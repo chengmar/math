@@ -1,0 +1,33 @@
+status: needs_review
+source: user_supplied_official_rules_required
+competition_year: null
+page_limit: null
+anonymous_required: true
+required_sections:
+  - 摘要
+  - 关键词
+  - 问题重述
+  - 问题分析
+  - 模型假设
+  - 符号说明
+  - 数据处理
+  - 模型建立
+  - 模型求解
+  - 模型验证
+  - 敏感性分析
+  - 模型评价
+  - 结论
+  - 参考文献
+  - 附录
+  - 支撑材料说明
+identity_patterns:
+  - 学号
+  - 姓名：
+  - 学校：
+placeholder_patterns:
+  - TODO
+  - TBC
+  - 待填写
+  - XX大学
+notes: 请依据当年官方规则核对并更新，系统未硬编码页数。
+

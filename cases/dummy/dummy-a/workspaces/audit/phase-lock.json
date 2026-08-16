@@ -1,0 +1,9 @@
+{
+  "lock_id": "ea58527a-b44b-4d59-8ff6-5239b328df0a",
+  "case_id": "dummy-a",
+  "phase": "audit",
+  "skill": "$cumcm-a-audit",
+  "created_at": "2026-08-16T15:40:51+08:00",
+  "allowed_paths_sha256": "18cec60067133169e0faeaa87f7ec86ef8b48cac4b82cb1ec67b4e52443ddc37",
+  "forbidden_paths_sha256": "f075bf741aa5e0dc4527893642bc07eb4bc70edc84733fa9b1801ed5ccaa0b47"
+}

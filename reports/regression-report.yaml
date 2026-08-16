@@ -1,0 +1,22 @@
+status: pass
+generated_at: '2026-08-16T15:47:21+08:00'
+cases:
+- status: pass
+  dimensions:
+    result_reliability:
+      before: 49.0
+      after: 50.0
+      delta: 1.0
+      status: pass
+    method_quality:
+      before: 19.0
+      after: 20.0
+      delta: 1.0
+      status: pass
+    paper_quality:
+      before: 24.0
+      after: 25.0
+      delta: 1.0
+      status: pass
+  tolerance: 2.0
+  case_id: dummy-a

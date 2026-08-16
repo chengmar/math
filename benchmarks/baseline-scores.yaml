@@ -1,0 +1,9 @@
+cases:
+  dummy-a:
+    categories:
+      result_reliability:
+        score: 49.0
+      method_quality:
+        score: 19.0
+      paper_quality:
+        score: 24.0

@@ -1,0 +1,2 @@
+﻿case_id,total,result_reliability,method_quality,paper_quality,status,scored_at
+dummy-a,95.0,50.0,20.0,25.0,pass,2026-08-16T15:47:21+08:00

@@ -1,0 +1,335 @@
+{
+  "status": "pass",
+  "version": "blind-final",
+  "verified_at": "2026-08-16T15:43:54+08:00",
+  "manifest": "D:\\CUMCM-A-Lab\\trainer\\cases\\dummy\\dummy-a\\frozen\\FROZEN_BLIND_FINAL.json",
+  "tree_hash_match": true,
+  "expected_tree_sha256": "f8f931503ba125f2b408af7478d5312ce7db10ea1808e37cfa1c176747f102be",
+  "actual_tree_sha256": "f8f931503ba125f2b408af7478d5312ce7db10ea1808e37cfa1c176747f102be",
+  "files": [
+    {
+      "path": "AGENTS.override.md",
+      "status": "pass",
+      "expected_sha256": "7690fcf2947ba7ae00a75f9f5c63307ef550da245ab3b73ef6d6a4c48b7eb4c0",
+      "actual_sha256": "7690fcf2947ba7ae00a75f9f5c63307ef550da245ab3b73ef6d6a4c48b7eb4c0"
+    },
+    {
+      "path": "allowed-paths.json",
+      "status": "pass",
+      "expected_sha256": "40a7fa1c36c2b7e15bbe77b7cc8b9c586bc565fb475b8ae854e0f417e53c92a4",
+      "actual_sha256": "40a7fa1c36c2b7e15bbe77b7cc8b9c586bc565fb475b8ae854e0f417e53c92a4"
+    },
+    {
+      "path": "assumptions.yaml",
+      "status": "pass",
+      "expected_sha256": "0503e3d179b712964da01bdfd5bc020bc2e255a3abe39f1d57df76e49da8a710",
+      "actual_sha256": "0503e3d179b712964da01bdfd5bc020bc2e255a3abe39f1d57df76e49da8a710"
+    },
+    {
+      "path": "audit/audit-findings.yaml",
+      "status": "pass",
+      "expected_sha256": "ce558f121aeac8f4a9e1cff3f462722cc6eeaad7a9dc4d7dd2e58cce2fd41b1d",
+      "actual_sha256": "ce558f121aeac8f4a9e1cff3f462722cc6eeaad7a9dc4d7dd2e58cce2fd41b1d"
+    },
+    {
+      "path": "audit/audit-report.md",
+      "status": "pass",
+      "expected_sha256": "a3e9d6ad17b175696511dc792b40e6e6291be585f1c566dc63fc076cca74a2e7",
+      "actual_sha256": "a3e9d6ad17b175696511dc792b40e6e6291be585f1c566dc63fc076cca74a2e7"
+    },
+    {
+      "path": "audit/counterexamples.md",
+      "status": "pass",
+      "expected_sha256": "d47adce1e3af6c9fbec6a7b04253c6e90575145e8a9c41a75316426cc02a7a45",
+      "actual_sha256": "d47adce1e3af6c9fbec6a7b04253c6e90575145e8a9c41a75316426cc02a7a45"
+    },
+    {
+      "path": "audit/reproduction-report.json",
+      "status": "pass",
+      "expected_sha256": "b4afb1f8159749642a47b8fb47143f7e0b0884e68f82531a1adae7cf59e8aaba",
+      "actual_sha256": "b4afb1f8159749642a47b8fb47143f7e0b0884e68f82531a1adae7cf59e8aaba"
+    },
+    {
+      "path": "audit/revision-plan.md",
+      "status": "pass",
+      "expected_sha256": "60301ad04e9911b9583928fd9d533f2b6a21a3eb79b500ab0fbaa871b1bf2e79",
+      "actual_sha256": "60301ad04e9911b9583928fd9d533f2b6a21a3eb79b500ab0fbaa871b1bf2e79"
+    },
+    {
+      "path": "blind-v1/AGENTS.override.md",
+      "status": "pass",
+      "expected_sha256": "42906a0e421b8818da1d4294b391f331de653a4667f16749337c2fc04180e3c1",
+      "actual_sha256": "42906a0e421b8818da1d4294b391f331de653a4667f16749337c2fc04180e3c1"
+    },
+    {
+      "path": "blind-v1/allowed-paths.json",
+      "status": "pass",
+      "expected_sha256": "74aafa6b07c00d56f5c6c2e68317294e5bd2f741299bbf58e233264ace3ff034",
+      "actual_sha256": "74aafa6b07c00d56f5c6c2e68317294e5bd2f741299bbf58e233264ace3ff034"
+    },
+    {
+      "path": "blind-v1/assumptions.yaml",
+      "status": "pass",
+      "expected_sha256": "0503e3d179b712964da01bdfd5bc020bc2e255a3abe39f1d57df76e49da8a710",
+      "actual_sha256": "0503e3d179b712964da01bdfd5bc020bc2e255a3abe39f1d57df76e49da8a710"
+    },
+    {
+      "path": "blind-v1/code/run.py",
+      "status": "pass",
+      "expected_sha256": "e3b1ad2833c80a6099ffa4b76f53e2d918bcc4f598090f10aff45688261853f8",
+      "actual_sha256": "e3b1ad2833c80a6099ffa4b76f53e2d918bcc4f598090f10aff45688261853f8"
+    },
+    {
+      "path": "blind-v1/data-audit.md",
+      "status": "pass",
+      "expected_sha256": "4753b631afb1d300d875d8cdc995276c429ee0854d544797c330117f9ca6c26a",
+      "actual_sha256": "4753b631afb1d300d875d8cdc995276c429ee0854d544797c330117f9ca6c26a"
+    },
+    {
+      "path": "blind-v1/figures/trend.svg",
+      "status": "pass",
+      "expected_sha256": "883bbf45110deb37af906db603f1be384b22c9c6ddc6478a8e6dbc42753e0a83",
+      "actual_sha256": "883bbf45110deb37af906db603f1be384b22c9c6ddc6478a8e6dbc42753e0a83"
+    },
+    {
+      "path": "blind-v1/forbidden-paths.json",
+      "status": "pass",
+      "expected_sha256": "356902c6c001ad95a3b5b57f303e030044069dd17457ec411df47d4027bbb8b3",
+      "actual_sha256": "356902c6c001ad95a3b5b57f303e030044069dd17457ec411df47d4027bbb8b3"
+    },
+    {
+      "path": "blind-v1/input/data/values.csv",
+      "status": "pass",
+      "expected_sha256": "66c7481b5e5fc3243baf14fb0e52cb7751f1432c808f3d6cde8a16ffaa62b98f",
+      "actual_sha256": "66c7481b5e5fc3243baf14fb0e52cb7751f1432c808f3d6cde8a16ffaa62b98f"
+    },
+    {
+      "path": "blind-v1/input/problem/problem.md",
+      "status": "pass",
+      "expected_sha256": "a1cfd942a8bdb097a135102586a902699175ba22b1be24e52e7b2b2ddac0570a",
+      "actual_sha256": "a1cfd942a8bdb097a135102586a902699175ba22b1be24e52e7b2b2ddac0570a"
+    },
+    {
+      "path": "blind-v1/model-selection.md",
+      "status": "pass",
+      "expected_sha256": "b18788944cf8a5ee2172d8007607551712e12d762271d19fe2a3c6140f1f78d7",
+      "actual_sha256": "b18788944cf8a5ee2172d8007607551712e12d762271d19fe2a3c6140f1f78d7"
+    },
+    {
+      "path": "blind-v1/paper-template/README.md",
+      "status": "pass",
+      "expected_sha256": "5c6b272bae5b40a6956ddb77ca8bfb7524ca0f14033281c961631da12dc7fe8e",
+      "actual_sha256": "5c6b272bae5b40a6956ddb77ca8bfb7524ca0f14033281c961631da12dc7fe8e"
+    },
+    {
+      "path": "blind-v1/paper-template/main.tex",
+      "status": "pass",
+      "expected_sha256": "cfac1e6782928e87a6f7855fc52c958bd13445c95741dc2543d1df13b7369044",
+      "actual_sha256": "cfac1e6782928e87a6f7855fc52c958bd13445c95741dc2543d1df13b7369044"
+    },
+    {
+      "path": "blind-v1/paper-template/paper.md",
+      "status": "pass",
+      "expected_sha256": "edabe61697d78b458d431ded3b45e914dd9dedd4bef8e4a29c7392bf37179324",
+      "actual_sha256": "edabe61697d78b458d431ded3b45e914dd9dedd4bef8e4a29c7392bf37179324"
+    },
+    {
+      "path": "blind-v1/paper-template/preamble.tex",
+      "status": "pass",
+      "expected_sha256": "285340522f658d1301b42e684c4279f6ed08bff1b024ec635da841996236a29a",
+      "actual_sha256": "285340522f658d1301b42e684c4279f6ed08bff1b024ec635da841996236a29a"
+    },
+    {
+      "path": "blind-v1/paper-template/references.bib",
+      "status": "pass",
+      "expected_sha256": "af4393a1dac960c70eedcdd675b48549009db8967c8b25bfe34933d5da946e1e",
+      "actual_sha256": "af4393a1dac960c70eedcdd675b48549009db8967c8b25bfe34933d5da946e1e"
+    },
+    {
+      "path": "blind-v1/paper-template/sections/01-problem.tex",
+      "status": "pass",
+      "expected_sha256": "194937ab6433ec9d53d779cfc908ebc457c489488d7380087c204cd154e013a4",
+      "actual_sha256": "194937ab6433ec9d53d779cfc908ebc457c489488d7380087c204cd154e013a4"
+    },
+    {
+      "path": "blind-v1/paper-template/sections/02-analysis.tex",
+      "status": "pass",
+      "expected_sha256": "06f7ff056f7fbe5561146d162d61320595cecc03e2f346806a3d252c88e8354d",
+      "actual_sha256": "06f7ff056f7fbe5561146d162d61320595cecc03e2f346806a3d252c88e8354d"
+    },
+    {
+      "path": "blind-v1/paper-template/sections/03-assumptions-symbols.tex",
+      "status": "pass",
+      "expected_sha256": "d88aef7ae189d9f50e84cf2bfc6a09553149f1512c85f30dce6cc4b7a8e10929",
+      "actual_sha256": "d88aef7ae189d9f50e84cf2bfc6a09553149f1512c85f30dce6cc4b7a8e10929"
+    },
+    {
+      "path": "blind-v1/paper-template/sections/04-data-model.tex",
+      "status": "pass",
+      "expected_sha256": "3ac0eb9141ea7af999b1eb82d338cde1b77e0a5ad4b5092e9366d9c9988e35b4",
+      "actual_sha256": "3ac0eb9141ea7af999b1eb82d338cde1b77e0a5ad4b5092e9366d9c9988e35b4"
+    },
+    {
+      "path": "blind-v1/paper-template/sections/05-solution-validation.tex",
+      "status": "pass",
+      "expected_sha256": "3aaeadfdac2ad74e817fe5318085bdb53f6e1bfa0c3b827c485fa2eaa2737f78",
+      "actual_sha256": "3aaeadfdac2ad74e817fe5318085bdb53f6e1bfa0c3b827c485fa2eaa2737f78"
+    },
+    {
+      "path": "blind-v1/paper-template/sections/06-evaluation-conclusion.tex",
+      "status": "pass",
+      "expected_sha256": "422de8e05a6110d04d67214995636acca069ecd01e3f37c87eeb29fe7e73879a",
+      "actual_sha256": "422de8e05a6110d04d67214995636acca069ecd01e3f37c87eeb29fe7e73879a"
+    },
+    {
+      "path": "blind-v1/paper-template/sections/appendix.tex",
+      "status": "pass",
+      "expected_sha256": "b3a490d1ca1e9bd23a95a7500b90566a62e3974c92770f788bcc93a596a633e1",
+      "actual_sha256": "b3a490d1ca1e9bd23a95a7500b90566a62e3974c92770f788bcc93a596a633e1"
+    },
+    {
+      "path": "blind-v1/paper/main.tex",
+      "status": "pass",
+      "expected_sha256": "1748db0384e4cbc7df4b76d3955772ac747429bad0840b4cb7de21e956167359",
+      "actual_sha256": "1748db0384e4cbc7df4b76d3955772ac747429bad0840b4cb7de21e956167359"
+    },
+    {
+      "path": "blind-v1/paper/paper.md",
+      "status": "pass",
+      "expected_sha256": "692fcda9ea7a9fffe1613c54295276155f82b6684b3778fed79ebb7ca48a7157",
+      "actual_sha256": "692fcda9ea7a9fffe1613c54295276155f82b6684b3778fed79ebb7ca48a7157"
+    },
+    {
+      "path": "blind-v1/phase-lock.json",
+      "status": "pass",
+      "expected_sha256": "bdba884c6ae2c625f059e57d53ace1ff8b722bd926fed0d9e95fc407c1e5a599",
+      "actual_sha256": "bdba884c6ae2c625f059e57d53ace1ff8b722bd926fed0d9e95fc407c1e5a599"
+    },
+    {
+      "path": "blind-v1/problem-analysis.md",
+      "status": "pass",
+      "expected_sha256": "54d0b60b4da19aba3d4d9dabf21a470654605d56b3aee1e2b9497312d335f206",
+      "actual_sha256": "54d0b60b4da19aba3d4d9dabf21a470654605d56b3aee1e2b9497312d335f206"
+    },
+    {
+      "path": "blind-v1/reproducibility.yaml",
+      "status": "pass",
+      "expected_sha256": "76a751a402b50a838b9ab415571147984e0388352334a06cd41c42c343144445",
+      "actual_sha256": "76a751a402b50a838b9ab415571147984e0388352334a06cd41c42c343144445"
+    },
+    {
+      "path": "blind-v1/results/summary.json",
+      "status": "pass",
+      "expected_sha256": "f45020d2b79ac09fd8d48dcab08760fbcffd82546681c9d47f06528f77165319",
+      "actual_sha256": "f45020d2b79ac09fd8d48dcab08760fbcffd82546681c9d47f06528f77165319"
+    },
+    {
+      "path": "blind-v1/retrieval-log.json",
+      "status": "pass",
+      "expected_sha256": "440d50e2e460a03ae12ae3faa4ffebeb6c9b8c40abd169ee2b46812eae3945b2",
+      "actual_sha256": "440d50e2e460a03ae12ae3faa4ffebeb6c9b8c40abd169ee2b46812eae3945b2"
+    },
+    {
+      "path": "blind-v1/solution-report.yaml",
+      "status": "pass",
+      "expected_sha256": "83c51dc157ebd6857da6184e386597bbfd212709c229489352aa9038a32b68c8",
+      "actual_sha256": "83c51dc157ebd6857da6184e386597bbfd212709c229489352aa9038a32b68c8"
+    },
+    {
+      "path": "blind-v1/variables.yaml",
+      "status": "pass",
+      "expected_sha256": "effa3487cf36c840cd82b96498e68037496f7452f24dcf11d8c4c4c8a840d046",
+      "actual_sha256": "effa3487cf36c840cd82b96498e68037496f7452f24dcf11d8c4c4c8a840d046"
+    },
+    {
+      "path": "code/run.py",
+      "status": "pass",
+      "expected_sha256": "e3b1ad2833c80a6099ffa4b76f53e2d918bcc4f598090f10aff45688261853f8",
+      "actual_sha256": "e3b1ad2833c80a6099ffa4b76f53e2d918bcc4f598090f10aff45688261853f8"
+    },
+    {
+      "path": "data-audit.md",
+      "status": "pass",
+      "expected_sha256": "4753b631afb1d300d875d8cdc995276c429ee0854d544797c330117f9ca6c26a",
+      "actual_sha256": "4753b631afb1d300d875d8cdc995276c429ee0854d544797c330117f9ca6c26a"
+    },
+    {
+      "path": "figures/trend.svg",
+      "status": "pass",
+      "expected_sha256": "883bbf45110deb37af906db603f1be384b22c9c6ddc6478a8e6dbc42753e0a83",
+      "actual_sha256": "883bbf45110deb37af906db603f1be384b22c9c6ddc6478a8e6dbc42753e0a83"
+    },
+    {
+      "path": "forbidden-paths.json",
+      "status": "pass",
+      "expected_sha256": "f42ea98992a3d7e68b7b4464c1450a38542372d6eeb5e9ef176b89a15ac334fc",
+      "actual_sha256": "f42ea98992a3d7e68b7b4464c1450a38542372d6eeb5e9ef176b89a15ac334fc"
+    },
+    {
+      "path": "input/data/values.csv",
+      "status": "pass",
+      "expected_sha256": "66c7481b5e5fc3243baf14fb0e52cb7751f1432c808f3d6cde8a16ffaa62b98f",
+      "actual_sha256": "66c7481b5e5fc3243baf14fb0e52cb7751f1432c808f3d6cde8a16ffaa62b98f"
+    },
+    {
+      "path": "input/problem/problem.md",
+      "status": "pass",
+      "expected_sha256": "a1cfd942a8bdb097a135102586a902699175ba22b1be24e52e7b2b2ddac0570a",
+      "actual_sha256": "a1cfd942a8bdb097a135102586a902699175ba22b1be24e52e7b2b2ddac0570a"
+    },
+    {
+      "path": "model-selection.md",
+      "status": "pass",
+      "expected_sha256": "b18788944cf8a5ee2172d8007607551712e12d762271d19fe2a3c6140f1f78d7",
+      "actual_sha256": "b18788944cf8a5ee2172d8007607551712e12d762271d19fe2a3c6140f1f78d7"
+    },
+    {
+      "path": "paper/main.tex",
+      "status": "pass",
+      "expected_sha256": "1748db0384e4cbc7df4b76d3955772ac747429bad0840b4cb7de21e956167359",
+      "actual_sha256": "1748db0384e4cbc7df4b76d3955772ac747429bad0840b4cb7de21e956167359"
+    },
+    {
+      "path": "paper/paper.md",
+      "status": "pass",
+      "expected_sha256": "692fcda9ea7a9fffe1613c54295276155f82b6684b3778fed79ebb7ca48a7157",
+      "actual_sha256": "692fcda9ea7a9fffe1613c54295276155f82b6684b3778fed79ebb7ca48a7157"
+    },
+    {
+      "path": "phase-lock.json",
+      "status": "pass",
+      "expected_sha256": "f171cf3e4ad4e9a2390c4759f1ea192433318b5feda32ed341d9085b4cbb7bdc",
+      "actual_sha256": "f171cf3e4ad4e9a2390c4759f1ea192433318b5feda32ed341d9085b4cbb7bdc"
+    },
+    {
+      "path": "problem-analysis.md",
+      "status": "pass",
+      "expected_sha256": "54d0b60b4da19aba3d4d9dabf21a470654605d56b3aee1e2b9497312d335f206",
+      "actual_sha256": "54d0b60b4da19aba3d4d9dabf21a470654605d56b3aee1e2b9497312d335f206"
+    },
+    {
+      "path": "reproducibility.yaml",
+      "status": "pass",
+      "expected_sha256": "76a751a402b50a838b9ab415571147984e0388352334a06cd41c42c343144445",
+      "actual_sha256": "76a751a402b50a838b9ab415571147984e0388352334a06cd41c42c343144445"
+    },
+    {
+      "path": "results/summary.json",
+      "status": "pass",
+      "expected_sha256": "f45020d2b79ac09fd8d48dcab08760fbcffd82546681c9d47f06528f77165319",
+      "actual_sha256": "f45020d2b79ac09fd8d48dcab08760fbcffd82546681c9d47f06528f77165319"
+    },
+    {
+      "path": "solution-report.yaml",
+      "status": "pass",
+      "expected_sha256": "83c51dc157ebd6857da6184e386597bbfd212709c229489352aa9038a32b68c8",
+      "actual_sha256": "83c51dc157ebd6857da6184e386597bbfd212709c229489352aa9038a32b68c8"
+    },
+    {
+      "path": "variables.yaml",
+      "status": "pass",
+      "expected_sha256": "effa3487cf36c840cd82b96498e68037496f7452f24dcf11d8c4c4c8a840d046",
+      "actual_sha256": "effa3487cf36c840cd82b96498e68037496f7452f24dcf11d8c4c4c8a840d046"
+    }
+  ]
+}

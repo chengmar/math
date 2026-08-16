@@ -1,0 +1,82 @@
+state: knowledge_proposed
+history:
+- from: initialized
+  to: solve_ready
+  timestamp: '2026-08-16T15:40:50+08:00'
+  command: prepare --phase solve
+  actor: cumcm_lab
+  reason: 准备隔离的 solve 工作区（上一状态 initialized）
+  git_commit: null
+  manifest_hash: null
+- from: solve_ready
+  to: solving
+  timestamp: '2026-08-16T15:40:50+08:00'
+  command: prepare --phase solve
+  actor: cumcm_lab
+  reason: 准备隔离的 solve 工作区（上一状态 solve_ready）
+  git_commit: null
+  manifest_hash: null
+- from: solving
+  to: blind_v1_frozen
+  timestamp: '2026-08-16T15:40:51+08:00'
+  command: freeze --version blind-v1
+  actor: cumcm_lab
+  reason: 冻结 blind-v1 解答并记录 SHA-256
+  git_commit: null
+  manifest_hash: 155016456f6c6bfb964bd33dd5d63672c1722299d05e52193efdf000c2d3770f
+- from: blind_v1_frozen
+  to: audit_ready
+  timestamp: '2026-08-16T15:40:51+08:00'
+  command: prepare --phase audit
+  actor: cumcm_lab
+  reason: 准备隔离的 audit 工作区（上一状态 blind_v1_frozen）
+  git_commit: null
+  manifest_hash: null
+- from: audit_ready
+  to: audited
+  timestamp: '2026-08-16T15:40:51+08:00'
+  command: complete --phase audit
+  actor: cumcm_lab
+  reason: audit 阶段必需输出已齐全
+  git_commit: null
+  manifest_hash: null
+- from: audited
+  to: blind_revision_ready
+  timestamp: '2026-08-16T15:40:51+08:00'
+  command: prepare --phase blind-revision
+  actor: cumcm_lab
+  reason: 准备隔离的 blind-revision 工作区（上一状态 audited）
+  git_commit: null
+  manifest_hash: null
+- from: blind_revision_ready
+  to: blind_final_frozen
+  timestamp: '2026-08-16T15:40:51+08:00'
+  command: freeze --version blind-final
+  actor: cumcm_lab
+  reason: 冻结 blind-final 解答并记录 SHA-256
+  git_commit: null
+  manifest_hash: c1547ea8ad069c283168d31f233d00ffd6362e8406dd3696c3d5b285eae027ba
+- from: blind_final_frozen
+  to: reflection_ready
+  timestamp: '2026-08-16T15:40:52+08:00'
+  command: prepare --phase reflection
+  actor: cumcm_lab
+  reason: 准备隔离的 reflection 工作区（上一状态 blind_final_frozen）
+  git_commit: null
+  manifest_hash: null
+- from: reflection_ready
+  to: reflected
+  timestamp: '2026-08-16T15:40:52+08:00'
+  command: complete --phase reflection
+  actor: cumcm_lab
+  reason: reflection 阶段必需输出已齐全
+  git_commit: null
+  manifest_hash: null
+- from: reflected
+  to: knowledge_proposed
+  timestamp: '2026-08-16T15:40:52+08:00'
+  command: build_dummy
+  actor: cumcm_lab
+  reason: 生成明确标记 demo 的知识提案
+  git_commit: null
+  manifest_hash: null

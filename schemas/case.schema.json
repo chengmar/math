@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["case_id", "title", "split", "status", "created_at"],
+  "properties": {
+    "case_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{1,63}$"},
+    "title": {"type": "string", "minLength": 1},
+    "split": {"enum": ["train", "dev", "exam", "dummy"]},
+    "problem_family": {"type": "string"},
+    "task_types": {"type": "array", "items": {"type": "string"}},
+    "data_types": {"type": "array", "items": {"type": "string"}},
+    "status": {"type": "string"}
+  },
+  "additionalProperties": true
+}
+

@@ -1,0 +1,3 @@
+assumptions:
+- id: A1
+  text: 输入数据真实等于人工值

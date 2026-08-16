@@ -1,0 +1,26 @@
+id: candidate-id
+title: 候选知识标题
+type: method_card
+status: candidate
+provenance: real_training_required
+version: 1
+tags: []
+problem_families: []
+applicable_conditions: []
+inapplicable_conditions: []
+minimum_baseline: ''
+recommended_method: ''
+why_it_works: ''
+required_validation: []
+common_failures: []
+counterexamples: []
+source_cases: []
+source_documents: []
+evidence: []
+confidence: low
+last_tested: null
+regression_status: not_run
+created_at: null
+updated_at: null
+approved_by: null
+

@@ -1,0 +1,17 @@
+schema_version: 1
+policy:
+  solve_allowed_statuses: [verified]
+  evaluation_allowed_statuses: [verified]
+  reflection_allowed_statuses: [verified, candidate, demo]
+  max_retrieval: 5
+cards:
+  - id: demo-baseline-first
+    path: method-cards/demo-baseline-first.yaml
+    status: demo
+  - id: demo-unit-audit
+    path: validation-patterns/demo-unit-audit.yaml
+    status: demo
+  - id: demo-leakage-warning
+    path: failure-modes/demo-leakage-warning.yaml
+    status: demo
+

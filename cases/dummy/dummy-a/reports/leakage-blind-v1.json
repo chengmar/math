@@ -1,0 +1,10 @@
+{
+  "status": "pass",
+  "phase": "solve",
+  "workspace": "D:\\CUMCM-A-Lab\\trainer\\cases\\dummy\\dummy-a\\workspaces\\solve",
+  "checked_at": "2026-08-16T15:40:50+08:00",
+  "checked_files": 31,
+  "findings": [],
+  "warnings": [],
+  "limitation": "仅检测文件层面的明显泄漏，不能证明模型内部绝对未见过相似内容。"
+}

@@ -1,0 +1,19 @@
+{
+  "status": "fail",
+  "phase": "solve",
+  "workspace": "D:\\CUMCM-A-Lab\\trainer\\tests\\fixtures\\leakage",
+  "checked_at": "2026-08-16T15:43:54+08:00",
+  "checked_files": 1,
+  "findings": [
+    {
+      "category": "phase_lock_missing",
+      "evidence": "D:\\CUMCM-A-Lab\\trainer\\tests\\fixtures\\leakage\\phase-lock.json"
+    },
+    {
+      "category": "forbidden_path_token",
+      "evidence": "reference-paper-answer-key.md"
+    }
+  ],
+  "warnings": [],
+  "limitation": "仅检测文件层面的明显泄漏，不能证明模型内部绝对未见过相似内容。"
+}

@@ -1,0 +1,22 @@
+case_id: dummy-a
+questions:
+- id: Q1
+  result: 3.0
+  unit: 无量纲
+baseline:
+  name: hand-computed arithmetic mean
+  result: 3.0
+main_model:
+  name: deterministic arithmetic mean
+validation:
+- type: independent hand check
+  status: pass
+  error: 0.0
+- type: sensitivity
+  status: pass
+  delta: 0.2
+limitations:
+- 仅验证训练系统生命周期，不代表真实建模能力
+reproducibility:
+  run_command: python code/run.py
+  result: results/summary.json

@@ -1,0 +1,141 @@
+from __future__ import annotations
+
+import re
+from pathlib import Path
+from typing import Any
+
+from .util import now_iso, read_yaml, write_json, write_yaml
+
+
+SEARCH_DIRS = ("method-cards", "failure-modes", "validation-patterns", "paper-writing", "problem-taxonomy")
+QUERY_FIELDS = (
+    "problem_family",
+    "task_type",
+    "data_type",
+    "model_family",
+    "objective",
+    "constraints",
+    "validation_needed",
+    "failure_modes",
+)
+
+
+def _tokens(value: Any) -> set[str]:
+    if value is None:
+        return set()
+    if isinstance(value, (list, tuple, set)):
+        text = " ".join(str(item) for item in value)
+    else:
+        text = str(value)
+    return {item.casefold() for item in re.findall(r"[\w\-\u4e00-\u9fff]+", text)}
+
+
+def retrieve_knowledge(
+    knowledge_root: Path,
+    query: dict[str, Any],
+    *,
+    phase: str = "solve",
+    limit: int = 5,
+    log_path: Path | None = None,
+) -> list[dict[str, Any]]:
+    limit = min(max(int(limit), 1), 5)
+    allowed_statuses = {"verified"} if phase in {"solve", "evaluation"} else {"verified", "candidate", "demo"}
+    query_tokens = set().union(*(_tokens(query.get(field)) for field in QUERY_FIELDS))
+    scored: list[dict[str, Any]] = []
+    for directory in SEARCH_DIRS:
+        base = knowledge_root / directory
+        if not base.exists():
+            continue
+        for path in sorted([*base.rglob("*.yaml"), *base.rglob("*.yml")]):
+            card = read_yaml(path)
+            if not isinstance(card, dict) or card.get("status") not in allowed_statuses:
+                continue
+            searchable = {
+                "title": card.get("title"),
+                "tags": card.get("tags"),
+                "problem_families": card.get("problem_families"),
+                "recommended_method": card.get("recommended_method"),
+                "required_validation": card.get("required_validation"),
+                "common_failures": card.get("common_failures"),
+            }
+            card_tokens = set().union(*(_tokens(value) for value in searchable.values()))
+            matches = sorted(query_tokens & card_tokens)
+            score = len(matches)
+            if query_tokens and score == 0:
+                continue
+            scored.append(
+                {
+                    "id": card.get("id"),
+                    "title": card.get("title"),
+                    "status": card.get("status"),
+                    "score": score,
+                    "matched_terms": matches,
+                    "match_reason": "匹配标签/任务/模型/验证关键词" if matches else "空查询下的合格卡片",
+                    "path": str(path),
+                }
+            )
+    results = sorted(scored, key=lambda item: (-item["score"], str(item["id"])))[:limit]
+    if log_path:
+        write_json(
+            log_path,
+            {
+                "retrieved_at": now_iso(),
+                "phase": phase,
+                "query": query,
+                "limit": limit,
+                "cards": results,
+            },
+        )
+    return results
+
+
+def promote_lesson(
+    knowledge_root: Path,
+    candidate_path: Path,
+    *,
+    human_approved: bool = False,
+    approved_by: str | None = None,
+) -> dict[str, Any]:
+    card = read_yaml(candidate_path)
+    if not isinstance(card, dict) or card.get("status") != "candidate":
+        raise ValueError("只能升级 status=candidate 的知识卡。")
+    if card.get("provenance") == "demo":
+        raise ValueError("demo 卡片不得升级为真实 verified 知识。")
+    cases = card.get("source_cases") or []
+    positive = [case for case in cases if isinstance(case, dict) and case.get("outcome") == "positive"]
+    case_ids = {case.get("case_id") for case in positive if case.get("case_id")}
+    variant_groups = {case.get("variant_group") for case in positive if case.get("variant_group")}
+    checks = {
+        "two_independent_cases": len(case_ids) >= 2 and len(variant_groups) >= 2,
+        "positive_evidence": len(positive) >= 2 and bool(card.get("evidence")),
+        "applicable_conditions": bool(card.get("applicable_conditions")),
+        "inapplicable_conditions": bool(card.get("inapplicable_conditions")),
+        "counterexamples": bool(card.get("counterexamples")),
+        "regression_passed": card.get("regression_status") == "pass",
+        "human_approval": bool(human_approved and approved_by),
+    }
+    proposal = {
+        "card_id": card.get("id"),
+        "created_at": now_iso(),
+        "source": str(candidate_path),
+        "checks": checks,
+        "status": "approved" if all(checks.values()) else "needs_review",
+    }
+    proposal_path = knowledge_root / "promotion-proposals" / f"{card.get('id')}-proposal.yaml"
+    write_yaml(proposal_path, proposal)
+    if not all(value for key, value in checks.items() if key != "human_approval"):
+        raise ValueError(f"升级条件不足，已生成提案：{proposal_path}")
+    if not checks["human_approval"]:
+        return proposal
+    promoted = dict(card)
+    promoted["status"] = "verified"
+    promoted["approved_by"] = approved_by
+    promoted["updated_at"] = now_iso()
+    destination = knowledge_root / "method-cards" / f"{card['id']}.yaml"
+    if destination.exists():
+        raise FileExistsError(f"verified 卡片已存在，拒绝覆盖：{destination}")
+    write_yaml(destination, promoted)
+    proposal["verified_path"] = str(destination)
+    write_yaml(proposal_path, proposal)
+    return proposal
+

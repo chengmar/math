@@ -1,0 +1,4 @@
+variables:
+- name: x_i
+  meaning: 第 i 个值
+  unit: 无量纲

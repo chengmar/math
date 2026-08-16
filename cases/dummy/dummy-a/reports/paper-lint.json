@@ -1,0 +1,89 @@
+{
+  "status": "needs_review",
+  "checked_at": "2026-08-16T15:47:21+08:00",
+  "paper": "D:\\CUMCM-A-Lab\\trainer\\cases\\dummy\\dummy-a\\frozen\\blind-final\\paper\\paper.md",
+  "rules_status": "needs_review",
+  "checks": [
+    {
+      "id": "abstract_exists",
+      "status": "pass",
+      "evidence": "检测摘要标题或 abstract 环境"
+    },
+    {
+      "id": "abstract_model",
+      "status": "pass",
+      "evidence": "摘要前 2500 字符中的模型词"
+    },
+    {
+      "id": "abstract_result",
+      "status": "pass",
+      "evidence": "摘要中的定量结果"
+    },
+    {
+      "id": "required_sections",
+      "status": "pass",
+      "evidence": "章节齐全"
+    },
+    {
+      "id": "question_conclusions",
+      "status": "pass",
+      "evidence": "需人工核对每一小问是否均有结论"
+    },
+    {
+      "id": "figure_captions",
+      "status": "pass",
+      "evidence": "检测到 1 个图表标题"
+    },
+    {
+      "id": "figure_references",
+      "status": "pass",
+      "evidence": "正文图表引用模式"
+    },
+    {
+      "id": "table_units",
+      "status": "needs_review",
+      "evidence": "单位语义无法可靠自动判断"
+    },
+    {
+      "id": "placeholders",
+      "status": "pass",
+      "evidence": "未发现配置占位符"
+    },
+    {
+      "id": "identity",
+      "status": "pass",
+      "evidence": "未发现配置身份模式"
+    },
+    {
+      "id": "undefined_symbols",
+      "status": "needs_review",
+      "evidence": "明显符号定义仍需人工核查"
+    },
+    {
+      "id": "references",
+      "status": "pass",
+      "evidence": "参考文献章节/命令"
+    },
+    {
+      "id": "supporting_materials",
+      "status": "pass",
+      "evidence": "支撑材料说明"
+    },
+    {
+      "id": "page_limit",
+      "status": "needs_review",
+      "evidence": "competition-rules.yaml 未填写当年官方页数"
+    },
+    {
+      "id": "code_outputs",
+      "status": "pass",
+      "evidence": "code=True, results=True"
+    },
+    {
+      "id": "number_consistency",
+      "status": "needs_review",
+      "evidence": "数字一致性需结合结构化结果和人工抽查"
+    }
+  ],
+  "limitation": "结构检查不能替代数学正确性、论证质量或人工排版评审。"
+}

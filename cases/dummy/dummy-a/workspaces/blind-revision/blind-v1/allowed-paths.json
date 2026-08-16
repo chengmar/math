@@ -1,0 +1,9 @@
+{
+  "phase": "solve",
+  "paths": [
+    "D:\\CUMCM-A-Lab\\trainer\\cases\\dummy\\dummy-a\\workspaces\\solve\\input",
+    "D:\\CUMCM-A-Lab\\trainer\\cases\\dummy\\dummy-a\\workspaces\\solve\\knowledge",
+    "D:\\CUMCM-A-Lab\\trainer\\cases\\dummy\\dummy-a\\workspaces\\solve\\paper-template",
+    "D:\\CUMCM-A-Lab\\trainer\\cases\\dummy\\dummy-a\\workspaces\\solve\\retrieval-log.json"
+  ]
+}

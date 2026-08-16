@@ -1,0 +1,174 @@
+{
+  "schema_version": 1,
+  "case_id": "dummy-a",
+  "version": "blind-v1",
+  "created_at": "2026-08-16T15:40:50+08:00",
+  "snapshot": "blind-v1",
+  "tree_sha256": "ef4853f627ae07d956e1773acceb3ff13eeae420f1fe8ac268ae7662ca9262b8",
+  "git_commit": null,
+  "git_dirty": null,
+  "python_version": "3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]",
+  "operating_system": "Windows-10-10.0.26200-SP0",
+  "dependencies": [],
+  "random_seed": 20260816,
+  "run_command": "python code/run.py",
+  "knowledge_cards": [],
+  "leakage_status": "pass",
+  "files": [
+    {
+      "path": "AGENTS.override.md",
+      "size": 373,
+      "sha256": "42906a0e421b8818da1d4294b391f331de653a4667f16749337c2fc04180e3c1"
+    },
+    {
+      "path": "allowed-paths.json",
+      "size": 390,
+      "sha256": "74aafa6b07c00d56f5c6c2e68317294e5bd2f741299bbf58e233264ace3ff034"
+    },
+    {
+      "path": "assumptions.yaml",
+      "size": 64,
+      "sha256": "0503e3d179b712964da01bdfd5bc020bc2e255a3abe39f1d57df76e49da8a710"
+    },
+    {
+      "path": "code/run.py",
+      "size": 469,
+      "sha256": "e3b1ad2833c80a6099ffa4b76f53e2d918bcc4f598090f10aff45688261853f8"
+    },
+    {
+      "path": "data-audit.md",
+      "size": 70,
+      "sha256": "4753b631afb1d300d875d8cdc995276c429ee0854d544797c330117f9ca6c26a"
+    },
+    {
+      "path": "figures/trend.svg",
+      "size": 156,
+      "sha256": "883bbf45110deb37af906db603f1be384b22c9c6ddc6478a8e6dbc42753e0a83"
+    },
+    {
+      "path": "forbidden-paths.json",
+      "size": 249,
+      "sha256": "356902c6c001ad95a3b5b57f303e030044069dd17457ec411df47d4027bbb8b3"
+    },
+    {
+      "path": "input/data/values.csv",
+      "size": 22,
+      "sha256": "66c7481b5e5fc3243baf14fb0e52cb7751f1432c808f3d6cde8a16ffaa62b98f"
+    },
+    {
+      "path": "input/problem/problem.md",
+      "size": 69,
+      "sha256": "a1cfd942a8bdb097a135102586a902699175ba22b1be24e52e7b2b2ddac0570a"
+    },
+    {
+      "path": "model-selection.md",
+      "size": 74,
+      "sha256": "b18788944cf8a5ee2172d8007607551712e12d762271d19fe2a3c6140f1f78d7"
+    },
+    {
+      "path": "paper-template/README.md",
+      "size": 369,
+      "sha256": "5c6b272bae5b40a6956ddb77ca8bfb7524ca0f14033281c961631da12dc7fe8e"
+    },
+    {
+      "path": "paper-template/main.tex",
+      "size": 687,
+      "sha256": "cfac1e6782928e87a6f7855fc52c958bd13445c95741dc2543d1df13b7369044"
+    },
+    {
+      "path": "paper-template/paper.md",
+      "size": 370,
+      "sha256": "edabe61697d78b458d431ded3b45e914dd9dedd4bef8e4a29c7392bf37179324"
+    },
+    {
+      "path": "paper-template/preamble.tex",
+      "size": 278,
+      "sha256": "285340522f658d1301b42e684c4279f6ed08bff1b024ec635da841996236a29a"
+    },
+    {
+      "path": "paper-template/references.bib",
+      "size": 205,
+      "sha256": "af4393a1dac960c70eedcdd675b48549009db8967c8b25bfe34933d5da946e1e"
+    },
+    {
+      "path": "paper-template/sections/01-problem.tex",
+      "size": 85,
+      "sha256": "194937ab6433ec9d53d779cfc908ebc457c489488d7380087c204cd154e013a4"
+    },
+    {
+      "path": "paper-template/sections/02-analysis.tex",
+      "size": 94,
+      "sha256": "06f7ff056f7fbe5561146d162d61320595cecc03e2f346806a3d252c88e8354d"
+    },
+    {
+      "path": "paper-template/sections/03-assumptions-symbols.tex",
+      "size": 148,
+      "sha256": "d88aef7ae189d9f50e84cf2bfc6a09553149f1512c85f30dce6cc4b7a8e10929"
+    },
+    {
+      "path": "paper-template/sections/04-data-model.tex",
+      "size": 169,
+      "sha256": "3ac0eb9141ea7af999b1eb82d338cde1b77e0a5ad4b5092e9366d9c9988e35b4"
+    },
+    {
+      "path": "paper-template/sections/05-solution-validation.tex",
+      "size": 220,
+      "sha256": "3aaeadfdac2ad74e817fe5318085bdb53f6e1bfa0c3b827c485fa2eaa2737f78"
+    },
+    {
+      "path": "paper-template/sections/06-evaluation-conclusion.tex",
+      "size": 139,
+      "sha256": "422de8e05a6110d04d67214995636acca069ecd01e3f37c87eeb29fe7e73879a"
+    },
+    {
+      "path": "paper-template/sections/appendix.tex",
+      "size": 142,
+      "sha256": "b3a490d1ca1e9bd23a95a7500b90566a62e3974c92770f788bcc93a596a633e1"
+    },
+    {
+      "path": "paper/main.tex",
+      "size": 94,
+      "sha256": "1748db0384e4cbc7df4b76d3955772ac747429bad0840b4cb7de21e956167359"
+    },
+    {
+      "path": "paper/paper.md",
+      "size": 1452,
+      "sha256": "692fcda9ea7a9fffe1613c54295276155f82b6684b3778fed79ebb7ca48a7157"
+    },
+    {
+      "path": "phase-lock.json",
+      "size": 364,
+      "sha256": "bdba884c6ae2c625f059e57d53ace1ff8b722bd926fed0d9e95fc407c1e5a599"
+    },
+    {
+      "path": "problem-analysis.md",
+      "size": 62,
+      "sha256": "54d0b60b4da19aba3d4d9dabf21a470654605d56b3aee1e2b9497312d335f206"
+    },
+    {
+      "path": "reproducibility.yaml",
+      "size": 91,
+      "sha256": "76a751a402b50a838b9ab415571147984e0388352334a06cd41c42c343144445"
+    },
+    {
+      "path": "results/summary.json",
+      "size": 52,
+      "sha256": "f45020d2b79ac09fd8d48dcab08760fbcffd82546681c9d47f06528f77165319"
+    },
+    {
+      "path": "retrieval-log.json",
+      "size": 330,
+      "sha256": "440d50e2e460a03ae12ae3faa4ffebeb6c9b8c40abd169ee2b46812eae3945b2"
+    },
+    {
+      "path": "solution-report.yaml",
+      "size": 461,
+      "sha256": "83c51dc157ebd6857da6184e386597bbfd212709c229489352aa9038a32b68c8"
+    },
+    {
+      "path": "variables.yaml",
+      "size": 65,
+      "sha256": "effa3487cf36c840cd82b96498e68037496f7452f24dcf11d8c4c4c8a840d046"
+    }
+  ]
+}

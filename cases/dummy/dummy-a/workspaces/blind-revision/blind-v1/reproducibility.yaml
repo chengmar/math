@@ -1,0 +1,4 @@
+random_seed: 20260816
+run_command: python code/run.py
+dependencies: []
+knowledge_cards: []

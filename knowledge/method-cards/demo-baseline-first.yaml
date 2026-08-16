@@ -1,0 +1,26 @@
+id: demo-baseline-first
+title: Demo：先建立可解释基线
+type: method_card
+status: demo
+provenance: demo
+version: 1
+tags: [demo, baseline, simplicity]
+problem_families: [synthetic]
+applicable_conditions: [仅用于测试知识卡格式]
+inapplicable_conditions: [不得作为真实竞赛 verified 经验]
+minimum_baseline: 最简单的均值或解析基线
+recommended_method: 在复杂模型前实现可解释基线
+why_it_works: 为测试流程提供比较锚点
+required_validation: [与人工可算样例比较]
+common_failures: [把复杂性误当收益]
+counterexamples: [题目直接给出唯一解析模型时不需要多余候选]
+source_cases: []
+source_documents: [人工生成演示]
+evidence: []
+confidence: demo_only
+last_tested: null
+regression_status: not_applicable
+created_at: '2026-08-16'
+updated_at: '2026-08-16'
+approved_by: null
+

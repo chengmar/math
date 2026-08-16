@@ -1,0 +1,7 @@
+interface:
+  display_name: "CUMCM A 盲解"
+  short_description: "执行隔离、可复现的 A 题盲解与审计后盲修订工作流"
+  default_prompt: "Use $cumcm-a-solve to solve the current case in the isolated blind-solve phase."
+policy:
+  allow_implicit_invocation: false
+

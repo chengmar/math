@@ -1,0 +1,31 @@
+scores:
+  mathematical_correctness:
+    score: 12
+    evidence: 人工 Dummy 验收，仅评价流程
+  uncertainty_limitations:
+    score: 4
+    evidence: 人工 Dummy 验收，仅评价流程
+  fit_to_problem:
+    score: 7
+    evidence: 人工 Dummy 验收，仅评价流程
+  simplicity_cost:
+    score: 5
+    evidence: 人工 Dummy 验收，仅评价流程
+  innovation_benefit:
+    score: 0
+    evidence: Dummy 没有创新收益，不因流程完整而给创新分
+  interpretability:
+    score: 3
+    evidence: 人工 Dummy 验收，仅评价流程
+  abstract_quality:
+    score: 5
+    evidence: 人工 Dummy 验收，仅评价流程
+  structure_logic:
+    score: 5
+    evidence: 人工 Dummy 验收，仅评价流程
+  notation_explanation:
+    score: 4
+    evidence: 人工 Dummy 验收，仅评价流程
+  figure_tables:
+    score: 4
+    evidence: 人工 Dummy 验收，仅评价流程

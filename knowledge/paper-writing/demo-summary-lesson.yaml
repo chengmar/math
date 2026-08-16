@@ -1,0 +1,26 @@
+id: demo-summary-lesson
+title: Demo：摘要包含模型与定量结论
+type: paper_writing
+status: demo
+provenance: demo
+version: 1
+tags: [demo, abstract, writing]
+problem_families: [synthetic]
+applicable_conditions: [仅测试论文检查]
+inapplicable_conditions: [不得当作真实获奖经验]
+minimum_baseline: 摘要说明任务、方法、结果、结论
+recommended_method: 把关键数值从结构化结果写入摘要
+why_it_works: 提高可追踪性
+required_validation: [核对摘要数字与 results]
+common_failures: [只写采用某模型但没有结果]
+counterexamples: [理论题可能以严格性质而非数值为核心]
+source_cases: []
+source_documents: [人工生成演示]
+evidence: []
+confidence: demo_only
+last_tested: null
+regression_status: not_applicable
+created_at: '2026-08-16'
+updated_at: '2026-08-16'
+approved_by: null
+

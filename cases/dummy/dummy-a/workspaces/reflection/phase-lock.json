@@ -1,0 +1,9 @@
+{
+  "lock_id": "c963e755-50b0-4330-ae12-9f9f178a2f57",
+  "case_id": "dummy-a",
+  "phase": "reflection",
+  "skill": "$cumcm-a-reflect",
+  "created_at": "2026-08-16T15:40:52+08:00",
+  "allowed_paths_sha256": "63d6c39ef871a0b0f0ea344f85817f66b5e9cb195a30211c35ff7c07b9baaf1b",
+  "forbidden_paths_sha256": "f99ce53378143303121b1cf0a5920f251cff2215851adfd1523ef1f3515dd1dd"
+}

@@ -1,0 +1,108 @@
+status: pass
+scored_at: '2026-08-16T15:47:21+08:00'
+case_id: dummy-a
+total: 95.0
+maximum: 100
+categories:
+  result_reliability:
+    label: 结果准确性与可靠性
+    weight: 50
+    score: 50.0
+    criteria:
+      question_coverage:
+        weight: 8.0
+        score: 8.0
+        status: pass
+        evidence: questions=1
+      mathematical_correctness:
+        weight: 12.0
+        score: 12.0
+        status: pass
+        evidence: 人工 Dummy 验收，仅评价流程
+      numeric_results:
+        weight: 10.0
+        score: 10.0
+        status: pass
+        evidence: 结构化 results 目录
+      reproducibility:
+        weight: 8.0
+        score: 8.0
+        status: pass
+        evidence: 干净目录重跑
+      validation_sensitivity:
+        weight: 8.0
+        score: 8.0
+        status: pass
+        evidence: validation=2
+      uncertainty_limitations:
+        weight: 4.0
+        score: 4.0
+        status: pass
+        evidence: 人工 Dummy 验收，仅评价流程
+  method_quality:
+    label: 方法质量与简洁创新
+    weight: 25
+    score: 20.0
+    criteria:
+      fit_to_problem:
+        weight: 7.0
+        score: 7.0
+        status: pass
+        evidence: 人工 Dummy 验收，仅评价流程
+      baseline_comparison:
+        weight: 5.0
+        score: 5.0
+        status: pass
+        evidence: solution-report.baseline
+      simplicity_cost:
+        weight: 5.0
+        score: 5.0
+        status: pass
+        evidence: 人工 Dummy 验收，仅评价流程
+      innovation_benefit:
+        weight: 5.0
+        score: 0.0
+        status: pass
+        evidence: Dummy 没有创新收益，不因流程完整而给创新分
+      interpretability:
+        weight: 3.0
+        score: 3.0
+        status: pass
+        evidence: 人工 Dummy 验收，仅评价流程
+  paper_quality:
+    label: 论文表达与排版
+    weight: 25
+    score: 25.0
+    criteria:
+      abstract_quality:
+        weight: 5.0
+        score: 5.0
+        status: pass
+        evidence: 人工 Dummy 验收，仅评价流程
+      structure_logic:
+        weight: 5.0
+        score: 5.0
+        status: pass
+        evidence: 人工 Dummy 验收，仅评价流程
+      notation_explanation:
+        weight: 4.0
+        score: 4.0
+        status: pass
+        evidence: 人工 Dummy 验收，仅评价流程
+      figure_tables:
+        weight: 4.0
+        score: 4.0
+        status: pass
+        evidence: 人工 Dummy 验收，仅评价流程
+      traceability:
+        weight: 4.0
+        score: 4.0
+        status: pass
+        evidence: 运行命令、结果与报告
+      format_references:
+        weight: 3.0
+        score: 3.0
+        status: pass
+        evidence: 参考文献与占位符检查
+human_review_needed: []
+boundary: 自动评分只覆盖客观结构与复现项；数学正确性、创新收益和表达质量必须有人工作证。

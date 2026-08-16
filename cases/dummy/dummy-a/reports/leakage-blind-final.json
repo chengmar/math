@@ -1,0 +1,10 @@
+{
+  "status": "pass",
+  "phase": "blind-revision",
+  "workspace": "D:\\CUMCM-A-Lab\\trainer\\cases\\dummy\\dummy-a\\workspaces\\blind-revision",
+  "checked_at": "2026-08-16T15:40:51+08:00",
+  "checked_files": 54,
+  "findings": [],
+  "warnings": [],
+  "limitation": "仅检测文件层面的明显泄漏，不能证明模型内部绝对未见过相似内容。"
+}

@@ -1,0 +1,16 @@
+{
+  "retrieved_at": "2026-08-16T15:40:50+08:00",
+  "phase": "solve",
+  "query": {
+    "problem_family": "synthetic-mean",
+    "task_type": [],
+    "data_type": [],
+    "model_family": null,
+    "objective": null,
+    "constraints": null,
+    "validation_needed": null,
+    "failure_modes": null
+  },
+  "limit": 5,
+  "cards": []
+}

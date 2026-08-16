@@ -1,0 +1,9 @@
+{
+  "lock_id": "fdf21c57-1e79-4122-b7e4-2e1ab4c5cc1b",
+  "case_id": "dummy-a",
+  "phase": "blind-revision",
+  "skill": "$cumcm-a-solve",
+  "created_at": "2026-08-16T15:40:51+08:00",
+  "allowed_paths_sha256": "40a7fa1c36c2b7e15bbe77b7cc8b9c586bc565fb475b8ae854e0f417e53c92a4",
+  "forbidden_paths_sha256": "f42ea98992a3d7e68b7b4464c1450a38542372d6eeb5e9ef176b89a15ac334fc"
+}

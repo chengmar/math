@@ -1,0 +1,14 @@
+{
+  "status": "pass",
+  "checked_at": "2026-08-16T15:40:52+08:00",
+  "source": "D:\\CUMCM-A-Lab\\trainer\\cases\\dummy\\dummy-a\\frozen\\blind-final",
+  "missing_required": [],
+  "run_script": "D:\\CUMCM-A-Lab\\trainer\\cases\\dummy\\dummy-a\\frozen\\blind-final\\code\\run.py",
+  "return_code": 0,
+  "stdout": "{\"mean\": 3.0, \"count\": 5, \"seed\": 20260816}\n",
+  "stderr": "",
+  "random_seed_detected": true,
+  "run_command_recorded": true,
+  "outputs_regenerated": true,
+  "claim_boundary": "pass 仅表示干净临时目录中成功重跑并生成输出，不表示数值或数学结论正确。"
+}
