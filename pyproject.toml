@@ -4,10 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cumcm-a-lab"
-version = "0.1.0"
+version = "0.2.0"
 description = "CUMCM A 题能力训练实验室的本地隔离、冻结、审计与评测工具"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
   "PyYAML>=6,<7",
   "jsonschema>=4,<5",
@@ -26,4 +26,3 @@ where = ["src"]
 addopts = "-ra"
 testpaths = ["tests"]
 pythonpath = ["src"]
-

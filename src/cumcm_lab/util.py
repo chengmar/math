@@ -144,9 +144,12 @@ def git_snapshot(root: Path) -> tuple[str | None, bool | None]:
 def find_trainer_root(start: Path | None = None) -> Path:
     current = (start or Path.cwd()).resolve()
     for candidate in (current, *current.parents):
-        if (candidate / "pyproject.toml").exists() and (candidate / "src" / "cumcm_lab").exists():
+        if (candidate / "pyproject.toml").exists():
             return candidate
-    raise FileNotFoundError("未找到 trainer 根目录；请从 D:\\CUMCM-A-Lab\\trainer 内运行。")
+        nested = candidate / "trainer"
+        if (nested / "pyproject.toml").exists():
+            return nested
+    raise FileNotFoundError("未找到 trainer 根目录；请从项目或其外部 runtime-cases 内运行。")
 
 
 def load_lab_paths(trainer_root: Path) -> dict[str, str]:
@@ -157,5 +160,10 @@ def load_lab_paths(trainer_root: Path) -> dict[str, str]:
         raise FileNotFoundError(f"缺少路径配置：{path_file}")
     with path_file.open("rb") as handle:
         data = tomllib.load(handle)
-    return {key: str(value) for key, value in data.get("paths", {}).items()}
-
+    paths = {key: str(value) for key, value in data.get("paths", {}).items()}
+    local_file = trainer_root.parent / "local-paths.toml"
+    if local_file.exists():
+        with local_file.open("rb") as handle:
+            local_data = tomllib.load(handle)
+        paths.update({key: str(value) for key, value in local_data.get("paths", {}).items()})
+    return paths

@@ -8,7 +8,7 @@
 
 - `AGENTS.md`：每次任务都必须遵守的稳定纪律，短而固定。
 - `.agents/skills`：四个显式阶段工作流；每个 Skill 的隐式调用均已关闭。
-- `knowledge`：Git 管理、带来源和适用边界的知识卡。solve/evaluation 只读 `verified`。
+- `knowledge`：Git 管理、带来源和适用边界的知识卡。solve/evaluation 只读 `machine_verified` 与 `verified`。
 - Memories：模型外的自动个性化记忆。本专用 Profile 已关闭读取与生成，核心经验不得依赖 Memories。
 
 复杂算法、神经网络、遗传算法不自动等于创新；必须证明误差、稳健性、参数、计算成本、约束满足、解释性或结论价值中的实际收益。
@@ -27,6 +27,16 @@
 两个 Vault 在 Git 仓库外，没有符号链接进入 trainer。系统只在专用 `CODEX_HOME` 中禁用非项目自定义/插件 Skills；没有删除原 Skills、修改原 `.codex` 或卸载插件。来源不明或系统内置内容只清点、不操作。
 
 文件隔离能发现明显泄漏，但不能证明模型内部绝对未见过类似内容。自动检查也不能完整判断数学正确性或替代人工评委。
+
+## 批量语料与自动训练队列
+
+`framework-v1` 之后的批量层固定采用 2003A—2021A 训练、2022 排除、2023A 最终测试封存。原始材料只从仓库外的 Intake 读取，确定性副本只写到仓库外的 Vault，真实运行案例只写到 `D:\CUMCM-A-Lab\runtime-cases`。仓库中的 `corpus/training-queue.yaml` 仅保存不透明案例状态；本机尝试次数、锁、PID 和断点保存在被 Git 忽略的 `runtime`。
+
+批量层包括：只读 inventory、默认 dry-run 的事务导入、源/目标 SHA-256 复核、安全解压、同年 A 题匹配、独立 Curator、19 题升序队列、每阶段全新 Codex 会话、可恢复 Autopilot、Shadow Evaluation、机器验证知识门和 2023 单向封存。2023A 在显式不可逆确认前永远不会进入自动队列。
+
+PowerShell 入口位于 `scripts`，可从任意当前目录运行并自动定位项目虚拟环境、`local-paths.toml` 与专用 `CODEX_HOME`：`initialize-corpus.ps1`、`inventory-corpus.ps1`、`import-corpus.ps1`、`validate-corpus.ps1`、`queue-status.ps1`、`run-training-queue.ps1`、`resume-training-queue.ps1`、`start-autopilot.ps1`、`stop-autopilot.ps1` 和 `autopilot-status.ps1`。导入默认只做 dry-run；已有不同哈希目标一律拒绝覆盖。
+
+当前批量状态和平台限制见 `reports/corpus-summary.json`、`reports/training-summary.json`、`reports/autopilot-progress.md` 与 `reports/security-sentinels.json`。
 
 ## 第一次启动
 

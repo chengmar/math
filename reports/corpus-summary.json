@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-08-17T15:45:49+08:00",
+  "status": "needs_review",
+  "source": {
+    "problems": "D:/CUMCM-A-Intake/problems-raw",
+    "papers": "D:/CUMCM-A-Intake/papers-raw",
+    "total_files": 189,
+    "total_bytes": 381723687,
+    "problem_source_files": 61,
+    "paper_source_files": 128,
+    "source_hashes_unchanged": true
+  },
+  "classification": {
+    "problem_statements": 22,
+    "official_attachments": 6,
+    "official_data": 27,
+    "problem_instructions": 2,
+    "archive_containers": 17,
+    "reference_papers": 115,
+    "duplicates": 4,
+    "cross_split_duplicates": 0,
+    "requires_review": 0,
+    "quarantine": 0
+  },
+  "import": {
+    "dry_run": "pass",
+    "apply": "pass",
+    "copy_actions": 174,
+    "skipped_records": 15,
+    "destination_hashes_match": true,
+    "knowledge_writes": 0
+  },
+  "split": {
+    "train_cases": 19,
+    "train_case_ids": ["2003A", "2004A", "2005A", "2006A", "2007A", "2008A", "2009A", "2010A", "2011A", "2012A", "2013A", "2014A", "2015A", "2016A", "2017A", "2018A", "2019A", "2020A", "2021A"],
+    "blocked_cases": [],
+    "supporting_files_needs_review": ["2003A", "2008A", "2013A", "2016A"],
+    "excluded": ["2022A"],
+    "test": {"case_id": "2023A", "status": "test_sealed", "opaque_file_count": 8}
+  },
+  "git_real_material_leak": false
+}

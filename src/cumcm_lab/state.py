@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from .util import git_snapshot, now_iso, read_yaml, write_yaml
+from .util import find_trainer_root, git_snapshot, now_iso, read_yaml, write_yaml
 
 
 STATES = {
@@ -64,9 +64,7 @@ def transition(
     current = data["state"]
     if target not in TRANSITIONS[current]:
         raise ValueError(f"非法状态迁移：{current} -> {target}")
-    trainer_root = case_dir
-    while trainer_root.parent != trainer_root and not (trainer_root / "pyproject.toml").exists():
-        trainer_root = trainer_root.parent
+    trainer_root = find_trainer_root(case_dir)
     commit, _ = git_snapshot(trainer_root)
     data["state"] = target
     data["history"].append(
@@ -86,4 +84,3 @@ def transition(
     case_meta["status"] = target
     write_yaml(case_dir / "case.yaml", case_meta)
     return data
-

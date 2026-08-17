@@ -10,10 +10,12 @@ from .leakage import check_leakage
 from .state import load_state, transition
 from .util import (
     git_snapshot,
+    find_trainer_root,
     iter_regular_files,
     now_iso,
     read_json,
     read_yaml,
+    load_lab_paths,
     safe_copy_tree,
     sha256_file,
     tree_hash,
@@ -28,11 +30,7 @@ VERSION_MAP = {
 
 
 def _trainer_root(case_dir: Path) -> Path:
-    current = case_dir.resolve()
-    for candidate in (current, *current.parents):
-        if (candidate / "pyproject.toml").exists():
-            return candidate
-    raise FileNotFoundError("无法从案例路径定位 trainer 根目录。")
+    return find_trainer_root(case_dir)
 
 
 def freeze_solution(case_dir: Path, version: str, *, random_seed: int | None = None, run_command: str | None = None) -> Path:
@@ -58,12 +56,17 @@ def freeze_solution(case_dir: Path, version: str, *, random_seed: int | None = N
     if not source.exists() or not any(source.rglob("*")):
         raise FileNotFoundError(f"解答工作区为空：{source}")
     trainer_root = _trainer_root(case_dir)
-    lab_root = trainer_root.parent
-    vault_roots = [lab_root.parent / "CUMCM-A-Vaults" / "reference-vault", lab_root.parent / "CUMCM-A-Vaults" / "exam-vault"]
+    paths = load_lab_paths(trainer_root)
+    vault_roots = [Path(paths["reference_vault"]), Path(paths["exam_vault"])]
+    strict_real_case = not case_dir.resolve().is_relative_to(trainer_root.resolve())
+    index_value = paths.get("vault_hash_index")
+    vault_hash_index = Path(index_value) if index_value and (Path(index_value).exists() or strict_real_case) else None
     leakage_report = check_leakage(
         source,
         phase,
         vault_roots=vault_roots,
+        vault_hash_index=vault_hash_index,
+        strict_vaults=strict_real_case,
         report_path=case_dir / "reports" / f"leakage-{version}.json",
     )
     if leakage_report["status"] == "fail":

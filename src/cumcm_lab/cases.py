@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from .util import now_iso, read_yaml, write_yaml
+from .util import load_lab_paths, now_iso, read_yaml, safe_copy_tree, write_yaml
 
 
 CASE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]{1,63}$")
@@ -73,9 +73,71 @@ def init_case(
 def find_case(trainer_root: Path, case_id: str) -> Path:
     registry = read_yaml(trainer_root / "cases" / "registry.yaml", {"cases": []})
     matches = [entry for entry in registry.get("cases", []) if entry.get("case_id") == case_id]
-    if len(matches) != 1:
-        raise FileNotFoundError(f"案例登记不存在或不唯一：{case_id}")
-    case_dir = trainer_root / matches[0]["path"]
+    if len(matches) > 1:
+        raise FileNotFoundError(f"案例登记不唯一：{case_id}")
+    if len(matches) == 1:
+        case_dir = trainer_root / matches[0]["path"]
+    else:
+        paths = load_lab_paths(trainer_root)
+        case_dir = Path(paths["runtime_cases"]) / case_id
     if not case_dir.exists():
         raise FileNotFoundError(f"案例目录不存在：{case_dir}")
+    return case_dir
+
+
+def init_runtime_case(trainer_root: Path, case_id: str, *, split: str = "train") -> Path:
+    validate_case_id(case_id)
+    if split != "train" or case_id.casefold() == "2023a":
+        raise ValueError("runtime 训练案例只允许 train，2023A 永久拒绝自动创建。")
+    paths = load_lab_paths(trainer_root)
+    runtime_root = Path(paths["runtime_cases"])
+    question_source = Path(paths["question_bank"]) / "train" / case_id
+    if not question_source.is_dir():
+        raise FileNotFoundError(f"question-bank 中不存在训练题：{case_id}")
+    case_dir = runtime_root / case_id
+    if case_dir.exists():
+        raise FileExistsError(f"runtime 案例已存在，拒绝覆盖：{case_dir}")
+    for rel in (
+        "input/problem",
+        "input/data",
+        "input/attachments",
+        "workspaces/solve",
+        "workspaces/audit",
+        "workspaces/blind-revision",
+        "workspaces/reflection",
+        "workspaces/evaluation",
+        "frozen",
+        "reports",
+        "logs",
+        "manifests",
+    ):
+        (case_dir / rel).mkdir(parents=True, exist_ok=True)
+    for source_name, destination_name in (("problem", "problem"), ("data", "data"), ("attachments", "attachments")):
+        source = question_source / source_name
+        if source.exists():
+            safe_copy_tree(source, case_dir / "input" / destination_name)
+    references = Path(paths["reference_vault"]) / case_id
+    reference_ids = [f"{case_id}/{path.name}" for path in sorted(references.iterdir()) if path.is_file() and not path.is_symlink()][:4] if references.is_dir() else []
+    created = now_iso()
+    write_yaml(
+        case_dir / "case.yaml",
+        {
+            "case_id": case_id,
+            "title": case_id,
+            "split": "train",
+            "problem_family": "unspecified",
+            "task_types": [],
+            "data_types": [],
+            "allowed_resources": [],
+            "forbidden_resources": ["intake", "reference-vault", "exam-vault", "other-years"],
+            "reference_ids": reference_ids,
+            "status": "initialized",
+            "created_at": created,
+        },
+    )
+    write_yaml(case_dir / "case-state.yaml", {"state": "initialized", "history": []})
+    registry_path = runtime_root / "registry.yaml"
+    registry = read_yaml(registry_path, {"cases": []})
+    registry.setdefault("cases", []).append({"case_id": case_id, "split": "train", "status": "initialized", "created_at": created})
+    write_yaml(registry_path, registry)
     return case_dir

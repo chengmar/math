@@ -1,0 +1,48 @@
+from pathlib import Path
+
+import pytest
+
+from cumcm_lab.cases import find_case, init_runtime_case
+from cumcm_lab.util import find_trainer_root
+
+
+def _configure_runtime(trainer: Path, lab_root: Path, vault_root: Path) -> tuple[Path, Path]:
+    question_bank = vault_root / "question-bank"
+    runtime_cases = lab_root / "runtime-cases"
+    runtime_cases.mkdir()
+    (lab_root / "local-paths.toml").write_text(
+        "[paths]\n"
+        f'runtime_cases = "{runtime_cases.as_posix()}"\n'
+        f'question_bank = "{question_bank.as_posix()}"\n',
+        encoding="utf-8",
+    )
+    return question_bank, runtime_cases
+
+
+def test_runtime_case_is_external_and_uses_only_current_question(lab_factory) -> None:
+    trainer, lab_root, vault_root = lab_factory()
+    question_bank, runtime_cases = _configure_runtime(trainer, lab_root, vault_root)
+    source = question_bank / "train" / "2003A"
+    (source / "problem").mkdir(parents=True)
+    (source / "data").mkdir()
+    (source / "problem" / "file-problem.txt").write_text("dummy", encoding="utf-8")
+    (source / "data" / "file-data.txt").write_text("1,2", encoding="utf-8")
+    references = vault_root / "reference-vault" / "2003A"
+    references.mkdir(parents=True)
+    (references / "ref-opaque.pdf").write_bytes(b"dummy")
+
+    case_dir = init_runtime_case(trainer, "2003A")
+
+    assert case_dir == runtime_cases / "2003A"
+    assert not case_dir.is_relative_to(trainer)
+    assert (case_dir / "input" / "problem" / "file-problem.txt").exists()
+    assert (case_dir / "input" / "data" / "file-data.txt").exists()
+    assert find_case(trainer, "2003A") == case_dir
+    assert find_trainer_root(case_dir) == trainer
+
+
+def test_runtime_case_hard_rejects_2023(lab_factory) -> None:
+    trainer, lab_root, vault_root = lab_factory()
+    _configure_runtime(trainer, lab_root, vault_root)
+    with pytest.raises(ValueError, match="2023A"):
+        init_runtime_case(trainer, "2023A")

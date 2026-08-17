@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-08-17T15:45:49+08:00",
+  "queue": {
+    "train_cases": 19,
+    "pending": 19,
+    "running": 0,
+    "blocked_queue_items": 0,
+    "completed": 0,
+    "current_case": "2003A",
+    "current_phase": "solve",
+    "attempts_consumed": 0,
+    "max_retries": 1
+  },
+  "autopilot": {
+    "status": "blocked",
+    "actually_running": false,
+    "pid": null,
+    "lock_present": false,
+    "blocker_kind": "codex_home_auth_missing",
+    "recoverable": true,
+    "checkpoint": "2003A/solve/preflight"
+  },
+  "knowledge": {
+    "candidate": 1,
+    "machine_verified": 0,
+    "verified_real": 0,
+    "demo": 4
+  },
+  "final_test": {
+    "case_id": "2023A",
+    "status": "test_sealed",
+    "consumed": false,
+    "automatically_executable": false
+  }
+}

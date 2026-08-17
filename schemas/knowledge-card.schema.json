@@ -4,7 +4,7 @@
   "required": ["id", "title", "type", "status", "applicable_conditions", "inapplicable_conditions", "minimum_baseline", "required_validation", "counterexamples", "source_cases", "evidence"],
   "properties": {
     "id": {"type": "string", "minLength": 2},
-    "status": {"enum": ["candidate", "verified", "deprecated", "demo"]},
+    "status": {"enum": ["candidate", "machine_verified", "verified", "deprecated", "demo"]},
     "source_cases": {"type": "array", "items": {"type": "object"}, "minItems": 0},
     "applicable_conditions": {"type": "array", "items": {"type": "string"}},
     "inapplicable_conditions": {"type": "array", "items": {"type": "string"}},
@@ -13,4 +13,3 @@
   },
   "additionalProperties": true
 }
-

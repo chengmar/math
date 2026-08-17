@@ -133,13 +133,19 @@ def prepare_phase(trainer_root: Path, case_id: str, phase: str) -> Path:
         reference_ids = case_meta.get("reference_ids") or []
         if not reference_ids:
             raise ValueError("未在 case.yaml 中登记受控参考材料 reference_ids。")
-        safe_copy_tree(case_dir / "frozen" / "blind-final", workspace / "blind-final")
-        refs_target = workspace / "approved-references"
-        refs_target.mkdir(parents=True, exist_ok=True)
+        reference_sources: list[tuple[str, Path]] = []
         for reference_id in reference_ids:
+            reference_path = Path(str(reference_id))
+            if not reference_path.parts or reference_path.parts[0].casefold() != case_id.casefold():
+                raise ValueError(f"参考材料必须来自当前案例目录 {case_id}：{reference_id}")
             source = (reference_vault / str(reference_id)).resolve()
             if not source.is_relative_to(reference_vault.resolve()) or not source.is_file() or source.is_symlink():
                 raise ValueError(f"参考材料未通过 Vault 边界检查：{reference_id}")
+            reference_sources.append((str(reference_id), source))
+        safe_copy_tree(case_dir / "frozen" / "blind-final", workspace / "blind-final")
+        refs_target = workspace / "approved-references"
+        refs_target.mkdir(parents=True, exist_ok=True)
+        for reference_id, source in reference_sources:
             destination = refs_target / Path(str(reference_id)).name
             if destination.exists():
                 raise FileExistsError(f"参考材料目标重名：{destination.name}")

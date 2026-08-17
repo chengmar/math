@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from .util import iter_regular_files, now_iso, read_json, read_yaml, sha256_file, write_json
+from .util import find_trainer_root, iter_regular_files, now_iso, read_json, read_yaml, sha256_file, write_json
 
 
 PROTECTED_PHASES = {"solve", "audit", "blind-revision", "evaluation"}
@@ -17,6 +17,22 @@ FORBIDDEN_TOKENS = {
     "标准答案",
     "赛题讲评",
 }
+
+
+def _load_rules(workspace: Path) -> tuple[set[str], set[str]]:
+    try:
+        trainer_root = find_trainer_root(workspace)
+        rules_path = trainer_root / "config" / "leakage-rules.yaml"
+        if not rules_path.is_file():
+            return set(PROTECTED_PHASES), set(FORBIDDEN_TOKENS)
+        rules = read_yaml(rules_path)
+    except (FileNotFoundError, OSError, ValueError):
+        return set(PROTECTED_PHASES), set(FORBIDDEN_TOKENS)
+    phases = {str(item) for item in rules.get("protected_phases", [])}
+    tokens = {str(item) for item in rules.get("forbidden_path_tokens", [])}
+    if not phases or not tokens:
+        raise ValueError("leakage-rules.yaml 缺少 protected_phases 或 forbidden_path_tokens。")
+    return phases, tokens
 
 
 def _vault_hashes(vault_roots: list[Path]) -> tuple[dict[str, list[str]], list[str]]:
@@ -34,17 +50,42 @@ def _vault_hashes(vault_roots: list[Path]) -> tuple[dict[str, list[str]], list[s
     return hashes, warnings
 
 
+def _indexed_vault_hashes(index_path: Path) -> tuple[dict[str, list[str]], list[str]]:
+    if not index_path.is_file():
+        return {}, [f"Vault 哈希索引不存在：{index_path}"]
+    try:
+        payload = read_json(index_path)
+        hashes: dict[str, list[str]] = {}
+        for item in payload.get("hashes", []):
+            digest = str(item.get("sha256", ""))
+            if len(digest) == 64:
+                hashes.setdefault(digest, []).append("indexed-vault-file")
+        if not hashes:
+            return {}, [f"Vault 哈希索引为空：{index_path}"]
+        return hashes, []
+    except (OSError, ValueError, TypeError) as exc:
+        return {}, [f"Vault 哈希索引无法读取：{index_path}: {exc}"]
+
+
 def check_leakage(
     workspace: Path,
     phase: str,
     *,
     vault_roots: list[Path] | None = None,
+    vault_hash_index: Path | None = None,
+    strict_vaults: bool = False,
     report_path: Path | None = None,
 ) -> dict[str, Any]:
+    protected_phases, forbidden_tokens = _load_rules(workspace)
     findings: list[dict[str, str]] = []
     warnings: list[str] = []
-    vault_hashes, vault_warnings = _vault_hashes(vault_roots or [])
+    if vault_hash_index is not None:
+        vault_hashes, vault_warnings = _indexed_vault_hashes(vault_hash_index)
+    else:
+        vault_hashes, vault_warnings = _vault_hashes(vault_roots or [])
     warnings.extend(vault_warnings)
+    if strict_vaults and vault_warnings:
+        findings.append({"category": "vault_hash_index_unavailable", "evidence": "真实训练要求完整的预计算 Vault 哈希索引"})
     if not workspace.exists():
         findings.append({"category": "workspace_missing", "evidence": str(workspace)})
         files: list[Path] = []
@@ -55,7 +96,7 @@ def check_leakage(
             findings.append({"category": "symlink", "evidence": str(exc)})
             files = [path for path in workspace.rglob("*") if path.is_file() and not path.is_symlink()]
 
-    if phase in PROTECTED_PHASES:
+    if phase in protected_phases:
         lock_path = workspace / "phase-lock.json"
         if not lock_path.exists():
             findings.append({"category": "phase_lock_missing", "evidence": str(lock_path)})
@@ -68,11 +109,20 @@ def check_leakage(
                         "evidence": f"期望 {phase}，实际 {lock.get('phase')}",
                     }
                 )
+            for manifest_name, hash_field in (
+                ("allowed-paths.json", "allowed_paths_sha256"),
+                ("forbidden-paths.json", "forbidden_paths_sha256"),
+            ):
+                manifest_path = workspace / manifest_name
+                if not manifest_path.exists():
+                    findings.append({"category": "phase_manifest_missing", "evidence": manifest_name})
+                elif lock.get(hash_field) != sha256_file(manifest_path):
+                    findings.append({"category": "phase_manifest_tampered", "evidence": manifest_name})
 
     for path in files:
         relative = path.relative_to(workspace).as_posix()
         lowered = relative.casefold()
-        for token in FORBIDDEN_TOKENS:
+        for token in forbidden_tokens:
             if token.casefold() in lowered:
                 findings.append({"category": "forbidden_path_token", "evidence": relative})
                 break
@@ -111,4 +161,3 @@ def check_leakage(
     if report_path:
         write_json(report_path, report)
     return report
-

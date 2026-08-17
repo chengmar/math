@@ -1,0 +1,125 @@
+schema_version: 1
+generated_at: '2026-08-17T15:43:12+08:00'
+allowed_statuses:
+- audited
+- auditing
+- blind_final_frozen
+- blind_revision
+- blind_v1_frozen
+- completed
+- failed
+- import_blocked
+- knowledge_proposed
+- leakage_invalid
+- manually_paused
+- online_evaluated
+- pending
+- ready
+- ready_for_final_test
+- reflecting
+- regression_pending
+- shadow_evaluation
+- solving
+- test_consumed
+- test_sealed
+max_retries: 1
+items:
+- ordinal: 1
+  case_id: 2003A
+  split: train
+  status: ready
+  blocked_reason: null
+- ordinal: 2
+  case_id: 2004A
+  split: train
+  status: ready
+  blocked_reason: null
+- ordinal: 3
+  case_id: 2005A
+  split: train
+  status: ready
+  blocked_reason: null
+- ordinal: 4
+  case_id: 2006A
+  split: train
+  status: ready
+  blocked_reason: null
+- ordinal: 5
+  case_id: 2007A
+  split: train
+  status: ready
+  blocked_reason: null
+- ordinal: 6
+  case_id: 2008A
+  split: train
+  status: ready
+  blocked_reason: null
+- ordinal: 7
+  case_id: 2009A
+  split: train
+  status: ready
+  blocked_reason: null
+- ordinal: 8
+  case_id: 2010A
+  split: train
+  status: ready
+  blocked_reason: null
+- ordinal: 9
+  case_id: 2011A
+  split: train
+  status: ready
+  blocked_reason: null
+- ordinal: 10
+  case_id: 2012A
+  split: train
+  status: ready
+  blocked_reason: null
+- ordinal: 11
+  case_id: 2013A
+  split: train
+  status: ready
+  blocked_reason: null
+- ordinal: 12
+  case_id: 2014A
+  split: train
+  status: ready
+  blocked_reason: null
+- ordinal: 13
+  case_id: 2015A
+  split: train
+  status: ready
+  blocked_reason: null
+- ordinal: 14
+  case_id: 2016A
+  split: train
+  status: ready
+  blocked_reason: null
+- ordinal: 15
+  case_id: 2017A
+  split: train
+  status: ready
+  blocked_reason: null
+- ordinal: 16
+  case_id: 2018A
+  split: train
+  status: ready
+  blocked_reason: null
+- ordinal: 17
+  case_id: 2019A
+  split: train
+  status: ready
+  blocked_reason: null
+- ordinal: 18
+  case_id: 2020A
+  split: train
+  status: ready
+  blocked_reason: null
+- ordinal: 19
+  case_id: 2021A
+  split: train
+  status: ready
+  blocked_reason: null
+final_test:
+  case_id: 2023A
+  split: test
+  status: test_sealed

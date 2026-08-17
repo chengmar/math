@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-08-17T15:45:49+08:00",
+  "status": "needs_review",
+  "workspace_copy_isolation": [
+    {
+      "status": "pass",
+      "phase": "solve",
+      "case_id": "2003A",
+      "workspace": "D:\\CUMCM-A-Lab\\runtime-cases\\2003A\\workspaces\\solve",
+      "violations": []
+    },
+    {
+      "status": "pass",
+      "phase": "audit",
+      "case_id": "2003A",
+      "workspace": "D:\\CUMCM-A-Lab\\runtime-cases\\2003A\\workspaces\\audit",
+      "violations": []
+    },
+    {
+      "status": "pass",
+      "phase": "blind-revision",
+      "case_id": "2003A",
+      "workspace": "D:\\CUMCM-A-Lab\\runtime-cases\\2003A\\workspaces\\blind-revision",
+      "violations": []
+    },
+    {
+      "status": "pass",
+      "phase": "reflection",
+      "case_id": "2003A",
+      "workspace": "D:\\CUMCM-A-Lab\\runtime-cases\\2003A\\workspaces\\reflection",
+      "violations": []
+    }
+  ],
+  "codex_absolute_path_denial": {
+    "status": "needs_review",
+    "executed": false,
+    "results": [],
+    "reason": "isolated_codex_auth_missing_or_probe_not_run"
+  }
+}

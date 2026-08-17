@@ -11,5 +11,5 @@ candidate_status: candidate
 protected_phases:
   - solve
   - audit
+  - blind-revision
   - evaluation
-

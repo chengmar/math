@@ -39,7 +39,7 @@ def retrieve_knowledge(
     log_path: Path | None = None,
 ) -> list[dict[str, Any]]:
     limit = min(max(int(limit), 1), 5)
-    allowed_statuses = {"verified"} if phase in {"solve", "evaluation"} else {"verified", "candidate", "demo"}
+    allowed_statuses = {"machine_verified", "verified"} if phase in {"solve", "evaluation"} else {"machine_verified", "verified", "candidate", "demo"}
     query_tokens = set().union(*(_tokens(query.get(field)) for field in QUERY_FIELDS))
     scored: list[dict[str, Any]] = []
     for directory in SEARCH_DIRS:
@@ -139,3 +139,65 @@ def promote_lesson(
     write_yaml(proposal_path, proposal)
     return proposal
 
+
+def machine_verify_lesson(knowledge_root: Path, candidate_path: Path) -> dict[str, Any]:
+    """Promote a candidate only after strict cross-year, leakage-free evidence."""
+    card = read_yaml(candidate_path)
+    if not isinstance(card, dict) or card.get("status") != "candidate":
+        raise ValueError("只能机器验证 status=candidate 的知识卡。")
+    if card.get("provenance") == "demo":
+        raise ValueError("demo 卡片不得升级为 machine_verified。")
+
+    source_cases = [item for item in card.get("source_cases", []) if isinstance(item, dict)]
+    origin_year = card.get("origin_year")
+    validations = [
+        item
+        for item in source_cases
+        if item.get("role") == "shadow_validation"
+        and item.get("outcome") == "positive"
+        and isinstance(item.get("year"), int)
+        and (not isinstance(origin_year, int) or item["year"] > origin_year)
+    ]
+    case_ids = {item.get("case_id") for item in validations if item.get("case_id")}
+    families = {item.get("problem_family") for item in validations if item.get("problem_family")}
+    checks = {
+        "two_later_cases": len(case_ids) >= 2,
+        "different_problem_families": len(families) >= 2,
+        "core_metric_improved": all(item.get("core_metric_improved") is True for item in validations) and bool(validations),
+        "accuracy_not_degraded": all(item.get("accuracy_not_degraded") is True for item in validations) and bool(validations),
+        "paper_not_degraded": all(item.get("paper_not_degraded") is True for item in validations) and bool(validations),
+        "complexity_justified": all(item.get("complexity_justified") is True for item in validations) and bool(validations),
+        "leakage_free": all(item.get("leakage_status") == "pass" for item in validations) and bool(validations),
+        "independent_review": card.get("independent_review_status") == "pass",
+        "regression_passed": card.get("regression_status") == "pass",
+        "applicable_conditions": bool(card.get("applicable_conditions")),
+        "inapplicable_conditions": bool(card.get("inapplicable_conditions")),
+        "failure_cases": bool(card.get("failure_cases")),
+        "counterexamples": bool(card.get("counterexamples")),
+    }
+    proposal = {
+        "card_id": card.get("id"),
+        "created_at": now_iso(),
+        "source": str(candidate_path),
+        "verification_type": "machine",
+        "label": "机器验证",
+        "checks": checks,
+        "status": "approved" if all(checks.values()) else "needs_review",
+    }
+    proposal_path = knowledge_root / "promotion-proposals" / f"{card.get('id')}-machine-proposal.yaml"
+    write_yaml(proposal_path, proposal)
+    if not all(checks.values()):
+        raise ValueError(f"机器验证条件不足，已生成提案：{proposal_path}")
+
+    promoted = dict(card)
+    promoted["status"] = "machine_verified"
+    promoted["verification_kind"] = "machine"
+    promoted["verification_label"] = "机器验证"
+    promoted["updated_at"] = now_iso()
+    destination = knowledge_root / "method-cards" / f"{card['id']}.yaml"
+    if destination.exists():
+        raise FileExistsError(f"知识卡已存在，拒绝覆盖：{destination}")
+    write_yaml(destination, promoted)
+    proposal["machine_verified_path"] = str(destination)
+    write_yaml(proposal_path, proposal)
+    return proposal
