@@ -147,3 +147,20 @@ def test_solution_results_and_robustness_headings_are_recognized(tmp_path):
     report = lint_paper(paper, ROOT / "config" / "competition-rules.yaml")
     required = next(item for item in report["checks"] if item["id"] == "required_sections")
     assert required["status"] == "pass"
+
+
+def test_traffic_queue_semantic_section_headings_are_recognized(tmp_path):
+    paper = tmp_path / "main.tex"
+    paper.write_text(
+        "\\begin{abstract}模型给出 3.32 分钟的定量结果。关键词：交通流。\\end{abstract}\n"
+        "\\section{问题重述}\\section{证据边界与问题分析}\n"
+        "\\section{假设与符号}\\section{数据处理与容量估计}\n"
+        "\\section{排队模型}\\section{模型求解与结果}\n"
+        "\\section{验证、敏感性与稳健性}\\section{局限与结论}\n"
+        "\\begin{thebibliography}{1}\\bibitem{x} x\\end{thebibliography}\n"
+        "\\appendix\\section{复现说明}\n",
+        encoding="utf-8",
+    )
+    report = lint_paper(paper, ROOT / "config" / "competition-rules.yaml")
+    required = next(item for item in report["checks"] if item["id"] == "required_sections")
+    assert required["status"] == "pass"
