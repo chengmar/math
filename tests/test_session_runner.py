@@ -2,10 +2,19 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import subprocess
+import sys
 from pathlib import Path
 
-from cumcm_lab.session_runner import FORBIDDEN_CODEX_ARGS, build_codex_exec_command, run_stage_session
+from cumcm_lab.session_runner import (
+    FORBIDDEN_CODEX_ARGS,
+    _event_stream_summary,
+    _run_native_codex_process,
+    build_codex_exec_command,
+    resolve_codex_executable,
+    run_stage_session,
+)
 
 
 def _read_json(path: Path) -> dict:
@@ -36,7 +45,7 @@ def test_command_is_new_ephemeral_session_with_fixed_safe_flags(tmp_path: Path) 
         "-c",
         'approval_policy="never"',
         "-s",
-        "workspace-write",
+        "danger-full-access",
         "--json",
         "-o",
         str(final.resolve()),
@@ -45,6 +54,12 @@ def test_command_is_new_ephemeral_session_with_fixed_safe_flags(tmp_path: Path) 
         "-",
     ]
     assert not FORBIDDEN_CODEX_ARGS.intersection(command)
+
+
+def test_explicit_codex_executable_is_not_replaced_by_path_lookup(tmp_path: Path) -> None:
+    executable = tmp_path / "codex.exe"
+    executable.write_bytes(b"dummy")
+    assert resolve_codex_executable(executable) == str(executable.resolve())
 
 
 def test_missing_codex_home_auth_is_blocked_without_starting_process(tmp_path: Path) -> None:
@@ -89,6 +104,7 @@ def test_fake_runner_receives_stdin_and_writes_auditable_outputs(tmp_path: Path)
 
     def fake_runner(command, **kwargs):
         calls.append({"command": command, **kwargs})
+        kwargs["stdout"].write('{"type":"thread.started","thread_id":"dummy-thread"}\n')
         kwargs["stdout"].write('{"type":"done"}\n')
         kwargs["stderr"].write("fake diagnostic\n")
         final_path = Path(command[command.index("-o") + 1])
@@ -126,13 +142,17 @@ def test_fake_runner_receives_stdin_and_writes_auditable_outputs(tmp_path: Path)
     input_manifest = _read_json(run_dir / "input-manifest.json")
     assert input_manifest["prompt_sha256"] == expected_hash
     assert input_manifest["files"][0]["sha256"] == hashlib.sha256(input_file.read_bytes()).hexdigest()
-    assert (run_dir / "events.jsonl").read_text(encoding="utf-8") == '{"type":"done"}\n'
+    assert (run_dir / "events.jsonl").read_text(encoding="utf-8") == (
+        '{"type":"thread.started","thread_id":"dummy-thread"}\n{"type":"done"}\n'
+    )
     assert (run_dir / "stderr.log").read_text(encoding="utf-8") == "fake diagnostic\n"
     assert (run_dir / "final-message.md").read_text(encoding="utf-8") == "fake final\n"
     metadata = _read_json(run_dir / "run-metadata.json")
     assert metadata["status"] == "completed"
     assert metadata["process_started"] is True
     assert metadata["reasoning_effort"] == "high"
+    assert metadata["thread_id"] == "dummy-thread"
+    assert metadata["ephemeral"] is True
     outputs = _read_json(run_dir / "output-manifest.json")
     assert outputs["status"] == "completed"
     assert all(item["exists"] for item in outputs["files"])
@@ -153,3 +173,47 @@ def test_each_attempt_gets_a_unique_session_run_id(tmp_path: Path) -> None:
     assert first["session_run_id"] != second["session_run_id"]
     assert Path(first["run_dir"]).is_dir()
     assert Path(second["run_dir"]).is_dir()
+
+
+def test_event_stream_summary_ignores_a_partially_flushed_record(tmp_path: Path) -> None:
+    events = tmp_path / "events.jsonl"
+    events.write_text(
+        '{"type":"thread.started","thread_id":"thread-1"}\n'
+        '{"type":"turn.completed"}\n'
+        '{"type":',
+        encoding="utf-8",
+    )
+    assert _event_stream_summary(events) == {
+        "thread_id": "thread-1",
+        "turn_completed": 1,
+        "errors": [],
+    }
+
+
+def test_native_supervisor_reaps_only_its_completed_hanging_process(tmp_path: Path) -> None:
+    events = tmp_path / "events.jsonl"
+    stderr = tmp_path / "stderr.log"
+    final = tmp_path / "final-message.md"
+    environment = dict(os.environ)
+    environment["FAKE_FINAL_PATH"] = str(final)
+    child = (
+        "import json,os,time; "
+        "print(json.dumps({'type':'thread.started','thread_id':'dummy-thread'}), flush=True); "
+        "open(os.environ['FAKE_FINAL_PATH'],'w',encoding='utf-8').write('done\\n'); "
+        "print(json.dumps({'type':'turn.completed','usage':{}}), flush=True); "
+        "time.sleep(60)"
+    )
+    outcome = _run_native_codex_process(
+        [sys.executable, "-c", child],
+        prompt="dummy",
+        workspace=tmp_path,
+        environment=environment,
+        events_path=events,
+        stderr_path=stderr,
+        final_message_path=final,
+        terminal_grace_seconds=0.1,
+    )
+    assert outcome["terminal_recovered"] is True
+    assert outcome["event_summary"]["turn_completed"] == 1
+    assert outcome["termination"]["pid"] == outcome["pid"]
+    assert outcome["termination"]["requested"] is True

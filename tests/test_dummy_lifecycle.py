@@ -24,6 +24,7 @@ def test_dummy_case_complete_lifecycle(lab_factory, solution_writer):
     assert verify_frozen(case_dir, "blind-v1")["status"] == "pass"
 
     audit = prepare_phase(trainer, "dummy-a", "audit")
+    assert (audit / "frozen-solution" / "FROZEN_BLIND_V1.json").is_file()
     (audit / "audit-report.md").write_text("# 独立审计\n\n未发现阻断性错误。\n", encoding="utf-8")
     (audit / "audit-findings.yaml").write_text("findings: []\n", encoding="utf-8")
     (audit / "reproduction-report.json").write_text(json.dumps({"status": "pass"}), encoding="utf-8")
@@ -44,6 +45,8 @@ def test_dummy_case_complete_lifecycle(lab_factory, solution_writer):
     (case_dir / "case.yaml").write_text(yaml.safe_dump(meta, allow_unicode=True, sort_keys=False), encoding="utf-8")
 
     reflection = prepare_phase(trainer, "dummy-a", "reflection")
+    assert (reflection / "blind-final" / "FROZEN_BLIND_FINAL.json").is_file()
+    assert (reflection / "blind-final" / "REFLECTION-BOUNDARY.json").is_file()
     (reflection / "comparison-matrix.md").write_text("# Demo 比较\n", encoding="utf-8")
     (reflection / "comparison-matrix.yaml").write_text("status: demo\n", encoding="utf-8")
     (reflection / "reference-validation.md").write_text("# 参考验证\n", encoding="utf-8")

@@ -13,7 +13,7 @@ from .util import now_iso, read_json, read_yaml, write_json, write_yaml
 QUEUE_SCHEMA_VERSION = 1
 FINAL_TEST_CASE_ID = "2023A"
 TRAIN_PHASES = ("solve", "audit", "blind-revision", "reflection")
-ITEM_STATUSES = {"pending", "running", "blocked", "completed"}
+ITEM_STATUSES = {"pending", "running", "blocked", "deferred_platform_safety", "completed"}
 PUBLIC_QUEUE_STATUSES = {
     "pending",
     "ready",
@@ -31,6 +31,7 @@ PUBLIC_QUEUE_STATUSES = {
     "regression_pending",
     "completed",
     "failed",
+    "deferred_platform_safety",
     "leakage_invalid",
     "manually_paused",
     "test_sealed",
@@ -295,6 +296,7 @@ def begin_phase(queue_path: Path, case_id: str) -> tuple[dict[str, Any], int]:
         raise QueueError(f"阶段已超过最大重试次数：{case_id}/{phase}")
     item["attempts"][phase] = attempts
     item["status"] = "running"
+    item["blocked_reason"] = None
     item["lifecycle_status"] = {
         "solve": "solving",
         "audit": "auditing",
@@ -335,6 +337,183 @@ def mark_phase_success(queue_path: Path, case_id: str, phase: str) -> dict[str, 
     return item
 
 
+def recover_phase_success(
+    queue_path: Path,
+    case_id: str,
+    phase: str,
+    *,
+    evidence_id: str,
+) -> dict[str, Any]:
+    """Advance an interrupted or retry-exhausted phase after validated output recovery.
+
+    The recorded attempt count is preserved: recovery is not a new model call and must
+    not silently replenish or consume retries.
+    """
+
+    if not evidence_id.strip():
+        raise QueueError("恢复成功必须提供非空证据标识。")
+    queue = load_training_queue(queue_path)
+    item = _find_item(queue, case_id)
+    if item.get("status") not in {"blocked", "pending", "running"} or item.get("current_phase") != phase:
+        raise QueueError(f"仅能恢复当前被阻塞或中断阶段：{case_id}/{phase}")
+    if int(item.get("attempts", {}).get(phase, 0)) < 1:
+        raise QueueError(f"没有可恢复的既有阶段尝试：{case_id}/{phase}")
+    expected_index = len(item["completed_phases"])
+    if expected_index >= len(TRAIN_PHASES) or TRAIN_PHASES[expected_index] != phase:
+        raise QueueError(f"恢复阶段顺序错误：{case_id}/{phase}")
+
+    item["completed_phases"].append(phase)
+    if len(item["completed_phases"]) == len(TRAIN_PHASES):
+        item["status"] = "completed"
+        item["current_phase"] = None
+        item["lifecycle_status"] = "completed"
+    else:
+        item["status"] = "pending"
+        item["current_phase"] = TRAIN_PHASES[len(item["completed_phases"])]
+        item["lifecycle_status"] = {
+            "solve": "ready",
+            "audit": "blind_v1_frozen",
+            "blind-revision": "audited",
+            "reflection": "blind_final_frozen",
+        }[item["current_phase"]]
+    item["blocked_reason"] = None
+    item["last_error"] = None
+    item["recovered_phase"] = {
+        "phase": phase,
+        "evidence_id": evidence_id.strip(),
+        "recovered_at": now_iso(),
+        "attempt_count_preserved": int(item["attempts"][phase]),
+    }
+    item["updated_at"] = now_iso()
+    save_training_queue(queue_path, queue)
+    return item
+
+
+def mark_phase_interrupted_quota(
+    queue_path: Path,
+    case_id: str,
+    phase: str,
+    *,
+    message: str,
+    run_id: str | None = None,
+) -> dict[str, Any]:
+    """Save an exact resumable checkpoint without spending an atomic-phase retry."""
+
+    queue = load_training_queue(queue_path)
+    item = _find_item(queue, case_id)
+    if item.get("status") != "running" or item.get("current_phase") != phase:
+        raise QueueError(f"额度中断与当前阶段不一致：{case_id}/{phase}")
+    attempts = int(item.get("attempts", {}).get(phase, 0))
+    if attempts < 1:
+        raise QueueError(f"额度中断缺少已启动尝试：{case_id}/{phase}")
+    item["attempts"][phase] = attempts - 1
+    item["status"] = "pending"
+    item["lifecycle_status"] = {
+        "solve": "ready",
+        "audit": "blind_v1_frozen",
+        "blind-revision": "audited",
+        "reflection": "blind_final_frozen",
+    }[phase]
+    item["blocked_reason"] = "resumable_after_quota_reset"
+    item["last_error"] = str(message)
+    interruptions = list(item.get("quota_interruptions") or [])
+    interruptions.append(
+        {
+            "phase": phase,
+            "run_id": run_id,
+            "interrupted_at": now_iso(),
+            "retry_count_preserved": attempts - 1,
+        }
+    )
+    item["quota_interruptions"] = interruptions
+    item["updated_at"] = now_iso()
+    save_training_queue(queue_path, queue)
+    return item
+
+
+def mark_phase_interrupted_user(
+    queue_path: Path,
+    case_id: str,
+    phase: str,
+    *,
+    message: str,
+    run_id: str | None = None,
+    evidence_id: str | None = None,
+) -> dict[str, Any]:
+    """Save an exact user-stop checkpoint without consuming the retry budget."""
+
+    queue = load_training_queue(queue_path)
+    item = _find_item(queue, case_id)
+    if item.get("status") != "running" or item.get("current_phase") != phase:
+        raise QueueError(f"用户中断与当前阶段不一致：{case_id}/{phase}")
+    attempts = int(item.get("attempts", {}).get(phase, 0))
+    if attempts < 1:
+        raise QueueError(f"用户中断缺少已启动尝试：{case_id}/{phase}")
+    item["attempts"][phase] = attempts - 1
+    item["status"] = "pending"
+    item["lifecycle_status"] = {
+        "solve": "ready",
+        "audit": "blind_v1_frozen",
+        "blind-revision": "audited",
+        "reflection": "blind_final_frozen",
+    }[phase]
+    item["blocked_reason"] = "interrupted_user"
+    item["last_error"] = str(message)
+    interruptions = list(item.get("user_interruptions") or [])
+    interruptions.append(
+        {
+            "phase": phase,
+            "run_id": run_id,
+            "evidence_id": evidence_id,
+            "interrupted_at": now_iso(),
+            "retry_count_preserved": attempts - 1,
+        }
+    )
+    item["user_interruptions"] = interruptions
+    item["updated_at"] = now_iso()
+    save_training_queue(queue_path, queue)
+    return item
+
+
+def recover_unstarted_phase(
+    queue_path: Path,
+    case_id: str,
+    phase: str,
+    *,
+    evidence_id: str,
+) -> dict[str, Any]:
+    """Roll back queue accounting when infrastructure failed before model start."""
+
+    if not evidence_id.strip():
+        raise QueueError("未启动阶段恢复必须提供非空证据标识。")
+    queue = load_training_queue(queue_path)
+    item = _find_item(queue, case_id)
+    if item.get("status") != "running" or item.get("current_phase") != phase:
+        raise QueueError(f"未启动恢复与当前阶段不一致：{case_id}/{phase}")
+    attempts = int(item.get("attempts", {}).get(phase, 0))
+    if attempts < 1:
+        raise QueueError(f"未启动恢复缺少已记账尝试：{case_id}/{phase}")
+    item["attempts"][phase] = attempts - 1
+    item["status"] = "pending"
+    item["lifecycle_status"] = {
+        "solve": "ready",
+        "audit": "blind_v1_frozen",
+        "blind-revision": "audited",
+        "reflection": "blind_final_frozen",
+    }[phase]
+    item["blocked_reason"] = None
+    item["last_error"] = None
+    item["prestart_recovery"] = {
+        "phase": phase,
+        "evidence_id": evidence_id.strip(),
+        "recovered_at": now_iso(),
+        "attempt_count_preserved": attempts - 1,
+    }
+    item["updated_at"] = now_iso()
+    save_training_queue(queue_path, queue)
+    return item
+
+
 def mark_phase_failure(
     queue_path: Path,
     case_id: str,
@@ -362,6 +541,41 @@ def mark_phase_failure(
     )
     item["blocked_reason"] = None if retry_available else ("retry_exhausted" if transient else "case_error")
     item["last_error"] = str(error)
+    item["updated_at"] = now_iso()
+    save_training_queue(queue_path, queue)
+    return item
+
+
+def mark_case_deferred_platform_safety(
+    queue_path: Path,
+    case_id: str,
+    *,
+    error: str,
+    run_id: str | None = None,
+    thread_id: str | None = None,
+) -> dict[str, Any]:
+    """Defer one classifier-blocked case without treating it as completed or scored."""
+
+    queue = load_training_queue(queue_path)
+    item = _find_item(queue, case_id)
+    if item.get("completed_phases"):
+        raise QueueError(f"已有完成阶段的案例不能标记平台安全延期：{case_id}")
+    item["status"] = "deferred_platform_safety"
+    item["lifecycle_status"] = "deferred_platform_safety"
+    item["blocked_reason"] = "bio_safety_classifier"
+    item["last_error"] = str(error)
+    item["deferred_at"] = now_iso()
+    item["deferred_details"] = {
+        "blind_v1": "not_started",
+        "audit": "not_started",
+        "blind_final": "not_started",
+        "reflection": "not_started",
+        "reference_opened": False,
+        "knowledge_generated": False,
+        "consumed_as_training_result": False,
+        "run_id": run_id,
+        "thread_id": thread_id,
+    }
     item["updated_at"] = now_iso()
     save_training_queue(queue_path, queue)
     return item

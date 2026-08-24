@@ -1,12 +1,10 @@
 [CmdletBinding()]
 param(
     [int]$MaxCases,
-    [string]$Model = 'gpt-5.4',
-    [ValidateSet('low', 'medium', 'high', 'xhigh')][string]$Reasoning = 'xhigh',
+    [string]$Model = 'gpt-5.6-sol',
+    [ValidateSet('low', 'medium', 'high', 'xhigh', 'max')][string]$Reasoning = 'max',
     [switch]$Foreground
 )
 
-$arguments = @{ MaxCases = $MaxCases; Model = $Model; Reasoning = $Reasoning; All = $true }
-if (-not $Foreground) { $arguments.Detach = $true }
-& (Join-Path $PSScriptRoot 'run-training-queue.ps1') @arguments
-exit $LASTEXITCODE
+Write-Error '后台 Autopilot 已暂停；正式训练只允许使用前台队列。'
+exit 1

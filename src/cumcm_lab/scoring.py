@@ -126,7 +126,6 @@ def _update_leaderboard(path: Path, report: dict[str, Any]) -> None:
     rows.append(row)
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8-sig", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=list(row))
+        writer = csv.DictWriter(handle, fieldnames=list(row), lineterminator="\n")
         writer.writeheader()
         writer.writerows(sorted(rows, key=lambda item: item["case_id"]))
-

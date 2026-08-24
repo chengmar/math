@@ -3,10 +3,16 @@ from __future__ import annotations
 import ctypes
 import json
 import os
+import shutil
+import subprocess
+import sys
+import tempfile
 import uuid
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any, Mapping, Protocol
+
+import yaml
 
 from .training_queue import (
     FINAL_TEST_CASE_ID,
@@ -16,7 +22,9 @@ from .training_queue import (
     begin_phase,
     load_training_queue,
     mark_phase_failure,
+    mark_phase_interrupted_quota,
     mark_phase_success,
+    mark_case_deferred_platform_safety,
     next_runnable_item,
     queue_summary,
     set_stop_requested,
@@ -46,6 +54,23 @@ class CasePhaseError(AutopilotError):
 
 class TransientPhaseError(AutopilotError):
     """An error eligible for the queue's single retry."""
+
+
+class PlatformSafetyBlock(CasePhaseError):
+    """A single-case external content-safety block; never retry automatically."""
+
+    def __init__(self, message: str, *, run_id: str | None = None, thread_id: str | None = None) -> None:
+        super().__init__(message)
+        self.run_id = run_id
+        self.thread_id = thread_id
+
+
+class UsageLimitReached(AutopilotError):
+    """The account cannot start another model turn until quota resets."""
+
+    def __init__(self, message: str, *, run_id: str | None = None) -> None:
+        super().__init__(message)
+        self.run_id = run_id
 
 
 @dataclass(frozen=True)
@@ -271,6 +296,171 @@ def _invoke_executor(
     return result
 
 
+def _platform_safety_message(events_path: Path) -> str | None:
+    if not events_path.is_file():
+        return None
+    for line in events_path.read_text(encoding="utf-8-sig", errors="replace").splitlines():
+        try:
+            event = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        message = str(event.get("message", "")) if event.get("type") == "error" else ""
+        lowered = message.casefold()
+        if message and "safety reasons" in lowered and ("biology" in lowered or "benefit or to harm" in lowered):
+            return message
+    return None
+
+
+def _usage_limit_message(session_dir: Path) -> str | None:
+    candidates: list[str] = []
+    events_path = Path(session_dir) / "events.jsonl"
+    if events_path.is_file():
+        for line in events_path.read_text(encoding="utf-8-sig", errors="replace").splitlines():
+            try:
+                event = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if event.get("type") == "error":
+                candidates.append(str(event.get("message") or ""))
+    for name in ("stderr.log", "final-message.md"):
+        path = Path(session_dir) / name
+        if path.is_file():
+            candidates.append(path.read_text(encoding="utf-8-sig", errors="replace"))
+    explicit = (
+        "usage limit",
+        "quota exhausted",
+        "quota_exhausted",
+        "insufficient_quota",
+        "resets your usage limit",
+        "usage limit resets",
+    )
+    for candidate in candidates:
+        lowered = candidate.casefold()
+        if any(token in lowered for token in explicit):
+            return candidate.strip()[-4000:]
+        if "rate limit" in lowered and any(token in lowered for token in ("quota", "plan", "usage", "reset")):
+            return candidate.strip()[-4000:]
+    return None
+
+
+def _candidate_knowledge_statuses(payload: Any) -> list[str]:
+    """Return proposal lifecycle statuses without confusing evidence checks with card status."""
+
+    statuses: list[str] = []
+
+    def visit(value: Any) -> None:
+        if isinstance(value, dict):
+            for key, child in value.items():
+                if key == "knowledge_status" and isinstance(child, str):
+                    statuses.append(child.casefold())
+                elif (key == "cards" or key.endswith("_cards")) and isinstance(child, list):
+                    for card in child:
+                        if isinstance(card, dict):
+                            statuses.append(
+                                str(
+                                    card.get("status")
+                                    or card.get("knowledge_status")
+                                    or card.get("state")
+                                    or ""
+                                ).casefold()
+                            )
+                        else:
+                            statuses.append("")
+                else:
+                    visit(child)
+        elif isinstance(value, list):
+            for child in value:
+                visit(child)
+
+    if isinstance(payload, dict) and isinstance(payload.get("status"), str):
+        top_status = str(payload["status"]).casefold()
+        if top_status in {"candidate", "demo", "verified", "machine_verified", "deprecated"}:
+            statuses.append(top_status)
+    visit(payload)
+    return statuses
+
+
+def _validate_candidate_proposals(lesson_root: Path, case_id: str) -> dict[str, Any]:
+    """Validate either legacy YAML proposals or indexed Markdown candidate cards."""
+
+    lesson_root = Path(lesson_root)
+    if not lesson_root.is_dir():
+        return {"files": 0, "candidate_count": 0, "invalid": ["lessons-proposed-missing"]}
+
+    index_path = lesson_root / "index.yaml"
+    if index_path.is_file():
+        index = yaml.safe_load(index_path.read_text(encoding="utf-8-sig")) or {}
+        cards = index.get("cards") if isinstance(index, dict) else None
+        if not isinstance(cards, list) or not cards:
+            return {"files": 1, "candidate_count": 0, "invalid": ["index.yaml:cards"]}
+
+        invalid: list[str] = []
+        seen_paths: set[str] = set()
+        root = lesson_root.resolve()
+        for position, card in enumerate(cards, start=1):
+            label = f"index.yaml:cards[{position}]"
+            if not isinstance(card, dict):
+                invalid.append(label)
+                continue
+            relative = str(card.get("path") or "").strip()
+            if not relative or relative in seen_paths:
+                invalid.append(f"{label}:path")
+                continue
+            seen_paths.add(relative)
+            candidate_path = (lesson_root / relative).resolve()
+            if (
+                not candidate_path.is_relative_to(root)
+                or candidate_path.parent != root
+                or candidate_path.suffix.casefold() != ".md"
+                or not candidate_path.is_file()
+            ):
+                invalid.append(f"{label}:path")
+                continue
+
+            text = candidate_path.read_text(encoding="utf-8-sig")
+            if not text.startswith("---\n"):
+                invalid.append(f"{relative}:frontmatter")
+                continue
+            parts = text.split("---", 2)
+            try:
+                frontmatter = yaml.safe_load(parts[1]) if len(parts) == 3 else None
+            except yaml.YAMLError:
+                frontmatter = None
+            if not isinstance(frontmatter, dict):
+                invalid.append(f"{relative}:frontmatter")
+                continue
+            if (
+                str(card.get("status") or "").casefold() != "candidate"
+                or str(frontmatter.get("status") or "").casefold() != "candidate"
+                or str(frontmatter.get("case_id") or "") != case_id
+                or str(frontmatter.get("id") or "") != str(card.get("id") or "")
+            ):
+                invalid.append(f"{relative}:metadata")
+        return {
+            "files": 1 + len(seen_paths),
+            "candidate_count": len(cards),
+            "invalid": invalid,
+        }
+
+    lesson_files = sorted(lesson_root.glob("*.yaml")) + sorted(lesson_root.glob("*.yml"))
+    invalid = []
+    candidate_count = 0
+    for path in lesson_files:
+        payload = yaml.safe_load(path.read_text(encoding="utf-8-sig")) or {}
+        statuses = _candidate_knowledge_statuses(payload)
+        candidate_count += len(statuses)
+        metadata_valid = not isinstance(payload, dict) or (
+            (not payload.get("case_id") or str(payload.get("case_id")) == case_id)
+            and (
+                not payload.get("package_status")
+                or str(payload.get("package_status")).casefold() == "candidate"
+            )
+        )
+        if not metadata_valid or not statuses or any(status != "candidate" for status in statuses):
+            invalid.append(path.name)
+    return {"files": len(lesson_files), "candidate_count": candidate_count, "invalid": invalid}
+
+
 def run_autopilot(
     queue_path: Path,
     runtime_dir: Path,
@@ -300,6 +490,9 @@ def run_autopilot(
             schema_version=1,
             status="running",
             pid=os.getpid(),
+            recoverable=True,
+            blocker_kind=None,
+            blocker=None,
             lock_nonce=lock["nonce"],
             queue_path=str(queue_path.resolve()),
             started_at=now_iso(),
@@ -315,7 +508,13 @@ def run_autopilot(
             item = next_runnable_item(queue)
             if item is None:
                 summary = queue_summary(queue)
-                final_status = "completed_with_blocks" if summary["counts"]["blocked"] else "completed"
+                final_status = (
+                    "completed_with_blocks"
+                    if summary["counts"]["blocked"] or summary["counts"]["deferred_platform_safety"]
+                    else "completed"
+                )
+                if hasattr(executor, "record_progress"):
+                    executor.record_progress(queue_path, runtime_dir)
                 return _write_state(runtime_dir, status=final_status, queue=summary, finished_at=now_iso())
 
             case_id = str(item["case_id"])
@@ -343,16 +542,80 @@ def run_autopilot(
                 updated = mark_phase_success(queue_path, case_id, phase)
                 if updated["status"] == "completed":
                     completed_cases += 1
+                    if hasattr(executor, "record_progress"):
+                        executor.record_progress(queue_path, runtime_dir)
                 _write_state(runtime_dir, last_completed={"case_id": case_id, "phase": phase, "run_id": run_id})
+            except PlatformSafetyBlock as exc:
+                mark_case_deferred_platform_safety(
+                    queue_path,
+                    case_id,
+                    error=str(exc),
+                    run_id=exc.run_id,
+                    thread_id=exc.thread_id,
+                )
+                write_json(
+                    run_dir / "executor-error.json",
+                    {"kind": "platform_safety", "message": str(exc), "at": now_iso()},
+                )
+                _write_state(
+                    runtime_dir,
+                    last_error={"kind": "platform_safety", "case_id": case_id, "phase": phase, "message": str(exc)},
+                )
+                queue_after = load_training_queue(queue_path)
+                current_ordinal = int(next(item["ordinal"] for item in queue_after["items"] if item["case_id"] == case_id))
+                prior_item = next(
+                    (item for item in queue_after["items"] if int(item["ordinal"]) == current_ordinal - 1),
+                    None,
+                )
+                prior_same = bool(
+                    prior_item
+                    and prior_item.get("status") == "deferred_platform_safety"
+                    and prior_item.get("blocked_reason") == "bio_safety_classifier"
+                )
+                if prior_same:
+                    raise SystemAutopilotError("连续年份触发同一平台内容安全阻塞，暂停正式训练。")
+                completed_cases += 1
+                if max_cases is not None and completed_cases >= max_cases:
+                    return _write_state(runtime_dir, status="checkpointed", finished_at=now_iso())
+                continue
+            except UsageLimitReached as exc:
+                mark_phase_interrupted_quota(
+                    queue_path,
+                    case_id,
+                    phase,
+                    message=str(exc),
+                    run_id=exc.run_id,
+                )
+                write_json(
+                    run_dir / "executor-error.json",
+                    {"kind": "quota", "message": str(exc), "at": now_iso()},
+                )
+                set_stop_requested(queue_path, True)
+                return _write_state(
+                    runtime_dir,
+                    status="resumable_after_quota_reset",
+                    stop_requested=True,
+                    blocker_kind="quota",
+                    blocker=str(exc),
+                    last_error={"kind": "quota", "case_id": case_id, "phase": phase, "message": str(exc)},
+                    finished_at=now_iso(),
+                )
             except TransientPhaseError as exc:
                 updated = mark_phase_failure(queue_path, case_id, phase, str(exc), transient=True)
                 write_json(run_dir / "executor-error.json", {"kind": "transient", "message": str(exc), "at": now_iso()})
                 _write_state(runtime_dir, last_error={"kind": "transient", "case_id": case_id, "phase": phase, "message": str(exc)})
+                if updated["status"] == "blocked":
+                    completed_cases += 1
+                    if max_cases is not None and completed_cases >= max_cases:
+                        return _write_state(runtime_dir, status="checkpointed", finished_at=now_iso())
                 continue
             except CasePhaseError as exc:
                 mark_phase_failure(queue_path, case_id, phase, str(exc), transient=False)
                 write_json(run_dir / "executor-error.json", {"kind": "case", "message": str(exc), "at": now_iso()})
                 _write_state(runtime_dir, last_error={"kind": "case", "case_id": case_id, "phase": phase, "message": str(exc)})
+                completed_cases += 1
+                if max_cases is not None and completed_cases >= max_cases:
+                    return _write_state(runtime_dir, status="checkpointed", finished_at=now_iso())
                 continue
             except (FinalTestExecutionDenied, SystemAutopilotError):
                 raise
@@ -433,21 +696,368 @@ class CodexPhaseExecutor:
         codex_home: Path,
         *,
         codex_command: str = "codex",
-        model: str = "gpt-5.4",
-        reasoning_effort: str = "xhigh",
+        model: str = "gpt-5.6-sol",
+        reasoning_effort: str = "max",
     ) -> None:
         self.trainer_root = Path(trainer_root).resolve()
         self.codex_home = Path(codex_home).resolve()
         self.codex_command = codex_command
+        if model != "gpt-5.6-sol" or reasoning_effort != "max":
+            raise SystemAutopilotError("正式训练固定为 gpt-5.6-sol/max；禁止降级或静默回退。")
         self.model = model
         self.reasoning_effort = reasoning_effort
 
+    def _verify_final_test_seal(self) -> dict[str, Any]:
+        from .training_queue import read_final_test_seal
+        from .util import load_lab_paths
+
+        paths = load_lab_paths(self.trainer_root)
+        seal = read_final_test_seal(Path(paths["exam_vault"]) / "2023A" / "SEALED.json")
+        if seal.get("state") != "sealed" or seal.get("status") != "test_sealed":
+            raise SystemAutopilotError("2023A 不再是 test_sealed/consumed=false，停止全队列。")
+        return seal
+
+    def record_progress(self, queue_path: Path, runtime_dir: Path) -> dict[str, Any]:
+        """Write metadata-only progress and verify the opaque 2023A seal."""
+
+        from .util import load_lab_paths
+
+        paths = load_lab_paths(self.trainer_root)
+        seal = self._verify_final_test_seal()
+
+        queue = load_training_queue(queue_path)
+        cases: list[dict[str, Any]] = []
+        total_candidates = 0
+        for item in queue["items"]:
+            case_id = str(item["case_id"])
+            case_dir = Path(paths["runtime_cases"]) / case_id
+            sessions: dict[str, dict[str, Any]] = {}
+            for phase in TRAIN_PHASES:
+                session_path = case_dir / "logs" / f"{phase}-session.json"
+                if not session_path.is_file():
+                    continue
+                session = read_json(session_path, {})
+                sessions[phase] = {
+                    "thread_id": session.get("thread_id"),
+                    "model": session.get("model"),
+                    "reasoning_effort": session.get("reasoning_effort"),
+                    "fallback": session.get("fallback"),
+                }
+            candidate_count = 0
+            lesson_root = case_dir / "workspaces" / "reflection" / "lessons-proposed"
+            if lesson_root.is_dir():
+                proposal_validation = _validate_candidate_proposals(lesson_root, case_id)
+                if not proposal_validation["invalid"]:
+                    candidate_count = int(proposal_validation["candidate_count"])
+            total_candidates += candidate_count
+            cases.append(
+                {
+                    "case_id": case_id,
+                    "status": item.get("status"),
+                    "current_phase": item.get("current_phase"),
+                    "completed_phases": list(item.get("completed_phases") or []),
+                    "attempts": dict(item.get("attempts") or {}),
+                    "blind_v1": (case_dir / "frozen" / "FROZEN_BLIND_V1.json").is_file(),
+                    "audit": "audit" in (item.get("completed_phases") or []),
+                    "blind_final": (case_dir / "frozen" / "FROZEN_BLIND_FINAL.json").is_file(),
+                    "reflection": "reflection" in (item.get("completed_phases") or []),
+                    "sessions": sessions,
+                    "fallback_detected": any(value.get("fallback") is not False for value in sessions.values()),
+                    "candidate_count": candidate_count,
+                    "machine_verified_generated": 0,
+                }
+            )
+
+        policy_path = Path(runtime_dir) / "execution-policy.json"
+        policy = read_json(policy_path, {}) if policy_path.is_file() else {}
+        baseline_candidates = int(policy.get("candidate_baseline_count") or 0)
+        target_cases = [entry for entry in cases if 2005 <= int(entry["case_id"][:4]) <= 2021]
+        all_target_complete = bool(target_cases) and all(entry["status"] == "completed" for entry in target_cases)
+        summary = {
+            "schema_version": 1,
+            "generated_at": now_iso(),
+            "system_status": "ready_for_final_test" if all_target_complete else "continuous_training",
+            "execution_policy": policy.get("execution_policy"),
+            "queue": queue_summary(queue),
+            "cases": cases,
+            "new_candidate_count": max(0, total_candidates - baseline_candidates),
+            "new_machine_verified_count": 0,
+            "final_test": {
+                "case_id": "2023A",
+                "status": "test_sealed",
+                "consumed": False,
+                "manifest_sha256": seal.get("manifest_sha256"),
+            },
+            "isolation_statement": "这是最小复制工作区隔离，不是Windows绝对路径安全证明。",
+        }
+        reports = self.trainer_root / "reports"
+        reports.mkdir(parents=True, exist_ok=True)
+        write_json(reports / "training-summary.json", summary)
+        rows = [
+            "# 连续正式训练进度",
+            "",
+            f"更新时间：{summary['generated_at']}",
+            "",
+            f"系统状态：{summary['system_status']}",
+            "",
+            "这是最小复制工作区隔离，不是Windows绝对路径安全证明。",
+            "",
+            "| 案例 | 队列状态 | 当前阶段 | Blind V1 | Audit | Blind Final | Reflection | Candidate |",
+            "|---|---|---|---:|---:|---:|---:|---:|",
+        ]
+        for entry in cases:
+            rows.append(
+                "| {case_id} | {status} | {phase} | {v1} | {audit} | {final} | {reflection} | {candidates} |".format(
+                    case_id=entry["case_id"],
+                    status=entry["status"],
+                    phase=entry["current_phase"] or "-",
+                    v1="是" if entry["blind_v1"] else "否",
+                    audit="是" if entry["audit"] else "否",
+                    final="是" if entry["blind_final"] else "否",
+                    reflection="是" if entry["reflection"] else "否",
+                    candidates=entry["candidate_count"],
+                )
+            )
+        rows.extend(
+            [
+                "",
+                f"本轮新增 Candidate：{summary['new_candidate_count']}",
+                "",
+                "本轮新增 machine_verified：0",
+                "",
+                "2023A：test_sealed；consumed=false。",
+            ]
+        )
+        (reports / "autopilot-progress.md").write_text("\n".join(rows) + "\n", encoding="utf-8", newline="\n")
+        return summary
+
+    @staticmethod
+    def _required_solution_outputs(workspace: Path) -> list[str]:
+        required = (
+            "problem-analysis.md",
+            "data-audit.md",
+            "assumptions.yaml",
+            "variables.yaml",
+            "model-selection.md",
+            "solution-report.yaml",
+            "reproducibility.yaml",
+            "paper/main.tex",
+            "paper/paper.md",
+        )
+        missing = [name for name in required if not (workspace / name).is_file()]
+        code_root = workspace / "code"
+        if not code_root.is_dir() or not any(
+            path.is_file() and path.suffix.casefold() in {".py", ".ps1"}
+            for path in code_root.iterdir()
+        ):
+            missing.append("code/<python-or-powershell-entrypoint>")
+        for directory in ("results", "figures"):
+            root = workspace / directory
+            if not root.is_dir() or not any(path.is_file() for path in root.rglob("*")):
+                missing.append(f"{directory}/<file>")
+        return missing
+
+    def _compile_paper(self, case_dir: Path, workspace: Path, label: str) -> dict[str, Any]:
+        from .util import safe_copy_tree
+
+        engine = shutil.which("xelatex")
+        source_paper_dir = workspace / "paper"
+        main_tex = source_paper_dir / "main.tex"
+        report: dict[str, Any] = {
+            "status": "fail",
+            "engine": engine,
+            "source": str(main_tex),
+            "source_pdf": str(source_paper_dir / "main.pdf"),
+            "verification_pdf": "temporary-copy/paper/main.pdf",
+            "source_pdf_preserved": True,
+            "runs": [],
+        }
+        if not engine or not main_tex.is_file():
+            report["reason"] = "xelatex 或 paper/main.tex 不存在"
+        else:
+            with tempfile.TemporaryDirectory(prefix="cumcm-tex-") as temp_name:
+                verification_workspace = Path(temp_name) / "workspace"
+                verification_workspace.mkdir(parents=True)
+                for name in ("paper", "results", "figures"):
+                    source = workspace / name
+                    if source.is_dir():
+                        safe_copy_tree(source, verification_workspace / name)
+                paper_dir = verification_workspace / "paper"
+                for generated_name in ("main.aux", "main.log", "main.out", "main.pdf", "main.toc"):
+                    generated = paper_dir / generated_name
+                    if generated.exists():
+                        generated.unlink()
+                for _ in range(2):
+                    completed = subprocess.run(
+                        [engine, "-interaction=nonstopmode", "-halt-on-error", "main.tex"],
+                        cwd=paper_dir,
+                        capture_output=True,
+                        text=True,
+                        encoding="utf-8",
+                        errors="replace",
+                        timeout=240,
+                        check=False,
+                    )
+                    report["runs"].append(
+                        {
+                            "return_code": completed.returncode,
+                            "stdout_tail": completed.stdout[-6000:],
+                            "stderr_tail": completed.stderr[-3000:],
+                        }
+                    )
+                    if completed.returncode != 0:
+                        break
+                pdf = paper_dir / "main.pdf"
+                if report["runs"] and all(item["return_code"] == 0 for item in report["runs"]) and pdf.is_file() and pdf.stat().st_size:
+                    report["status"] = "pass"
+                    report["pdf_size"] = pdf.stat().st_size
+                else:
+                    report["reason"] = "XeLaTeX 未成功生成非空 PDF"
+        write_json(case_dir / "reports" / f"tex-compile-{label}.json", report)
+        return report
+
+    def _validate_solution_workspace(self, case_dir: Path, workspace: Path, label: str) -> None:
+        from .paper import lint_paper
+        from .verify import verify_case
+
+        missing = self._required_solution_outputs(workspace)
+        reproduction = verify_case(
+            case_dir,
+            source_root=workspace,
+            report_path=case_dir / "reports" / f"reproduction-{label}.json",
+        )
+        paper_source = workspace / "paper" / "main.tex"
+        if not paper_source.is_file():
+            paper_source = workspace / "paper" / "paper.md"
+        paper_lint = lint_paper(
+            paper_source,
+            self.trainer_root / "config" / "competition-rules.yaml",
+            artifact_root=workspace,
+            report_path=case_dir / "reports" / f"paper-lint-{label}.json",
+        ) if paper_source.is_file() else {"status": "fail"}
+        compile_report = self._compile_paper(case_dir, workspace, label)
+        gate = {
+            "status": "pass" if not missing and reproduction["status"] == "pass" and paper_lint["status"] != "fail" and compile_report["status"] == "pass" else "fail",
+            "missing": missing,
+            "reproduction": reproduction["status"],
+            "paper_lint": paper_lint["status"],
+            "tex_compile": compile_report["status"],
+            "isolation_statement": "这是最小复制工作区隔离，不是Windows绝对路径安全证明。",
+        }
+        write_json(case_dir / "reports" / f"quality-gate-{label}.json", gate)
+        if gate["status"] != "pass":
+            raise TransientPhaseError(f"{label} 质量门禁失败：{gate}")
+
+    def _validate_reflection_and_regression(self, case_dir: Path) -> None:
+        from .freeze import verify_frozen
+        from .git_guard import inspect_git_tree
+        from .util import load_lab_paths, sha256_file
+
+        workspace = case_dir / "workspaces" / "reflection"
+        lesson_root = workspace / "lessons-proposed"
+        proposal_validation = _validate_candidate_proposals(lesson_root, case_dir.name)
+        candidate_count = int(proposal_validation["candidate_count"])
+        invalid = list(proposal_validation["invalid"])
+        if candidate_count < 1 or invalid:
+            raise TransientPhaseError(
+                "Reflection candidate 知识卡不完整："
+                f"files={proposal_validation['files']}, cards={candidate_count}, invalid={invalid}"
+            )
+
+        session_records = []
+        for phase in TRAIN_PHASES:
+            session_path = case_dir / "logs" / f"{phase}-session.json"
+            if not session_path.is_file():
+                raise SystemAutopilotError(f"缺少阶段会话证据：{session_path}")
+            session_records.append(read_json(session_path))
+        thread_ids = [str(item.get("thread_id") or "") for item in session_records]
+        session_contract_pass = (
+            all(thread_ids)
+            and len(set(thread_ids)) == len(TRAIN_PHASES)
+            and all(item.get("model") == self.model for item in session_records)
+            and all(item.get("reasoning_effort") == self.reasoning_effort for item in session_records)
+            and all(item.get("fallback") is False and item.get("ephemeral") is True for item in session_records)
+        )
+        if not session_contract_pass:
+            raise SystemAutopilotError("四阶段独立会话或实际模型契约验证失败。")
+
+        knowledge_snapshot_path = case_dir / "reports" / "knowledge-repository-snapshot-blind-final.json"
+        if not knowledge_snapshot_path.is_file():
+            raise SystemAutopilotError("Blind Final 前知识库快照缺失。")
+        before_knowledge = read_json(knowledge_snapshot_path)
+        current_knowledge = [
+            {
+                "path": path.relative_to(self.trainer_root / "knowledge").as_posix(),
+                "sha256": sha256_file(path),
+            }
+            for path in sorted((self.trainer_root / "knowledge").rglob("*"))
+            if path.is_file() and not path.is_symlink()
+        ]
+        if current_knowledge != before_knowledge.get("files"):
+            raise SystemAutopilotError("Reflection 前后项目知识库发生变化；拒绝自动升级 candidate。")
+
+        paths = load_lab_paths(self.trainer_root)
+        index_path = Path(paths["vault_hash_index"])
+        index = read_json(index_path) if index_path.is_file() else {"hashes": []}
+        hashes = [str(item.get("sha256")) for item in index.get("hashes", []) if item.get("sha256")]
+        git_report = inspect_git_tree(self.trainer_root, real_hashes=hashes, include_untracked=True)
+        write_json(case_dir / "reports" / "git-leak-guard.json", git_report)
+        if git_report["status"] != "pass":
+            raise SystemAutopilotError("Git 泄漏守卫失败，停止全队列。")
+
+        completed = subprocess.run(
+            [sys.executable, "-m", "pytest", "-q"],
+            cwd=self.trainer_root,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            timeout=600,
+            check=False,
+        )
+        regression = {
+            "status": "pass" if completed.returncode == 0 else "fail",
+            "return_code": completed.returncode,
+            "stdout": completed.stdout,
+            "stderr": completed.stderr,
+        }
+        write_json(case_dir / "reports" / "regression-tests.json", regression)
+        if regression["status"] != "pass":
+            raise SystemAutopilotError("回归测试失败，停止全队列。")
+
+        regression_gates = {
+            "status": "pass",
+            "blind_v1_frozen": verify_frozen(case_dir, "blind-v1")["status"],
+            "blind_final_frozen": verify_frozen(case_dir, "blind-final")["status"],
+            "blind_final_reproduction": read_json(
+                case_dir / "reports" / "reproduction-blind-final.json", {}
+            ).get("status"),
+            "independent_ephemeral_sessions": session_contract_pass,
+            "git_leak_guard": git_report["status"],
+            "candidate_only": True,
+            "candidate_count": candidate_count,
+            "knowledge_repository_unchanged": True,
+        }
+        if any(
+            regression_gates[key] != "pass"
+            for key in ("blind_v1_frozen", "blind_final_frozen", "blind_final_reproduction", "git_leak_guard")
+        ):
+            regression_gates["status"] = "fail"
+        write_json(case_dir / "reports" / "regression-gates.json", regression_gates)
+        if regression_gates["status"] != "pass":
+            raise SystemAutopilotError("案例回归门禁失败，停止全队列。")
+
     def _prepare_or_reuse(self, case_id: str, phase: str) -> tuple[Path, Path, bool]:
-        from .cases import find_case
-        from .phases import prepare_phase
+        from .cases import find_case, init_runtime_case
+        from .phases import ensure_reflection_control_files, prepare_phase
         from .state import load_state
 
-        case_dir = find_case(self.trainer_root, case_id)
+        try:
+            case_dir = find_case(self.trainer_root, case_id)
+        except FileNotFoundError:
+            if phase != "solve":
+                raise
+            case_dir = init_runtime_case(self.trainer_root, case_id)
         state = load_state(case_dir)["state"]
         workspace = case_dir / "workspaces" / phase
         if state in self.COMPLETED_STATES[phase]:
@@ -456,6 +1066,8 @@ class CodexPhaseExecutor:
             workspace = prepare_phase(self.trainer_root, case_id, phase)
         elif state not in self.READY_STATES[phase]:
             raise SystemAutopilotError(f"队列与案例状态不一致：{case_id}/{phase}: {state}")
+        if phase == "reflection" and state in self.READY_STATES[phase]:
+            ensure_reflection_control_files(case_dir, workspace)
         if not (workspace / "phase-lock.json").is_file():
             raise SystemAutopilotError(f"阶段工作区缺少 phase-lock.json：{workspace}")
         return case_dir, workspace, False
@@ -463,19 +1075,106 @@ class CodexPhaseExecutor:
     def _finalize(self, case_dir: Path, case_id: str, phase: str) -> None:
         from .freeze import freeze_solution, verify_frozen
         from .phases import complete_phase
+        from .scoring import score_case
 
         if phase == "solve":
+            self._validate_solution_workspace(case_dir, case_dir / "workspaces" / "solve", "blind-v1")
             freeze_solution(case_dir, "blind-v1")
             if verify_frozen(case_dir, "blind-v1")["status"] != "pass":
                 raise SystemAutopilotError(f"blind-v1 冻结校验失败：{case_id}")
         elif phase == "audit":
             complete_phase(self.trainer_root, case_id, "audit")
         elif phase == "blind-revision":
+            self._validate_solution_workspace(case_dir, case_dir / "workspaces" / "blind-revision", "blind-final")
             freeze_solution(case_dir, "blind-final")
             if verify_frozen(case_dir, "blind-final")["status"] != "pass":
                 raise SystemAutopilotError(f"blind-final 冻结校验失败：{case_id}")
+            blind_score = score_case(case_dir, self.trainer_root)
+            write_json(
+                case_dir / "reports" / "blind-score-boundary.json",
+                {
+                    "case_id": case_id,
+                    "recorded_at": now_iso(),
+                    "score_status": blind_score["status"],
+                    "score_total": blind_score["total"],
+                    "references_opened": False,
+                    "boundary": "该成绩在 reflection 工作区准备、参考论文复制之前记录。",
+                },
+            )
+            from .util import sha256_file
+
+            solve_knowledge = case_dir / "workspaces" / "solve" / "knowledge"
+            solve_files = [
+                {
+                    "path": path.relative_to(solve_knowledge).as_posix(),
+                    "sha256": sha256_file(path),
+                }
+                for path in sorted(solve_knowledge.rglob("*"))
+                if path.is_file() and not path.is_symlink()
+            ] if solve_knowledge.is_dir() else []
+            write_json(
+                case_dir / "reports" / "knowledge-snapshot-blind-final.json",
+                {
+                    "case_id": case_id,
+                    "recorded_at": now_iso(),
+                    "references_opened": False,
+                    "solve_knowledge_count": len(solve_files),
+                    "solve_knowledge": solve_files,
+                },
+            )
+            knowledge_root = self.trainer_root / "knowledge"
+            write_json(
+                case_dir / "reports" / "knowledge-repository-snapshot-blind-final.json",
+                {
+                    "case_id": case_id,
+                    "recorded_at": now_iso(),
+                    "files": [
+                        {
+                            "path": path.relative_to(knowledge_root).as_posix(),
+                            "sha256": sha256_file(path),
+                        }
+                        for path in sorted(knowledge_root.rglob("*"))
+                        if path.is_file() and not path.is_symlink()
+                    ],
+                },
+            )
         elif phase == "reflection":
+            self._validate_reflection_and_regression(case_dir)
+            reflection_workspace = case_dir / "workspaces" / "reflection"
+            refs = reflection_workspace / "approved-references"
+            derived_refs = reflection_workspace / ".reflection-review"
+            reference_count = len([path for path in refs.iterdir() if path.is_file()]) if refs.is_dir() else 0
+            derived_reference_count = (
+                len([path for path in derived_refs.rglob("*") if path.is_file()])
+                if derived_refs.is_dir()
+                else 0
+            )
+            for cleanup_target in (refs, derived_refs):
+                if not cleanup_target.exists():
+                    continue
+                if not cleanup_target.resolve().is_relative_to(reflection_workspace.resolve()):
+                    raise SystemAutopilotError("Reflection 参考材料清理目标越界。")
+                shutil.rmtree(cleanup_target)
+            write_json(
+                case_dir / "reports" / "reflection-reference-cleanup.json",
+                {
+                    "status": "pass" if not refs.exists() and not derived_refs.exists() else "fail",
+                    "removed_reference_count": reference_count,
+                    "removed_derived_reference_count": derived_reference_count,
+                    "removed_at": now_iso(),
+                },
+            )
+            if refs.exists() or derived_refs.exists():
+                raise SystemAutopilotError("Reflection 临时参考材料清理失败。")
             complete_phase(self.trainer_root, case_id, "reflection")
+            from .state import transition
+
+            transition(
+                case_dir,
+                "knowledge_proposed",
+                command="foreground-training reflection regression",
+                reason="Reflection candidate 已生成且回归测试通过；未升级为可用知识",
+            )
         else:
             raise SystemAutopilotError(f"未知训练阶段：{phase}")
 
@@ -490,10 +1189,35 @@ class CodexPhaseExecutor:
         if not prompt_path.is_file():
             raise SystemAutopilotError(f"阶段提示词不存在：{prompt_path}")
         case_dir, workspace, already_complete = self._prepare_or_reuse(case_id, phase)
+        self._verify_final_test_seal()
         if already_complete:
             return PhaseResult(message="案例状态表明该阶段已完成；按幂等恢复跳过。")
 
-        prompt = prompt_path.read_text(encoding="utf-8-sig")
+        if phase in {"solve", "audit", "blind-revision"}:
+            from .leakage import check_leakage
+            from .util import load_lab_paths
+
+            paths = load_lab_paths(self.trainer_root)
+            preflight_leakage = check_leakage(
+                workspace,
+                phase,
+                vault_roots=[Path(paths["reference_vault"]), Path(paths["exam_vault"])],
+                vault_hash_index=Path(paths["vault_hash_index"]),
+                strict_vaults=True,
+                report_path=case_dir / "reports" / f"leakage-preflight-{phase}.json",
+            )
+            if preflight_leakage["status"] == "fail":
+                raise SystemAutopilotError(f"{case_id}/{phase} 启动前泄漏硬门失败。")
+
+        phase_lock = read_json(workspace / "phase-lock.json")
+        skill_path = str(phase_lock.get("skill_path") or "")
+        if not skill_path or not Path(skill_path).is_file():
+            raise SystemAutopilotError(f"阶段 Skill 路径无效：{skill_path}")
+        prompt = (
+            f"开始前先完整读取并严格执行项目阶段 Skill：{skill_path}\n"
+            "不得调用其他阶段 Skill；不得跨阶段 resume。\n\n"
+            + prompt_path.read_text(encoding="utf-8-sig")
+        )
         session = run_stage_session(
             workspace=workspace,
             run_root=run_dir,
@@ -506,10 +1230,62 @@ class CodexPhaseExecutor:
         )
         if session.get("status") == "blocked":
             raise SystemAutopilotError(f"Codex 阶段被阻塞：{session.get('blocked_reason')}")
-        if session.get("status") != "completed" or session.get("exit_code") != 0:
-            raise TransientPhaseError(f"Codex 阶段进程退出码为 {session.get('exit_code')}。")
         session_dir = Path(str(session["run_dir"]))
+        safety_message = _platform_safety_message(session_dir / "events.jsonl")
+        if safety_message:
+            metadata = read_json(session_dir / "run-metadata.json", {})
+            write_json(
+                run_dir / "platform-safety.json",
+                {
+                    "case_id": case_id,
+                    "phase": phase,
+                    "message": safety_message,
+                    "session_run_id": session.get("session_run_id"),
+                    "thread_id": metadata.get("thread_id"),
+                    "model": metadata.get("model"),
+                    "reasoning_effort": metadata.get("reasoning_effort"),
+                    "at": metadata.get("finished_at"),
+                },
+            )
+            raise PlatformSafetyBlock(
+                safety_message,
+                run_id=run_dir.name,
+                thread_id=metadata.get("thread_id"),
+            )
+        usage_message = _usage_limit_message(session_dir)
+        if usage_message:
+            raise UsageLimitReached(usage_message, run_id=run_dir.name)
+        if session.get("status") != "completed" or (
+            session.get("exit_code") != 0 and session.get("terminal_recovered") is not True
+        ):
+            raise TransientPhaseError(f"Codex 阶段进程退出码为 {session.get('exit_code')}。")
         if not (session_dir / "final-message.md").is_file():
             raise CasePhaseError("Codex 未生成 final-message.md。")
+        metadata = read_json(session_dir / "run-metadata.json", {})
+        contract = metadata.get("actual_session_contract") or {}
+        if (
+            metadata.get("status") != "completed"
+            or contract.get("model") != self.model
+            or contract.get("reasoning_effort") != self.reasoning_effort
+            or contract.get("fallback") is not False
+            or contract.get("ephemeral") is not True
+            or not contract.get("thread_id")
+        ):
+            raise SystemAutopilotError("实际模型、推理档位或独立 ephemeral 会话验证失败；禁止冻结。")
+        write_json(
+            case_dir / "logs" / f"{phase}-session.json",
+            {
+                "case_id": case_id,
+                "phase": phase,
+                "session_run_id": metadata.get("session_run_id"),
+                "thread_id": contract.get("thread_id"),
+                "model": contract.get("model"),
+                "reasoning_effort": contract.get("reasoning_effort"),
+                "fallback": contract.get("fallback"),
+                "ephemeral": contract.get("ephemeral"),
+                "started_at": metadata.get("started_at"),
+                "finished_at": metadata.get("finished_at"),
+            },
+        )
         self._finalize(case_dir, case_id, phase)
         return PhaseResult(message="Codex 阶段与外部收尾均成功。", metadata=dict(session))

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-17T15:45:49+08:00",
-  "status": "needs_review",
+  "generated_at": "2026-08-17T16:46:55+08:00",
+  "status": "fail",
   "workspace_copy_isolation": [
     {
       "status": "pass",
@@ -33,9 +33,65 @@
     }
   ],
   "codex_absolute_path_denial": {
-    "status": "needs_review",
-    "executed": false,
-    "results": [],
-    "reason": "isolated_codex_auth_missing_or_probe_not_run"
+    "status": "fail",
+    "executed": true,
+    "capability": "unavailable",
+    "reason": "command_policy_denied_allowed_and_forbidden_reads_equally",
+    "results": [
+      {
+        "profile": "treatment",
+        "phase": "solve",
+        "status": "fail",
+        "real_ephemeral_session": true,
+        "allowed_reads": "0/4",
+        "forbidden_reads": "5/5 policy-denied",
+        "path_specific_boundary_demonstrated": false,
+        "exit_code": 0,
+        "run_id": "d0ba73a6-788a-447d-b38a-6178fabf101e"
+      },
+      {
+        "profile": "treatment",
+        "phase": "audit",
+        "status": "fail",
+        "real_ephemeral_session": true,
+        "reason": "local_probe_command_denied_before_file_open",
+        "exit_code": 0,
+        "run_id": "ad7968db-1e4c-41e3-848b-056ee61290ee"
+      },
+      {
+        "profile": "treatment",
+        "phase": "reflection",
+        "status": "fail",
+        "real_ephemeral_session": true,
+        "reason": "local_probe_command_denied_before_file_open",
+        "exit_code": 0,
+        "run_id": "c3e1739a-e500-4524-8578-df71dfef56f6"
+      },
+      {
+        "profile": "baseline",
+        "phase": "baseline",
+        "status": "fail",
+        "real_ephemeral_session": true,
+        "reason": "local_probe_command_denied_before_file_open",
+        "exit_code": 0,
+        "run_id": "bdec67ac-1c85-4460-a6f7-640a9a16710d"
+      },
+      {
+        "profile": "curator",
+        "phase": "curator",
+        "status": "fail",
+        "real_ephemeral_session": true,
+        "reason": "local_probe_command_denied_before_file_open",
+        "exit_code": 0,
+        "run_id": "c75453e6-c527-4dac-91e3-fc4ed294adb8"
+      }
+    ]
+  },
+  "evidence": {
+    "stdout": "sanitized events JSONL retained under ignored runtime/security-probes",
+    "stderr": "retained under ignored runtime/security-probes; no credential material recorded",
+    "commands": "sanitized fixed codex exec contract and per-call command status retained",
+    "sentinel_contents_recorded": false,
+    "temporary_probe_files_removed": true
   }
 }

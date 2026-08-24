@@ -2,16 +2,21 @@ from __future__ import annotations
 
 import json
 import os
+from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
 from cumcm_lab.autopilot import (
     AlreadyRunningError,
+    CodexPhaseExecutor,
     CasePhaseError,
     PhaseResult,
+    PlatformSafetyBlock,
     StaleLockError,
     SystemAutopilotError,
     TransientPhaseError,
+    UsageLimitReached,
     acquire_autopilot_lock,
     autopilot_status,
     release_autopilot_lock,
@@ -19,6 +24,8 @@ from cumcm_lab.autopilot import (
     request_autopilot_stop,
     resume_autopilot,
     run_autopilot,
+    _candidate_knowledge_statuses,
+    _validate_candidate_proposals,
 )
 from cumcm_lab.training_queue import TRAIN_PHASES, create_training_queue, load_training_queue
 
@@ -83,6 +90,200 @@ def test_case_failure_does_not_prevent_later_case_check(tmp_path):
     assert result["status"] == "completed_with_blocks"
     assert queue["items"][0]["status"] == "blocked"
     assert queue["items"][1]["status"] == "completed"
+
+
+def test_single_case_limit_checkpoints_after_case_failure(tmp_path):
+    queue_path = tmp_path / "queue.json"
+    runtime = tmp_path / "runtime"
+    create_training_queue(["2003A", "2004A"], queue_path)
+
+    def executor(case_id, phase, attempt, run_dir):
+        raise CasePhaseError("current case failed")
+
+    result = run_autopilot(queue_path, runtime, executor, max_cases=1)
+    queue = load_training_queue(queue_path)
+    assert result["status"] == "checkpointed"
+    assert queue["items"][0]["status"] == "blocked"
+    assert queue["items"][1]["status"] == "pending"
+    assert queue["items"][1]["attempts"]["solve"] == 0
+
+
+def test_single_content_safety_block_defers_case_and_continues(tmp_path):
+    queue_path = tmp_path / "queue.json"
+    runtime = tmp_path / "runtime"
+    create_training_queue(["2003A", "2004A"], queue_path)
+
+    def executor(case_id, phase, attempt, run_dir):
+        if case_id == "2003A":
+            raise PlatformSafetyBlock("biology classifier", run_id=run_dir.name, thread_id="thread-2003")
+        return None
+
+    result = run_autopilot(queue_path, runtime, executor)
+    queue = load_training_queue(queue_path)
+    assert result["status"] == "completed_with_blocks"
+    assert queue["items"][0]["status"] == "deferred_platform_safety"
+    assert queue["items"][0]["completed_phases"] == []
+    assert queue["items"][1]["status"] == "completed"
+
+
+def test_consecutive_content_safety_blocks_stop_the_queue(tmp_path):
+    queue_path = tmp_path / "queue.json"
+    runtime = tmp_path / "runtime"
+    create_training_queue(["2003A", "2004A", "2005A"], queue_path)
+
+    def executor(case_id, phase, attempt, run_dir):
+        raise PlatformSafetyBlock("biology classifier", run_id=run_dir.name, thread_id=f"thread-{case_id}")
+
+    with pytest.raises(SystemAutopilotError, match="连续年份"):
+        run_autopilot(queue_path, runtime, executor)
+    queue = load_training_queue(queue_path)
+    assert queue["stop_requested"] is True
+    assert queue["items"][0]["status"] == "deferred_platform_safety"
+    assert queue["items"][1]["status"] == "deferred_platform_safety"
+    assert queue["items"][2]["attempts"]["solve"] == 0
+
+
+def test_completed_year_breaks_content_safety_streak(tmp_path):
+    queue_path = tmp_path / "queue.json"
+    runtime = tmp_path / "runtime"
+    create_training_queue(["2003A", "2004A", "2005A", "2006A"], queue_path)
+
+    def executor(case_id, phase, attempt, run_dir):
+        if case_id in {"2003A", "2005A"}:
+            raise PlatformSafetyBlock("biology classifier", run_id=run_dir.name, thread_id=f"thread-{case_id}")
+        return None
+
+    result = run_autopilot(queue_path, runtime, executor)
+    queue = load_training_queue(queue_path)
+    assert result["status"] == "completed_with_blocks"
+    assert [item["status"] for item in queue["items"]] == [
+        "deferred_platform_safety",
+        "completed",
+        "deferred_platform_safety",
+        "completed",
+    ]
+
+
+def test_usage_limit_stops_with_resumable_atomic_checkpoint(tmp_path):
+    queue_path = tmp_path / "queue.json"
+    runtime = tmp_path / "runtime"
+    create_training_queue(["2005A", "2006A"], queue_path)
+
+    def executor(case_id, phase, attempt, run_dir):
+        raise UsageLimitReached("usage limit resets tomorrow", run_id=run_dir.name)
+
+    result = run_autopilot(queue_path, runtime, executor)
+    queue = load_training_queue(queue_path)
+    assert result["status"] == "resumable_after_quota_reset"
+    assert queue["stop_requested"] is True
+    assert queue["items"][0]["status"] == "pending"
+    assert queue["items"][0]["current_phase"] == "solve"
+    assert queue["items"][0]["attempts"]["solve"] == 0
+    assert queue["items"][1]["attempts"]["solve"] == 0
+    assert not (runtime / "autopilot.lock").exists()
+
+
+def test_nested_candidate_statuses_ignore_evidence_pass_needs_review():
+    payload = {
+        "cards": [
+            {"knowledge_status": "candidate", "checks": [{"status": "pass"}]},
+            {"knowledge_status": "candidate", "checks": [{"status": "needs_review"}]},
+        ]
+    }
+    assert _candidate_knowledge_statuses(payload) == ["candidate", "candidate"]
+
+
+def test_yaml_card_containers_are_counted_without_treating_evidence_as_lifecycle(tmp_path):
+    lesson_root = tmp_path / "lessons-proposed"
+    lesson_root.mkdir()
+    (lesson_root / "method-cards.yaml").write_text(
+        "case_id: 2008A\n"
+        "package_status: candidate\n"
+        "method_cards:\n"
+        "  - id: METHOD-1\n"
+        "    status: candidate\n"
+        "    evidence_status: pass\n"
+        "  - id: METHOD-2\n"
+        "    status: candidate\n"
+        "    evidence_status: needs_review\n",
+        encoding="utf-8",
+    )
+
+    assert _validate_candidate_proposals(lesson_root, "2008A") == {
+        "files": 1,
+        "candidate_count": 2,
+        "invalid": [],
+    }
+
+
+def test_yaml_card_container_rejects_wrong_case_or_non_candidate_card(tmp_path):
+    lesson_root = tmp_path / "lessons-proposed"
+    lesson_root.mkdir()
+    (lesson_root / "cards.yaml").write_text(
+        "case_id: 2007A\n"
+        "package_status: candidate\n"
+        "cards:\n"
+        "  - id: CARD-1\n"
+        "    status: verified\n",
+        encoding="utf-8",
+    )
+
+    result = _validate_candidate_proposals(lesson_root, "2008A")
+
+    assert result["candidate_count"] == 1
+    assert result["invalid"] == ["cards.yaml"]
+
+
+def test_yaml_card_container_accepts_state_alias(tmp_path):
+    lesson_root = tmp_path / "lessons-proposed"
+    lesson_root.mkdir()
+    (lesson_root / "cards.yaml").write_text(
+        "case_id: 2009A\n"
+        "collection_state: candidate\n"
+        "cards:\n"
+        "  - id: CARD-1\n"
+        "    state: candidate\n"
+        "  - id: CARD-2\n"
+        "    state: candidate\n",
+        encoding="utf-8",
+    )
+
+    assert _validate_candidate_proposals(lesson_root, "2009A") == {
+        "files": 1,
+        "candidate_count": 2,
+        "invalid": [],
+    }
+
+
+def test_indexed_markdown_candidate_cards_are_validated(tmp_path):
+    lesson_root = tmp_path / "lessons-proposed"
+    lesson_root.mkdir()
+    (lesson_root / "index.yaml").write_text(
+        "cards:\n  - id: 2005A-CARD-1\n    path: card-1.md\n    status: candidate\n",
+        encoding="utf-8",
+    )
+    (lesson_root / "card-1.md").write_text(
+        "---\nid: 2005A-CARD-1\nstatus: candidate\ncase_id: 2005A\n---\n\n# Card\n",
+        encoding="utf-8",
+    )
+    assert _validate_candidate_proposals(lesson_root, "2005A") == {
+        "files": 2,
+        "candidate_count": 1,
+        "invalid": [],
+    }
+
+
+def test_indexed_markdown_candidate_cards_reject_escape(tmp_path):
+    lesson_root = tmp_path / "lessons-proposed"
+    lesson_root.mkdir()
+    (tmp_path / "outside.md").write_text("---\nstatus: candidate\n---\n", encoding="utf-8")
+    (lesson_root / "index.yaml").write_text(
+        "cards:\n  - id: escaped\n    path: ../outside.md\n    status: candidate\n",
+        encoding="utf-8",
+    )
+    result = _validate_candidate_proposals(lesson_root, "2005A")
+    assert result["candidate_count"] == 1
+    assert result["invalid"] == ["index.yaml:cards[1]:path"]
 
 
 def test_system_failure_stops_entire_queue(tmp_path):
@@ -174,3 +375,30 @@ def test_missing_dedicated_auth_records_blocker_without_consuming_attempt(tmp_pa
     assert result["pid"] is None
     assert load_training_queue(queue_path)["items"][0]["attempts"]["solve"] == 0
     assert not (runtime / "autopilot.lock").exists()
+
+
+def test_compile_paper_uses_temporary_copy_and_preserves_source_pdf(tmp_path, monkeypatch):
+    trainer_root = tmp_path / "trainer"
+    codex_home = tmp_path / "codex-home"
+    case_dir = tmp_path / "case"
+    workspace = tmp_path / "workspace"
+    for directory in (trainer_root, codex_home, case_dir / "reports", workspace / "paper"):
+        directory.mkdir(parents=True, exist_ok=True)
+    (workspace / "paper" / "main.tex").write_text("document", encoding="utf-8")
+    source_pdf = workspace / "paper" / "main.pdf"
+    source_pdf.write_bytes(b"original-pdf")
+
+    def fake_run(command, *, cwd, **kwargs):
+        del command, kwargs
+        Path(cwd, "main.pdf").write_bytes(b"verified-pdf")
+        return SimpleNamespace(returncode=0, stdout="ok", stderr="")
+
+    monkeypatch.setattr("cumcm_lab.autopilot.shutil.which", lambda _: "xelatex")
+    monkeypatch.setattr("cumcm_lab.autopilot.subprocess.run", fake_run)
+    executor = CodexPhaseExecutor(trainer_root, codex_home)
+
+    report = executor._compile_paper(case_dir, workspace, "test")
+
+    assert report["status"] == "pass"
+    assert report["source_pdf_preserved"] is True
+    assert source_pdf.read_bytes() == b"original-pdf"

@@ -23,8 +23,9 @@ def main() -> int:
     parser.add_argument("--runtime-dir", type=Path, default=trainer / "runtime")
     parser.add_argument("--trainer-root", type=Path, default=trainer)
     parser.add_argument("--codex-home", type=Path, default=trainer.parent / "codex-home")
-    parser.add_argument("--model", default="gpt-5.4")
-    parser.add_argument("--reasoning", "--reasoning-effort", dest="reasoning_effort", choices=["low", "medium", "high", "xhigh"], default="xhigh")
+    parser.add_argument("--codex-command", default="codex")
+    parser.add_argument("--model", default="gpt-5.6-sol")
+    parser.add_argument("--reasoning", "--reasoning-effort", dest="reasoning_effort", choices=["low", "medium", "high", "xhigh", "max"], default="max")
     parser.add_argument("--max-cases", type=int)
     parser.add_argument("--max-retries", type=int, choices=[1], default=1)
     parser.add_argument("--stop-after-phase", choices=TRAIN_PHASES)
@@ -33,6 +34,7 @@ def main() -> int:
         executor = CodexPhaseExecutor(
             args.trainer_root,
             args.codex_home,
+            codex_command=args.codex_command,
             model=args.model,
             reasoning_effort=args.reasoning_effort,
         )
@@ -44,7 +46,13 @@ def main() -> int:
             stop_after_phase=args.stop_after_phase,
         )
         print(json.dumps(result, ensure_ascii=False, indent=2))
-        return 0 if result.get("status") in {"completed", "completed_with_blocks", "checkpointed", "stopped"} else 1
+        return 0 if result.get("status") in {
+            "completed",
+            "completed_with_blocks",
+            "checkpointed",
+            "stopped",
+            "resumable_after_quota_reset",
+        } else 1
     except Exception as exc:
         print(f"[ERROR] {exc}", file=sys.stderr)
         return 1

@@ -17,6 +17,7 @@ from .util import (
     safe_copy_tree,
     sha256_file,
     write_json,
+    write_yaml,
 )
 
 
@@ -26,6 +27,14 @@ PHASE_SKILLS = {
     "blind-revision": "$cumcm-a-solve",
     "reflection": "$cumcm-a-reflect",
     "evaluation": "$cumcm-a-evaluate",
+}
+
+PHASE_SKILL_DIRS = {
+    "solve": "cumcm-a-solve",
+    "audit": "cumcm-a-audit",
+    "blind-revision": "cumcm-a-solve",
+    "reflection": "cumcm-a-reflect",
+    "evaluation": "cumcm-a-evaluate",
 }
 
 PHASE_FORBIDDEN = {
@@ -67,14 +76,41 @@ def _copy_verified_knowledge(trainer_root: Path, case_meta: dict, workspace: Pat
     return results
 
 
-def _phase_override(phase: str) -> str:
+def _phase_override(phase: str, skill_path: Path) -> str:
     skill = PHASE_SKILLS[phase]
     forbidden = "、".join(PHASE_FORBIDDEN[phase])
     return (
         f"# {phase} 阶段锁\n\n"
         f"本会话只允许显式调用 `{skill}`，不得调用其他阶段 Skill。\n"
+        f"开始工作前必须完整读取并严格执行项目 Skill：`{skill_path}`。\n"
         f"只读取 `allowed-paths.json` 中列出的内容；禁止：{forbidden}。\n"
         "所有自动判断使用 pass、fail 或 needs_review；不得伪造复现、哈希或数学正确性。\n"
+    )
+
+
+def ensure_reflection_control_files(case_dir: Path, workspace: Path) -> None:
+    """Install the authoritative external freeze evidence in a reflection copy."""
+
+    manifest = case_dir / "frozen" / "FROZEN_BLIND_FINAL.json"
+    target_root = workspace / "blind-final"
+    if not manifest.is_file() or not target_root.is_dir():
+        raise FileNotFoundError("Reflection 缺少外部 Blind Final 冻结清单或冻结副本。")
+    report = verify_frozen(case_dir, "blind-final")
+    if report["status"] != "pass":
+        raise ValueError("Blind Final 外部冻结校验失败，拒绝准备 Reflection 控制材料。")
+    shutil.copy2(manifest, target_root / "FROZEN_BLIND_FINAL.json")
+    write_json(
+        target_root / "REFLECTION-BOUNDARY.json",
+        {
+            "case_id": read_yaml(case_dir / "case.yaml").get("case_id"),
+            "external_freeze_status": "pass",
+            "external_freeze_manifest": "FROZEN_BLIND_FINAL.json",
+            "external_freeze_verified_at": report.get("verified_at"),
+            "audit_requirement": "completed",
+            "audit_state": "audited",
+            "self_report_frozen_field_authoritative": False,
+            "note": "外部冻结发生在 Blind Revision 会话结束后；冻结清单是权威证据，解题会话内的 pre-freeze 自报字段不是冻结状态依据。",
+        },
     )
 
 
@@ -86,6 +122,10 @@ def prepare_phase(trainer_root: Path, case_id: str, phase: str) -> Path:
     case_meta = read_yaml(case_dir / "case.yaml")
     workspace = case_dir / "workspaces" / phase
     ensure_empty_directory(workspace)
+    skill_root = (trainer_root / ".agents" / "skills" / PHASE_SKILL_DIRS[phase]).resolve()
+    skill_path = skill_root / "SKILL.md"
+    if not skill_path.is_file():
+        raise FileNotFoundError(f"项目阶段 Skill 不存在：{skill_path}")
     paths = load_lab_paths(trainer_root)
     reference_vault = Path(paths["reference_vault"])
     exam_vault = Path(paths["exam_vault"])
@@ -105,6 +145,15 @@ def prepare_phase(trainer_root: Path, case_id: str, phase: str) -> Path:
             raise ValueError("blind-v1 冻结校验失败，拒绝进入审计。")
         _copy_input(case_dir, workspace)
         safe_copy_tree(case_dir / "frozen" / "blind-v1", workspace / "frozen-solution")
+        # The audit Skill must independently verify the authoritative frozen
+        # file list and SHA-256 values before reviewing mathematics.  Keep the
+        # manifest beside the copied snapshot, inside the audit read boundary;
+        # the manifest is external metadata and is intentionally not part of
+        # the snapshot tree hash it authenticates.
+        shutil.copy2(
+            case_dir / "frozen" / "FROZEN_BLIND_V1.json",
+            workspace / "frozen-solution" / "FROZEN_BLIND_V1.json",
+        )
         next_states = ("audit_ready",)
     elif phase == "blind-revision":
         if state != "audited":
@@ -132,7 +181,19 @@ def prepare_phase(trainer_root: Path, case_id: str, phase: str) -> Path:
             raise ValueError("blind-final 冻结校验失败，拒绝进入复盘。")
         reference_ids = case_meta.get("reference_ids") or []
         if not reference_ids:
-            raise ValueError("未在 case.yaml 中登记受控参考材料 reference_ids。")
+            current_reference_root = reference_vault / case_id
+            if not current_reference_root.is_dir():
+                raise ValueError(f"当前案例参考目录不存在：{case_id}")
+            candidates = [
+                path
+                for path in sorted(current_reference_root.iterdir())
+                if path.is_file() and not path.is_symlink()
+            ]
+            if len(candidates) < 2:
+                raise ValueError(f"Reflection 需要当前案例 2 至 4 篇参考材料，实际仅 {len(candidates)} 篇。")
+            reference_ids = [f"{case_id}/{path.name}" for path in candidates[:4]]
+            case_meta["reference_ids"] = reference_ids
+            write_yaml(case_dir / "case.yaml", case_meta)
         reference_sources: list[tuple[str, Path]] = []
         for reference_id in reference_ids:
             reference_path = Path(str(reference_id))
@@ -143,6 +204,7 @@ def prepare_phase(trainer_root: Path, case_id: str, phase: str) -> Path:
                 raise ValueError(f"参考材料未通过 Vault 边界检查：{reference_id}")
             reference_sources.append((str(reference_id), source))
         safe_copy_tree(case_dir / "frozen" / "blind-final", workspace / "blind-final")
+        ensure_reflection_control_files(case_dir, workspace)
         refs_target = workspace / "approved-references"
         refs_target.mkdir(parents=True, exist_ok=True)
         for reference_id, source in reference_sources:
@@ -161,11 +223,16 @@ def prepare_phase(trainer_root: Path, case_id: str, phase: str) -> Path:
         safe_copy_tree(trainer_root / "templates" / "paper", workspace / "paper-template")
         next_states = ("evaluation_ready",)
 
-    allowed = [str(path.resolve()) for path in workspace.iterdir() if path.name not in {"allowed-paths.json", "forbidden-paths.json"}]
+    allowed = [
+        str(path.resolve())
+        for path in workspace.iterdir()
+        if path.name not in {"allowed-paths.json", "forbidden-paths.json"}
+    ]
+    allowed.append(str(skill_root))
     forbidden = [str(reference_vault.resolve()), str(exam_vault.resolve()), *PHASE_FORBIDDEN[phase]]
     write_json(workspace / "allowed-paths.json", {"phase": phase, "paths": allowed})
     write_json(workspace / "forbidden-paths.json", {"phase": phase, "paths": forbidden})
-    (workspace / "AGENTS.override.md").write_text(_phase_override(phase), encoding="utf-8")
+    (workspace / "AGENTS.override.md").write_text(_phase_override(phase, skill_path), encoding="utf-8")
     write_json(
         workspace / "phase-lock.json",
         {
@@ -173,6 +240,7 @@ def prepare_phase(trainer_root: Path, case_id: str, phase: str) -> Path:
             "case_id": case_id,
             "phase": phase,
             "skill": PHASE_SKILLS[phase],
+            "skill_path": str(skill_path),
             "created_at": now_iso(),
             "allowed_paths_sha256": sha256_file(workspace / "allowed-paths.json"),
             "forbidden_paths_sha256": sha256_file(workspace / "forbidden-paths.json"),

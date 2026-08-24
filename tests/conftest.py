@@ -43,6 +43,7 @@ def lab_factory(tmp_path):
         shutil.copy2(PROJECT_ROOT / "config" / "competition-rules.yaml", trainer / "config" / "competition-rules.yaml")
         shutil.copy2(PROJECT_ROOT / "config" / "scoring-rubric.yaml", trainer / "config" / "scoring-rubric.yaml")
         shutil.copytree(PROJECT_ROOT / "templates" / "paper", trainer / "templates" / "paper", dirs_exist_ok=True)
+        shutil.copytree(PROJECT_ROOT / ".agents" / "skills", trainer / ".agents" / "skills", dirs_exist_ok=True)
         codex_home = lab_root / "codex-home"
         codex_home.mkdir()
         (codex_home / "lab-paths.toml").write_text(
@@ -152,4 +153,3 @@ Q1 的 Dummy 结果为 3.0 unit。
 @pytest.fixture
 def solution_writer():
     return write_solution
-

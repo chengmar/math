@@ -116,8 +116,6 @@ def init_runtime_case(trainer_root: Path, case_id: str, *, split: str = "train")
         source = question_source / source_name
         if source.exists():
             safe_copy_tree(source, case_dir / "input" / destination_name)
-    references = Path(paths["reference_vault"]) / case_id
-    reference_ids = [f"{case_id}/{path.name}" for path in sorted(references.iterdir()) if path.is_file() and not path.is_symlink()][:4] if references.is_dir() else []
     created = now_iso()
     write_yaml(
         case_dir / "case.yaml",
@@ -130,7 +128,9 @@ def init_runtime_case(trainer_root: Path, case_id: str, *, split: str = "train")
             "data_types": [],
             "allowed_resources": [],
             "forbidden_resources": ["intake", "reference-vault", "exam-vault", "other-years"],
-            "reference_ids": reference_ids,
+            # Reference filenames are intentionally not enumerated until
+            # Blind Final is frozen and reflection is being prepared.
+            "reference_ids": [],
             "status": "initialized",
             "created_at": created,
         },

@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-08-24T13:24:07+08:00",
+  "pytest": {
+    "status": "pass",
+    "tests": 144,
+    "failures": 0,
+    "skipped": 0,
+    "command": "python -m pytest -q"
+  },
+  "git_leak_guard": {
+    "status": "pass",
+    "files_checked": 475,
+    "include_untracked": true,
+    "findings": []
+  },
+  "queue": {
+    "queue_id": "acfc8cf5-1648-4223-a161-0435d94e04b4",
+    "stop_requested": true,
+    "max_retries": 1,
+    "counts": {
+      "blocked": 0,
+      "completed": 6,
+      "deferred_platform_safety": 1,
+      "pending": 12,
+      "running": 0
+    },
+    "current": {
+      "case_id": "2010A",
+      "phase": "solve",
+      "status": "pending"
+    },
+    "total": 19,
+    "updated_at": "2026-08-24T13:22:22+08:00"
+  },
+  "current_checkpoint": {
+    "case_id": "2010A",
+    "phase": "solve",
+    "status": "interrupted_user",
+    "attempts_restored": 0,
+    "formal_outputs_created": false
+  },
+  "final_test": {
+    "case_id": "2023A",
+    "status": "test_sealed",
+    "state": "sealed",
+    "consumed": false
+  },
+  "training_summary_path": "D:\\CUMCM-A-Lab\\trainer\\reports\\training-summary.json",
+  "progress_report_path": "D:\\CUMCM-A-Lab\\trainer\\reports\\autopilot-progress.md"
+}

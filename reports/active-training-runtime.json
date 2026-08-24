@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "verified_at": "2026-08-17T17:40:23.1731198+08:00",
+  "cli_before": "codex-cli 0.142.0",
+  "cli_after": "codex-cli 0.147.0",
+  "minimum_cli": "0.144.0",
+  "model": "gpt-5.6-sol",
+  "reasoning_effort": "max",
+  "model_catalog_confirmed": true,
+  "event_metadata_confirmed": true,
+  "thread_id": "01a00f0e-7762-7ef2-a9e0-4119056b7d7e",
+  "rollout": "D:\\CUMCM-A-Lab\\codex-home\\sessions\\2026\\08\\17\\rollout-2026-08-17T17-30-01-01a00f0e-7762-7ef2-a9e0-4119056b7d7e.jsonl",
+  "rollout_sha256": "e9e7170856d30d7ddbb5c342990bdb4367779f84077d5f345ac7b6f14313cee5",
+  "silent_fallback_allowed": false,
+  "network_problem_search": "disabled",
+  "execution_mode": "foreground-only",
+  "isolation_statement": "这是最小复制工作区隔离，不是Windows绝对路径安全证明。"
+}

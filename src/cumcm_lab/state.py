@@ -20,12 +20,13 @@ STATES = {
     "evaluation_ready",
     "evaluated",
     "archived",
+    "deferred_platform_safety",
 }
 
 TRANSITIONS: dict[str, set[str]] = {
-    "initialized": {"solve_ready", "evaluation_ready"},
-    "solve_ready": {"solving"},
-    "solving": {"blind_v1_frozen"},
+    "initialized": {"solve_ready", "evaluation_ready", "deferred_platform_safety"},
+    "solve_ready": {"solving", "deferred_platform_safety"},
+    "solving": {"blind_v1_frozen", "deferred_platform_safety"},
     "blind_v1_frozen": {"audit_ready"},
     "audit_ready": {"audited"},
     "audited": {"blind_revision_ready", "blind_final_frozen"},
@@ -37,6 +38,7 @@ TRANSITIONS: dict[str, set[str]] = {
     "evaluation_ready": {"evaluated"},
     "evaluated": {"archived"},
     "archived": set(),
+    "deferred_platform_safety": set(),
 }
 
 

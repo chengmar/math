@@ -1,36 +1,635 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-17T15:45:49+08:00",
+  "generated_at": "2026-08-24T18:06:13+08:00",
+  "system_status": "continuous_training",
+  "execution_policy": {
+    "continuous_mode": true,
+    "auto_start_next_phase": true,
+    "auto_start_next_case": true,
+    "first_case": "2010A",
+    "final_training_case": "2021A",
+    "max_cases": "all_remaining",
+    "stop_after_current_case": false,
+    "stop_on_usage_limit": true,
+    "retry_on_usage_limit": false,
+    "stop_before_2023": true,
+    "max_retries_per_atomic_phase": 1,
+    "model": "gpt-5.6-sol",
+    "reasoning": "max",
+    "fallback_allowed": false,
+    "foreground_only": true
+  },
   "queue": {
-    "train_cases": 19,
-    "pending": 19,
-    "running": 0,
-    "blocked_queue_items": 0,
-    "completed": 0,
-    "current_case": "2003A",
-    "current_phase": "solve",
-    "attempts_consumed": 0,
-    "max_retries": 1
+    "queue_id": "acfc8cf5-1648-4223-a161-0435d94e04b4",
+    "stop_requested": true,
+    "max_retries": 1,
+    "counts": {
+      "blocked": 2,
+      "completed": 6,
+      "deferred_platform_safety": 1,
+      "pending": 10,
+      "running": 0
+    },
+    "current": {
+      "case_id": "2012A",
+      "phase": "solve",
+      "status": "pending"
+    },
+    "total": 19,
+    "updated_at": "2026-08-24T18:02:04+08:00"
   },
-  "autopilot": {
-    "status": "blocked",
-    "actually_running": false,
-    "pid": null,
-    "lock_present": false,
-    "blocker_kind": "codex_home_auth_missing",
-    "recoverable": true,
-    "checkpoint": "2003A/solve/preflight"
-  },
-  "knowledge": {
-    "candidate": 1,
-    "machine_verified": 0,
-    "verified_real": 0,
-    "demo": 4
-  },
+  "cases": [
+    {
+      "case_id": "2003A",
+      "status": "deferred_platform_safety",
+      "current_phase": "solve",
+      "completed_phases": [],
+      "attempts": {
+        "solve": 2,
+        "audit": 0,
+        "blind-revision": 0,
+        "reflection": 0
+      },
+      "blind_v1": false,
+      "audit": false,
+      "blind_final": false,
+      "reflection": false,
+      "sessions": {},
+      "fallback_detected": false,
+      "candidate_count": 0,
+      "machine_verified_generated": 0
+    },
+    {
+      "case_id": "2004A",
+      "status": "completed",
+      "current_phase": null,
+      "completed_phases": [
+        "solve",
+        "audit",
+        "blind-revision",
+        "reflection"
+      ],
+      "attempts": {
+        "solve": 2,
+        "audit": 1,
+        "blind-revision": 1,
+        "reflection": 2
+      },
+      "blind_v1": true,
+      "audit": true,
+      "blind_final": true,
+      "reflection": true,
+      "sessions": {
+        "solve": {
+          "thread_id": "01a00f52-ff01-7981-8eee-c566e72a941c",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        },
+        "audit": {
+          "thread_id": "01a00f75-4988-74c2-8406-c4e5e65b9303",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        },
+        "blind-revision": {
+          "thread_id": "01a00f78-4842-74e1-b9cc-33562599caa5",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        },
+        "reflection": {
+          "thread_id": "01a00f90-9e81-7f03-8e89-541ec4be5c42",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        }
+      },
+      "fallback_detected": false,
+      "candidate_count": 6,
+      "machine_verified_generated": 0
+    },
+    {
+      "case_id": "2005A",
+      "status": "completed",
+      "current_phase": null,
+      "completed_phases": [
+        "solve",
+        "audit",
+        "blind-revision",
+        "reflection"
+      ],
+      "attempts": {
+        "solve": 2,
+        "audit": 1,
+        "blind-revision": 1,
+        "reflection": 2
+      },
+      "blind_v1": true,
+      "audit": true,
+      "blind_final": true,
+      "reflection": true,
+      "sessions": {
+        "solve": {
+          "thread_id": "01a00feb-3608-7050-bd3f-04ef945f6eb9",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        },
+        "audit": {
+          "thread_id": "01a024e5-30b7-7852-bf64-afec9d8e8c66",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        },
+        "blind-revision": {
+          "thread_id": "01a024e9-e5c2-7332-9697-1cdbad4ace71",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        },
+        "reflection": {
+          "thread_id": "01a02500-8b05-70b0-9afd-2aabe8966cdf",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        }
+      },
+      "fallback_detected": false,
+      "candidate_count": 7,
+      "machine_verified_generated": 0
+    },
+    {
+      "case_id": "2006A",
+      "status": "completed",
+      "current_phase": null,
+      "completed_phases": [
+        "solve",
+        "audit",
+        "blind-revision",
+        "reflection"
+      ],
+      "attempts": {
+        "solve": 2,
+        "audit": 1,
+        "blind-revision": 2,
+        "reflection": 1
+      },
+      "blind_v1": true,
+      "audit": true,
+      "blind_final": true,
+      "reflection": true,
+      "sessions": {
+        "solve": {
+          "thread_id": "01a02950-0d85-7110-a30b-f2835799cfad",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        },
+        "audit": {
+          "thread_id": "01a029c2-7a29-7be2-aab7-770cf218d8a7",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        },
+        "blind-revision": {
+          "thread_id": "01a029db-6080-7eb2-bdaa-035fa64022d1",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        },
+        "reflection": {
+          "thread_id": "01a029f8-6fae-73e1-9e06-b7a7ff01da4a",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        }
+      },
+      "fallback_detected": false,
+      "candidate_count": 6,
+      "machine_verified_generated": 0
+    },
+    {
+      "case_id": "2007A",
+      "status": "completed",
+      "current_phase": null,
+      "completed_phases": [
+        "solve",
+        "audit",
+        "blind-revision",
+        "reflection"
+      ],
+      "attempts": {
+        "solve": 1,
+        "audit": 1,
+        "blind-revision": 2,
+        "reflection": 2
+      },
+      "blind_v1": true,
+      "audit": true,
+      "blind_final": true,
+      "reflection": true,
+      "sessions": {
+        "solve": {
+          "thread_id": "01a0298c-e82b-7c53-94b1-f30692be8cdb",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        },
+        "audit": {
+          "thread_id": "01a02a0f-7554-7380-bbbf-669878179a37",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        },
+        "blind-revision": {
+          "thread_id": "01a02ca6-f4c0-72d1-9c67-cc192e13da34",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        },
+        "reflection": {
+          "thread_id": "01a02e10-6f7a-7ed0-bc39-8f0fe563378c",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        }
+      },
+      "fallback_detected": false,
+      "candidate_count": 6,
+      "machine_verified_generated": 0
+    },
+    {
+      "case_id": "2008A",
+      "status": "completed",
+      "current_phase": null,
+      "completed_phases": [
+        "solve",
+        "audit",
+        "blind-revision",
+        "reflection"
+      ],
+      "attempts": {
+        "solve": 2,
+        "audit": 1,
+        "blind-revision": 2,
+        "reflection": 2
+      },
+      "blind_v1": true,
+      "audit": true,
+      "blind_final": true,
+      "reflection": true,
+      "sessions": {
+        "solve": {
+          "thread_id": "01a02cdd-7437-7952-9581-3af430db4258",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        },
+        "audit": {
+          "thread_id": "01a02e34-ccc2-7990-a5ee-fda759d2a365",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        },
+        "blind-revision": {
+          "thread_id": "01a02e4d-d651-73c2-a71a-d9b6136a9716",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        },
+        "reflection": {
+          "thread_id": "01a02e94-810a-7532-91eb-dd2389b8c199",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        }
+      },
+      "fallback_detected": false,
+      "candidate_count": 35,
+      "machine_verified_generated": 0
+    },
+    {
+      "case_id": "2009A",
+      "status": "completed",
+      "current_phase": null,
+      "completed_phases": [
+        "solve",
+        "audit",
+        "blind-revision",
+        "reflection"
+      ],
+      "attempts": {
+        "solve": 2,
+        "audit": 1,
+        "blind-revision": 2,
+        "reflection": 2
+      },
+      "blind_v1": true,
+      "audit": true,
+      "blind_final": true,
+      "reflection": true,
+      "sessions": {
+        "solve": {
+          "thread_id": "01a02ee1-c4cd-7df3-8352-7d8a2717a736",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        },
+        "audit": {
+          "thread_id": "01a02f24-743e-79c0-8505-9add4d9e4c08",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        },
+        "blind-revision": {
+          "thread_id": "01a02f43-c994-7211-a1d8-37e654123e6e",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        },
+        "reflection": {
+          "thread_id": "01a02f77-e832-7343-becd-b00b9760ffeb",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        }
+      },
+      "fallback_detected": false,
+      "candidate_count": 10,
+      "machine_verified_generated": 0
+    },
+    {
+      "case_id": "2010A",
+      "status": "blocked",
+      "current_phase": "blind-revision",
+      "completed_phases": [
+        "solve",
+        "audit"
+      ],
+      "attempts": {
+        "solve": 2,
+        "audit": 1,
+        "blind-revision": 2,
+        "reflection": 0
+      },
+      "blind_v1": true,
+      "audit": true,
+      "blind_final": false,
+      "reflection": false,
+      "sessions": {
+        "solve": {
+          "thread_id": "01a03274-f77d-72e0-92e4-8be73bd8fcbd",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        },
+        "audit": {
+          "thread_id": "01a032af-0916-7c91-9cbb-9858912695c8",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        }
+      },
+      "fallback_detected": false,
+      "candidate_count": 0,
+      "machine_verified_generated": 0
+    },
+    {
+      "case_id": "2011A",
+      "status": "blocked",
+      "current_phase": "solve",
+      "completed_phases": [],
+      "attempts": {
+        "solve": 2,
+        "audit": 0,
+        "blind-revision": 0,
+        "reflection": 0
+      },
+      "blind_v1": false,
+      "audit": false,
+      "blind_final": false,
+      "reflection": false,
+      "sessions": {},
+      "fallback_detected": false,
+      "candidate_count": 0,
+      "machine_verified_generated": 0
+    },
+    {
+      "case_id": "2012A",
+      "status": "pending",
+      "current_phase": "solve",
+      "completed_phases": [],
+      "attempts": {
+        "solve": 1,
+        "audit": 0,
+        "blind-revision": 0,
+        "reflection": 0
+      },
+      "blind_v1": false,
+      "audit": false,
+      "blind_final": false,
+      "reflection": false,
+      "sessions": {
+        "solve": {
+          "thread_id": "01a0330c-ecc5-7e80-a184-dfee6c1384da",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        }
+      },
+      "fallback_detected": false,
+      "candidate_count": 0,
+      "machine_verified_generated": 0
+    },
+    {
+      "case_id": "2013A",
+      "status": "pending",
+      "current_phase": "solve",
+      "completed_phases": [],
+      "attempts": {
+        "solve": 0,
+        "audit": 0,
+        "blind-revision": 0,
+        "reflection": 0
+      },
+      "blind_v1": false,
+      "audit": false,
+      "blind_final": false,
+      "reflection": false,
+      "sessions": {},
+      "fallback_detected": false,
+      "candidate_count": 0,
+      "machine_verified_generated": 0
+    },
+    {
+      "case_id": "2014A",
+      "status": "pending",
+      "current_phase": "solve",
+      "completed_phases": [],
+      "attempts": {
+        "solve": 0,
+        "audit": 0,
+        "blind-revision": 0,
+        "reflection": 0
+      },
+      "blind_v1": false,
+      "audit": false,
+      "blind_final": false,
+      "reflection": false,
+      "sessions": {},
+      "fallback_detected": false,
+      "candidate_count": 0,
+      "machine_verified_generated": 0
+    },
+    {
+      "case_id": "2015A",
+      "status": "pending",
+      "current_phase": "solve",
+      "completed_phases": [],
+      "attempts": {
+        "solve": 0,
+        "audit": 0,
+        "blind-revision": 0,
+        "reflection": 0
+      },
+      "blind_v1": false,
+      "audit": false,
+      "blind_final": false,
+      "reflection": false,
+      "sessions": {},
+      "fallback_detected": false,
+      "candidate_count": 0,
+      "machine_verified_generated": 0
+    },
+    {
+      "case_id": "2016A",
+      "status": "pending",
+      "current_phase": "solve",
+      "completed_phases": [],
+      "attempts": {
+        "solve": 0,
+        "audit": 0,
+        "blind-revision": 0,
+        "reflection": 0
+      },
+      "blind_v1": false,
+      "audit": false,
+      "blind_final": false,
+      "reflection": false,
+      "sessions": {},
+      "fallback_detected": false,
+      "candidate_count": 0,
+      "machine_verified_generated": 0
+    },
+    {
+      "case_id": "2017A",
+      "status": "pending",
+      "current_phase": "solve",
+      "completed_phases": [],
+      "attempts": {
+        "solve": 0,
+        "audit": 0,
+        "blind-revision": 0,
+        "reflection": 0
+      },
+      "blind_v1": false,
+      "audit": false,
+      "blind_final": false,
+      "reflection": false,
+      "sessions": {},
+      "fallback_detected": false,
+      "candidate_count": 0,
+      "machine_verified_generated": 0
+    },
+    {
+      "case_id": "2018A",
+      "status": "pending",
+      "current_phase": "solve",
+      "completed_phases": [],
+      "attempts": {
+        "solve": 0,
+        "audit": 0,
+        "blind-revision": 0,
+        "reflection": 0
+      },
+      "blind_v1": false,
+      "audit": false,
+      "blind_final": false,
+      "reflection": false,
+      "sessions": {},
+      "fallback_detected": false,
+      "candidate_count": 0,
+      "machine_verified_generated": 0
+    },
+    {
+      "case_id": "2019A",
+      "status": "pending",
+      "current_phase": "solve",
+      "completed_phases": [],
+      "attempts": {
+        "solve": 0,
+        "audit": 0,
+        "blind-revision": 0,
+        "reflection": 0
+      },
+      "blind_v1": false,
+      "audit": false,
+      "blind_final": false,
+      "reflection": false,
+      "sessions": {},
+      "fallback_detected": false,
+      "candidate_count": 0,
+      "machine_verified_generated": 0
+    },
+    {
+      "case_id": "2020A",
+      "status": "pending",
+      "current_phase": "solve",
+      "completed_phases": [],
+      "attempts": {
+        "solve": 0,
+        "audit": 0,
+        "blind-revision": 0,
+        "reflection": 0
+      },
+      "blind_v1": false,
+      "audit": false,
+      "blind_final": false,
+      "reflection": false,
+      "sessions": {},
+      "fallback_detected": false,
+      "candidate_count": 0,
+      "machine_verified_generated": 0
+    },
+    {
+      "case_id": "2021A",
+      "status": "pending",
+      "current_phase": "solve",
+      "completed_phases": [],
+      "attempts": {
+        "solve": 0,
+        "audit": 0,
+        "blind-revision": 0,
+        "reflection": 0
+      },
+      "blind_v1": false,
+      "audit": false,
+      "blind_final": false,
+      "reflection": false,
+      "sessions": {},
+      "fallback_detected": false,
+      "candidate_count": 0,
+      "machine_verified_generated": 0
+    }
+  ],
+  "new_candidate_count": 64,
+  "new_machine_verified_count": 0,
   "final_test": {
     "case_id": "2023A",
     "status": "test_sealed",
     "consumed": false,
-    "automatically_executable": false
-  }
+    "manifest_sha256": "2054e6fa346db311175d4d0c433790c36079c54b35734e02b0ff430dc76441b6"
+  },
+  "isolation_statement": "这是最小复制工作区隔离，不是Windows绝对路径安全证明。"
 }
