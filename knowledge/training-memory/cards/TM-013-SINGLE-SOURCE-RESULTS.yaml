@@ -1,0 +1,19 @@
+id: TM-013-SINGLE-SOURCE-RESULTS
+title: 表格、图和正文数字由同一结构化结果源生成
+type: paper_expression
+status: provisional_training
+source_cases: [2004A, 2006A]
+source_kind: engineering_and_writing_synthesis
+origin_year: 2004
+tags: [paper, results, consistency, reproducibility]
+applicable_conditions: [同一关键数字出现在摘要、正文、表格或图中的两个以上位置]
+inapplicable_conditions: [没有数值结果的概念性报告]
+minimum_baseline: 结构化结果文件是唯一数字来源
+recommended_action: 用生成脚本写入表格和 LaTeX 片段，并在发布前做表文图交叉核对
+why_it_may_help: 手工重复录入容易产生摘要与明细冲突
+required_validation: [结构化结果存在, 自动生成记录, 精度和单位一致]
+failure_modes: [手改摘要数字, 舍入后总计不守恒]
+counterexamples: [主表与结论各自合理但相互矛盾]
+complexity_cost: 低到中；需要生成模板
+evidence_summary: 低可信数学案例仅贡献稳定出现的论文工程失败模式
+last_updated: '2026-08-24'

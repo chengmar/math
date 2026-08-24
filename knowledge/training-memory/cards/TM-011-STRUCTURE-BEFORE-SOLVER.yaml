@@ -1,0 +1,19 @@
+id: TM-011-STRUCTURE-BEFORE-SOLVER
+title: 多起点数值求解前先检查结构可识别性和退化族
+type: failure_mode
+status: provisional_training
+source_cases: [2004A, 2008A]
+source_kind: generic_failure_only
+origin_year: 2004
+tags: [optimization, geometry, identifiability, numerical_stability]
+applicable_conditions: [非线性方程、几何反演或参数估计可能存在尺度、符号、排列或规范自由度]
+inapplicable_conditions: [唯一性已有严格证明且假设在数据中成立]
+minimum_baseline: 代数寻找退化解族并列出自由度和必要非退化约束
+recommended_action: 先消除结构歧义，再运行确定性网格和随机多起点；按几何有效性聚类根
+why_it_may_help: 多次收敛到同一残差不能证明问题可识别
+required_validation: [退化族检查, 约束充分性, 根聚类, 条件数或扰动稳定性]
+failure_modes: [把局部收敛当唯一解, 只按目标值选择无意义根]
+counterexamples: [存在整族零残差退化解而优化器稳定返回其中一个]
+complexity_cost: 中到高；需要符号分析和多起点实验
+evidence_summary: 仅保留早期案例共同暴露的通用可识别性失败模式
+last_updated: '2026-08-24'

@@ -1,0 +1,19 @@
+id: TM-006-SMALL-DENOMINATOR-GUARD
+title: 除小量结构必须有独立安全模式
+type: failure_mode
+status: provisional_training
+source_cases: [2009A]
+source_kind: audit_counterexample
+origin_year: 2009
+tags: [control, numerical_stability, ratio, boundary, safety]
+applicable_conditions: [控制、估计或归一化中出现执行量除以可能接近零的观测量]
+inapplicable_conditions: [分母由严格正下界保证且已在数据和实现中验证]
+minimum_baseline: 测试零、阈值两侧和符号变化输入
+recommended_action: 低量区切换到独立有界模式；最终按原始定义回代所有约束
+why_it_may_help: 仅在计算分母上加 epsilon 可能掩盖原定义下的巨大违反
+required_validation: [阈值连续性, 原公式回代, 噪声与符号扰动]
+failure_modes: [只测名义区间, 用截断分母通过但原比例仍越界]
+counterexamples: [名义数据稳定而接近零时命令瞬间放大]
+complexity_cost: 低；增加分支和边界测试
+evidence_summary: 审计反例与修订后的逐项断言均提供直接证据
+last_updated: '2026-08-24'

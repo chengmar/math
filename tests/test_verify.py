@@ -1,6 +1,10 @@
+import os
+import shutil
 from pathlib import Path
 
-from cumcm_lab.verify import _isolated_reproduction_arguments, _powershell_reproduction_command, verify_case
+import pytest
+
+from cumcm_lab.verify import _isolated_reproduction_arguments, _powershell_reproduction_command, _safe_workspace_invocation, verify_case
 
 
 def test_powershell_reproduction_passes_declared_workspace() -> None:
@@ -138,6 +142,57 @@ def test_isolated_reproduction_arguments_redirects_declared_workspace(tmp_path: 
 
     assert rewritten == ["-Workspace", str(tmp_path), "-VerifyPaper"]
     assert arguments[1] == "D:/original/case"
+
+
+def test_windows_backslash_powershell_entry_is_recognized(tmp_path: Path) -> None:
+    source = tmp_path / "source"
+    (source / "code").mkdir(parents=True)
+    (source / "code" / "run_all.ps1").write_text("exit 0\n", encoding="utf-8")
+
+    invocation = _safe_workspace_invocation(
+        r"powershell -File code\run_all.ps1 -Workspace C:\original\case",
+        source,
+    )
+
+    assert invocation is not None
+    assert invocation[0] == "powershell"
+    assert invocation[1].as_posix() == "code/run_all.ps1"
+
+
+def test_batch_entry_is_recognized(tmp_path: Path) -> None:
+    source = tmp_path / "source"
+    (source / "code").mkdir(parents=True)
+    (source / "code" / "run_all.cmd").write_text("exit /b 0\n", encoding="utf-8")
+
+    invocation = _safe_workspace_invocation(r"cmd /c code\run_all.cmd", source)
+
+    assert invocation is not None
+    assert invocation[0] == "batch"
+    assert invocation[1].as_posix() == "code/run_all.cmd"
+
+
+@pytest.mark.skipif(os.name != "nt" or not (shutil.which("pwsh") or shutil.which("powershell")), reason="Windows PowerShell required")
+def test_verify_accepts_named_all_powershell_pipeline(tmp_path: Path) -> None:
+    source = tmp_path / "source"
+    for directory in ("code", "results", "paper"):
+        (source / directory).mkdir(parents=True, exist_ok=True)
+    (source / "solution-report.yaml").write_text("status: pass\n", encoding="utf-8")
+    (source / "reproducibility.yaml").write_text(
+        "random_seed: 7\ncommands:\n  all: powershell -File code\\run_all.ps1 -Workspace C:\\original\\case\n",
+        encoding="utf-8",
+    )
+    (source / "code" / "run_all.ps1").write_text(
+        "param([string]$Workspace)\nNew-Item -ItemType Directory -Force -Path (Join-Path $Workspace 'results') | Out-Null\nSet-Content -LiteralPath (Join-Path $Workspace 'results/out.txt') -Value 'ok'\n",
+        encoding="utf-8",
+    )
+
+    report = verify_case(tmp_path, source_root=source)
+
+    assert report["status"] == "pass"
+    assert report["entrypoint_kind"] == "powershell"
+    assert report["command_source"] == "reproducibility.yaml"
+    assert len(report["entrypoint_sha256"]) == 1
+    assert report["command_results"][0]["elapsed_seconds"] >= 0
 
 
 def test_verify_accepts_full_command_mapping(tmp_path: Path) -> None:

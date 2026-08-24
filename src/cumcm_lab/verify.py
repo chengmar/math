@@ -1,15 +1,17 @@
 from __future__ import annotations
 
+import os
 import re
 import shlex
 import shutil
 import subprocess
 import sys
 import tempfile
+import time
 from pathlib import Path
 from typing import Any
 
-from .util import now_iso, read_yaml, safe_copy_tree, write_json
+from .util import now_iso, read_yaml, safe_copy_tree, sha256_file, write_json
 
 
 def _recorded_reproduction_commands(reproduction: dict[str, Any]) -> list[str]:
@@ -57,6 +59,8 @@ def _recorded_reproduction_commands(reproduction: dict[str, Any]) -> list[str]:
             "full_numerical_run",
             "authoritative_command",
             "run_command",
+            "all",
+            "run_all",
         ):
             value = raw_commands.get(key)
             if isinstance(value, str) and value.strip():
@@ -91,7 +95,10 @@ def _safe_workspace_invocation(command_text: str, source: Path) -> tuple[str, Pa
     """Parse a recorded Python/PowerShell command confined to ``source/code``."""
 
     try:
-        tokens = shlex.split(command_text, posix=True)
+        # ``posix=True`` consumes Windows backslashes (``code\run_all.ps1``
+        # becomes ``coderun_all.ps1``).  Keep Windows path separators and strip
+        # only symmetric command-line quotes.
+        tokens = [token[1:-1] if len(token) >= 2 and token[0] == token[-1] and token[0] in {'"', "'"} else token for token in shlex.split(command_text, posix=False)]
     except ValueError:
         return None
     if not tokens:
@@ -100,7 +107,12 @@ def _safe_workspace_invocation(command_text: str, source: Path) -> tuple[str, Pa
     kind: str
     script_token: str
     arguments: list[str]
-    if executable in {"python", "python.exe", "py", "py.exe"}:
+    direct_suffix = Path(tokens[0].replace("\\", "/")).suffix.casefold()
+    if direct_suffix in {".py", ".ps1", ".cmd", ".bat"}:
+        kind = {".py": "python", ".ps1": "powershell", ".cmd": "batch", ".bat": "batch"}[direct_suffix]
+        script_token = tokens[0]
+        arguments = tokens[1:]
+    elif executable in {"python", "python.exe", "py", "py.exe"}:
         script_index = 1
         while script_index < len(tokens) and tokens[script_index].startswith("-"):
             script_index += 1
@@ -119,22 +131,35 @@ def _safe_workspace_invocation(command_text: str, source: Path) -> tuple[str, Pa
         kind = "powershell"
         script_token = tokens[file_index + 1]
         arguments = tokens[file_index + 2 :]
+    elif executable in {"cmd", "cmd.exe"}:
+        try:
+            command_index = next(index for index, token in enumerate(tokens) if token.casefold() in {"/c", "-c"})
+        except StopIteration:
+            return None
+        if command_index + 1 >= len(tokens):
+            return None
+        kind = "batch"
+        script_token = tokens[command_index + 1]
+        arguments = tokens[command_index + 2 :]
     else:
         return None
-    relative = Path(script_token.replace("\\", "/"))
+    normalized = script_token.replace("\\", "/")
+    while normalized.startswith("./"):
+        normalized = normalized[2:]
+    relative = Path(normalized)
     if relative.is_absolute() or not relative.parts or relative.parts[0].casefold() != "code":
         return None
     if any(part in {"", ".", ".."} for part in relative.parts):
         return None
-    expected_suffix = ".py" if kind == "python" else ".ps1"
-    if relative.suffix.casefold() != expected_suffix:
+    expected_suffixes = {"python": {".py"}, "powershell": {".ps1"}, "batch": {".cmd", ".bat"}}
+    if relative.suffix.casefold() not in expected_suffixes[kind]:
         return None
     script = source.joinpath(*relative.parts)
     try:
         script.resolve(strict=False).relative_to((source / "code").resolve(strict=False))
     except ValueError:
         return None
-    if not script.is_file():
+    if not script.is_file() or script.is_symlink():
         return None
     return kind, relative, arguments
 
@@ -208,6 +233,20 @@ def _isolated_reproduction_arguments(temp_root: Path, arguments: list[str]) -> l
     return isolated
 
 
+def _reproduction_path_prefixes() -> list[str]:
+    prefixes = [str(Path(sys.executable).resolve().parent)]
+    configured_miktex = os.environ.get("CUMCM_MIKTEX_BIN")
+    if configured_miktex:
+        candidate = Path(configured_miktex)
+        if (candidate / "xelatex.exe").is_file():
+            prefixes.append(str(candidate.resolve()))
+    lab_root = Path(__file__).resolve().parents[3]
+    bundled_miktex = lab_root / "runtime" / "miktex-portable" / "texmfs" / "install" / "miktex" / "bin" / "x64"
+    if (bundled_miktex / "xelatex.exe").is_file():
+        prefixes.append(str(bundled_miktex.resolve()))
+    return list(dict.fromkeys(prefixes))
+
+
 def artifact_root(case_dir: Path) -> Path:
     final = case_dir / "frozen" / "blind-final"
     if final.exists():
@@ -237,6 +276,15 @@ def verify_case(
     preserved_validation_evidence: list[str] = []
     reproduction = read_yaml(source / "reproducibility.yaml", {})
     recorded_commands = _recorded_reproduction_commands(reproduction)
+    command_source = "reproducibility.yaml"
+    if not recorded_commands:
+        solution_report = read_yaml(source / "solution-report.yaml", {})
+        recorded_commands = _recorded_reproduction_commands(solution_report)
+        command_source = "solution-report.yaml"
+    if not recorded_commands:
+        case_config = read_yaml(case_dir / "case.yaml", {})
+        recorded_commands = _recorded_reproduction_commands(case_config)
+        command_source = "case.yaml"
     invocations = [
         invocation
         for command_text in recorded_commands
@@ -278,7 +326,7 @@ def verify_case(
                 isolated_arguments = _isolated_reproduction_arguments(temp_root, arguments)
                 if kind == "python":
                     command = [sys.executable, relative.as_posix(), *isolated_arguments]
-                else:
+                elif kind == "powershell":
                     shell = shutil.which("pwsh") or shutil.which("powershell") or "powershell"
                     command = [
                         shell,
@@ -289,6 +337,13 @@ def verify_case(
                         relative.as_posix(),
                         *isolated_arguments,
                     ]
+                else:
+                    shell = shutil.which("cmd.exe") or shutil.which("cmd") or "cmd.exe"
+                    command = [shell, "/d", "/c", relative.as_posix(), *isolated_arguments]
+                started = time.monotonic()
+                reproduction_env = os.environ.copy()
+                reproduction_env["PATH"] = os.pathsep.join([*_reproduction_path_prefixes(), reproduction_env.get("PATH", "")])
+                reproduction_env.setdefault("PYTHONUTF8", "1")
                 completed = subprocess.run(
                     command,
                     cwd=temp_root,
@@ -298,7 +353,9 @@ def verify_case(
                     errors="replace",
                     timeout=300,
                     check=False,
+                    env=reproduction_env,
                 )
+                elapsed_seconds = round(time.monotonic() - started, 6)
                 stdout_parts.append(completed.stdout)
                 stderr_parts.append(completed.stderr)
                 return_code = completed.returncode
@@ -307,6 +364,8 @@ def verify_case(
                         "script": relative.as_posix(),
                         "kind": kind,
                         "return_code": completed.returncode,
+                        "elapsed_seconds": elapsed_seconds,
+                        "sha256": sha256_file(source.joinpath(*relative.parts)),
                     }
                 )
             stdout = "\n".join(stdout_parts)
@@ -320,7 +379,9 @@ def verify_case(
         "missing_required": missing,
         "run_script": str(source.joinpath(*invocations[0][1].parts)) if invocations else None,
         "run_scripts": [str(source.joinpath(*relative.parts)) for _, relative, _ in invocations],
+        "entrypoint_sha256": [sha256_file(source.joinpath(*relative.parts)) for _, relative, _ in invocations],
         "entrypoint_kind": invocations[0][0] if invocations else None,
+        "command_source": command_source if recorded_commands else None,
         "return_code": return_code,
         "command_results": command_results,
         "cleaned_declared_targets": cleaned_declared_targets,

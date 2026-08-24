@@ -1,0 +1,19 @@
+id: TM-015-THRESHOLD-PROVENANCE
+title: 每个阈值和权重必须绑定来源与证据强度
+type: paper_expression
+status: provisional_training
+source_cases: [2005A, 2006A, 2009A]
+source_kind: cross_case_claim_boundary
+origin_year: 2005
+tags: [threshold, parameter, provenance, sensitivity, claim]
+applicable_conditions: [模型包含法规阈值、工程容差、专家权重或自定接受标准]
+inapplicable_conditions: [阈值仅为算法内部数值容差且不影响结论]
+minimum_baseline: 标明题面、标准、数据估计、专家判断或工程情景之一
+recommended_action: 外部标准作主结论；自定阈值只作情景并做敏感性，不把接受性写成事实
+why_it_may_help: 无来源的等级和权重会把主观设定伪装成客观判断
+required_validation: [来源表, 阈值两侧测试, 排名或结论敏感性]
+failure_modes: [迁移别题阈值, 只报告通过而不报告阈值来源]
+counterexamples: [连续误差不变，仅因任意分级线改变就得到相反评价]
+complexity_cost: 低；增加参数来源表和边界测试
+evidence_summary: 三个工程案例共同支持阈值来源和结论强度绑定
+last_updated: '2026-08-24'

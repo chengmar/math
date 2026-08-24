@@ -22,7 +22,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--prompt-file", type=Path, help="UTF-8 prompt file; omit to read the prompt from stdin.")
     parser.add_argument("--codex-home", type=Path, default=os.environ.get("CODEX_HOME"))
     parser.add_argument("--model", required=True)
-    parser.add_argument("--reasoning-effort", choices=("low", "medium", "high", "xhigh"), default="xhigh")
+    parser.add_argument("--reasoning-effort", choices=("low", "medium", "high", "xhigh", "max"), default="max")
     parser.add_argument("--input-file", type=Path, action="append", default=[])
     parser.add_argument("--executable", default="codex")
     return parser

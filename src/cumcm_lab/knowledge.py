@@ -8,6 +8,25 @@ from .util import now_iso, read_yaml, write_json, write_yaml
 
 
 SEARCH_DIRS = ("method-cards", "failure-modes", "validation-patterns", "paper-writing", "problem-taxonomy")
+TRAINING_MEMORY_REQUIRED_FIELDS = (
+    "id",
+    "title",
+    "type",
+    "status",
+    "source_cases",
+    "source_kind",
+    "applicable_conditions",
+    "inapplicable_conditions",
+    "minimum_baseline",
+    "recommended_action",
+    "why_it_may_help",
+    "required_validation",
+    "failure_modes",
+    "counterexamples",
+    "complexity_cost",
+    "evidence_summary",
+    "last_updated",
+)
 QUERY_FIELDS = (
     "problem_family",
     "task_type",
@@ -84,6 +103,107 @@ def retrieve_knowledge(
                 "query": query,
                 "limit": limit,
                 "cards": results,
+            },
+        )
+    return results
+
+
+def _case_year(value: Any) -> int | None:
+    match = re.fullmatch(r"(\d{4})A", str(value or "").strip(), flags=re.IGNORECASE)
+    return int(match.group(1)) if match else None
+
+
+def retrieve_training_memory(
+    knowledge_root: Path,
+    query: dict[str, Any],
+    *,
+    case_id: str,
+    phase: str = "solve",
+    limit: int = 5,
+    log_path: Path | None = None,
+) -> list[dict[str, Any]]:
+    """Retrieve provisional cross-case memory for later *training* solves only.
+
+    This is deliberately separate from verified knowledge retrieval.  A
+    provisional card never becomes verified or machine_verified merely because
+    it is copied into a later training workspace.
+    """
+
+    year = _case_year(case_id)
+    policy_path = knowledge_root.parent / "config" / "training-memory-policy.yaml"
+    policy = read_yaml(policy_path) if policy_path.is_file() else {}
+    first_year = int(policy.get("first_allowed_year", 2011))
+    final_year = int(policy.get("final_allowed_year", 2021))
+    configured_limit = int(policy.get("max_cards_per_solve", 5))
+    limit = min(max(int(limit), 0), configured_limit, 5)
+    eligible_phase = phase == "solve"
+    eligible_case = year is not None and first_year <= year <= final_year
+    query_tokens = set().union(*(_tokens(query.get(field)) for field in QUERY_FIELDS))
+    query_tokens |= _tokens(query.get("profile_tags"))
+    scored: list[dict[str, Any]] = []
+    invalid_cards: list[dict[str, Any]] = []
+
+    card_root = knowledge_root / "training-memory" / "cards"
+    if eligible_phase and eligible_case and limit and card_root.is_dir():
+        for path in sorted([*card_root.glob("*.yaml"), *card_root.glob("*.yml")]):
+            card = read_yaml(path)
+            missing = [field for field in TRAINING_MEMORY_REQUIRED_FIELDS if not card.get(field)] if isinstance(card, dict) else list(TRAINING_MEMORY_REQUIRED_FIELDS)
+            if missing:
+                invalid_cards.append({"path": path.name, "reason": "missing_fields", "fields": missing})
+                continue
+            if card.get("status") != "provisional_training":
+                continue
+            source_years = [_case_year(item) for item in card.get("source_cases", [])]
+            if not source_years or any(item is None or item >= year for item in source_years):
+                invalid_cards.append({"path": path.name, "reason": "source_not_earlier"})
+                continue
+            searchable = {
+                "title": card.get("title"),
+                "tags": card.get("tags"),
+                "type": card.get("type"),
+                "applicable_conditions": card.get("applicable_conditions"),
+                "recommended_action": card.get("recommended_action"),
+                "required_validation": card.get("required_validation"),
+                "failure_modes": card.get("failure_modes"),
+            }
+            card_tokens = set().union(*(_tokens(value) for value in searchable.values()))
+            matches = sorted(query_tokens & card_tokens)
+            score = len(matches)
+            if query_tokens and score == 0:
+                continue
+            scored.append(
+                {
+                    "id": card["id"],
+                    "title": card["title"],
+                    "status": card["status"],
+                    "score": score,
+                    "matched_terms": matches,
+                    "match_reason": "匹配问题类型/模型/约束/验证标签" if matches else "无标签时的通用卡片",
+                    "source_cases": list(card.get("source_cases", [])),
+                    "path": str(path),
+                }
+            )
+
+    results = sorted(scored, key=lambda item: (-item["score"], str(item["id"])))[:limit]
+    if log_path:
+        write_json(
+            log_path,
+            {
+                "retrieved_at": now_iso(),
+                "case_id": case_id,
+                "phase": phase,
+                "status": "provisional_training",
+                "query": query,
+                "limit": limit,
+                "eligible": eligible_phase and eligible_case,
+                "cards": results,
+                "invalid_cards": invalid_cards,
+                "policy": {
+                    "first_allowed_year": first_year,
+                    "final_allowed_year": final_year,
+                    "only_earlier_source_years": True,
+                    "not_verified": True,
+                },
             },
         )
     return results

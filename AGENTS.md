@@ -21,7 +21,7 @@
 
 ## 知识与论文纪律
 
-- solve 和 evaluate 只能使用标注为 `machine_verified` 或 `verified` 的知识卡；单题经验只能成为 `candidate`。
+- solve 和 evaluate 默认只能使用标注为 `machine_verified` 或 `verified` 的知识卡；唯一例外是 2011A—2021A 训练集 Solve 可按 `config/training-memory-policy.yaml` 使用最多 5 张、仅来自更早年份且状态为 `provisional_training` 的脱敏训练记忆。该例外不适用于 evaluation、2023A 或当前/未来年份经验；单题经验仍只能成为 `candidate`。
 - `machine_verified` 必须由两个不同后续年份的独立 Shadow 证据、回归和独立评审共同支持，并明确标注“机器验证”；不得写入人工批准字段。
 - 升级必须有两个非同题参数变体的独立正面案例、回归通过和人工批准，并保留适用条件、反例与来源。
 - 论文数字必须与代码结果一致；摘要包含模型、定量结果和结论；图表含标题、单位和正文引用。

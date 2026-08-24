@@ -7,7 +7,7 @@ from typing import Any
 
 from .cases import find_case
 from .freeze import verify_frozen
-from .knowledge import retrieve_knowledge
+from .knowledge import retrieve_knowledge, retrieve_training_memory
 from .state import load_state, transition
 from .util import (
     ensure_empty_directory,
@@ -76,6 +76,90 @@ def _copy_verified_knowledge(trainer_root: Path, case_meta: dict, workspace: Pat
     return results
 
 
+def _training_memory_query(case_dir: Path, case_meta: dict[str, Any]) -> dict[str, Any]:
+    """Infer only generic profile tags; never persist problem text or titles."""
+
+    query = {
+        "problem_family": case_meta.get("problem_family"),
+        "task_type": case_meta.get("task_types"),
+        "data_type": case_meta.get("data_types"),
+        "model_family": case_meta.get("model_family"),
+        "objective": case_meta.get("objective"),
+        "constraints": case_meta.get("constraints"),
+        "validation_needed": case_meta.get("validation_needed"),
+        "failure_modes": case_meta.get("failure_modes"),
+    }
+    snippets: list[str] = []
+    input_root = case_dir / "input"
+    if input_root.is_dir():
+        for path in sorted(input_root.rglob("*")):
+            if path.is_file() and not path.is_symlink() and path.suffix.casefold() in {".txt", ".md", ".tex", ".csv"}:
+                try:
+                    snippets.append(path.read_text(encoding="utf-8-sig", errors="replace")[:200_000])
+                except OSError:
+                    continue
+    text = "\n".join(snippets).casefold()
+    taxonomy = {
+        "forecast": ("预测", "forecast", "时间序列", "趋势", "未来"),
+        "time_series": ("时间序列", "逐年", "年度", "time series"),
+        "optimization": ("优化", "最优", "调度", "分配", "决策", "规划"),
+        "constraints": ("约束", "上限", "下限", "守恒", "constraint"),
+        "control": ("控制", "反馈", "执行器", "control", "torque"),
+        "simulation": ("仿真", "模拟", "递推", "状态转移", "simulation"),
+        "geometry": ("几何", "图像", "坐标", "相机", "geometry", "camera"),
+        "network": ("路径", "网络", "节点", "最短路", "network"),
+        "data_audit": ("数据", "附件", "excel", ".xls", ".xlsx", "csv"),
+        "uncertainty": ("误差", "敏感性", "稳健", "不确定", "error"),
+    }
+    profile_tags = [tag for tag, words in taxonomy.items() if any(word in text for word in words)]
+    profile_tags.append("validation")
+    query["profile_tags"] = sorted(set(profile_tags))
+    return query
+
+
+def _copy_training_memory(trainer_root: Path, case_dir: Path, case_meta: dict[str, Any], workspace: Path) -> list[dict[str, Any]]:
+    reports = workspace / "reports"
+    reports.mkdir(parents=True, exist_ok=True)
+    query = _training_memory_query(case_dir, case_meta)
+    results = retrieve_training_memory(
+        trainer_root / "knowledge",
+        query,
+        case_id=str(case_meta.get("case_id") or case_dir.name),
+        phase="solve",
+        limit=5,
+        log_path=reports / "training-memory-retrieval.json",
+    )
+    target = workspace / "knowledge" / "training-memory"
+    target.mkdir(parents=True, exist_ok=True)
+    for result in results:
+        source = Path(result["path"])
+        if source.is_symlink():
+            raise ValueError(f"拒绝复制符号链接训练记忆：{source}")
+        shutil.copy2(source, target / source.name)
+    usage_lines = [
+        "# 训练记忆使用记录",
+        "",
+        "每张检索卡必须选择 adopt、adapt 或 reject；允许全部 reject。",
+        "",
+    ]
+    for result in results:
+        usage_lines.extend(
+            [
+                f"## {result['id']}",
+                "",
+                "- decision: pending",
+                "- reason: pending",
+                "- decision_influenced: []",
+                "- validation_added: []",
+                "- complexity_added: none",
+                "- observed_risks: []",
+                "",
+            ]
+        )
+    (reports / "training-memory-usage.md").write_text("\n".join(usage_lines), encoding="utf-8")
+    return results
+
+
 def _phase_override(phase: str, skill_path: Path) -> str:
     skill = PHASE_SKILLS[phase]
     forbidden = "、".join(PHASE_FORBIDDEN[phase])
@@ -135,6 +219,7 @@ def prepare_phase(trainer_root: Path, case_id: str, phase: str) -> Path:
             raise ValueError(f"solve 只能从 initialized 准备，当前为 {state}。")
         _copy_input(case_dir, workspace)
         _copy_verified_knowledge(trainer_root, case_meta, workspace, "solve")
+        _copy_training_memory(trainer_root, case_dir, case_meta, workspace)
         safe_copy_tree(trainer_root / "templates" / "paper", workspace / "paper-template")
         next_states = ("solve_ready", "solving")
     elif phase == "audit":

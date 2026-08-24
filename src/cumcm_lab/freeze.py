@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import platform
+import re
 import shutil
 import sys
 from pathlib import Path
@@ -27,6 +28,60 @@ VERSION_MAP = {
     "blind-v1": ("FROZEN_BLIND_V1.json", "blind-v1", "blind_v1_frozen"),
     "blind-final": ("FROZEN_BLIND_FINAL.json", "blind-final", "blind_final_frozen"),
 }
+
+FREEZE_EXCLUDED_DIRS = {".git", ".venv", "__pycache__", ".pytest_cache"}
+FREEZE_EXCLUDED_SUFFIXES = {".log", ".aux", ".toc", ".out", ".pyc"}
+
+
+def _copy_freeze_payload(source: Path, destination: Path) -> list[str]:
+    """Copy authoritative payload while excluding non-deterministic build debris."""
+
+    source = source.resolve()
+    destination.mkdir(parents=True, exist_ok=False)
+    destination = destination.resolve()
+    excluded: list[str] = []
+    for path in source.rglob("*"):
+        if path.is_symlink():
+            raise ValueError(f"拒绝冻结符号链接：{path}")
+        relative = path.relative_to(source)
+        relative_text = relative.as_posix()
+        if any(part in FREEZE_EXCLUDED_DIRS for part in relative.parts):
+            if path.is_file():
+                excluded.append(relative_text)
+            continue
+        if path.is_file() and (path.suffix.casefold() in FREEZE_EXCLUDED_SUFFIXES or path.name.startswith("~$")):
+            excluded.append(relative_text)
+            continue
+        target = destination / relative
+        if not target.resolve(strict=False).is_relative_to(destination):
+            raise ValueError(f"冻结目标路径越界：{target}")
+        if path.is_dir():
+            target.mkdir(parents=True, exist_ok=True)
+        elif path.is_file():
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(path, target)
+    return sorted(excluded)
+
+
+def _required_authoritative_payload(case_id: str, version: str) -> tuple[str, ...]:
+    match = re.fullmatch(r"(\d{4})A", case_id, flags=re.IGNORECASE)
+    if not match or int(match.group(1)) < 2010:
+        return ()
+    required = (
+        "code",
+        "results",
+        "figures",
+        "paper",
+        "solution-report.yaml",
+        "reproducibility.yaml",
+        "data-audit.md",
+        "assumptions.yaml",
+        "variables.yaml",
+        "model-selection.md",
+    )
+    if version == "blind-final":
+        return (*required, "audit")
+    return required
 
 
 def _trainer_root(case_dir: Path) -> Path:
@@ -71,9 +126,13 @@ def freeze_solution(case_dir: Path, version: str, *, random_seed: int | None = N
     )
     if leakage_report["status"] == "fail":
         raise ValueError("冻结前泄漏检查失败；详见案例 reports 目录。")
-    snapshot.mkdir(parents=True, exist_ok=False)
+    case_id = str(read_yaml(case_dir / "case.yaml").get("case_id") or case_dir.name)
+    required_payload = _required_authoritative_payload(case_id, version)
+    missing_payload = [name for name in required_payload if not (source / name).exists()]
+    if missing_payload:
+        raise FileNotFoundError(f"权威冻结载荷不完整：{missing_payload}")
     try:
-        safe_copy_tree(source, snapshot)
+        excluded_build_artifacts = _copy_freeze_payload(source, snapshot)
         files = iter_regular_files(snapshot)
         if not files:
             raise ValueError("没有可冻结的常规文件。")
@@ -85,7 +144,7 @@ def freeze_solution(case_dir: Path, version: str, *, random_seed: int | None = N
         reproducibility = read_yaml(source / "reproducibility.yaml", {})
         manifest: dict[str, Any] = {
             "schema_version": 1,
-            "case_id": read_yaml(case_dir / "case.yaml").get("case_id"),
+            "case_id": case_id,
             "version": version,
             "created_at": now_iso(),
             "snapshot": snapshot_name,
@@ -99,6 +158,8 @@ def freeze_solution(case_dir: Path, version: str, *, random_seed: int | None = N
             "run_command": run_command or reproducibility.get("run_command"),
             "knowledge_cards": reproducibility.get("knowledge_cards", []),
             "leakage_status": leakage_report["status"],
+            "authoritative_payload_required": list(required_payload),
+            "excluded_build_artifacts": excluded_build_artifacts,
             "files": file_entries,
         }
         write_json(manifest_path, manifest)

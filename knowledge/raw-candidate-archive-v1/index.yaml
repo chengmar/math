@@ -1,0 +1,33 @@
+schema_version: 1
+archive_id: raw-candidate-archive-v1
+created_at: '2026-08-24'
+storage_mode: source_preserved_in_place
+read_only: true
+candidate_record_count: 70
+content_copied_into_git: false
+note: 原始 Candidate 继续保存在各案例 Reflection 运行目录；本索引仅保存逻辑位置、文件数和聚合哈希，避免把单题事实或参考材料派生内容提交 Git。
+sources:
+  - case_id: 2004A
+    logical_path: runtime-cases/2004A/workspaces/reflection/lessons-proposed
+    file_count: 7
+    bundle_sha256: 4f5faa9cf42099f69e273ad187a53f476d73665d8e486faeec90e0a471bef325
+  - case_id: 2005A
+    logical_path: runtime-cases/2005A/workspaces/reflection/lessons-proposed
+    file_count: 8
+    bundle_sha256: b190cba287fe497b3487e62056fef8d1df623c1c327295adbfb55fb12f42ca49
+  - case_id: 2006A
+    logical_path: runtime-cases/2006A/workspaces/reflection/lessons-proposed
+    file_count: 7
+    bundle_sha256: 6bd298b1e45dff2a833b53eb3a7f94b6c9599b072a7d187a2859ad79305c02f5
+  - case_id: 2007A
+    logical_path: runtime-cases/2007A/workspaces/reflection/lessons-proposed
+    file_count: 7
+    bundle_sha256: 2b10bfb6a5334ce30b783d9b3e30edacf123d60b742a85c20d860e4d12573c48
+  - case_id: 2008A
+    logical_path: runtime-cases/2008A/workspaces/reflection/lessons-proposed
+    file_count: 6
+    bundle_sha256: 5815372abc47c2dacfc3fde170b2a082684dbee6eaac2d0cd5fd6d4c35f79fe8
+  - case_id: 2009A
+    logical_path: runtime-cases/2009A/workspaces/reflection/lessons-proposed
+    file_count: 2
+    bundle_sha256: bb81e84d75188e67f219a2cf47545791a3de5893a1e8348457cabb2b19b4108f

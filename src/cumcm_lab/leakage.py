@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from typing import Any
 
@@ -144,8 +145,25 @@ def check_leakage(
             except Exception as exc:  # YAML 语法错误由其他检查处理
                 warnings.append(f"无法解析 YAML：{relative}: {exc}")
                 continue
-            if isinstance(payload, dict) and str(payload.get("status", "")).casefold() == "candidate":
-                findings.append({"category": "candidate_knowledge", "evidence": relative})
+            if isinstance(payload, dict):
+                knowledge_status = str(payload.get("status", "")).casefold()
+                if knowledge_status == "candidate":
+                    findings.append({"category": "candidate_knowledge", "evidence": relative})
+                if knowledge_status == "provisional_at_risk":
+                    findings.append({"category": "at_risk_training_memory", "evidence": relative})
+                if knowledge_status == "provisional_training":
+                    lock = read_json(workspace / "phase-lock.json") if (workspace / "phase-lock.json").is_file() else {}
+                    case_id = str(lock.get("case_id") or "")
+                    match = re.fullmatch(r"(\d{4})A", case_id, flags=re.IGNORECASE)
+                    current_year = int(match.group(1)) if match else None
+                    source_years = []
+                    for source_case in payload.get("source_cases", []):
+                        source_match = re.fullmatch(r"(\d{4})A", str(source_case), flags=re.IGNORECASE)
+                        source_years.append(int(source_match.group(1)) if source_match else None)
+                    if phase == "evaluation":
+                        findings.append({"category": "provisional_memory_in_evaluation", "evidence": relative})
+                    if current_year is None or not source_years or any(year is None or year >= current_year for year in source_years):
+                        findings.append({"category": "non_earlier_training_memory", "evidence": relative})
 
     status = "fail" if findings else ("needs_review" if warnings else "pass")
     report = {
