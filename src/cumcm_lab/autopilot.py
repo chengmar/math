@@ -7,6 +7,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 import uuid
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -1163,7 +1164,14 @@ class CodexPhaseExecutor:
                     continue
                 if not cleanup_target.resolve().is_relative_to(reflection_workspace.resolve()):
                     raise SystemAutopilotError("Reflection 参考材料清理目标越界。")
-                shutil.rmtree(cleanup_target)
+                for cleanup_attempt in range(6):
+                    try:
+                        shutil.rmtree(cleanup_target)
+                        break
+                    except PermissionError:
+                        if cleanup_attempt == 5:
+                            raise
+                        time.sleep(1)
             write_json(
                 case_dir / "reports" / "reflection-reference-cleanup.json",
                 {

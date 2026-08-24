@@ -1,9 +1,11 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-24T18:06:13+08:00",
+  "generated_at": "2026-08-25T05:10:04+08:00",
   "system_status": "continuous_training",
   "execution_policy": {
     "continuous_mode": true,
+    "training_paused": false,
+    "new_model_sessions_allowed": true,
     "auto_start_next_phase": true,
     "auto_start_next_case": true,
     "first_case": "2010A",
@@ -24,19 +26,19 @@
     "stop_requested": true,
     "max_retries": 1,
     "counts": {
-      "blocked": 2,
-      "completed": 6,
+      "blocked": 0,
+      "completed": 9,
       "deferred_platform_safety": 1,
-      "pending": 10,
+      "pending": 9,
       "running": 0
     },
     "current": {
-      "case_id": "2012A",
+      "case_id": "2013A",
       "phase": "solve",
       "status": "pending"
     },
     "total": 19,
-    "updated_at": "2026-08-24T18:02:04+08:00"
+    "updated_at": "2026-08-25T05:10:02+08:00"
   },
   "cases": [
     {
@@ -106,7 +108,7 @@
         }
       },
       "fallback_detected": false,
-      "candidate_count": 6,
+      "candidate_count": 0,
       "machine_verified_generated": 0
     },
     {
@@ -206,7 +208,7 @@
         }
       },
       "fallback_detected": false,
-      "candidate_count": 6,
+      "candidate_count": 0,
       "machine_verified_generated": 0
     },
     {
@@ -361,22 +363,24 @@
     },
     {
       "case_id": "2010A",
-      "status": "blocked",
-      "current_phase": "blind-revision",
+      "status": "completed",
+      "current_phase": null,
       "completed_phases": [
         "solve",
-        "audit"
+        "audit",
+        "blind-revision",
+        "reflection"
       ],
       "attempts": {
         "solve": 2,
         "audit": 1,
         "blind-revision": 2,
-        "reflection": 0
+        "reflection": 2
       },
       "blind_v1": true,
       "audit": true,
-      "blind_final": false,
-      "reflection": false,
+      "blind_final": true,
+      "reflection": true,
       "sessions": {
         "solve": {
           "thread_id": "01a03274-f77d-72e0-92e4-8be73bd8fcbd",
@@ -389,57 +393,122 @@
           "model": "gpt-5.6-sol",
           "reasoning_effort": "max",
           "fallback": false
-        }
-      },
-      "fallback_detected": false,
-      "candidate_count": 0,
-      "machine_verified_generated": 0
-    },
-    {
-      "case_id": "2011A",
-      "status": "blocked",
-      "current_phase": "solve",
-      "completed_phases": [],
-      "attempts": {
-        "solve": 2,
-        "audit": 0,
-        "blind-revision": 0,
-        "reflection": 0
-      },
-      "blind_v1": false,
-      "audit": false,
-      "blind_final": false,
-      "reflection": false,
-      "sessions": {},
-      "fallback_detected": false,
-      "candidate_count": 0,
-      "machine_verified_generated": 0
-    },
-    {
-      "case_id": "2012A",
-      "status": "pending",
-      "current_phase": "solve",
-      "completed_phases": [],
-      "attempts": {
-        "solve": 1,
-        "audit": 0,
-        "blind-revision": 0,
-        "reflection": 0
-      },
-      "blind_v1": false,
-      "audit": false,
-      "blind_final": false,
-      "reflection": false,
-      "sessions": {
-        "solve": {
-          "thread_id": "01a0330c-ecc5-7e80-a184-dfee6c1384da",
+        },
+        "blind-revision": {
+          "thread_id": "01a032e0-9fc7-7813-9411-026aa15ee863",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        },
+        "reflection": {
+          "thread_id": "01a03425-2e52-7b71-8abc-99ba6c8db0b4",
           "model": "gpt-5.6-sol",
           "reasoning_effort": "max",
           "fallback": false
         }
       },
       "fallback_detected": false,
-      "candidate_count": 0,
+      "candidate_count": 32,
+      "machine_verified_generated": 0
+    },
+    {
+      "case_id": "2011A",
+      "status": "completed",
+      "current_phase": null,
+      "completed_phases": [
+        "solve",
+        "audit",
+        "blind-revision",
+        "reflection"
+      ],
+      "attempts": {
+        "solve": 1,
+        "audit": 1,
+        "blind-revision": 2,
+        "reflection": 1
+      },
+      "blind_v1": true,
+      "audit": true,
+      "blind_final": true,
+      "reflection": true,
+      "sessions": {
+        "solve": {
+          "thread_id": "01a0343c-46ca-7951-afc8-eb374131ccdf",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        },
+        "audit": {
+          "thread_id": "01a0346d-666d-7b81-9688-69c3528b5c09",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        },
+        "blind-revision": {
+          "thread_id": "01a034a9-5f15-7663-9f01-b25ac36d7949",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        },
+        "reflection": {
+          "thread_id": "01a034da-c59b-7532-9d4d-89c30bce1f15",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        }
+      },
+      "fallback_detected": false,
+      "candidate_count": 28,
+      "machine_verified_generated": 0
+    },
+    {
+      "case_id": "2012A",
+      "status": "completed",
+      "current_phase": null,
+      "completed_phases": [
+        "solve",
+        "audit",
+        "blind-revision",
+        "reflection"
+      ],
+      "attempts": {
+        "solve": 1,
+        "audit": 1,
+        "blind-revision": 1,
+        "reflection": 1
+      },
+      "blind_v1": true,
+      "audit": true,
+      "blind_final": true,
+      "reflection": true,
+      "sessions": {
+        "solve": {
+          "thread_id": "01a0330c-ecc5-7e80-a184-dfee6c1384da",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        },
+        "audit": {
+          "thread_id": "01a034ba-82a9-7f52-8815-a8f25999665e",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        },
+        "blind-revision": {
+          "thread_id": "01a034ed-3dda-76a0-8da9-67d26dff57f4",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        },
+        "reflection": {
+          "thread_id": "01a0357b-7830-7ac2-a723-e9f19b103a3a",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        }
+      },
+      "fallback_detected": false,
+      "candidate_count": 8,
       "machine_verified_generated": 0
     },
     {
@@ -623,7 +692,7 @@
       "machine_verified_generated": 0
     }
   ],
-  "new_candidate_count": 64,
+  "new_candidate_count": 120,
   "new_machine_verified_count": 0,
   "final_test": {
     "case_id": "2023A",
