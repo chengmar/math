@@ -347,13 +347,22 @@ def _candidate_knowledge_statuses(payload: Any) -> list[str]:
     """Return proposal lifecycle statuses without confusing evidence checks with card status."""
 
     statuses: list[str] = []
+    proposal_collections = {
+        "cards",
+        "method_cards",
+        "lessons",
+        "expression_lessons",
+        "failure_modes",
+        "patterns",
+        "validation_patterns",
+    }
 
     def visit(value: Any) -> None:
         if isinstance(value, dict):
             for key, child in value.items():
                 if key == "knowledge_status" and isinstance(child, str):
                     statuses.append(child.casefold())
-                elif (key == "cards" or key.endswith("_cards")) and isinstance(child, list):
+                elif (key in proposal_collections or key.endswith("_cards")) and isinstance(child, list):
                     for card in child:
                         if isinstance(card, dict):
                             statuses.append(

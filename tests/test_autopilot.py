@@ -193,6 +193,22 @@ def test_nested_candidate_statuses_ignore_evidence_pass_needs_review():
     assert _candidate_knowledge_statuses(payload) == ["candidate", "candidate"]
 
 
+def test_candidate_status_parser_accepts_reflection_skill_collections():
+    payload = {
+        "case_id": "2010A",
+        "lessons": [{"id": "EL-1", "status": "candidate"}],
+        "failure_modes": [{"id": "FM-1", "status": "candidate"}],
+        "patterns": [{"id": "VP-1", "status": "candidate"}],
+        "checks": [{"status": "pass"}],
+    }
+
+    assert _candidate_knowledge_statuses(payload) == [
+        "candidate",
+        "candidate",
+        "candidate",
+    ]
+
+
 def test_yaml_card_containers_are_counted_without_treating_evidence_as_lifecycle(tmp_path):
     lesson_root = tmp_path / "lessons-proposed"
     lesson_root.mkdir()
