@@ -1,0 +1,16 @@
+{
+  "case_id": "2012A",
+  "status": "pending",
+  "lifecycle_status": "ready",
+  "current_phase": "solve",
+  "completed_phases": [],
+  "attempts": {
+    "solve": 1,
+    "audit": 0,
+    "blind-revision": 0,
+    "reflection": 0
+  },
+  "blocked_reason": null,
+  "blind_v1_exists": false,
+  "blind_final_exists": false
+}

@@ -1,0 +1,120 @@
+schema_version: 1
+case_id: 2004A
+phase: reflection
+cards:
+  - id: CAND-2004A-M01
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_status: candidate
+    origin: learned_after_references
+    problem:
+      statement: 外部设施的欧氏最近商区可能没有合法步行连接。
+      observed_status: fail
+    method:
+      nodes:
+        - 外部交通与餐饮设施
+        - 白色步行道路节点
+        - 合法道口商区
+        - 场馆环路商区
+        - 看台出口
+      edges: 只使用题面图、现场测绘或明确工程假设支持的边
+      uncertainty:
+        edge_length: coordinate_scenarios
+        edge_existence: topology_scenarios
+      routing: shortest_path_with_equal_split_only_for_true_ties
+    validation:
+      - check: 每条接入边可追溯到图示或现场证据
+        status: needs_review
+      - check: 小图手算与独立最短路一致
+        status: needs_review
+      - check: 不出现跨非步行区域直连
+        status: needs_review
+    failure_conditions:
+      - 未画出的安检、围栏或单向管制改变通行
+      - 图示道口位置无法唯一辨认
+    prohibited_claims:
+      - 不把参考论文共同热点直接当正确答案
+      - 不用坐标抖动代替拓扑不确定性
+
+  - id: CAND-2004A-M02
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_status: candidate
+    origin: independently_conceived_and_reference_confirmed
+    problem:
+      statement: 一人经过多个商区不等于完成多次全额购买。
+      observed_status: pass
+    method:
+      layer_1: 累计商区曝光人次并归一化为人流份额
+      layer_2: 对单个观众的候选路线曝光归一化为一次潜在交易位置分布
+      layer_3: 用行级消费档代表值加权得到消费额潜力
+      data_structure: 保留交通乘餐饮联合分布及其联合消费额
+    validation:
+      - check: footfall_share_sum_equals_1
+        status: pass
+      - check: transaction_share_sum_equals_1
+        status: pass
+      - check: revenue_share_sum_equals_1
+        status: pass
+      - check: 最高档代表值敏感性
+        status: pass
+      - check: 外部真实购买率
+        status: needs_review
+    failure_conditions:
+      - 同一人可能多次独立购买且次数与路线相关
+      - 网点吸引力、价格、排队差异显著
+
+  - id: CAND-2004A-M03
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_status: candidate
+    origin: independently_conceived_and_reference_strengthened
+    problem:
+      statement: 题面没有捕获率、服务能力、成本和毛利，绝对网点数不可唯一识别。
+      observed_status: needs_review
+    method:
+      identified_inputs:
+        - 相对人流或交易份额
+        - 场馆容量
+      unidentified_inputs:
+        - 上座率
+        - 捕获率
+        - 每类网点服务能力
+        - 固定与可变成本
+        - 毛利率
+      outputs:
+        - 参数盒内可行配置范围
+        - 供应与空间均衡的Pareto前沿
+        - 固定网点加可移动模块的两阶段方案
+        - 最有价值的现场校准量
+    validation:
+      - check: 每个情景逐区容量覆盖
+        status: needs_review
+      - check: 参数单调性和边界输入
+        status: needs_review
+      - check: 现场销售与排队校准
+        status: needs_review
+    prohibited_claims:
+      - 不把单一参数组的数量称为事实性唯一最优
+
+  - id: CAND-2004A-M04
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_status: candidate
+    origin: learned_from_cross_reference_failures
+    problem:
+      statement: 摘要、公式、表格和求解结果可能相互矛盾。
+      observed_status: fail
+    method:
+      required_artifacts:
+        - 逐约束逐商区残差表
+        - 总量和份额守恒表
+        - 摘要正文表格数值一致性报告
+        - 穷举证明或MILP最优间隙
+        - 启发式best_known标签
+      scale_rule: 小规模整数问题优先使用可验证的精确方法
+    validation:
+      - check: R1摘要表格矛盾可被捕获
+        status: pass
+      - check: R3公式结果矛盾可被捕获
+        status: pass
+      - check: R4更优反例可被捕获
+        status: pass
+      - check: 新道口模型的独立证书
+        status: needs_review

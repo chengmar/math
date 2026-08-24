@@ -1,0 +1,20 @@
+case_id: 2006A
+status: candidate_only
+candidate_count: 6
+machine_verified_count: 0
+verified_count: 0
+exported_files:
+- file: case-specific.yaml
+  sha256: 3e5339d246cdad613d621d54182522485cc66a124bca4b38938bbed620687823
+- file: expression-lessons.yaml
+  sha256: 2d4478253242f7fcabc48215a6871b486a0b2848c770e8fdf31cdd757a0f10fa
+- file: failure-modes.yaml
+  sha256: bc0d68b8d34958eb4149782ef9c0429b1451aadf7566ad504d82e2c227a87af6
+- file: method-cards.yaml
+  sha256: 94ef50edc36f29764bcbf3f39d35d016503cf5eeef10bed90232ed19798f39e7
+- file: non-transferable.yaml
+  sha256: 223e73cee4a424ba4730c941b6346a47b86559807d9b88acd0b2ab251d10a529
+- file: README.md
+  sha256: 03abccad155d114df18369b84372c3a928167b19548f8108cc7d71d414fe676d
+- file: validation-patterns.yaml
+  sha256: 127a58e015acec6e77a53388b473a2d9fe6e078a29580787dd94885f47f44160

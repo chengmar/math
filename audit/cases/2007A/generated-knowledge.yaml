@@ -1,0 +1,20 @@
+case_id: 2007A
+status: candidate_only
+candidate_count: 6
+machine_verified_count: 0
+verified_count: 0
+exported_files:
+- file: expression-pattern-provenance-and-judgment.yaml
+  sha256: 300cf1a9512f86a508fe918fab343d4a7dba916531e4804983a69a91f023f74b
+- file: failure-mode-in-sample-fit-as-forecast.yaml
+  sha256: b411dbb664d0801d4404d7e538fbcec48d6a342d6f7b80a1334ce420d83a4657
+- file: method-card-age-selective-conservative-migration.yaml
+  sha256: 3f7495e69a98408685611a299679d677592ea50da465c4359bef05b525816f0a
+- file: method-card-bounded-urbanization-driver.yaml
+  sha256: 5728727de72245b566416d454edfe11ccbea27424bd80be7929343d84d449c73
+- file: nontransferable-case-parameters.yaml
+  sha256: f7e434b8fd402fa803f1482a8b0540b6f49ee9178e9fe0353c45a6ceafb320c2
+- file: README.md
+  sha256: 1ca1fbd38a34d10c9a35829c082c02476913ad84e8f622871c007923e5f00efe
+- file: validation-pattern-layered-forecast-evidence.yaml
+  sha256: d10d263f7c682b106c93f9ce9004ca3521618dfffcd4a22e9e0674f8134581a9

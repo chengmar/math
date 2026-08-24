@@ -1,0 +1,55 @@
+case_id: 2008A
+phase: audit
+overall_status: fail
+findings:
+  - id: AUD-PREFLIGHT-001
+    severity: critical
+    category: freeze_integrity
+    evidence:
+      - "允许路径内的 frozen-solution 共含 178 个普通文件、5,399,327 字节。"
+      - "递归文件名搜索只发现 results/generated/run_manifest.json；不存在独立的 FROZEN、freeze 或 checksum 整树清单。"
+      - "solution-report.yaml:115 记录 delivery.frozen: false。"
+      - "reproducibility.yaml 只为 10 个输入/确定性输出给出 SHA-256；run_manifest.json 只列局部代码、输入和 17 个 generated 输出，均未覆盖整树。"
+    affected_files:
+      - frozen-solution/solution-report.yaml
+      - frozen-solution/reproducibility.yaml
+      - frozen-solution/results/generated/run_manifest.json
+      - frozen-solution
+    reason: "没有权威冻结清单，无法证明审计对象与待审冻结版本逐文件一致，也无法检测未列文件的替换、增删或混入。"
+    recommended_fix: "不要修改本 audit 副本；回到受控冻结流程，先确定权威载荷，再生成覆盖全部载荷文件的规范化相对路径、字节数和 SHA-256 清单，明确清单自身的排除规则，并把 frozen 状态设为 pass 后复制到新的 audit 工作区。"
+    requires_human_review: needs_review
+
+  - id: AUD-PREFLIGHT-002
+    severity: critical
+    category: code_output_lineage
+    evidence:
+      - "results/generated/run_manifest.json 声明 code_sha256=a6f8bdf079646589bb812cba7d0503a2ba93db6442de65333fa41cab6fff40c6。"
+      - "当前 frozen-solution/code/solve.py 实测 SHA-256=f3fc1ad7b06e1ac71bb5b5db3ea0bf19b6c5d71787959a2cef4b1bb6c41c3017。"
+      - "同一 run_manifest.json 中 17 个输出文件的实测哈希全部相符，因此现状构成‘旧输出与不同代码并存’的直接证据。"
+    affected_files:
+      - frozen-solution/code/solve.py
+      - frozen-solution/results/generated/run_manifest.json
+      - frozen-solution/results/generated
+      - frozen-solution/figures/<SOURCE_FILE_REDACTED>
+      - frozen-solution/figures/<SOURCE_FILE_REDACTED>
+      - frozen-solution/figures/<SOURCE_FILE_REDACTED>
+      - frozen-solution/figures/<SOURCE_FILE_REDACTED>
+    reason: "当前代码不能由该运行清单认证为生成现有 17 个输出的代码，代码—产物来源链断裂；在此状态下复跑结果即使成功也不能证明复现了被冻结的那次运行。"
+    recommended_fix: "由人工确认哪一版 solve.py 和哪次运行是权威版本；用该精确代码从原始输入重建产物并重新生成运行清单，或恢复与已存输出对应的精确代码。随后重新冻结并开启全新的 audit 会话。"
+    requires_human_review: needs_review
+
+  - id: AUD-PREFLIGHT-003
+    severity: major
+    category: reproduction_specification
+    evidence:
+      - "reproducibility.yaml 的主命令为 python code/solve.py --monte-carlo 100，并声明 Monte Carlo 重复 100 次。"
+      - <LONG_QUOTE_REDACTED>
+      - "两个清单指向不同输出集合，且没有整树冻结清单指定哪个流水线及哪些产物构成权威交付。"
+    affected_files:
+      - frozen-solution/reproducibility.yaml
+      - frozen-solution/results/generated/run_manifest.json
+      - frozen-solution/code/run_all.ps1
+      - frozen-solution/code/solve.py
+    reason: "复现入口、随机试验类型和权威输出集合存在歧义，审计者无法仅凭冻结材料确定唯一复现协议。"
+    recommended_fix: "在重新冻结前指定唯一顶层复现入口；若确需两条流水线，明确执行顺序、输入输出所有权、随机参数以及论文数字分别来自哪条流水线，并将二者纳入同一冻结清单。"
+    requires_human_review: needs_review

@@ -1,0 +1,2 @@
+[console_scripts]
+cumcm-lab = cumcm_lab.cli:main

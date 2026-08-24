@@ -1,0 +1,65 @@
+schema_version: "1.0"
+id: "cumcm-a-2007a-layered-forecast-evidence"
+status: "candidate"
+type: "validation_pattern"
+title: <REFERENCE_TITLE_REDACTED>
+origin: "independently_conceived_and_strengthened_after_audit"
+claim: >-
+  人口预测至少分开验证版本身份、执行复现、关键定义、内部不变量、留出预测、外部上下文
+  和联合稳健性；上层 pass 不能替代下层失败，也不能反向冒充科学正确。
+applicable_when:
+  - "输出包含长期预测、政策情景或复杂状态递推。"
+  - "模型有代码、多个数据处理步骤或多个判断字段。"
+not_applicable_when:
+  - "纯符号推导且没有数值预测；仍应保留定义和反例检查。"
+minimum_baseline:
+  name: "持久性或无机制简单基线"
+  requirement: "必须与主模型使用相同留出折和同口径损失。"
+layers:
+  - id: "identity"
+    check: "冻结清单、路径安全、字节数和 SHA-256。"
+    pass_means: "比较对象身份稳定。"
+  - id: "execution"
+    check: "干净副本运行、依赖、退出码和确定性输出。"
+    pass_means: "当前实现可重复。"
+  - id: "definitions"
+    check: "TFR、暴露量、性别比等关键量用手算或构造反例验证。"
+    pass_means: "被测试定义按声明实现。"
+  - id: "invariants"
+    check: "守恒、非负、开放年龄组和极端边界。"
+    pass_means: "递推内部一致。"
+  - id: "predictive"
+    check: "所有预处理在训练折内的滚动/外部留出。"
+    pass_means: "预注册范围内有预测证据。"
+  - id: "context"
+    check: "与未参与校准的数据或事实核对。"
+    pass_means: "相应外部量匹配；校准输入不能重复充当验证。"
+  - id: "robustness"
+    check: "联合参数、机制和数据口径情景。"
+    pass_means: "结论在声明范围内稳定。"
+aggregation_rule: "overall 取关键层中最严重状态；存在科学 needs_review 或 context fail 时不得写 overall pass。"
+validation:
+  automatic_judgment: "needs_review"
+  current_case_evidence:
+    identity: "pass"
+    execution: "pass"
+    definitions: "pass"
+    invariants: "pass"
+    predictive: "needs_review"
+    context: "fail"
+    robustness: "needs_review"
+counterexamples:
+  - "R2 GM 样本内误差很小，但没有留出证据。"
+  - "R4 区域加总 pass，却仍有正文数字冲突 fail。"
+  - "BF 28 输出同哈希 pass，科学状态仍 needs_review。"
+source_cases:
+  - id: "2007A-BF"
+    evidence: "分层判断、滚动折、联合包络和干净复现。"
+  - id: "2007A-AUDIT"
+    evidence: "AUD-001 至 AUD-009 暴露身份、定义、验证和表达层不能混用。"
+  - id: "2007A-R2-R4"
+    evidence: "样本内精度与表文一致性反例。"
+evidence_strength: "high_within_case"
+promotion_gate:
+  - "至少在两个其他带代码预测题中证明该分层能捕获不同类型错误。"
+  - "为各层预先定义 pass/fail/needs_review 门槛。"

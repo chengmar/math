@@ -1,0 +1,10 @@
+case_id: 2009A
+status: candidate_only
+candidate_count: 10
+machine_verified_count: 0
+verified_count: 0
+exported_files:
+- file: candidate-lessons.yaml
+  sha256: a295d6f888da2e129687fa140b3cd531e0b6c5c1ad29be9af9d06083ead95c9f
+- file: README.md
+  sha256: c276da0f2471ba291e83ee991346e478eee357fa5bf837ab61d3b774c04bd25b

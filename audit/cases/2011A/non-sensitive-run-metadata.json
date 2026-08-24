@@ -1,0 +1,36 @@
+[
+  {
+    "phase": null,
+    "run_id": "476bbc51-8e94-43da-a44f-3bf8d958492e",
+    "thread_id": "01a03308-5b1a-7b42-9a60-b3e8e0c986eb",
+    "status": "failed",
+    "model": "gpt-5.6-sol",
+    "reasoning": "max",
+    "fallback": false,
+    "ephemeral": true,
+    "started_at": "2026-08-24T17:09:40+08:00",
+    "finished_at": "2026-08-24T17:12:01+08:00",
+    "exit_code": 1,
+    "completion_classification": "normal_process_exit",
+    "case_id": "2011A",
+    "blocked_reason": null,
+    "error_kind": null
+  },
+  {
+    "phase": null,
+    "run_id": "cb160b0e-e8f7-44b1-b9ec-af7c9871bafb",
+    "thread_id": "01a0330a-9dc2-7702-8871-b4dcbb43a37e",
+    "status": "failed",
+    "model": "gpt-5.6-sol",
+    "reasoning": "max",
+    "fallback": false,
+    "ephemeral": true,
+    "started_at": "2026-08-24T17:12:04+08:00",
+    "finished_at": "2026-08-24T17:14:31+08:00",
+    "exit_code": 1,
+    "completion_classification": "normal_process_exit",
+    "case_id": "2011A",
+    "blocked_reason": null,
+    "error_kind": null
+  }
+]

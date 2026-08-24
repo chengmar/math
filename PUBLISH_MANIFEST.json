@@ -1,0 +1,18 @@
+{
+  "generated_at": "2026-08-24T19:06:25+08:00",
+  "source_git_commit": "cf9abd5d6d86350588062453fd4c90d18ab2c044",
+  "source_git_branch": "feature/bulk-corpus-autopilot-2003-2023",
+  "source_worktree_dirty": true,
+  "export_file_count": 509,
+  "export_total_size": 2713931,
+  "test_result": "source: 144 passed; sanitized export: 144 passed; source git leak guard: pass; git diff --check: pass; 12/12 completed-case freeze manifests: pass; post-test export structure/leak/secret scan: pass",
+  "leak_scan_result": "pass",
+  "secret_scan_result": "pass",
+  "real_problem_files_exported": 0,
+  "reference_papers_exported": 0,
+  "raw_data_exported": 0,
+  "test_2023_content_exported": 0,
+  "auth_files_exported": 0,
+  "publish_commit": null,
+  "hash_manifest_scope": "all export files except PUBLISH_MANIFEST.json and EXPORT_FILES.sha256 (self-reference exclusion)"
+}

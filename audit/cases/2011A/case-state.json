@@ -1,0 +1,16 @@
+{
+  "case_id": "2011A",
+  "status": "blocked",
+  "lifecycle_status": "failed",
+  "current_phase": "solve",
+  "completed_phases": [],
+  "attempts": {
+    "solve": 2,
+    "audit": 0,
+    "blind-revision": 0,
+    "reflection": 0
+  },
+  "blocked_reason": "retry_exhausted",
+  "blind_v1_exists": false,
+  "blind_final_exists": false
+}

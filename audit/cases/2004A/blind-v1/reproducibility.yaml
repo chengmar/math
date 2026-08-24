@@ -1,0 +1,52 @@
+phase: solve
+status: pass
+workspace: <RUNTIME_ROOT>\2004A\workspaces\solve
+randomness:
+  seed: 2004
+  bootstrap_replicates: 500
+  resampling: within_each_survey_wave_with_replacement
+  map_jitter_sd_px: 4.0
+commands:
+  phase_check: >-
+    python <LAB_ROOT>\.agents\skills\cumcm-a-solve\scripts\check_phase.py
+    --workspace <RUNTIME_ROOT>\2004A\workspaces\solve
+  full_pipeline: >-
+    powershell -ExecutionPolicy Bypass -File .\code\run_all.ps1
+    -Workspace <RUNTIME_ROOT>\2004A\workspaces\solve
+    -Bootstrap 500 -Seed 2004
+  consistency_check: python .\code\check_consistency.py --workspace .
+inputs:
+  problem_doc_sha256: 234c2601de31db896d395458637a6c5b01e3b2019620f74b627da715d60d4ce5
+  attachment_rar_sha256: 4865ac7af439cc3f7191ac35c8f26fdd9c74a6853a55a3249c3b745eb0c60107
+  extracted_mdb_sha256: 9481e6dc1e3a0595917eb38385bb91cf3ee75b36a182a2080ac218a05ec44ee0
+software:
+  python: 3.11.9
+  numpy: 2.4.2
+  pandas: 3.0.0
+  scipy: 1.17.0
+  matplotlib: 3.10.8
+  access_provider: Microsoft.ACE.OLEDB.16.0
+  archive_tool: Windows_bsdtar
+platform_dependencies:
+  - Windows PowerShell with System.Data.OleDb
+  - A compatible Microsoft ACE or Jet OLE DB provider
+  - Python packages pinned in code/requirements.txt
+outputs:
+  code: code/
+  numeric_results: results/
+  figures: figures/
+  paper: paper/main.tex
+  markdown_paper: paper/paper.md
+  hash_manifest: results/checksums.sha256
+checks:
+  input_extraction_status: pass
+  fixed_seed_status: pass
+  output_hash_manifest_status: pass
+  consecutive_rerun_status: pass
+  latex_compile_status: pass
+  latex_runtime_support_status: needs_review
+  cross_platform_bitwise_identity_status: needs_review
+notes:
+  - PNG and floating-point outputs are expected to be deterministic in the recorded environment.
+  - Cross-platform byte identity is not claimed because fonts, Access providers, BLAS, and Matplotlib backends may differ.
+  - The hash manifest contains actual SHA-256 values generated after the run; no hash is inferred or fabricated.

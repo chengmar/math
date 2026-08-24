@@ -1,0 +1,220 @@
+schema_version: 1
+case_id: 2006A
+phase: reflection
+knowledge_status: candidate
+network_used: false
+reference_count: 4
+
+freeze_gate:
+  phase_lock: pass
+  allowed_paths_hash: pass
+  forbidden_paths_hash: pass
+  external_boundary: pass
+  audit_completed: pass
+  audit_mathematics_reviewed: needs_review
+  manifest_sha256: 68217b278154832387665934c219af4e29494d90f8215358a5e2729b16c6dd89
+  manifest_entries: 234
+  manifest_entry_hashes: pass
+  tree_sha256_declared: fdb0474839e6d9195c87acee59d49e2e7a3359b92a19c3b16f048f1ebc97f898
+  tree_sha256_recomputed: fdb0474839e6d9195c87acee59d49e2e7a3359b92a19c3b16f048f1ebc97f898
+  tree_sha256_status: pass
+  unmanifested_cache_files:
+    count: 10
+    scope: "__pycache__/*.pyc only"
+    used_as_evidence: false
+    exclusion_rule_status: needs_review
+
+objects:
+  blind:
+    title: <REFERENCE_TITLE_REDACTED>
+    origin: frozen_blind_final
+    main_model: risk_adjusted_concave_integer_allocation
+    main_branch_allocation: [55, 48, 120, 69, 72, 53, 22, 30, 31]
+    allocation_sum: 500
+    mechanical_feasibility: pass
+    temporal_holdout: pass
+    clean_independent_math_audit: needs_review
+  R1:
+    file:<SOURCE_FILE_REDACTED>
+    title: <REFERENCE_TITLE_REDACTED>
+    sha256: <REFERENCE_HASH_REDACTED>
+    pages: 17
+    parse_status: pass
+    code_reproduction: needs_review
+    main_methods: [GM11, linear_programming, saturation_adjustment, AHP, weighted_multiobjective]
+    deterministic_checks:
+      model1_course_table_total: fail
+      model1_course_bounds: fail
+      model2_branch_total: pass
+      model2_hard_hr: fail
+      multiobjective_total: fail
+  R2:
+    file:<SOURCE_FILE_REDACTED>
+    title: <REFERENCE_TITLE_REDACTED>
+    sha256: <REFERENCE_HASH_REDACTED>
+    pages: 25
+    parse_status: pass
+    code_reproduction: needs_review
+    main_methods: [hierarchical_profit_optimization, GM11, fuzzy_evaluation, strong_product_grading]
+    deterministic_checks:
+      model1_total: pass
+      model1_hard_hr: fail
+      fuzzy_total: fail
+      fuzzy_hard_hr: fail
+      chemical_hr_capacity: fail
+  R3:
+    file:<SOURCE_FILE_REDACTED>
+    title: <REFERENCE_TITLE_REDACTED>
+    sha256: <REFERENCE_HASH_REDACTED>
+    pages: 22
+    parse_status: pass
+    code_reproduction: needs_review
+    main_methods: [AHP, course_regression, integer_programming, balanced_greedy, change_penalty, genetic_algorithm]
+    deterministic_checks:
+      selected_course_table_total: pass
+      selected_course_table_bounds: pass
+      selected_hard_hr: pass
+      objective_direction_expression: fail
+      stability_budget_invariants: fail
+  R4:
+    file:<SOURCE_FILE_REDACTED>
+    title: <REFERENCE_TITLE_REDACTED>
+    sha256: <REFERENCE_HASH_REDACTED>
+    pages: 19
+    parse_status: pass
+    code_reproduction: needs_review
+    main_methods: [GM11, interaction_regression, concave_programming, marginal_greedy]
+    deterministic_checks:
+      allocation_total: pass
+      stated_course_bounds: fail
+      branch_half: pass
+      hard_hr: fail
+      target_information_boundary: fail
+      published_optimality_claim: fail
+
+input_reimplementation:
+  status: pass
+  course_count: 72
+  detailed_request_total: 750
+  branch_order: [计算机类, 经管类, 数学类, 英语类, 两课类, "机械、能源类", "化学、化工类", "地理、地质类", 环境类]
+  branch_requests: [110, 56, 222, 120, 72, 60, 30, 40, 40]
+  hard_hr_caps: [114, 114, 120, 102, 111, 72, 44, 63, 72]
+
+result_comparison:
+  - object: blind
+    scheme: main
+    vector: [55, 48, 120, 69, 72, 53, 22, 30, 31]
+    total: 500
+    total_status: pass
+    hard_hr_status: pass
+    reallocated_units_vs_blind: 0
+  - object: R1
+    scheme: two_stage
+    vector: [68, 40, 145, 84, 56, 36, 18, 28, 25]
+    total: 500
+    total_status: pass
+    hard_hr_status: fail
+    reallocated_units_vs_blind: 53
+  - object: R1
+    scheme: multiobjective
+    vector: [72, 38, 147, 81, 49, 39, 20, 27, 26]
+    total: 499
+    total_status: fail
+    hard_hr_status: fail
+    reallocated_units_vs_blind: null
+  - object: R2
+    scheme: hierarchical
+    vector: [59, 37, 167, 64, 55, 37, 21, 30, 30]
+    total: 500
+    total_status: pass
+    hard_hr_status: fail
+    reallocated_units_vs_blind: 51
+  - object: R2
+    scheme: fuzzy
+    vector: [61, 38, 152, 65, 59, 41, 21, 34, 33]
+    total: 504
+    total_status: fail
+    hard_hr_status: fail
+    reallocated_units_vs_blind: null
+  - object: R3
+    scheme: selected_hard_hr
+    vector: [77, 37, 120, 91, 48, 51, 22, 26, 28]
+    total: 500
+    total_status: pass
+    hard_hr_status: pass
+    reallocated_units_vs_blind: 44
+  - object: R4
+    scheme: course_table_aggregated
+    vector: [59, 47, 145, 88, 57, 34, 20, 23, 27]
+    total: 500
+    total_status: pass
+    stated_course_bounds_status: fail
+    hard_hr_status: fail
+    reallocated_units_vs_blind: 48
+
+dimension_matrix:
+  problem_decomposition:
+    blind: "official branch allocation plus advisory course allocation"
+    R1: "course LP plus two-stage and multiobjective alternatives"
+    R2: "bottom-up branch profit plus top-level weighted allocation"
+    R3: "branch strong-product allocation then within-branch profit allocation"
+    R4: "direct 72-course allocation"
+  baseline:
+    blind: "explicit proportional baseline"
+    R1: "none"
+    R2: "no simple baseline"
+    R3: "raw LINGO solution used as contrast"
+    R4: "same objective solved by LINGO and greedy"
+  validation:
+    blind: "2003-2004 tuning, 2005 temporal holdout, invariant checks"
+    R1: "method agreement and plan-actual regression; no holdout"
+    R2: "method agreement and local sensitivity; no holdout"
+    R3: "in-sample residuals and stochastic table with budget failures"
+    R4: "in-sample fit and agreement with another extrapolation"
+  interpretability:
+    blind: high
+    R1: medium
+    R2: medium_high
+    R3: medium_high
+    R4: medium
+  reproducibility:
+    blind: pass
+    R1: needs_review
+    R2: needs_review
+    R3: needs_review
+    R4: needs_review
+  economic_truth:
+    blind: needs_review
+    R1: needs_review
+    R2: needs_review
+    R3: needs_review
+    R4: needs_review
+
+origin_attribution:
+  independently_derived:
+    - total_500_from_history
+    - branch_level_half_guarantee
+    - hard_three_stage_hr_bottleneck
+    - price_times_forecast_yield_proxy
+    - square_root_concavity
+    - discrete_marginal_greedy
+    - temporal_holdout
+    - risk_adjustment
+    - structural_and_residual_sensitivity
+  audit_revision:
+    - distinguish_local_hashes_from_authoritative_freeze
+    - remove_holdout_based_model_family_selection
+    - clean_single_pipeline_and_second_run_hash_check
+    - exact_small_instance_counterexample_tests
+  learned_after_references:
+    - optional_transition_cost_or_change_budget
+    - explicit_current_long_term_resource_reserve
+    - saturation_as_business_interpretation
+    - target_leakage_from_outcome_derived_demand_index
+    - invariant_gate_before_reference_result_comparison
+
+novelty_boundary:
+  world_first_claim: false
+  relative_to_current_set_only: true
+  direct_upgrade_allowed: false
+  final_judgment: needs_review

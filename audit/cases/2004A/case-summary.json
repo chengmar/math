@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "case_id": "2004A",
+  "status": "completed",
+  "completed_phases": [
+    "solve",
+    "audit",
+    "blind-revision",
+    "reflection"
+  ],
+  "blind_v1_exists": true,
+  "blind_final_exists": true,
+  "audit_findings": {
+    "critical": 1,
+    "major": 1,
+    "minor": 0,
+    "total": 2
+  },
+  "reflection_completed": true,
+  "candidate_count": 6,
+  "sessions": {
+    "solve": {
+      "phase": "solve",
+      "run_id": "77e85a9e-fa5d-4580-8060-6abdd60b0404",
+      "thread_id": "01a00f52-ff01-7981-8eee-c566e72a941c",
+      "status": null,
+      "model": "gpt-5.6-sol",
+      "reasoning": "max",
+      "fallback": false,
+      "ephemeral": true,
+      "started_at": "2026-08-17T18:44:52+08:00",
+      "finished_at": "2026-08-17T19:16:15+08:00",
+      "exit_code": null,
+      "completion_classification": null
+    },
+    "audit": {
+      "phase": "audit",
+      "run_id": "b412a8b9-e4b6-46b4-af6d-f7dfd412acf6",
+      "thread_id": "01a00f75-4988-74c2-8406-c4e5e65b9303",
+      "status": null,
+      "model": "gpt-5.6-sol",
+      "reasoning": "max",
+      "fallback": false,
+      "ephemeral": true,
+      "started_at": "2026-08-17T19:22:19+08:00",
+      "finished_at": "2026-08-17T19:25:11+08:00",
+      "exit_code": null,
+      "completion_classification": null
+    },
+    "blind-revision": {
+      "phase": "blind-revision",
+      "run_id": "469400b7-a38f-4465-8590-73b56864c6c3",
+      "thread_id": "01a00f78-4842-74e1-b9cc-33562599caa5",
+      "status": null,
+      "model": "gpt-5.6-sol",
+      "reasoning": "max",
+      "fallback": false,
+      "ephemeral": true,
+      "started_at": "2026-08-17T19:25:36+08:00",
+      "finished_at": "2026-08-17T19:46:10+08:00",
+      "exit_code": null,
+      "completion_classification": null
+    },
+    "reflection": {
+      "phase": "reflection",
+      "run_id": "846fc897-b4bd-48d6-a459-3af3ff268d38",
+      "thread_id": "01a00f90-9e81-7f03-8e89-541ec4be5c42",
+      "status": null,
+      "model": "gpt-5.6-sol",
+      "reasoning": "max",
+      "fallback": false,
+      "ephemeral": true,
+      "started_at": "2026-08-17T19:52:11+08:00",
+      "finished_at": "2026-08-17T20:28:11+08:00",
+      "exit_code": null,
+      "completion_classification": null
+    }
+  },
+  "score_boundary": {
+    "blind_v1_score": null,
+    "blind_final_score": 26.0,
+    "score_delta": null,
+    "note": "源系统未分别保存 Blind V1 与 Blind Final 的独立评分，禁止据此计算提升。"
+  },
+  "references_opened_only_after_blind_final": true,
+  "reference_leakage_detected": false
+}

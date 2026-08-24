@@ -1,0 +1,32 @@
+schema_version: 1
+case_id: 2006A
+knowledge_status: candidate
+items:
+  - id: NT-001
+    statement: "预算500、申请750/784、数学上限120及九社向量只属于当前附件版本。"
+    evidence_status: pass
+    do_not_generalize: true
+  - id: NT-002
+    statement: "风险系数0.5、凹指数0.5、伪样本30/10不是通用常数。"
+    evidence_status: pass
+    do_not_generalize: true
+  - id: NT-003
+    statement: "R1的60/20/20和R2的0.65/0.25/0.05/0.05权重不得复制为默认权重。"
+    evidence_status: pass
+    do_not_generalize: true
+  - id: NT-004
+    statement: "历史产能超限不自动意味着未来可加班、外包或跨部门流动。"
+    evidence_status: pass
+    do_not_generalize: true
+  - id: NT-005
+    statement: "当前四篇参考表格出现错误，不推出其他获奖论文或参考材料通常错误。"
+    evidence_status: pass
+    do_not_generalize: true
+  - id: NT-006
+    statement: "P115、Q2a映射规则和课程代码1至72都是本题数据字典内容。"
+    evidence_status: pass
+    do_not_generalize: true
+  - id: NT-007
+    statement: "2005单年留出表现不能外推到其他年份、出版社或资源配置任务。"
+    evidence_status: pass
+    do_not_generalize: true

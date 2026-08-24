@@ -1,0 +1,65 @@
+phase: audit
+overall_status: fail
+frozen_solution_modified: false
+findings:
+  - id: AUD-FROZEN-001
+    status: fail
+    severity: critical
+    category: provenance_integrity
+    evidence: >-
+      对 frozen-solution 递归枚举得到 144 个文件；按文件名搜索
+      FROZEN* 与 frozen-manifest* 得到 0 个结果。现有 results/input_hashes.json
+      与 results/output_hashes.json 不是全量冻结清单，也没有由 audit 阶段锁提供的
+      权威根哈希。因而无法把当前代码、论文和结果绑定到同一个已验证冻结版本。
+    affected_files:
+      - frozen-solution
+      - frozen-solution/phase-lock.json
+      - frozen-solution/results/input_hashes.json
+      - frozen-solution/results/output_hashes.json
+    reason: >-
+      审计 Skill 要求在复现前验证冻结清单和逐文件 SHA-256，且不一致即停止。
+      缺少权威基线时，重新计算当前哈希只能描述当前状态，不能证明它等于冻结状态。
+    recommended_fix: >-
+      由冻结打包流程在本审计工作区之外重新生成最小冻结包；为每个纳入文件记录
+      规范化相对路径、字节数和 SHA-256，并把清单自身摘要写入不可由冻结包同时改写的
+      audit phase-lock 或等价可信锚点。随后开启新的 audit 会话重新预检，不修改本冻结副本。
+    requires_human_review: true
+
+  - id: AUD-FROZEN-002
+    status: fail
+    severity: major
+    category: hash_coverage
+    evidence: >-
+      现有两个清单合计 35 个唯一条目且 35/35 内部校验通过，但冻结树共有 144 个文件，
+      仍有 109 个文件未覆盖。关键遗漏包括 code/solve.py、code/run_all.ps1、
+      code/verify.py、code/verify_outputs.py、paper/main.tex、paper/<SOURCE_FILE_REDACTED>、
+      paper/paper.md、solution-report.yaml、reproducibility.yaml、phase-lock.json，
+      以及 results/output_hashes.json 自身。
+    affected_files:
+      - frozen-solution/code/solve.py
+      - frozen-solution/code/run_all.ps1
+      - frozen-solution/code/verify.py
+      - frozen-solution/code/verify_outputs.py
+      - frozen-solution/paper/main.tex
+      - frozen-solution/paper/<SOURCE_FILE_REDACTED>
+      - frozen-solution/paper/paper.md
+      - frozen-solution/solution-report.yaml
+      - frozen-solution/reproducibility.yaml
+      - frozen-solution/results/output_hashes.json
+    reason: >-
+      未覆盖的代码可改变重跑行为，未覆盖的论文可改变被审查的论证，未锚定的输出清单
+      可与被改写产物一起重新生成。35/35 内部一致不能推出冻结对象完整可信。
+    recommended_fix: >-
+      将全部审计必需文件纳入权威清单；若有意排除构建缓存或临时文件，应在清单中明确
+      排除规则并保证被排除文件不参与复现、论文编译或结论生成。对清单设置外部可信摘要。
+    requires_human_review: true
+
+unassessed_domains:
+  small_question_coverage: needs_review
+  formulas_and_dimensions: needs_review
+  constraints_and_boundaries: needs_review
+  identifiability_feasibility_boundedness_convergence: needs_review
+  random_stability_and_numerical_stability: needs_review
+  leakage_validation_mixing_and_overfitting: needs_review
+  model_counterexamples: needs_review
+  paper_code_figure_consistency: needs_review

@@ -1,0 +1,261 @@
+schema_version: "1.0"
+case_id: "2007A"
+phase: "reflection"
+skill: "$cumcm-a-reflect"
+status: "candidate"
+dummy_detected: false
+
+scope:
+  network_search_used: false
+  extra_reference_used: false
+  approved_reference_count: 4
+  blind_final_modified: false
+  core_knowledge_modified: false
+
+freeze_verification:
+  judgment: "pass"
+  phase_lock_judgment: "pass"
+  boundary_judgment: "pass"
+  manifest_path: "blind-final/FROZEN_BLIND_FINAL.json"
+  boundary_path: "blind-final/REFLECTION-BOUNDARY.json"
+  manifest_sha256: "c847fcc3b6542f20993198f10b1e7d402a0fb41b08deab1c081c44de46fa7592"
+  expected_tree_sha256: "34a9c4c0ca557403881009b8438c6472e7c966d9a6845a7e32b9172e56f610f0"
+  recomputed_tree_sha256: "34a9c4c0ca557403881009b8438c6472e7c966d9a6845a7e32b9172e56f610f0"
+  manifest_entry_count: 427
+  missing_count: 0
+  size_mismatch_count: 0
+  hash_mismatch_count: 0
+  duplicate_path_count: 0
+  unsafe_path_count: 0
+  unlisted_pyc_judgment: "needs_review"
+  audit_requirement_judgment: "pass"
+  clean_reproduction:
+    judgment: "pass"
+    deterministic_output_count: 28
+    output_hash_judgment: "pass"
+    execution_judgment: "pass"
+    internal_invariants_judgment: "pass"
+    scientific_validation_judgment: "needs_review"
+
+blind_final:
+  id: "BF"
+  title: <REFERENCE_TITLE_REDACTED>
+  origin: "blind_solution_plus_audit_revision_without_references"
+  overall_judgment: "needs_review"
+  model:
+    state_shape: [3, 2, 91]
+    horizon: [2005, 2100]
+    selected: "three_area_two_sex_single_age_cohort_component"
+    selection_judgment: "needs_review"
+    complexity: "O(T*R*S*A); factorial robustness multiplies by scenario count"
+  validation:
+    execution_judgment: "pass"
+    internal_invariants_judgment: "pass"
+    rolling_selection_judgment: "needs_review"
+    contextual_judgment: "fail"
+    scientific_validation_judgment: "needs_review"
+  medium_results:
+    population_2010_billion: 1.36
+    population_2020_billion: 1.4259803013
+    peak_year: 2025
+    peak_population_billion: 1.4366224938
+    population_2050_billion: 1.3325233181
+    population_2100_billion: 0.9307613243
+    older_65_share_2020: 0.1535824288
+    older_65_share_2050: 0.2600374006
+
+references:
+  R1:
+    file: "<REFERENCE_ID>"
+    sha256: <REFERENCE_HASH_REDACTED>
+    pages: 15
+    title: <REFERENCE_TITLE_REDACTED>
+    dummy: false
+    extraction_judgment: "needs_review"
+    arithmetic_judgment: "needs_review"
+    reproducibility_judgment: "needs_review"
+    evidence:
+      - "coupled regional Logistic equations are visible"
+      - "age-recursion matrices and fertility scenarios are visible"
+      - "2010=1.363 billion, 2020=1.457 billion, peak around 2039 at 1.465 billion are cross-visible"
+    uncertainty:
+      - "Chinese body text and table labels are missing under the available Adobe-GB1 mapping"
+      - "no code or complete parameter archive"
+  R2:
+    file: "<REFERENCE_ID>"
+    sha256: <REFERENCE_HASH_REDACTED>
+    pages: 26
+    title: <REFERENCE_TITLE_REDACTED>
+    dummy: false
+    extraction_judgment: "pass"
+    arithmetic_judgment: "fail"
+    reproducibility_judgment: "needs_review"
+    subchecks:
+      gm11_arithmetic_judgment: "pass"
+      gm11_out_of_sample_judgment: "needs_review"
+      logistic_parameter_back_substitution_judgment: "fail"
+      structural_model_reproduction_judgment: "needs_review"
+    evidence:
+      gm11_a: -0.0068963087
+      gm11_u: 122682.2792
+      gm11_in_sample_mean_relative_error_pct: 0.11065
+      logistic_reported_max_selected_point_error_billion: 0.20656
+  R3:
+    file: "<REFERENCE_ID>"
+    sha256: <REFERENCE_HASH_REDACTED>
+    pages: 8
+    title: <REFERENCE_TITLE_REDACTED>
+    authors: ["郭媛", "冯俊峰", "杨智超"]
+    dummy: false
+    extraction_judgment: "pass"
+    arithmetic_judgment: "pass"
+    reproducibility_judgment: "needs_review"
+    subchecks:
+      tfr_means_excluding_2003_judgment: "pass"
+      urbanization_linear_fit_judgment: "pass"
+      sars_causal_attribution_judgment: "needs_review"
+      holdout_validation_judgment: "needs_review"
+    evidence:
+      tfr_means_excluding_2003:
+        city: 0.984
+        town: 1.25425
+        rural: 1.6495
+      refit_urbanization_slope: 1.39354545
+      reported_formula_rmse_percentage_points: 0.15647
+  R4:
+    file: "<REFERENCE_ID>"
+    sha256: <REFERENCE_HASH_REDACTED>
+    pages: 10
+    title: <REFERENCE_TITLE_REDACTED>
+    authors: ["杨海滨", "赵翔", "黄魁华"]
+    dummy: false
+    extraction_judgment: "pass"
+    arithmetic_judgment: "fail"
+    reproducibility_judgment: "needs_review"
+    subchecks:
+      regional_sex_sum_judgment: "pass"
+      table_text_2020_consistency_judgment: "fail"
+      holdout_validation_judgment: "needs_review"
+    evidence:
+      table_population_2020_billion: 1.42913
+      conclusion_population_2020_billion: 1.329
+      conflict_relative_pct: 7.00636
+
+dimensions:
+  problem_decomposition:
+    BF: "structure reconstruction; candidate comparison; conditional projection; validation and joint robustness"
+    R1: "regional coupled growth plus age recursion"
+    R2: "separate scalar-short, scalar-long, age-structure, and migration models"
+    R3: "three-step ladder: Leslie, sex-specific, urbanization-corrected"
+    R4: "ageing, fertility, migration processes plus an indicator system"
+  assumptions:
+    BF: "no international migration; open 90+; conservative internal reclassification; staged exogenous rates"
+    R1: "full assumption text needs_review"
+    R2: "submodel-specific assumptions; mostly fixed mortality, fertility pattern, and migration pattern"
+    R3: "short-run averages; scenario TFR; bounded long-run urbanization"
+    R4: "rural-to-urban net migration; externally specified fertility, mortality and migration modes"
+  data:
+    BF: "five cross-sections; 2010 scale anchor is not independent validation; sampling design unknown"
+    R1: "attachments and policy scenarios; exact roles need_review"
+    R2: "national total series plus attachments and cited parameters"
+    R3: "attachments plus urbanization and policy materials"
+    R4: "2000 initial state plus attachments and external statistical parameters"
+  baseline:
+    BF: "M0 persistence and M1 no-urbanization cohort"
+    R1: "no scored baseline found"
+    R2: "Logistic and GM are scalar references but not compared under a common loss"
+    R3: "Leslie model is an explicit mechanism baseline"
+    R4: "no independent simple baseline"
+  main_model:
+    BF: "M2 conditional main model; selection needs_review because fold rankings reverse"
+    R1: "coupled Logistic and age model are used together; selection needs_review"
+    R2: "four task-specific models without a single validated selection"
+    R3: "model 3 selected for coverage, not forecast-error dominance"
+    R4: "full regionalized sex-age state-space model"
+  parameters_and_algorithm:
+    BF: "common-denominator exposure; mortality shrinkage and monotonic smoothing; fold-local anomaly rule; standard national TFR"
+    R1: "visible coupling coefficients and fertility paths; complete reconstruction needs_review"
+    R2: "three-point Logistic; GM least squares; chi-square fertility shape; normal migration-age shape"
+    R3: "rates averaged after excluding 2003; linear then logistic urbanization; TFR scenarios"
+    R4: "parametric fertility shape; declining mortality rule; age-specific migration-mode matrices"
+  validation:
+    BF: "rolling folds, fold isolation, invariants, contextual checks, clean hash reproduction"
+    R1: "local chart-number consistency only"
+    R2: "GM in-sample tests; Logistic back-substitution fails; no structural holdout"
+    R3: "trend comparison and scenario analysis; no independent holdout"
+    R4: "table sums pass; table-text conflict fails; no independent holdout"
+  sensitivity_and_robustness:
+    BF: "54-case joint envelope plus 16 additional mechanism/hyperparameter cases"
+    R1: "multiple fertility and rate scenarios; joint scope needs_review"
+    R2: "one-factor TFR scenarios"
+    R3: "four fertility modes and an urbanization scenario"
+    R4: "qualitative sensitive-parameter discussion without a systematic experiment"
+  complexity:
+    BF: "O(T*R*S*A), memory O(R*S*A); validation engineering is substantial"
+    R1: "low-to-medium numerical cost; high audit cost due to incomplete text extraction"
+    R2: "low scalar cost and medium structural cost; high cognitive cost from four disconnected models"
+    R3: "approximately O(T*R*S*A); moderate state complexity"
+    R4: "O(T*R*S*A) when sparse structure is used; high parameter-identification burden"
+  interpretability:
+    BF: "mechanism-linked results and layered judgments; implementation is comparatively large"
+    R1: "figures are useful but approved-copy text is incomplete"
+    R2: "rich policy narrative, but model roles and numerical definitions are not fully unified"
+    R3: "clear progressive model ladder and intuitive charts"
+    R4: "strong state-process-indicator mapping; dense notation"
+  expression:
+    BF: "claims are tied to evidence states; limitations and failure conditions are explicit"
+    R1: "approved-copy usability needs_review"
+    R2: "complete sections and explicit pros/cons, but repetition and unchecked parameter errors"
+    R3: "compact published presentation; limited credibility argument"
+    R4: "rigorous matrix presentation; unchecked 2020 table-text inconsistency"
+
+result_comparison:
+  BF_medium:
+    population_2010_billion: 1.36
+    population_2020_billion: 1.42598
+    peak: {year: 2025, population_billion: 1.43662}
+    population_2050_billion: 1.33252
+    judgment: "needs_review"
+  R1:
+    population_2010_billion: 1.363
+    population_2020_billion: 1.457
+    peak: {year: 2039, population_billion: 1.465}
+    judgment: "needs_review"
+  R2_pde_tfr_1_8:
+    peak_year: 2027
+    population_2050_billion: 1.37
+    judgment: "needs_review"
+  R3:
+    population_2010_billion: 1.343
+    population_2020_billion: 1.412
+    peak: {year: 2025, population_billion: 1.423}
+    judgment: "needs_review"
+  R4_table:
+    population_2010_billion: 1.34702
+    population_2020_billion: 1.42913
+    peak: {year: 2030, population_billion: 1.48256}
+    population_2050_billion: 1.39158
+    judgment: "needs_review"
+  comparability_judgment: "needs_review"
+  note: "Initial scaling, TFR definitions, mortality paths, urbanization paths, and aging cutoffs differ."
+
+provenance_summary:
+  independently_conceived_before_references:
+    - "three-region, two-sex, single-age cohort state"
+    - "conservative internal migration and an open 90+ group"
+    - "simple persistence and no-urbanization baselines"
+    - "mortality shrinkage/smoothing, deterministic outputs, and explicit contextual conflicts"
+  corrected_after_audit_before_references:
+    - "standard national TFR aggregation and counterexample"
+    - "common exposure denominator"
+    - "rolling validation with fold-local preprocessing"
+    - "54-case joint robustness envelope"
+    - "birth-weighted sex-ratio aggregation and layered judgments"
+  learned_after_references:
+    - "age-selective migration-mode matrices as a candidate extension"
+    - "bounded urbanization paths instead of indefinite linear extrapolation"
+    - "compact state-process-indicator notation for explanation"
+    - "parametric fertility-age shapes as a sparse-data candidate, not a default"
+
+overall_judgment: "needs_review"
+promotion_to_verified_allowed: false

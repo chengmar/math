@@ -1,0 +1,60 @@
+schema_version: 1
+case_id: "2009A"
+phase: blind-revision
+status: pass
+seed: 2009
+randomness_note: "Main results are deterministic; the speed-noise stress uses seeds 2009 through 2108."
+primary_command: >-
+  powershell -NoProfile -ExecutionPolicy Bypass -File code/run_all.ps1
+  -Workspace <RUNTIME_ROOT>\2009A\workspaces\blind-revision
+pipeline:
+  - order: 1
+    producer: code/extract_data.ps1
+    action: "Hash the original XLS, open only a disposable copy through Excel COM, verify the original again, and write canonical observations plus provenance."
+  - order: 2
+    producer: code/solve.py
+    action: "Generate all numerical results, property/counterexample tests, figures and TeX macros."
+  - order: 3
+    producer: xelatex
+    action: "Compile paper/main.tex twice after removing the previous PDF and auxiliaries."
+  - order: 4
+    producer: code/record_build.py
+    action: "Record hashes of every TeX input and the new PDF."
+  - order: 5
+    producer: code/verify.py
+    action: "Independently recompute formulas/properties, compare build hashes, and inspect extracted PDF text."
+  - order: 6
+    producer: code/artifact_manifest.py
+    action: "Require the generated set to equal the declared set and record producer, command, inputs and SHA-256 for every artifact."
+software:
+  operating_system: "Windows 11 / 10.0.26200"
+  powershell: "Windows PowerShell 5.1.26100.9168 (exact declared shell)"
+  excel_com: "Microsoft Excel 12.0"
+  python: "3.12.13"
+  numpy: "2.5.2"
+  matplotlib: "3.11.1"
+  pyyaml: "6.0.3"
+  tex_engine: "MiKTeX XeLaTeX; exact version recorded in results/paper-build.json"
+  pdf_text_tool: "pdftotext from the MiKTeX runtime"
+encoding_policy:
+  python_outputs: "UTF-8 without BOM, LF, fixed CSV field order"
+  observations_csv: "UTF-8 without BOM, LF, invariant round-trip numbers"
+  powershell_requirement: "byte-level reproduction is claimed only for the exact Windows PowerShell 5.1 environment above"
+pdf_policy: "Verify source/PDF hash freshness and extracted content; do not promise timestamp-dependent PDF byte identity across environments."
+input_hashes_sha256:
+  input/problem/<SOURCE_FILE_REDACTED>: "34eafabb52ddbce55692e2fb23e9734a239cd28499f3807fbe2eea1644861113"
+  input/data/<SOURCE_FILE_REDACTED>: "d012ec8a7130e8a265240941d27fb660fb84454e6ecc3ec436bab3d969d3cb05"
+expected_checks:
+  phase_lock: pass
+  input_original_integrity: pass
+  numerical_generation: pass
+  controller_properties: pass
+  paper_source_pdf_freshness: pass
+  exact_artifact_set: pass
+  q4_acceptance: needs_review
+  mathematical_correctness: needs_review
+  hardware_feasibility: needs_review
+rerun_notes:
+  - "The command deletes only its explicit generated-file allowlist; unknown files are retained and make the artifact check fail."
+  - "No __pycache__ is generated because PYTHONDONTWRITEBYTECODE=1."
+  - "blind-v1 is never modified or used as an output target."

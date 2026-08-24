@@ -1,0 +1,134 @@
+case_id: 2006A
+phase: blind-revision
+status: needs_review
+status_reason: 本地数值与构建链可复跑，但权威外部冻结和新一轮独立干净环境审计尚未执行。
+workspace_relative_execution: true
+network_required: false
+network_used: false
+source_blind_v1_preserved: true
+
+randomness:
+  seed: 2006
+  monte_carlo_draws: 300
+
+converted_input_check:
+  status: pass
+  command: python code/check_converted_inputs.py --workspace .
+  report: results/conversion_check.json
+  scope: 保留的 2 个 Word 文本、11 个 Excel TSV、源文件、字符数、表形状和公式审计结构
+  office_reconversion_performed: false
+
+legacy_reconversion:
+  command: powershell -NoProfile -ExecutionPolicy Bypass -File code/convert_inputs.ps1 -Workspace .
+  status: needs_review
+  observed_attempt:
+    status: fail
+    reason: Word 12 COM cleanup returned RPC server unavailable
+    failed_output_adopted: false
+  safety_revision: 转换器现使用 staging、备份与回滚；失败不会再破坏已检查转换集。
+  rerun_with_full_pipeline: powershell -ExecutionPolicy Bypass -File code/run_all.ps1 -Workspace . -ReconvertLegacyInputs
+
+local_pipeline:
+  status: pass
+  command: python code/solve.py --workspace .
+  deterministic_core: true
+  numerical_results_regenerated: true
+
+second_run_hash_check:
+  status: pass
+  command: python code/check_reproducibility.py --workspace .
+  expected_report: results/reproducibility_check.json
+  observed_target_count: 21
+  observed_matched_count: 21
+  observed_mismatches: []
+
+independent_mechanical_verification:
+  status: pass
+  command: python code/verify_outputs.py --workspace .
+  expected_report: results/verification.json
+  scope: 算术约束、目标值独立复算、必需文件、论文—结果链接与局部复现证据
+  mathematical_truth_claim: needs_review
+
+paper_compile:
+  status: pass
+  command: xelatex --disable-installer -interaction=nonstopmode -halt-on-error -file-line-error main.tex
+  working_directory: paper
+  runs: 2
+  engine: MiKTeX-XeTeX 4.18 (MiKTeX 26.5 Portable)
+  warning_count: 0
+  report: results/paper-build-report.json
+  output: paper/<SOURCE_FILE_REDACTED>
+
+full_command:
+  command: powershell -ExecutionPolicy Bypass -File code/run_all.ps1 -Workspace .
+  status: pass
+  note: 默认验证并使用冻结 V1 中保留的转换文件；只有显式给出 -ReconvertLegacyInputs 才调用 Office COM。
+
+dependencies:
+  operating_system: Windows 11 10.0.26200
+  python: 3.12.13
+  numpy: 2.5.2
+  pandas: 3.0.5
+  scipy: 1.18.0
+  matplotlib: 3.11.1
+  pyyaml: 6.0.3
+  powershell: required
+  microsoft_word_com: 12.0 only for optional legacy reconversion
+  microsoft_excel_com: 12.0 only for optional legacy reconversion
+
+input_provenance:
+  status: pass
+  model_input_hashes: results/input_hashes.json
+  conversion_manifest: input/converted/manifest.json
+  conversion_check: results/conversion_check.json
+  authoritative_freeze_manifest: false
+
+output_provenance:
+  status: pass
+  artifact_hashes: results/artifact_hashes.json
+  delivery_candidate_manifest: delivery-manifest.candidate.json
+  candidate_entry_count: 78
+  candidate_consistency_check: pass
+  note: 两者都是工作区内局部证据，不是外部可信冻结锚点。
+
+external_freeze:
+  status: needs_review
+  policy: freeze-policy.yaml
+  required: 外部脚本为 blind-final 全树生成 FROZEN 清单，并将其 SHA-256 写入独立可信阶段锁。
+
+independent_clean_environment_audit:
+  status: needs_review
+  reason: 原独立审计因权威冻结清单缺失而在复现前停止。
+
+expected_invariants:
+  total_isbn: 500
+  allocation_sum: 500
+  branch_order:
+    - 计算机类
+    - 经管类
+    - 数学类
+    - 英语类
+    - 两课类
+    - 机械、能源类
+    - 化学、化工类
+    - 地理、地质类
+    - 环境类
+  branch_allocation:
+    - 55
+    - 48
+    - 120
+    - 69
+    - 72
+    - 53
+    - 22
+    - 30
+    - 31
+
+known_non_determinism:
+  - input/converted/manifest.json: generated_at 仅在显式 Office 重转换时变化
+  - paper/<SOURCE_FILE_REDACTED>: TeX 引擎可能嵌入构建元数据，冻结身份由最终全树清单固定
+
+limitations:
+  - Office COM 重转换在本会话一次尝试中因 RPC 清理错误失败，故只把保留转换的结构检查判为 pass。
+  - 本地二次哈希一致不等于独立干净环境复现。
+  - 机械验证 pass 不证明经济模型的因果有效性或数学真理。

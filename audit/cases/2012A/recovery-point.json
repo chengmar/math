@@ -1,0 +1,14 @@
+{
+  "case_id": "2012A",
+  "status": "pending",
+  "atomic_phase": "solve",
+  "completed_phases": [],
+  "attempts": {
+    "solve": 1,
+    "audit": 0,
+    "blind-revision": 0,
+    "reflection": 0
+  },
+  "retry_or_resume_model_session": false,
+  "next_action": "外部审计完成前保持暂停；不得自动启动模型。"
+}

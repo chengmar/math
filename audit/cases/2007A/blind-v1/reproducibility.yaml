@@ -1,0 +1,85 @@
+phase: solve
+case_id: 2007A
+overall_judgment: pass
+workspace: "<RUNTIME_ROOT>/2007A/workspaces/solve"
+phase_check:
+  command: "python <LAB_ROOT>/.agents/skills/cumcm-a-solve/scripts/check_phase.py --workspace <RUNTIME_ROOT>/2007A/workspaces/solve"
+  judgment: pass
+commands:
+  - order: 1
+    purpose: "离线解压并转换旧版Office输入"
+    command: "powershell -ExecutionPolicy Bypass -File code/convert_inputs.ps1 -Workspace ."
+    judgment: pass
+  - order: 2
+    purpose: "生成清洗数据、模型结果、验证、敏感性和全部图表"
+    command: "python code/solve_population.py --workspace ."
+    judgment: pass
+  - order: 3
+    purpose: "核对论文数字、图引用、YAML和SHA-256"
+    command: "python code/check_consistency.py --workspace ."
+    judgment: pass
+environment:
+  operating_system: "Windows 11"
+  python: "3.12.13"
+  office_com:
+    word: "12.0"
+    excel: "12.0"
+  unrar: "7.13 x64"
+  dependencies:
+    numpy: "2.5.2"
+    pandas: "3.0.5"
+    scipy: "1.18.0"
+    matplotlib: "3.11.1"
+    pyyaml: "available"
+randomness:
+  seed: 2007
+  stochastic_components_used: false
+inputs:
+  - path: "input/problem/<SOURCE_FILE_REDACTED>"
+    bytes: 25600
+    sha256: "ab4887d03c5b3374cade343a66216116e9e2c9c66db7650f43621c9584e4ba88"
+  - path: "input/attachments/<SOURCE_FILE_REDACTED>"
+    bytes: 186923
+    sha256: "be8aa57c79ee681e73cf813d214132aeae31832a22cdf14e943b1e54062f612b"
+  - path: "_work/converted/<SOURCE_FILE_REDACTED>"
+    bytes: 59924
+    sha256: "737098fc1386e85809654116aaf6ba272fd247fd40c6bb33bf091ce0bfd6ea14"
+conversion_notes:
+  - "Office宏被强制禁用，文档只读打开。"
+  - "HTML/PDF/XLSX副本可能含Office生成元数据，不作为数值复现判据。"
+  - "数值模型只读取UTF-8 CSV；其SHA-256固定记录。"
+  - "convert_inputs.ps1不覆盖原始题面或RAR。"
+expected_key_results:
+  implied_population_2005: 1323946941.7221434
+  medium_peak_year: 2025
+  medium_peak_population: 1436415462.3107066
+  medium_population_2050: 1322514196.339736
+  medium_population_2100: 893718405.0511559
+  validation_mathematical_judgment: pass
+  validation_overall_judgment: needs_review
+determinism_checks:
+  clean_rerun_completed: true
+  isolated_target: "_work/repro-run-clean-1"
+  conversion_csv_hash_judgment: pass
+  numerical_output_count: 23
+  numerical_output_hashes_match: pass
+  mismatch_count: 0
+  paper_consistency_judgment: pass
+manifest: "results/run_manifest.json"
+consistency_report: "results/consistency_check.json"
+latex:
+  source: "paper/main.tex"
+  pdf: "paper/<SOURCE_FILE_REDACTED>"
+  engine: "XeLaTeX (MiKTeX 26.5 Portable)"
+  engine_checked: true
+  offline_installer_disabled: true
+  compile_judgment: pass
+  visual_layout_judgment: pass
+  pages: 13
+  page_size: "A4"
+  pdf_bytes: 901123
+  pdf_sha256: "50603caecb09eb7bb23a3a9442114717ca8d0ba409f981135e14edc5ea1a7ca2"
+  undefined_reference_count: 0
+  overfull_warning_count: 2
+  overfull_warning_judgment: needs_review
+  note: "两处轻微overfull为4.64pt正文行和17.77pt附录命令行；逐页检查未见裁切。"

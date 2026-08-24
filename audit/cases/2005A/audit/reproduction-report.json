@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "case_id": "2005A",
+  "phase": "audit",
+  "overall_status": "fail",
+  "integrity_gate": {
+    "phase_lock": {
+      "status": "pass",
+      "command": "python <ABSOLUTE_PATH>",
+      "stdout": "[PASS] audit 阶段锁有效",
+      "stderr": "",
+      "exit_code": 0
+    },
+    "allowed_paths_sha256": {
+      "status": "pass",
+      "expected": "d26656710e6fa20687192d47a379f19e9dfb5600d881d903946021fef6d4db7e",
+      "actual": "d26656710e6fa20687192d47a379f19e9dfb5600d881d903946021fef6d4db7e"
+    },
+    "forbidden_paths_sha256": {
+      "status": "pass",
+      "expected": "f075bf741aa5e0dc4527893642bc07eb4bc70edc84733fa9b1801ed5ccaa0b47",
+      "actual": "f075bf741aa5e0dc4527893642bc07eb4bc70edc84733fa9b1801ed5ccaa0b47"
+    },
+    "input_copy_hashes": {
+      "status": "pass",
+      "files": [
+        {
+          "path": "problem/<SOURCE_FILE_REDACTED>",
+          "status": "pass",
+          "input_sha256": "cea35513e302801d4504f3febdf444af783d928c4748bdf91a21724a910e271a",
+          "frozen_copy_sha256": "cea35513e302801d4504f3febdf444af783d928c4748bdf91a21724a910e271a"
+        },
+        {
+          "path": "attachments/<SOURCE_FILE_REDACTED>",
+          "status": "pass",
+          "input_sha256": "ddd7b8e70aa727a2858e2476ddfeda7e3042be09d55b304297f990a203071e4f",
+          "frozen_copy_sha256": "ddd7b8e70aa727a2858e2476ddfeda7e3042be09d55b304297f990a203071e4f"
+        }
+      ]
+    },
+    "manifest_hashes": {
+      "status": "fail",
+      "manifest": "frozen-solution/results/reproduction-manifest.json",
+      "algorithm": "sha256",
+      "listed_file_count": 106,
+      "mismatch_count": 2,
+      "mismatches": [
+        {
+          "path": "paper/main.log",
+          "expected": "6f4f3b1fd2bbd6deea4ba4d42b621b70a7acaa7b1daeb3924418083403753856",
+          "actual": "964b79732d9047d66e6aa8556d6d03e417a91762d114c811705b7a72dd635f2e"
+        },
+        {
+          "path": "paper/<SOURCE_FILE_REDACTED>",
+          "expected": "cf81e844e69f3debe8e49ee9b969589d851cf729ebe028253fff8e59ad8c2763",
+          "actual": "8fa23bfe752750cc1190eeef9fcd948a07e05d43974ca4e0f0e7c5a26838ca9d"
+        }
+      ]
+    },
+    "manifest_coverage": {
+      "status": "needs_review",
+      "listed_file_count": 106,
+      "unlisted_file_count": 88
+    }
+  },
+  "clean_environment_reproduction": {
+    "status": "needs_review",
+    "executed": false,
+    "reason": "blocked_by_failed_frozen_integrity_gate",
+    "dependencies": [],
+    "commands": [],
+    "stdout": null,
+    "stderr": null,
+    "exit_code": null,
+    "outputs": []
+  },
+  "content_audit": {
+    "status": "needs_review",
+    "executed": false,
+    "reason": "blocked_by_failed_frozen_integrity_gate"
+  },
+  "notes": [
+    "No clean reproduction was attempted.",
+    "No claim of mathematical correctness or incorrectness was made.",
+    "The frozen-solution directory was not modified."
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "phase": "audit",
+  "case_id": "2004A",
+  "overall_status": "fail",
+  "phase_lock": {
+    "status": "pass",
+    "command": "python <ABSOLUTE_PATH>",
+    "stdout": "[PASS] audit 阶段锁有效",
+    "stderr": "",
+    "exit_code": 0
+  },
+  "path_lock_hashes": {
+    "status": "pass",
+    "allowed_paths_sha256": "a48b29104f7ca271914aa36e1630fa46a01b8a0261fd516c8468d573585f3260",
+    "forbidden_paths_sha256": "f075bf741aa5e0dc4527893642bc07eb4bc70edc84733fa9b1801ed5ccaa0b47"
+  },
+  "frozen_manifest": {
+    "status": "fail",
+    "path": "frozen-solution/results/checksums.sha256",
+    "entries": 40,
+    "passed": 39,
+    "failed": 1,
+    "missing": 0,
+    "invalid_lines": 0,
+    "path_escapes": 0,
+    "failures": [
+      {
+        "path": "paper/<SOURCE_FILE_REDACTED>",
+        "expected_sha256": "6013a396e8dc34f87b0c81651c64f59feb016d8e73a7354f55c8d1f962b209f2",
+        "actual_sha256": "8ab06208fa23eb7d841636976d6601732ee9af37a6c4dc337d69c5c1272fb8a9",
+        "status": "fail"
+      }
+    ]
+  },
+  "freeze_metadata": {
+    "status": "fail",
+    "path": "frozen-solution/solution-report.yaml",
+    "recorded_frozen_value": false,
+    "metadata_file_manifest_hash_status": "pass"
+  },
+  "clean_environment_reproduction": {
+    "status": "needs_review",
+    "attempted": false,
+    "reason": "The mandatory freeze-integrity gate failed, so the audit Skill required an immediate stop before executing solution code.",
+    "dependency_installation_attempted": false,
+    "pipeline_command_executed": false,
+    "stdout": null,
+    "stderr": null,
+    "exit_code": null,
+    "outputs_compared": false
+  },
+  "claims_not_made": [
+    "No clean-environment reproduction is claimed.",
+    "No mathematical correctness judgment is claimed.",
+    "No paper-code consistency judgment is claimed."
+  ]
+}

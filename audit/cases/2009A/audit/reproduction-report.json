@@ -1,0 +1,234 @@
+{
+  "schema_version": 1,
+  "case_id": "2009A",
+  "phase": "audit",
+  "generated_at": "2026-08-23T23:28:26.4752090+08:00",
+  "overall_status": "fail",
+  "status_basis": <LONG_QUOTE_REDACTED>,
+  "phase_validation": {
+    "status": "pass",
+    "command": "python <ABSOLUTE_PATH>",
+    "exit_code": 0,
+    "stdout": "[PASS] audit 阶段锁有效",
+    "stderr": ""
+  },
+  "boundary_manifest_validation": {
+    "status": "pass",
+    "allowed_paths_recorded_sha256": "ad668a5f4d3d68ac64a321cd7454e7b53d0050dc290405942123dd75876a56de",
+    "allowed_paths_actual_sha256": "ad668a5f4d3d68ac64a321cd7454e7b53d0050dc290405942123dd75876a56de",
+    "forbidden_paths_recorded_sha256": "f075bf741aa5e0dc4527893642bc07eb4bc70edc84733fa9b1801ed5ccaa0b47",
+    "forbidden_paths_actual_sha256": "f075bf741aa5e0dc4527893642bc07eb4bc70edc84733fa9b1801ed5ccaa0b47"
+  },
+  "frozen_validation": {
+    "protected_file_integrity_status": "pass",
+    "directory_cleanliness_status": "fail",
+    "schema_version": 1,
+    "case_id": "2009A",
+    "version": "blind-v1",
+    "manifest_entries": 111,
+    "duplicate_paths": 0,
+    "unsafe_paths": 0,
+    "missing_files": 0,
+    "size_mismatches": 0,
+    "sha256_mismatches": 0,
+    "tree_hash_encoding": "concat(path, NUL, sha256, LF) in manifest order",
+    "tree_sha256_recorded": "f774f688a8574b3f59ae6e613ca9da1a920b69222734642e7217eebb4799c3fd",
+    "tree_sha256_actual": "f774f688a8574b3f59ae6e613ca9da1a920b69222734642e7217eebb4799c3fd",
+    "tree_sha256_status": "pass",
+    "unlisted_files": [
+      "code/__pycache__/solve.cpython-312.pyc",
+      "code/__pycache__/verify.cpython-312.pyc"
+    ]
+  },
+  "clean_environment": {
+    "status": "pass",
+    "workspace": "<ABSOLUTE_PATH>",
+    "construction": <LONG_QUOTE_REDACTED>,
+    "copied_source_files": 50,
+    "excluded_generated_files": 61,
+    "frozen_solution_file_count_before_and_after": 114,
+    "cleanup_status": "pass",
+    "retention": "The temporary clean workspace was deleted after evidence capture and report validation."
+  },
+  "environment": {
+    "operating_system": "Microsoft Windows 10.0.26200 / recorded as Windows 11 10.0.26200",
+    "primary_powershell_executable": "<ABSOLUTE_PATH>",
+    "compatible_powershell_tested": "PowerShell 7.6.4",
+    "python_executable": "<ABSOLUTE_PATH>",
+    "python": "3.12.13",
+    "numpy": "2.5.2",
+    "matplotlib": "3.11.1",
+    "pyyaml": "6.0.3",
+    "xelatex": "MiKTeX XeTeX 3.141592653-2.6-0.999998",
+    "excel_com": "available"
+  },
+  "primary_run": {
+    "status": "pass",
+    "command": "powershell -NoProfile -ExecutionPolicy Bypass -File code/run_all.ps1 -Workspace '<ABSOLUTE_PATH>' -VerifyPaper",
+    "executable": "<ABSOLUTE_PATH>",
+    "working_directory": "<ABSOLUTE_PATH>",
+    "started_at": "2026-08-23T23:17:37.6921377+08:00",
+    "ended_at": "2026-08-23T23:17:44.2216745+08:00",
+    "duration_seconds": 6.5295368,
+    "exit_code": 0,
+    "stdout": <LONG_QUOTE_REDACTED>,
+    "stderr": <LONG_QUOTE_REDACTED>
+  },
+  "core_numerical_reproduction": {
+    "status": "pass",
+    "generated_artifact_count": 20,
+    "byte_identical_to_frozen_count": 15,
+    "identical_core_examples": {
+      "results/<SOURCE_FILE_REDACTED>": "511dc596b2e3aa4bff6a07846ae513fdaff1266e59e4a2b4984165310cff1c97",
+      "results/input-metadata.json": "2e3aa7796b2ea1879597a7a8d3cc6ab925bd02b9fb75890fb01fbe425dfac49a",
+      "results/metrics.json": "818b460d6bc3932fee7fb07ed6ca05099269ec3d336f44dc35a8fa0ac87178f3",
+      "results/run-manifest.json": "7ddb5f6a5e64d1e0b015f7387680728710d4deb5ec4306482fcb5ed288d303fa",
+      "paper/generated-results.tex": "7033f38bc66960bd44e0c36104d38fd91fc5312f11b4f64c2c14e6341b06c3e9"
+    }
+  },
+  "generated_mismatches": {
+    "status": "fail",
+    "count": 5,
+    "files": [
+      {
+        "path": "paper/main.aux",
+        "clean_sha256": "6214d9d5ec10610ed4df610c7c9b092b5dd38872d76147e46306fe83b08bd977",
+        "frozen_sha256": "ecfcbfd385de09de8a1b97c616ce66710593f443e33b00c0326b8508a47b3d94"
+      },
+      {
+        "path": "paper/main.log",
+        "clean_sha256": "a83a0dad8289e3544029b8c3810166e7ea7b4eb78566005cd76e212804061e3c",
+        "frozen_sha256": "af96d3c912ee263c20286a2fc2d26d2513f45afd434c245fcef906597d6660e7"
+      },
+      {
+        "path": "paper/main.out",
+        "clean_sha256": "701b3b8e95c820e58c59852fb3c141419c7128e31a7384eee4d92fffb34f9a13",
+        "frozen_sha256": "10ad2b204e88caa539669988bae287ac2b1c7694a5b747c7144988c522b7263d"
+      },
+      {
+        "path": "paper/<SOURCE_FILE_REDACTED>",
+        "clean_sha256": "da6084c9c4732a2c787e8eccc62c96df34e7207d59b72074577ca4e9aa853c0d",
+        "frozen_sha256": "5d672f3aca5966dd7cb25b8139f1190f8b45aaf9655a822ac4d7c5bed2eb8ca0"
+      },
+      {
+        "path": "results/verification.json",
+        "clean_sha256": "72af9037fd3f9b1c42fcde33b1e850b13c79dbe9dddf5a651e5d2b3c5f3cfea3",
+        "frozen_sha256": "3a5dcb83760448804fb2c10da3f8801763009a24266e64f99f887cfc96aefdf5"
+      }
+    ],
+    "pdf_text_comparison": {
+      "status": "fail",
+      "frozen_contains_reference_heading": false,
+      "clean_contains_reference_heading": true,
+      "frozen_contains_blind_reference_sentence": false,
+      "clean_contains_blind_reference_sentence": true,
+      "frozen_pages": 10,
+      "clean_pages": 10
+    }
+  },
+  "full_artifact_set_reproduction": {
+    "status": "fail",
+    "frozen_generated_artifact_count": 61,
+    "documented_run_generated_artifact_count": 20,
+    "not_regenerated_count": 41,
+    "not_regenerated": [
+      "figures/<SOURCE_FILE_REDACTED>",
+      "figures/<SOURCE_FILE_REDACTED>",
+      "figures/<SOURCE_FILE_REDACTED>",
+      "figures/<SOURCE_FILE_REDACTED>",
+      "paper/build/<SOURCE_FILE_REDACTED>",
+      "paper/build/<SOURCE_FILE_REDACTED>",
+      "paper/build/main.aux",
+      "paper/build/main.log",
+      "paper/build/main.out",
+      "paper/build/<SOURCE_FILE_REDACTED>",
+      "paper/build/<SOURCE_FILE_REDACTED>",
+      "paper/build/<SOURCE_FILE_REDACTED>",
+      "paper/build/<SOURCE_FILE_REDACTED>",
+      "paper/build/<SOURCE_FILE_REDACTED>",
+      "paper/build/<SOURCE_FILE_REDACTED>",
+      "paper/build/<SOURCE_FILE_REDACTED>",
+      "paper/build/<SOURCE_FILE_REDACTED>",
+      "paper/build/<SOURCE_FILE_REDACTED>",
+      "paper/build/<SOURCE_FILE_REDACTED>",
+      "paper/build/<SOURCE_FILE_REDACTED>",
+      "paper/build/<SOURCE_FILE_REDACTED>",
+      "results/<SOURCE_FILE_REDACTED>",
+      "results/<SOURCE_FILE_REDACTED>",
+      "results/delivery-check.json",
+      "results/<SOURCE_FILE_REDACTED>",
+      "results/<SOURCE_FILE_REDACTED>",
+      "results/<SOURCE_FILE_REDACTED>",
+      "results/pdf-preview/<SOURCE_FILE_REDACTED>",
+      "results/pdf-preview/<SOURCE_FILE_REDACTED>",
+      "results/pdf-preview/<SOURCE_FILE_REDACTED>",
+      "results/pdf-preview/<SOURCE_FILE_REDACTED>",
+      "results/pdf-preview/<SOURCE_FILE_REDACTED>",
+      "results/pdf-preview/<SOURCE_FILE_REDACTED>",
+      "results/pdf-preview/<SOURCE_FILE_REDACTED>",
+      "results/pdf-preview/<SOURCE_FILE_REDACTED>",
+      "results/pdf-preview/<SOURCE_FILE_REDACTED>",
+      "results/pdf-preview/<SOURCE_FILE_REDACTED>",
+      "results/problem-extracted.txt",
+      "results/<SOURCE_FILE_REDACTED>",
+      "results/<SOURCE_FILE_REDACTED>",
+      "results/summary.json"
+    ]
+  },
+  "compatible_shell_run": {
+    "status": "pass",
+    "byte_reproduction_status": "fail",
+    "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File code/run_all.ps1 -Workspace '<ABSOLUTE_PATH>' -VerifyPaper",
+    "powershell": "7.6.4",
+    "exit_code": 0,
+    "stdout": "[pass] extracted 468 observations; [pass] numerical results and figures generated; [pass] independent numerical and artifact verification; [pass] solve-stage computation completed",
+    "stderr": "Four MiKTeX update-check warnings",
+    "numeric_values_status": "pass",
+    "changed_byte_artifacts": [
+      "results/<SOURCE_FILE_REDACTED>",
+      "results/input-metadata.json",
+      "results/run-manifest.json",
+      "results/verification.json",
+      "paper/main.log",
+      "paper/<SOURCE_FILE_REDACTED>"
+    ]
+  },
+  "input_provenance": {
+    "status": "fail",
+    "outer_problem_sha256": "34eafabb52ddbce55692e2fb23e9734a239cd28499f3807fbe2eea1644861113",
+    "frozen_problem_sha256": "34eafabb52ddbce55692e2fb23e9734a239cd28499f3807fbe2eea1644861113",
+    "outer_xls_sha256": "d012ec8a7130e8a265240941d27fb660fb84454e6ecc3ec436bab3d969d3cb05",
+    "frozen_xls_sha256": "2b217b9c96afd13a6d30934028be766883defdfb891c051826b70f3c2d4629bc",
+    "semantic_extraction_status": "pass",
+    "semantic_evidence": "Both workbooks yield 468 rows with zero numerical differences in time, torque, and speed and identical four condition values.",
+    "mutation_probe": {
+      "status": "fail",
+      "before_sha256": "d012ec8a7130e8a265240941d27fb660fb84454e6ecc3ec436bab3d969d3cb05",
+      "after_sha256": "1b6fce54dc3860e3ebc703f4c88bc79a0384dc5b5226c57cc8daa996b880626d",
+      "before_size": 65024,
+      "after_size": 65024,
+      "metadata_recorded_sha256": "1b6fce54dc3860e3ebc703f4c88bc79a0384dc5b5226c57cc8daa996b880626d",
+      "repeat_open_stability_status": "pass"
+    }
+  },
+  "diagnostic_failed_attempts": [
+    {
+      "status": "fail",
+      "purpose": "Separate stdout/stderr with a low-level Windows PowerShell ProcessStartInfo launch",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr_summary": "Get-FileHash was unavailable in that launch context.",
+      "impact": "No generated artifact hash changed; the result was not used as the primary reproduction. A later direct Windows PowerShell invocation with separated streams passed."
+    }
+  ],
+  "final_reproduction_judgments": {
+    "documented_command_exit_status": "pass",
+    "core_numerical_values_status": "pass",
+    "core_generated_byte_status_under_windows_powershell": "pass",
+    "paper_source_pdf_consistency_status": "fail",
+    "complete_frozen_artifact_reproduction_status": "fail",
+    "input_original_byte_provenance_status": "fail",
+    "mathematical_correctness_status": "needs_review",
+    "hardware_feasibility_status": "needs_review"
+  }
+}

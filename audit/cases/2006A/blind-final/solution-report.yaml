@@ -1,0 +1,184 @@
+case_id: 2006A
+phase: blind-revision
+status: needs_review
+blind_solve: true
+revision_from_frozen_v1: true
+source_blind_v1_preserved: true
+freeze_performed: false
+reflection_performed: false
+external_search_performed: false
+reference_solution_read: false
+
+audit_basis:
+  overall_status: fail
+  reproduction_executed: false
+  confirmed_findings:
+    - AUD-FROZEN-001
+    - AUD-FROZEN-002
+  confirmed_scope: provenance_integrity_and_hash_coverage
+  mathematical_or_model_findings: needs_review
+  revision_policy: 数值模型无审计反证，故保留 V1；只修订交付范围、哈希语义、冻结契约与复现证据。
+
+decision:
+  year: 2006
+  total_isbn: 500
+  total_source: five historical detail-column totals all equal 500
+  request_detail_total: 750
+  request_published_total_rows: 784
+  request_discrepancy: 34
+  main_request_policy: detailed_course_rows
+  minimum_guarantee_level: branch
+  minimum_guarantee_total_main_policy: 375
+  allocation_by_branch:
+    计算机类: 55
+    经管类: 48
+    数学类: 120
+    英语类: 69
+    两课类: 72
+    机械、能源类: 53
+    化学、化工类: 22
+    地理、地质类: 30
+    环境类: 31
+  allocation_sum: 500
+  binding_hr_capacity:
+    - 数学类
+
+model:
+  selected: risk_adjusted_concave_integer_allocation
+  candidate_count: 3
+  forecast_selected: survey_augmented
+  forecast_coefficients:
+    yield_trend: 0.75
+    market_share_momentum: 0.50
+    satisfaction_delta: 0.10
+  risk_z: 0.50
+  concavity_eta: 0.50
+  objective_interpretation: risk-adjusted sales-value/gross-margin ranking proxy, not realized net profit
+
+candidate_results:
+  proportional_baseline:
+    holdout_wape: 0.2612037877
+    risk_adjusted_value_cny: 18344279.41
+  trend_value:
+    holdout_wape: 0.2340886674
+    risk_adjusted_value_cny: 21458820.81
+  risk_concave:
+    holdout_wape: 0.2278939875
+    holdout_spearman: 0.9556954396
+    central_value_cny: 25958647.64
+    risk_adjusted_value_cny: 21865549.61
+    risk_value_gain_vs_baseline: 0.1919546755
+
+validation:
+  converted_input_check:
+    status: pass
+    evidence: results/conversion_check.json
+    office_reconversion: needs_review
+  constraints:
+    status: pass
+    evidence: results/constraint_checks.json
+  boundaries:
+    status: pass
+    feasible_budget_interval:
+      - 375
+      - 630
+    evidence: results/boundary_checks.json
+  holdout_2005:
+    status: pass
+    interpretation: temporal holdout executed; error remains material and is reported
+    evidence: results/forecast_validation.json
+  published_total_row_sensitivity:
+    status: pass
+    reallocated_units: 0
+    evidence: results/<SOURCE_FILE_REDACTED>
+  empirical_residual_perturbation:
+    status: pass
+    draws: 300
+    evidence: results/<SOURCE_FILE_REDACTED>
+  second_run_hash_check:
+    status: pass
+    matched_files: 21
+    evidence: results/reproducibility_check.json
+  independent_output_verification:
+    status: pass
+    evidence: results/verification.json
+  paper_compile:
+    status: pass
+    engine: MiKTeX-XeTeX 4.18
+    runs: 2
+    warnings: 0
+    evidence: results/paper-build-report.json
+  full_pipeline_command:
+    status: pass
+    command: powershell -NoProfile -ExecutionPolicy Bypass -File code/run_all.ps1 -Workspace .
+
+provenance_revision:
+  legacy_partial_hash_files:
+    status: pass
+    policy: 只作为模型输入或生成产物局部证据，并明确 authoritative_freeze_manifest=false。
+    files:
+      - results/input_hashes.json
+      - results/artifact_hashes.json
+  minimal_payload:
+    status: pass
+    policy: freeze-policy.yaml
+    candidate_manifest: delivery-manifest.candidate.json
+    candidate_entry_count: 78
+    authoritative: false
+    freeze_status: needs_review
+  authoritative_external_freeze:
+    status: needs_review
+    required: 外部 blind-final 全树清单及不可随包改写的清单 SHA-256 锚点
+  new_independent_audit:
+    status: needs_review
+
+data_quality:
+  status: needs_review
+  issues:
+    - four 2006 branch total cells are hardcoded and disagree with detailed course sums
+    - mathematics historical allocations exceed the nominal HR bottleneck in all five years
+    - only numeric Q2a rows can be mapped safely to the 72 target courses
+  evidence: results/data_audit.json
+
+limitations:
+  - Profit margin values and fixed/overhead costs are absent, so absolute profit cannot be estimated.
+  - The concavity parameter is an engineering judgment; the descriptive elasticity is non-causal and near zero.
+  - The questionnaire-augmented forecast improves holdout WAPE only modestly over the trend rule.
+  - Course-level allocation is advisory; qualitative editorial review remains necessary, especially for five zero-new-ISBN courses.
+  - HR sharing, overtime and outsourcing are not observed.
+  - The original independent audit did not reach mathematical or model review.
+  - Office COM reconversion remains needs_review after an RPC cleanup failure; retained conversions passed structural and byte-hash checks.
+
+deliverables:
+  problem_analysis: problem-analysis.md
+  data_audit: data-audit.md
+  assumptions: assumptions.yaml
+  variables: variables.yaml
+  model_selection: model-selection.md
+  reproducibility: reproducibility.yaml
+  revision_notes: revision-notes.md
+  freeze_policy: freeze-policy.yaml
+  candidate_manifest: delivery-manifest.candidate.json
+  code: code/
+  results: results/
+  figures: figures/
+  paper_tex: paper/main.tex
+  paper_markdown: paper/paper.md
+  paper_pdf: paper/<SOURCE_FILE_REDACTED>
+
+completion_checks:
+  question_coverage: pass
+  code_generated_key_results: pass
+  baseline_and_candidates: pass
+  temporal_validation: pass
+  boundary_checks: pass
+  sensitivity_and_robustness: pass
+  limitations_disclosed: pass
+  second_run_hash_match: pass
+  paper_compile: pass
+  full_pipeline_command: pass
+  independent_mechanical_verification: pass
+  candidate_payload_coverage: pass
+  authoritative_external_freeze: needs_review
+
+next_phase: none

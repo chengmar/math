@@ -1,0 +1,107 @@
+phase: blind-revision
+case_id: 2004A
+status: pass
+frozen: false
+reflection_performed: false
+other_stage_called: false
+network_search_performed: false
+reference_solution_read: false
+skill: $cumcm-a-solve
+scope_status: pass
+revision_basis:
+  - problem_statement
+  - original_attachment
+  - frozen_blind_v1
+  - independent_audit_report
+audit_response:
+  prior_audit_gate_status: fail
+  AUD-001:
+    revision_pdf_manifest_status: pass
+    external_freeze_status: needs_review
+    action: PDF is built before the manifest; the final manifest is then independently verified against the current artifact set.
+  AUD-002:
+    truthful_revision_metadata_status: pass
+    external_frozen_metadata_status: needs_review
+    action: This revision truthfully remains frozen=false; only the external freeze procedure may attest blind-final as frozen.
+additional_reproducibility_repairs:
+  stale_v1_verification_artifacts_status: pass
+  run_entrypoint_matches_documentation_status: pass
+  same_environment_consecutive_rerun_status: pass
+  optimizer_fixed_bound_removed_status: pass
+input_audit:
+  status: pass
+  survey_rows: 10600
+  missing_cells: 0
+  travel_one_hot_status: pass
+  food_one_hot_status: pass
+task_coverage:
+  question_1_behavior_patterns: pass
+  question_2_flow_distribution: pass
+  question_3_ms_allocation: pass
+  question_4_scientific_validation: pass
+model:
+  selected: pixel_weighted_ring_shortest_path
+  selection_status: pass
+  baseline: gate_only_uniform_5_percent
+  alternatives_compared: 3
+key_results:
+  bus_proportion: 0.339811320754717
+  metro_proportion: 0.380188679245283
+  taxi_proportion: 0.18962264150943398
+  car_proportion: 0.09037735849056604
+  western_food_proportion: 0.525188679245283
+  mean_spend_midpoint_yuan: 201.4811320754717
+  commercial_area_passages: 1160000
+  highest_flow_zone: A9
+  highest_flow_share: 0.09976903057905011
+  lowest_flow_zone: C1
+  lowest_flow_share: 0.02662532530904359
+allocation_scenario:
+  capture_rate: 0.50
+  small_capacity_checkout_per_day: 2000
+  large_capacity_checkout_per_day: 4000
+  small_ms_total: 18
+  large_ms_total: 25
+  total_capacity_checkout_per_day: 136000
+  scenario_profit_yuan: 3247028.301886793
+  scenario_profit_status: pass
+  factual_profitability_status: needs_review
+validation:
+  data_audit_status: pass
+  independent_route_recomputation_status: pass
+  share_conservation_status: pass
+  wave_stability_status: pass
+  optimizer_boundary_extreme_status: pass
+  allocation_service_status: pass
+  allocation_balance_status: pass
+  profitability_scenario_status: pass
+  same_environment_consecutive_rerun_status: pass
+  latex_compile_status: pass
+  latex_runtime_support_status: needs_review
+  paper_result_consistency_status: pass
+  current_artifact_manifest_status: pass
+  mathematical_correctness_status: needs_review
+  external_validation_status: needs_review
+  competition_format_status: needs_review
+  cross_platform_bitwise_identity_status: needs_review
+limitations:
+  - 33% response rate may produce nonresponse bias.
+  - Behavior transfer from rehearsal venue to Olympic venues is not externally validated.
+  - Figure 2 is schematic; route access points are discretization-sensitive.
+  - Absolute outlet counts depend on explicit capacity, capture, cost, and margin scenarios absent from the problem.
+required_outputs:
+  problem_analysis: problem-analysis.md
+  data_audit: data-audit.md
+  assumptions: assumptions.yaml
+  variables: variables.yaml
+  model_selection: model-selection.md
+  reproducibility: reproducibility.yaml
+  revision_response: revision-response.md
+  code: code/
+  results: results/
+  figures: figures/
+  latex_paper: paper/main.tex
+  markdown_paper: paper/paper.md
+  artifact_manifest: results/checksums.sha256
+  manifest_verification: results/manifest-verification.json
+next_phase: null

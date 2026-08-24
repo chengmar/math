@@ -1,0 +1,44 @@
+schema_version: "1.0"
+id: "cumcm-a-2007a-provenance-and-judgment-expression"
+status: "candidate"
+type: "expression_pattern"
+title: <REFERENCE_TITLE_REDACTED>
+origin: "synthesized_from_blind_audit_reference_comparison"
+claim: >-
+  复盘和论文应让读者同时看见一个结论何时形成、来自哪份证据、当前是 pass/fail/needs_review，
+  以及它是否只是条件结果；这样可避免参考后倒填历史和把失败藏在附录。
+applicable_when:
+  - "存在盲解、审计、修订和参考复盘多个阶段。"
+  - "同一模型同时有可复现 pass 与科学 needs_review/fail。"
+not_applicable_when:
+  - "没有阶段来源差异的简单说明；仍应保留证据引用。"
+minimum_baseline:
+  name: "结论—来源—判断三列表"
+  fields: ["claim", "source", "judgment"]
+recommended_structure:
+  - "先给关键结果，再标明它是数据事实、校准输入、条件预测还是外部核对。"
+  - "单列独立想到、审计后修正、参考后学到。"
+  - "把关键 fail/needs_review 放在结果附近，不只放局限段。"
+  - "数字表由同一结果源生成，并做表—文—图一致性检查。"
+validation:
+  required_checks:
+    - "每个关键硬数字可追到文件、页码或生成结果。"
+    - "参考后内容不回写成盲解原有思想。"
+    - "所有自动判断只使用 pass/fail/needs_review。"
+    - "候选知识不出现 verified。"
+  automatic_judgment: "needs_review"
+counterexamples:
+  - "R4 的结果表写 2020 年 14.2913 亿，结论写 13.29 亿。"
+  - "旧 BF 运行状态曾写 pass，而科学验证同时为 needs_review。"
+  - "把审计修正归为参考后学习会伪造知识来源历史。"
+source_cases:
+  - id: "2007A-BF"
+    evidence: "最终判断分层和冻结前后来源链。"
+  - id: "2007A-R4"
+    evidence: "表文冲突反例。"
+  - id: "2007A-REFLECTION"
+    evidence: "三类来源归因矩阵。"
+evidence_strength: "medium_high"
+promotion_gate:
+  - "在其他多阶段案例中证明该模板不会增加歧义或伪造状态。"
+  - "由独立检查者复核来源链和表文一致性。"

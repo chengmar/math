@@ -1,0 +1,97 @@
+{
+  "case_id": "2008A",
+  "phase": "audit",
+  "audited_at": "2026-08-23T18:45:07.7595372+08:00",
+  "overall_status": "fail",
+  "stop_point": "freeze_integrity_preflight",
+  "phase_check": {
+    "status": "pass",
+    "command": "python <ABSOLUTE_PATH>",
+    "stdout": "[PASS] audit 阶段锁有效",
+    "stderr": "",
+    "exit_code": 0
+  },
+  "path_manifest_checks": {
+    "status": "pass",
+    "allowed_paths_sha256": {
+      "expected": "79da142ab0281b06e8a2ad0c346f05d1b9c9bf61ea5cf69ee6eb0a00df73a07b",
+      "actual": "79da142ab0281b06e8a2ad0c346f05d1b9c9bf61ea5cf69ee6eb0a00df73a07b",
+      "status": "pass"
+    },
+    "forbidden_paths_sha256": {
+      "expected": "f075bf741aa5e0dc4527893642bc07eb4bc70edc84733fa9b1801ed5ccaa0b47",
+      "actual": "f075bf741aa5e0dc4527893642bc07eb4bc70edc84733fa9b1801ed5ccaa0b47",
+      "status": "pass"
+    }
+  },
+  "frozen_payload_inventory": {
+    "file_count": 178,
+    "total_bytes": 5399327,
+    "whole_tree_manifest_status": "fail",
+    "freeze_declaration_status": "fail",
+    "observed_delivery_frozen_value": false,
+    "observed_manifest_candidates": [
+      "frozen-solution/results/generated/run_manifest.json"
+    ]
+  },
+  "input_hash_check": {
+    "path": "input/problem/<SOURCE_FILE_REDACTED>",
+    "expected_sha256": "d28c0ef2aaee74e9618dbf77a022527ced5f8b723eee4cc27774f648d842e599",
+    "actual_sha256": "d28c0ef2aaee74e9618dbf77a022527ced5f8b723eee4cc27774f648d842e599",
+    "status": "pass"
+  },
+  "partial_manifest_checks": {
+    "reproducibility_yaml": {
+      "declared_hash_count": 10,
+      "pass_count": 10,
+      "fail_count": 0,
+      "status": "pass",
+      "scope_status": "needs_review"
+    },
+    "generated_run_manifest_outputs": {
+      "declared_hash_count": 17,
+      "pass_count": 17,
+      "fail_count": 0,
+      "status": "pass",
+      "scope_status": "needs_review"
+    },
+    "generated_run_manifest_code": {
+      "path": "frozen-solution/code/solve.py",
+      "expected_sha256": "a6f8bdf079646589bb812cba7d0503a2ba93db6442de65333fa41cab6fff40c6",
+      "actual_sha256": "f3fc1ad7b06e1ac71bb5b5db3ea0bf19b6c5d71787959a2cef4b1bb6c41c3017",
+      "status": "fail"
+    }
+  },
+  "clean_environment": {
+    "status": "needs_review",
+    "created": false,
+    "reason": "冻结完整性前置门失败，按 cumcm-a-audit Skill 停止。"
+  },
+  "reproduction": {
+    "status": "needs_review",
+    "executed": false,
+    "commands": [],
+    "stdout": null,
+    "stderr": null,
+    "exit_code": null,
+    "outputs": [],
+    "reason": "未对未经完整冻结认证的载荷执行代码。"
+  },
+  "content_audit": {
+    "mathematics": "needs_review",
+    "dimensions_and_units": "needs_review",
+    "constraints_and_boundaries": "needs_review",
+    "identifiability_and_boundedness": "needs_review",
+    "numerical_stability": "needs_review",
+    "random_stability": "needs_review",
+    "leakage_and_overfitting": "needs_review",
+    "paper_code_figure_consistency": "needs_review",
+    "counterexamples": "needs_review"
+  },
+  "boundary_compliance": {
+    "network_search": "pass",
+    "reference_papers_access": "pass",
+    "other_phase_skills": "pass",
+    "frozen_solution_modified": "pass"
+  }
+}

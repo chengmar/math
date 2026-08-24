@@ -1,0 +1,307 @@
+{
+  "schema_version": "1.0",
+  "phase": "audit",
+  "case_id": "2007A",
+  "overall_judgment": "fail",
+  "judgments": {
+    "phase_lock": "pass",
+    "listed_manifest_hashes": "pass",
+    "complete_freeze_integrity": "fail",
+    "clean_numerical_reproduction": "pass",
+    "determinism": "pass",
+    "scientific_correctness": "fail"
+  },
+  "scope": {
+    "network_search_used": false,
+    "reference_papers_read": false,
+    "other_phase_skill_used": false,
+    "frozen_solution_modified": false,
+    "allowed_read_roots": [
+      "input",
+      "frozen-solution",
+      "<LAB_ROOT>/.agents/skills/cumcm-a-audit"
+    ]
+  },
+  "phase_check": {
+    "command": "python <LAB_ROOT>/.agents/skills/cumcm-a-audit/scripts/check_phase.py --workspace <RUNTIME_ROOT>/2007A/workspaces/audit",
+    "exit_code": 0,
+    "stdout": "[PASS] audit 阶段锁有效",
+    "stderr": "",
+    "judgment": "pass"
+  },
+  "environment": {
+    "observed_at": "2026-08-22T23:25:15.3564451+08:00",
+    "operating_system": "Windows-11-10.0.26200-SP0",
+    "powershell": "7.6.4",
+    "python": {
+      "executable": "<LAB_ROOT>/runtime/python312-venv/Scripts/python.exe",
+      "version": "3.12.13",
+      "isolated_flag": 1,
+      "no_user_site_flag": 1
+    },
+    "dependencies": {
+      "numpy": "2.5.2",
+      "pandas": "3.0.5",
+      "scipy": "1.18.0",
+      "matplotlib": "3.11.1"
+    },
+    "tools": {
+      "unrar": "7.13 x64",
+      "powershell_conversion_host": "powershell.exe",
+      "office_com": "available; conversion completed"
+    }
+  },
+  "freeze_verification": {
+    "phase_control_hashes": [
+      {
+        "path": "allowed-paths.json",
+        "expected_sha256": "5fee53eb91238a4f55d4e56e3424d9d96f4ba0e1ccd75933f96b8a4012d58a15",
+        "actual_sha256": "5fee53eb91238a4f55d4e56e3424d9d96f4ba0e1ccd75933f96b8a4012d58a15",
+        "judgment": "pass"
+      },
+      {
+        "path": "forbidden-paths.json",
+        "expected_sha256": "f075bf741aa5e0dc4527893642bc07eb4bc70edc84733fa9b1801ed5ccaa0b47",
+        "actual_sha256": "f075bf741aa5e0dc4527893642bc07eb4bc70edc84733fa9b1801ed5ccaa0b47",
+        "judgment": "pass"
+      }
+    ],
+    "run_manifest": {
+      "path": "frozen-solution/results/run_manifest.json",
+      "record_count": 27,
+      "path_safety": "pass",
+      "duplicate_paths": "pass",
+      "file_existence": "pass",
+      "declared_byte_counts": "pass",
+      "sha256": "pass",
+      "records_without_declared_bytes": [
+        "code/solve_population.py"
+      ]
+    },
+    "complete_tree_coverage": {
+      "judgment": "fail",
+      "observed_file_count": 176,
+      "run_manifest_covered_count": 27,
+      "uncovered_count": 149,
+      "audit_observed_tree_digest_algorithm": "sha256(UTF8 join of sorted relative_path<TAB>bytes<TAB>file_sha256 records with LF)",
+      "audit_observed_tree_digest": "e04eb99928c49fce9cefb0c1cb68bf69ecfc0dca921a0753b637f9ee14b7079a",
+      "note": "This digest is an audit-time observation, not a pre-existing freeze proof."
+    },
+    "recorded_pdf_hash": {
+      "path": "frozen-solution/paper/<SOURCE_FILE_REDACTED>",
+      "bytes": 901123,
+      "recorded_in": "frozen-solution/reproducibility.yaml",
+      "recorded_sha256": "50603caecb09eb7bb23a3a9442114717ca8d0ba409f981135e14edc5ea1a7ca2",
+      "actual_sha256_first": "fe8ef5b1503844399b8619723b4b47801523d51818d23d5e5030033524dc7bbc",
+      "actual_sha256_second": "fe8ef5b1503844399b8619723b4b47801523d51818d23d5e5030033524dc7bbc",
+      "repeatability": "pass",
+      "record_match": "fail"
+    },
+    "internal_frozen_flag": {
+      "path": "frozen-solution/solution-report.yaml",
+      "value": false,
+      "judgment": "fail"
+    }
+  },
+  "failed_attempts": [
+    {
+      "order": 1,
+      "purpose": "Create the first clean reproduction target",
+      "command_summary": "New-Item -ItemType Directory -LiteralPath ... followed by Copy-Item",
+      "shell_exit_code": 0,
+      "semantic_judgment": "fail",
+      "stdout": "",
+      "stderr_excerpt": "New-Item: A parameter cannot be found that matches parameter name 'LiteralPath'. Copy-Item then reported missing destination directories.",
+      "effect": "No target directory or copied file was created; the attempt was excluded from reproduction evidence."
+    }
+  ],
+  "clean_room_runs": [
+    {
+      "run_id": "clean-1",
+      "workspace": "audit-repro-clean-1",
+      "clean_preconditions": {
+        "preexisting_work": false,
+        "preexisting_results": false,
+        "preexisting_figures": false,
+        "judgment": "pass"
+      },
+      "copied_inputs": [
+        {
+          "path": "code/convert_inputs.ps1",
+          "sha256": "7e8e50ff20ce360fc67b86366c595c95084aacfcace9ec0cd2a0ab26a01d80ab",
+          "copy_hash_judgment": "pass"
+        },
+        {
+          "path": "code/solve_population.py",
+          "sha256": "df0733eb12ea6ba9e7cea7b8f5a39a9bb3e5591ad3ff25085a7f5bed0235da64",
+          "copy_hash_judgment": "pass"
+        },
+        {
+          "path": "input/problem/<SOURCE_FILE_REDACTED>",
+          "sha256": "ab4887d03c5b3374cade343a66216116e9e2c9c66db7650f43621c9584e4ba88",
+          "copy_hash_judgment": "pass"
+        },
+        {
+          "path": "input/attachments/<SOURCE_FILE_REDACTED>",
+          "sha256": "be8aa57c79ee681e73cf813d214132aeae31832a22cdf14e943b1e54062f612b",
+          "copy_hash_judgment": "pass"
+        }
+      ],
+      "commands": [
+        {
+          "order": 1,
+          "purpose": "Offline extraction and legacy Office conversion",
+          "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File code/convert_inputs.ps1 -Workspace .",
+          "started_at": "2026-08-22T23:26:10.0867243+08:00",
+          "ended_at": "2026-08-22T23:26:16.6748997+08:00",
+          "duration_seconds": 6.5881754,
+          "exit_code": 0,
+          "stdout_record": {
+            "capture_path": "audit-repro-clean-1/conversion.stdout.txt",
+            "bytes": 2356,
+            "sha256": "84b6b03832cde6d0701dd6c53144c505b90c66eb31cadb537ce00a111731d93f",
+            "excerpt": "UNRAR 7.13 x64; extraction completed;<SOURCE_FILE_REDACTED> 59924 bytes sha256=737098fc1386e85809654116aaf6ba272fd247fd40c6bb33bf091ce0bfd6ea14",
+            "encoding_note": "UnRAR Chinese console text was mojibake in the captured host encoding; file table and hashes were readable."
+          },
+          "stderr_record": {
+            "capture_path": "audit-repro-clean-1/conversion.stderr.txt",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "content": ""
+          },
+          "judgment": "pass"
+        },
+        {
+          "order": 2,
+          "purpose": "Isolated numerical solve",
+          "command": "python -I code/solve_population.py --workspace .",
+          "environment_overrides": {
+            "PYTHONHASHSEED": "0",
+            "OMP_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1",
+            "MKL_NUM_THREADS": "1",
+            "MPLCONFIGDIR": "_mplconfig"
+          },
+          "started_at": "2026-08-22T23:26:31.5795560+08:00",
+          "ended_at": "2026-08-22T23:26:55.7185805+08:00",
+          "duration_seconds": 24.1390245,
+          "exit_code": 0,
+          "stdout_record": {
+            "capture_path": "audit-repro-clean-1/solve.stdout.txt",
+            "bytes": 212,
+            "sha256": "35d9ec26803de62a3ee18a5affe6ec89db8555eefbca0605b3e1051672762a99",
+            "content": "{\"base_population_2005\": 1323946941.7221434, \"medium_peak_population\": 1436415462.3107066, \"medium_peak_year\": 2025, \"model_comparison_best\": \"multistate_cohort\", \"status\": \"pass\", \"validation\": \"needs_review\"}"
+          },
+          "stderr_record": {
+            "capture_path": "audit-repro-clean-1/solve.stderr.txt",
+            "bytes": 64,
+            "sha256": "43e0f35d96a73774a4c5a0a631d06faca9c12ddf17c33b4865135e07caa70d22",
+            "content": "Matplotlib is building the font cache; this may take a moment."
+          },
+          "judgment": "pass"
+        }
+      ],
+      "comparison_to_frozen": {
+        "dependency_versions": "pass",
+        "solver_code_sha256": "pass",
+        "problem_doc_sha256": "pass",
+        "attachment_rar_sha256": "pass",
+        "converted_csv_sha256": "pass",
+        "output_count_frozen": 23,
+        "output_count_fresh": 23,
+        "output_hash_judgment": "pass",
+        "mismatch_count": 0
+      },
+      "judgment": "pass"
+    },
+    {
+      "run_id": "clean-2",
+      "workspace": "audit-repro-clean-2",
+      "clean_preconditions": {
+        "preexisting_target": false,
+        "copied_file_count": 4,
+        "judgment": "pass"
+      },
+      "commands": [
+        {
+          "order": 1,
+          "purpose": "Second independent offline conversion",
+          "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File code/convert_inputs.ps1 -Workspace .",
+          "started_at": "2026-08-22T23:37:18.0926110+08:00",
+          "ended_at": "2026-08-22T23:37:24.8313913+08:00",
+          "duration_seconds": 6.7387803,
+          "exit_code": 0,
+          "stdout_record": {
+            "capture_path": "audit-repro-clean-2/conversion.stdout.txt",
+            "bytes": 2356,
+            "sha256": "43e4bd516c44c0bd0cbe4dc26925bd88071156e40c4fbd2230ef34b8e83d513c",
+            "excerpt": "UNRAR 7.13 x64; extraction completed;<SOURCE_FILE_REDACTED> 59924 bytes sha256=737098fc1386e85809654116aaf6ba272fd247fd40c6bb33bf091ce0bfd6ea14"
+          },
+          "stderr_record": {
+            "capture_path": "audit-repro-clean-2/conversion.stderr.txt",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "content": ""
+          },
+          "judgment": "pass"
+        },
+        {
+          "order": 2,
+          "purpose": "Determinism run with different hash seed and thread counts",
+          "command": "python -I code/solve_population.py --workspace .",
+          "environment_overrides": {
+            "PYTHONHASHSEED": "8675309",
+            "OMP_NUM_THREADS": "2",
+            "OPENBLAS_NUM_THREADS": "2",
+            "MKL_NUM_THREADS": "2",
+            "MPLCONFIGDIR": "_mplconfig"
+          },
+          "started_at": "2026-08-22T23:37:24.8355887+08:00",
+          "ended_at": "2026-08-22T23:37:29.8664650+08:00",
+          "duration_seconds": 5.0308763,
+          "exit_code": 0,
+          "stdout_record": {
+            "capture_path": "audit-repro-clean-2/solve.stdout.txt",
+            "bytes": 212,
+            "sha256": "35d9ec26803de62a3ee18a5affe6ec89db8555eefbca0605b3e1051672762a99",
+            "content": "{\"base_population_2005\": 1323946941.7221434, \"medium_peak_population\": 1436415462.3107066, \"medium_peak_year\": 2025, \"model_comparison_best\": \"multistate_cohort\", \"status\": \"pass\", \"validation\": \"needs_review\"}"
+          },
+          "stderr_record": {
+            "capture_path": "audit-repro-clean-2/solve.stderr.txt",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "content": ""
+          },
+          "judgment": "pass"
+        }
+      ],
+      "comparison_to_frozen_and_clean_1": {
+        "run_count": 3,
+        "output_count_each": 23,
+        "all_output_hashes_identical": "pass",
+        "mismatch_count": 0
+      },
+      "judgment": "pass"
+    }
+  ],
+  "determinism": {
+    "stochastic_components_used_by_solution": false,
+    "random_seed_in_solution": 2007,
+    "hash_seed_variation_tested": true,
+    "thread_count_variation_tested": true,
+    "conversion_core_csv_hash_stable": "pass",
+    "numerical_and_figure_output_hashes_stable": "pass",
+    "judgment": "pass"
+  },
+  "post_audit_verification": {
+    "observed_file_count": 176,
+    "before_tree_digest": "e04eb99928c49fce9cefb0c1cb68bf69ecfc0dca921a0753b637f9ee14b7079a",
+    "after_tree_digest": "e04eb99928c49fce9cefb0c1cb68bf69ecfc0dca921a0753b637f9ee14b7079a",
+    "frozen_solution_unchanged": "pass"
+  },
+  "important_limitations": [
+    "A pass here means the frozen numerical implementation was reproduced; it does not establish mathematical correctness.",
+    "Office-generated HTML, PDF and XLSX conversion artifacts contained nondeterministic metadata and were not numerical model inputs.",
+    "The explicit paper/<SOURCE_FILE_REDACTED> recorded hash mismatch and incomplete tree coverage make the complete freeze judgment fail."
+  ]
+}

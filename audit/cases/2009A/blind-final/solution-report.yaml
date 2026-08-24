@@ -1,0 +1,77 @@
+schema_version: 1
+case_id: "2009A"
+phase: blind-revision
+skill: "$cumcm-a-solve"
+blind_solution: true
+revision_of: blind-v1
+overall_status: pass
+status_meaning: "pass 表示修订产物、重跑和自动性质检查完成，不表示形式证明或硬件认证。"
+judgments:
+  phase_lock: {status: pass, evidence: "check_phase.py reported the blind-revision lock valid"}
+  allowed_path_compliance: {status: pass, evidence: "only input, blind-v1, audit and current revision outputs were read"}
+  leakage_check: {status: pass, evidence: "no network, Vault, reference paper, commentary or answer material was used"}
+  input_provenance: {status: pass, evidence: "original XLS pre/post SHA-256 is d012ec8a...; Excel opened only a disposable copy"}
+  unique_pipeline: {status: pass, evidence: "code/run_all.ps1 is the sole entrypoint and artifact-manifest.json enforces the exact product set"}
+  problem_coverage: {status: pass, evidence: "questions 1 through 6 are answered in paper/main.tex and paper/paper.md"}
+  q4_acceptance: {status: needs_review, evidence: "relative energy error is 5.575994900%, but the problem supplies no acceptance threshold"}
+  q6_constraints: {status: pass, evidence: "low-torque, equivalent-inertia, absolute-torque, state and stop properties are tested"}
+  q6_stability_domain: {status: pass, evidence: "declared plant pole range is [-0.389, 0.968] and observer pole is 0.75"}
+  mathematical_correctness: {status: needs_review, evidence: "independent computations pass but automated tests are not a formal proof"}
+  motor_hardware_feasibility: {status: needs_review, evidence: "motor voltage, rated current, thermal and physical slew limits are absent"}
+  physical_bench_validation: {status: needs_review, evidence: "controller results are model-in-the-loop replays on an exogenous torque trace"}
+questions:
+  - id: 1
+    computation_status: pass
+    result: {equivalent_inertia_kgm2: 51.9988857142857}
+  - id: 2
+    computation_status: pass
+    result:
+      individual_flywheel_inertias_kgm2: [30.0083120713529, 60.0166241427057, 120.033248285411]
+      selected_mechanical_inertia_kgm2: 40.0083120713529
+      selected_compensation_kgm2: 11.9905736429328
+  - id: 3
+    computation_status: pass
+    result:
+      law: "I = 1.5*(1-J_m/J_e)*M_b = -1.5*(J_e-J_m)*d(omega)/dt"
+      constant_deceleration_current_A: 174.687844448322
+  - id: 4
+    computation_status: pass
+    acceptance_status: needs_review
+    result:
+      road_energy_J: 52150.2000870041
+      bench_brake_energy_J: 49242.3075897029
+      signed_error_bench_minus_road_J: -2907.89249730114
+      absolute_relative_error_pct: 5.57599490021092
+  - id: 5
+    computation_status: pass
+    result:
+      controller: torque_zoh
+      replay_relative_energy_error_pct: 0.0220870148334877
+      max_speed_error_rpm: 0.0951377092859932
+  - id: 6
+    computation_status: pass
+    hardware_status: needs_review
+    result:
+      controller: robust_predictive
+      replay_relative_energy_error_pct: 0.0000742080366519074
+      max_speed_error_rpm: 0.00530548564520582
+      max_current_A: 121.413219040839
+      declared_actual_inertia_domain_kgm2: [18.0, 78.0]
+      declared_step_domain_s: [0.005, 0.05]
+validation:
+  low_torque_constraint_status: pass
+  numerical_stability_status: pass
+  speed_noise_status: pass
+  rapid_torque_status: pass
+  stopping_state_status: pass
+  paper_source_freshness_status: pass
+limitations:
+  - "The supplied torque trace is exogenous in model-in-the-loop replay."
+  - "The nominal 4.67 s replay does not reach the new controller's end condition and is marked needs_review for completion."
+  - "Torque-sensor calibration bias remains a failure mode."
+  - "Software limits are not physical motor certification."
+deliverables:
+  required_files_status: pass
+  clean_rebuild_status: pass
+  freeze_status: needs_review
+  freeze_note: "No blind-final freeze is created here; the external freeze script owns that action."

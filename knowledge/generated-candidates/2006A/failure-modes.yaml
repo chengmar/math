@@ -1,0 +1,58 @@
+schema_version: 1
+case_id: 2006A
+knowledge_status: candidate
+failure_modes:
+  - id: FM-BUDGET-TABLE-001
+    name: 公开结果表不守固定预算
+    origin: learned_after_references
+    evidence_status: pass
+    evidence:
+      - "R1课程表合计547，多目标表合计499。"
+      - "R2模糊方案合计504。"
+      - "R3稳定性表10次中6次合计为497至502。"
+    prevention: "任何目标值、稳定性或方案比较前，先自动检查整数、总量、上下界和组约束。"
+  - id: FM-SCOPE-HALF-002
+    name: 把组级最低保障误写成对象级最低保障
+    origin: mixed
+    evidence_status: pass
+    evidence: "附件原文为分社半数；R1/R3/R4使用逐课程半数。"
+    impact: "本题中会导致78个书号重分配并降低同口径中心代理。"
+    prevention: "给每条自然语言约束标注主体、聚合层级、单位和反例。"
+  - id: FM-HR-OVERRIDE-003
+    name: 用历史超限推定当前硬产能可无成本突破
+    origin: learned_after_references
+    evidence_status: pass
+    evidence: "多篇参考因数学历史分配超120而放宽或删除人力约束。"
+    risk: "加班、外包或跨社支援的权限和成本均未观测。"
+    prevention: "硬约束主情景 + 有成本的扩容情景；未经授权不把可能性写成事实。"
+  - id: FM-TARGET-LEAKAGE-004
+    name: 用目标结果构造预测特征再解释同一目标
+    origin: learned_after_reference_R4
+    evidence_status: pass
+    evidence: "R4以A出版社实际总销量增长构造总需求系数，再回归解释同一批实际销量。"
+    risk: "样本内R²被机械抬高，不能代表外推能力。"
+    prevention: "建立逐字段时间和因果来源表；任何含目标期结果的派生量不得进入预测特征。"
+  - id: FM-SATURATED-FIT-005
+    name: 极短序列高自由度拟合冒充预测验证
+    origin: learned_after_references
+    evidence_status: pass
+    evidence: "R3每课程5个年份最多拟合4项，只报告样本内8%残差。"
+    prevention: "减少自由度、跨课程共享/收缩，并保留整年时间外验证。"
+  - id: FM-MODEL-AGREEMENT-006
+    name: 两个相关模型相近被当作正确性证明
+    origin: learned_after_references
+    evidence_status: pass
+    examples: ["R2两方案接近", "R4模型外推与另一外推接近"]
+    prevention: "模型一致性只能是诊断；需要观测留出、反事实边界或外部回测。"
+  - id: FM-SOLVER-NAME-007
+    name: 用求解器名称替代可行性和最优性证据
+    origin: learned_after_references
+    evidence_status: pass
+    evidence: "R4声称LINGO全局最优，但公开表违反其自述课程上下界。"
+    prevention: "先公开可行性证书，再给目标复算、最优界或独立算法对照。"
+  - id: FM-WEIGHTED-ROUNDING-008
+    name: 多目标比例分配后未做守恒舍入
+    origin: learned_after_references
+    evidence_status: pass
+    evidence: "R1综合表合计499，R2模糊表合计504。"
+    prevention: "使用最大余数法或带总量等式的整数优化，并在输出端再次核验。"

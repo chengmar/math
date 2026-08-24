@@ -1,0 +1,138 @@
+phase: blind-revision
+case_id: 2007A
+reproducibility_judgment: pass
+solution_scientific_judgment: needs_review
+workspace: "<RUNTIME_ROOT>/2007A/workspaces/blind-revision"
+scope:
+  network_search_used: false
+  external_reference_used: false
+  other_phase_skill_used: false
+  blind_v1_modified: false
+  frozen: false
+  note: "本文件记录可重跑性，不把哈希一致等同于数学正确性或科学有效性。"
+phase_check:
+  command: "python <LAB_ROOT>/.agents/skills/cumcm-a-solve/scripts/check_phase.py --workspace <RUNTIME_ROOT>/2007A/workspaces/blind-revision"
+  judgment: pass
+commands:
+  - order: 1
+    purpose: "离线解压并转换旧版 Office 输入"
+    command: "powershell.exe -NoProfile -ExecutionPolicy Bypass -File code/convert_inputs.ps1 -Workspace ."
+    execution_judgment: pass
+  - order: 2
+    purpose: "生成清洗数据、滚动验证、情景、联合/附加敏感性和全部图表"
+    command: "python -I code/solve_population.py --workspace ."
+    execution_judgment: pass
+    internal_invariants_judgment: pass
+    scientific_validation_judgment: needs_review
+    overall_judgment: needs_review
+  - order: 3
+    purpose: "从仅含原始输入和两份生成脚本的新目录做隔离复现"
+    command: "powershell.exe -NoProfile -ExecutionPolicy Bypass -File code/verify_reproducibility.ps1 -Workspace . -Target _work/repro-run-blind-revision-2"
+    judgment: pass
+  - order: 4
+    purpose: "离线编译论文并解析交叉引用"
+    command: "xelatex --disable-installer -interaction=nonstopmode -halt-on-error main.tex"
+    working_directory: "paper"
+    run_count: 2
+    judgment: pass
+  - order: 5
+    purpose: "核对论文、公式、判断字段、图引用和哈希"
+    command: "python -I code/check_consistency.py --workspace ."
+    judgment: pass
+environment:
+  operating_system: "Windows 11"
+  python: "3.12.13"
+  powershell_host: "7.6.4"
+  windows_powershell_subprocess: "5.1.26100.9168"
+  office_com:
+    word: "12.0"
+    excel: "12.0"
+  unrar: "7.13 x64"
+  latex_engine: "MiKTeX-XeTeX 4.18 (MiKTeX 26.5 Portable)"
+  dependencies:
+    numpy: "2.5.2"
+    pandas: "3.0.5"
+    scipy: "1.18.0"
+    matplotlib: "3.11.1"
+    pyyaml: "available"
+randomness:
+  seed: 2007
+  stochastic_components_used: false
+  main_run:
+    python_hash_seed: 0
+    numerical_threads: 1
+inputs:
+  - path: "input/problem/<SOURCE_FILE_REDACTED>"
+    bytes: 25600
+    sha256: "ab4887d03c5b3374cade343a66216116e9e2c9c66db7650f43621c9584e4ba88"
+  - path: "input/attachments/<SOURCE_FILE_REDACTED>"
+    bytes: 186923
+    sha256: "be8aa57c79ee681e73cf813d214132aeae31832a22cdf14e943b1e54062f612b"
+  - path: "_work/converted/<SOURCE_FILE_REDACTED>"
+    bytes: 59924
+    sha256: "737098fc1386e85809654116aaf6ba272fd247fd40c6bb33bf091ce0bfd6ea14"
+code_hashes:
+  convert_inputs_ps1: "92db39283debd288bb6c073c66b6441541b8160b81d7c33d418700a104bbb6cc"
+  solve_population_py: "f4d370ecb3699dbad1390a5a6c0e09d37319469368cd84f3060ddde2f216cd39"
+  verify_reproducibility_ps1: "39e2ca29c98eb37458615f2a92bf41ec8bd62974917c9f20bd8c486ebe026dd4"
+  check_consistency_py: "0604eacf80dbc1e410099e12a8589ae2016489c78296498674663512b409eaaa"
+conversion:
+  core_csv_hash_judgment: pass
+  notes:
+    - "Office 宏被强制禁用，文档只读打开。"
+    - "Office 生成的 HTML/PDF/XLSX 含可变元数据，不是数值模型输入或确定性判据。"
+    - "数值模型只读取 UTF-8 核心 CSV。"
+main_run:
+  execution_judgment: pass
+  internal_invariants_judgment: pass
+  scientific_validation_judgment: needs_review
+  overall_judgment: needs_review
+  implied_population_2005: 1322420493.487736
+  medium_peak_year: 2025
+  medium_peak_population: 1436622493.7504396
+  medium_population_2050: 1332523318.14653
+  medium_population_2100: 930761324.2835695
+  model_selection_judgment: needs_review
+  factorial_case_count: 54
+clean_reproduction:
+  target: "_work/repro-run-blind-revision-2"
+  preexisting_target: false
+  copied_inputs_and_code_only: true
+  conversion_csv_hash_judgment: pass
+  deterministic_output_count: 28
+  output_hash_judgment: pass
+  mismatch_count: 0
+  judgment_layers_match: pass
+  fresh_execution_judgment: pass
+  fresh_internal_invariants_judgment: pass
+  fresh_scientific_validation_judgment: needs_review
+  overall_judgment: pass
+manifest: "results/run_manifest.json"
+reproduction_report: "results/reproducibility_check.json"
+consistency_report: "results/consistency_check.json"
+latex:
+  source: "paper/main.tex"
+  pdf: "paper/<SOURCE_FILE_REDACTED>"
+  engine: "MiKTeX-XeTeX 4.18 (MiKTeX 26.5 Portable)"
+  offline_installer_disabled: true
+  compile_run_count: 2
+  compile_judgment: pass
+  pages: 10
+  page_size: "A4"
+  pdf_bytes: 915028
+  pdf_sha256: "4da598e02e528d4f19fcdec77edef6b3d7f756b1a9419970395ab65fc07a3d99"
+  record_match_judgment: pass
+  undefined_reference_count: 0
+  overfull_warning_count: 0
+  underfull_warning_count: 0
+  visual_layout_judgment: pass
+  visual_review_scope: "10/10 pages rendered at 110 dpi and inspected"
+completion:
+  consistency_judgment: pass
+  blind_v1_preservation_judgment: pass
+  blind_v1_file_count: 176
+  blind_v1_tree_digest_algorithm: "sha256(UTF8 join of sorted relative_path<TAB>bytes<TAB>file_sha256 records with LF)"
+  blind_v1_tree_digest: "e04eb99928c49fce9cefb0c1cb68bf69ecfc0dca921a0753b637f9ee14b7079a"
+  blind_v1_audit_observed_digest_match_judgment: pass
+  external_freeze_required: true
+  note: "本阶段不生成 FROZEN 清单、不设置 frozen=true、不进入下一阶段。"

@@ -1,0 +1,25 @@
+id: demo-unit-audit
+title: Demo：量纲一致性检查
+type: validation_pattern
+status: demo
+provenance: demo
+version: 1
+tags: [demo, units, validation]
+problem_families: [synthetic]
+applicable_conditions: [仅用于测试 Schema 和检索]
+inapplicable_conditions: [无量纲纯组合对象仍需按定义判断]
+minimum_baseline: 列出变量和单位
+recommended_method: 对公式两侧逐项检查单位
+why_it_works: 可发现结构性录入或推导错误
+required_validation: [人工复核单位来源]
+common_failures: [把缩放后的无量纲变量当成原单位变量]
+counterexamples: [经验常数吸收单位时需要明确说明]
+source_cases: []
+source_documents: [人工生成演示]
+evidence: []
+confidence: demo_only
+last_tested: null
+regression_status: not_applicable
+created_at: '2026-08-16'
+updated_at: '2026-08-16'
+approved_by: null

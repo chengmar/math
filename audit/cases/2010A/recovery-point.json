@@ -1,0 +1,17 @@
+{
+  "case_id": "2010A",
+  "status": "blocked",
+  "atomic_phase": "blind-revision",
+  "completed_phases": [
+    "solve",
+    "audit"
+  ],
+  "attempts": {
+    "solve": 2,
+    "audit": 1,
+    "blind-revision": 2,
+    "reflection": 0
+  },
+  "retry_or_resume_model_session": false,
+  "next_action": "外部审计完成前保持暂停；不得自动启动模型。"
+}
