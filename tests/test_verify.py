@@ -159,6 +159,47 @@ def test_windows_backslash_powershell_entry_is_recognized(tmp_path: Path) -> Non
     assert invocation[1].as_posix() == "code/run_all.ps1"
 
 
+def test_powershell_call_operator_entry_is_recognized(tmp_path: Path) -> None:
+    source = tmp_path / "source"
+    (source / "code").mkdir(parents=True)
+    (source / "code" / "run_all.ps1").write_text("exit 0\n", encoding="utf-8")
+
+    invocation = _safe_workspace_invocation(
+        r"& '.\code\run_all.ps1' -Workspace (Get-Location).Path",
+        source,
+    )
+
+    assert invocation is not None
+    assert invocation[0] == "powershell"
+    assert invocation[1].as_posix() == "code/run_all.ps1"
+
+
+@pytest.mark.skipif(os.name != "nt" or not (shutil.which("pwsh") or shutil.which("powershell")), reason="Windows PowerShell required")
+def test_verify_accepts_one_numeric_run_with_call_operator(tmp_path: Path) -> None:
+    source = tmp_path / "source"
+    for directory in ("code", "results", "paper"):
+        (source / directory).mkdir(parents=True, exist_ok=True)
+    (source / "solution-report.yaml").write_text("status: pass\n", encoding="utf-8")
+    (source / "reproducibility.yaml").write_text(
+        "random_seed: 7\n"
+        "commands:\n"
+        "  one_numeric_run: \"& '.\\\\code\\\\run_all.ps1' -Workspace (Get-Location).Path\"\n",
+        encoding="utf-8",
+    )
+    (source / "code" / "run_all.ps1").write_text(
+        "param([string]$Workspace)\n"
+        "New-Item -ItemType Directory -Force -Path (Join-Path $Workspace 'results') | Out-Null\n"
+        "Set-Content -LiteralPath (Join-Path $Workspace 'results/out.txt') -Value 'ok'\n",
+        encoding="utf-8",
+    )
+
+    report = verify_case(tmp_path, source_root=source)
+
+    assert report["status"] == "pass"
+    assert report["entrypoint_kind"] == "powershell"
+    assert report["random_seed_detected"] is True
+
+
 def test_batch_entry_is_recognized(tmp_path: Path) -> None:
     source = tmp_path / "source"
     (source / "code").mkdir(parents=True)

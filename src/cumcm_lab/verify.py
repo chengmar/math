@@ -59,6 +59,10 @@ def _recorded_reproduction_commands(reproduction: dict[str, Any]) -> list[str]:
             "full_numerical_run",
             "authoritative_command",
             "run_command",
+            "full_run",
+            "one_numeric_run",
+            "numeric_run",
+            "primary_run",
             "all",
             "run_all",
         ):
@@ -101,6 +105,12 @@ def _safe_workspace_invocation(command_text: str, source: Path) -> tuple[str, Pa
         tokens = [token[1:-1] if len(token) >= 2 and token[0] == token[-1] and token[0] in {'"', "'"} else token for token in shlex.split(command_text, posix=False)]
     except ValueError:
         return None
+    if tokens and tokens[0] == "&":
+        # PowerShell commonly records direct script calls with the call
+        # operator, for example ``& '.\\code\\run_all.ps1' -Workspace ...``.
+        # Treat the operator as syntax rather than an executable; the same
+        # path-confinement and suffix checks below still apply to the script.
+        tokens = tokens[1:]
     if not tokens:
         return None
     executable = Path(tokens[0]).name.casefold()
