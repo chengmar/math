@@ -4,7 +4,31 @@ from pathlib import Path
 
 import pytest
 
-from cumcm_lab.verify import _isolated_reproduction_arguments, _powershell_reproduction_command, _safe_workspace_invocation, verify_case
+from cumcm_lab.verify import (
+    DEFAULT_REPRODUCTION_TIMEOUT_SECONDS,
+    _isolated_reproduction_arguments,
+    _powershell_reproduction_command,
+    _reproduction_timeout_seconds,
+    _safe_workspace_invocation,
+    verify_case,
+)
+
+
+def test_reproduction_timeout_defaults_to_one_hour(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("CUMCM_REPRODUCTION_TIMEOUT_SECONDS", raising=False)
+
+    assert _reproduction_timeout_seconds() == DEFAULT_REPRODUCTION_TIMEOUT_SECONDS == 3600
+
+
+def test_reproduction_timeout_is_configurable_and_bounded(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("CUMCM_REPRODUCTION_TIMEOUT_SECONDS", "1800")
+    assert _reproduction_timeout_seconds() == 1800
+
+    monkeypatch.setenv("CUMCM_REPRODUCTION_TIMEOUT_SECONDS", "1")
+    assert _reproduction_timeout_seconds() == 60
+
+    monkeypatch.setenv("CUMCM_REPRODUCTION_TIMEOUT_SECONDS", "not-an-integer")
+    assert _reproduction_timeout_seconds() == DEFAULT_REPRODUCTION_TIMEOUT_SECONDS
 
 
 def test_powershell_reproduction_passes_declared_workspace() -> None:

@@ -14,6 +14,22 @@ from typing import Any
 from .util import now_iso, read_yaml, safe_copy_tree, sha256_file, write_json
 
 
+DEFAULT_REPRODUCTION_TIMEOUT_SECONDS = 3600
+
+
+def _reproduction_timeout_seconds() -> int:
+    """Return the bounded timeout for an isolated full-case reproduction."""
+
+    raw = os.environ.get("CUMCM_REPRODUCTION_TIMEOUT_SECONDS", "").strip()
+    if not raw:
+        return DEFAULT_REPRODUCTION_TIMEOUT_SECONDS
+    try:
+        value = int(raw)
+    except ValueError:
+        return DEFAULT_REPRODUCTION_TIMEOUT_SECONDS
+    return min(max(value, 60), 86400)
+
+
 def _recorded_reproduction_commands(reproduction: dict[str, Any]) -> list[str]:
     """Return the declared reproduction pipeline without accepting shell syntax.
 
@@ -302,6 +318,7 @@ def verify_case(
     ]
     command_recorded = bool(recorded_commands)
     randomness = reproduction.get("randomness") if isinstance(reproduction.get("randomness"), dict) else {}
+    reproduction_timeout_seconds = _reproduction_timeout_seconds()
     if invocations:
         code_text = "\n".join(
             (source.joinpath(*relative.parts)).read_text(encoding="utf-8-sig", errors="replace")
@@ -361,7 +378,7 @@ def verify_case(
                     text=True,
                     encoding="utf-8",
                     errors="replace",
-                    timeout=300,
+                    timeout=reproduction_timeout_seconds,
                     check=False,
                     env=reproduction_env,
                 )
@@ -402,6 +419,7 @@ def verify_case(
         "stderr": stderr,
         "random_seed_detected": seed_found,
         "run_command_recorded": command_recorded,
+        "reproduction_timeout_seconds": reproduction_timeout_seconds,
         "outputs_regenerated": output_generated,
         "preserved_validation_evidence": preserved_validation_evidence,
         "claim_boundary": "pass 仅表示干净临时目录中成功重跑并生成输出，不表示数值或数学结论正确。",
