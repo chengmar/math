@@ -72,6 +72,27 @@ def test_verify_accepts_recorded_command_list(tmp_path: Path) -> None:
     assert report["run_command_recorded"] is True
 
 
+def test_verify_accepts_top_level_command_and_seed(tmp_path: Path) -> None:
+    source = tmp_path / "source"
+    for directory in ("code", "results", "paper"):
+        (source / directory).mkdir(parents=True, exist_ok=True)
+    (source / "solution-report.yaml").write_text("status: pass\n", encoding="utf-8")
+    (source / "reproducibility.yaml").write_text(
+        "command: python code/run.py\nseed: 2014\n",
+        encoding="utf-8",
+    )
+    (source / "code" / "run.py").write_text(
+        "from pathlib import Path\nPath('results/out.txt').write_text('ok')\n",
+        encoding="utf-8",
+    )
+
+    report = verify_case(tmp_path, source_root=source)
+
+    assert report["status"] == "pass"
+    assert report["random_seed_detected"] is True
+    assert report["run_command_recorded"] is True
+
+
 def test_verify_accepts_top_level_seed_and_full_pipeline_command(tmp_path: Path) -> None:
     source = tmp_path / "source"
     for directory in ("code", "results", "paper"):

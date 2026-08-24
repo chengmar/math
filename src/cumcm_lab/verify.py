@@ -38,7 +38,7 @@ def _recorded_reproduction_commands(reproduction: dict[str, Any]) -> list[str]:
     confinement are handled separately by ``_safe_workspace_invocation``.
     """
 
-    for command_key in ("run_command", "primary_command"):
+    for command_key in ("run_command", "primary_command", "command"):
         run_command = reproduction.get(command_key)
         if isinstance(run_command, str) and run_command.strip():
             return [run_command.strip()]
