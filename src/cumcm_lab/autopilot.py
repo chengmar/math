@@ -871,6 +871,29 @@ class CodexPhaseExecutor:
         from .util import safe_copy_tree
 
         engine = shutil.which("xelatex")
+        if not engine:
+            candidate_bins: list[Path] = []
+            configured_miktex = os.environ.get("CUMCM_MIKTEX_BIN")
+            if configured_miktex:
+                candidate_bins.append(Path(configured_miktex))
+            candidate_bins.append(
+                Path(__file__).resolve().parents[3]
+                / "runtime"
+                / "miktex-portable"
+                / "texmfs"
+                / "install"
+                / "miktex"
+                / "bin"
+                / "x64"
+            )
+            for candidate_bin in candidate_bins:
+                for executable_name in ("xelatex.exe", "xelatex"):
+                    candidate = candidate_bin / executable_name
+                    if candidate.is_file():
+                        engine = str(candidate.resolve())
+                        break
+                if engine:
+                    break
         source_paper_dir = workspace / "paper"
         main_tex = source_paper_dir / "main.tex"
         report: dict[str, Any] = {

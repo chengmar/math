@@ -67,6 +67,23 @@ def test_paper_identity_detection(tmp_path):
     assert check["status"] == "fail"
 
 
+def test_paper_code_outputs_accept_powershell_entrypoint(tmp_path):
+    paper = tmp_path / "paper.md"
+    paper.write_text(
+        "# 摘要\n采用均值模型得到 3.0。\n# 参考文献\n# 支撑材料说明\n",
+        encoding="utf-8",
+    )
+    (tmp_path / "code").mkdir()
+    (tmp_path / "code" / "solve.ps1").write_text("Write-Output 3", encoding="utf-8")
+    (tmp_path / "results").mkdir()
+    (tmp_path / "results" / "summary.json").write_text("{}", encoding="utf-8")
+
+    report = lint_paper(paper, ROOT / "config" / "competition-rules.yaml", artifact_root=tmp_path)
+
+    check = next(item for item in report["checks"] if item["id"] == "code_outputs")
+    assert check["status"] == "pass"
+
+
 def test_latex_combined_sections_and_thebibliography_are_recognized(tmp_path):
     paper = tmp_path / "main.tex"
     paper.write_text(

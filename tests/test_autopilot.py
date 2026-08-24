@@ -418,3 +418,32 @@ def test_compile_paper_uses_temporary_copy_and_preserves_source_pdf(tmp_path, mo
     assert report["status"] == "pass"
     assert report["source_pdf_preserved"] is True
     assert source_pdf.read_bytes() == b"original-pdf"
+
+
+def test_compile_paper_finds_configured_miktex_when_not_on_path(tmp_path, monkeypatch):
+    trainer_root = tmp_path / "trainer"
+    codex_home = tmp_path / "codex-home"
+    case_dir = tmp_path / "case"
+    workspace = tmp_path / "workspace"
+    miktex_bin = tmp_path / "miktex-bin"
+    for directory in (trainer_root, codex_home, case_dir / "reports", workspace / "paper", miktex_bin):
+        directory.mkdir(parents=True, exist_ok=True)
+    (workspace / "paper" / "main.tex").write_text("document", encoding="utf-8")
+    engine = miktex_bin / "xelatex.exe"
+    engine.write_bytes(b"stub")
+
+    def fake_run(command, *, cwd, **kwargs):
+        del kwargs
+        assert Path(command[0]) == engine.resolve()
+        Path(cwd, "main.pdf").write_bytes(b"verified-pdf")
+        return SimpleNamespace(returncode=0, stdout="ok", stderr="")
+
+    monkeypatch.setattr("cumcm_lab.autopilot.shutil.which", lambda _: None)
+    monkeypatch.setenv("CUMCM_MIKTEX_BIN", str(miktex_bin))
+    monkeypatch.setattr("cumcm_lab.autopilot.subprocess.run", fake_run)
+    executor = CodexPhaseExecutor(trainer_root, codex_home)
+
+    report = executor._compile_paper(case_dir, workspace, "test")
+
+    assert report["status"] == "pass"
+    assert Path(report["engine"]) == engine.resolve()

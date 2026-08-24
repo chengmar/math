@@ -363,7 +363,11 @@ def lint_paper(
         add("page_limit", "needs_review", "文本源文件无法可靠判断最终 PDF 页数")
 
     if artifact_root:
-        has_code = (artifact_root / "code").exists() and any((artifact_root / "code").rglob("*.py"))
+        supported_code_suffixes = {".py", ".ps1", ".cmd", ".bat"}
+        has_code = (artifact_root / "code").exists() and any(
+            path.is_file() and path.suffix.casefold() in supported_code_suffixes
+            for path in (artifact_root / "code").rglob("*")
+        )
         has_results = (artifact_root / "results").exists() and any(path.is_file() for path in (artifact_root / "results").rglob("*"))
         add("code_outputs", "pass" if has_code and has_results else "fail", f"code={has_code}, results={has_results}")
         add("number_consistency", "needs_review", "数字一致性需结合结构化结果和人工抽查")

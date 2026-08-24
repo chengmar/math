@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-25T05:10:04+08:00",
+  "generated_at": "2026-08-25T05:39:12+08:00",
   "system_status": "continuous_training",
   "execution_policy": {
     "continuous_mode": true,
@@ -34,11 +34,11 @@
     },
     "current": {
       "case_id": "2013A",
-      "phase": "solve",
+      "phase": "audit",
       "status": "pending"
     },
     "total": 19,
-    "updated_at": "2026-08-25T05:10:02+08:00"
+    "updated_at": "2026-08-25T05:39:12+08:00"
   },
   "cases": [
     {
@@ -514,19 +514,28 @@
     {
       "case_id": "2013A",
       "status": "pending",
-      "current_phase": "solve",
-      "completed_phases": [],
+      "current_phase": "audit",
+      "completed_phases": [
+        "solve"
+      ],
       "attempts": {
-        "solve": 0,
+        "solve": 2,
         "audit": 0,
         "blind-revision": 0,
         "reflection": 0
       },
-      "blind_v1": false,
+      "blind_v1": true,
       "audit": false,
       "blind_final": false,
       "reflection": false,
-      "sessions": {},
+      "sessions": {
+        "solve": {
+          "thread_id": "01a0359c-72d2-7582-a5da-b09b007aa526",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        }
+      },
       "fallback_detected": false,
       "candidate_count": 0,
       "machine_verified_generated": 0
