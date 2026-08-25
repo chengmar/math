@@ -403,6 +403,68 @@ def _validate_candidate_proposals(lesson_root: Path, case_id: str) -> dict[str, 
     index_path = lesson_root / "index.yaml"
     if index_path.is_file():
         index = yaml.safe_load(index_path.read_text(encoding="utf-8-sig")) or {}
+        proposals = index.get("proposals") if isinstance(index, dict) else None
+        if isinstance(proposals, list) and proposals:
+            invalid: list[str] = []
+            seen_paths: set[str] = set()
+            root = lesson_root.resolve()
+            default_state = str(index.get("default_proposal_state") or "").casefold()
+            for position, proposal in enumerate(proposals, start=1):
+                label = f"index.yaml:proposals[{position}]"
+                if not isinstance(proposal, dict):
+                    invalid.append(label)
+                    continue
+                relative = str(proposal.get("file") or proposal.get("path") or "").strip()
+                if not relative or relative in seen_paths:
+                    invalid.append(f"{label}:path")
+                    continue
+                seen_paths.add(relative)
+                candidate_path = (lesson_root / relative).resolve()
+                if (
+                    not candidate_path.is_relative_to(root)
+                    or candidate_path.parent != root
+                    or candidate_path.suffix.casefold() not in {".yaml", ".yml"}
+                    or not candidate_path.is_file()
+                ):
+                    invalid.append(f"{label}:path")
+                    continue
+                try:
+                    payload = yaml.safe_load(candidate_path.read_text(encoding="utf-8-sig")) or {}
+                except yaml.YAMLError:
+                    payload = None
+                if not isinstance(payload, dict):
+                    invalid.append(f"{relative}:yaml")
+                    continue
+                index_state = str(
+                    proposal.get("proposal_state")
+                    or proposal.get("status")
+                    or proposal.get("state")
+                    or default_state
+                ).casefold()
+                payload_state = str(
+                    payload.get("proposal_state")
+                    or payload.get("status")
+                    or payload.get("knowledge_status")
+                    or payload.get("state")
+                    or ""
+                ).casefold()
+                source_case = payload.get("source_case") if isinstance(payload.get("source_case"), dict) else {}
+                payload_case_id = str(payload.get("case_id") or source_case.get("case_id") or "")
+                index_id = str(proposal.get("id") or "")
+                payload_id = str(payload.get("proposal_id") or payload.get("id") or "")
+                if (
+                    index_state != "candidate"
+                    or payload_state != "candidate"
+                    or payload_case_id != case_id
+                    or not index_id
+                    or payload_id != index_id
+                ):
+                    invalid.append(f"{relative}:metadata")
+            return {
+                "files": 1 + len(seen_paths),
+                "candidate_count": len(proposals),
+                "invalid": invalid,
+            }
         cards = index.get("cards") if isinstance(index, dict) else None
         if not isinstance(cards, list) or not cards:
             return {"files": 1, "candidate_count": 0, "invalid": ["index.yaml:cards"]}

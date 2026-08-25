@@ -317,6 +317,33 @@ def test_indexed_markdown_candidate_cards_reject_escape(tmp_path):
     assert result["invalid"] == ["index.yaml:cards[1]:path"]
 
 
+def test_indexed_yaml_candidate_proposals_are_validated(tmp_path):
+    lesson_root = tmp_path / "lessons-proposed"
+    lesson_root.mkdir()
+    (lesson_root / "index.yaml").write_text(
+        "case_id: 2015A\n"
+        "default_proposal_state: candidate\n"
+        "proposals:\n"
+        "  - id: CP-2015A-001\n"
+        "    file: card-1.yaml\n"
+        "    proposal_state: candidate\n",
+        encoding="utf-8",
+    )
+    (lesson_root / "card-1.yaml").write_text(
+        "proposal_id: CP-2015A-001\n"
+        "proposal_state: candidate\n"
+        "source_case:\n"
+        "  case_id: 2015A\n",
+        encoding="utf-8",
+    )
+
+    assert _validate_candidate_proposals(lesson_root, "2015A") == {
+        "files": 2,
+        "candidate_count": 1,
+        "invalid": [],
+    }
+
+
 def test_system_failure_stops_entire_queue(tmp_path):
     queue_path = tmp_path / "queue.json"
     runtime = tmp_path / "runtime"
