@@ -382,8 +382,11 @@ def _candidate_knowledge_statuses(payload: Any) -> list[str]:
             for child in value:
                 visit(child)
 
-    if isinstance(payload, dict) and isinstance(payload.get("status"), str):
-        top_status = str(payload["status"]).casefold()
+    top_value = None
+    if isinstance(payload, dict):
+        top_value = payload.get("status") or payload.get("knowledge_status") or payload.get("state")
+    if isinstance(top_value, str):
+        top_status = top_value.casefold()
         if top_status in {"candidate", "demo", "verified", "machine_verified", "deprecated"}:
             statuses.append(top_status)
     visit(payload)

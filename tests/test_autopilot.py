@@ -271,6 +271,21 @@ def test_yaml_card_container_accepts_state_alias(tmp_path):
     }
 
 
+def test_standalone_yaml_candidate_accepts_top_level_state_alias(tmp_path):
+    lesson_root = tmp_path / "lessons-proposed"
+    lesson_root.mkdir()
+    (lesson_root / "card.yaml").write_text(
+        "id: LP-2013A-001\nstate: candidate\ntitle: evidence boundary\n",
+        encoding="utf-8",
+    )
+
+    assert _validate_candidate_proposals(lesson_root, "2013A") == {
+        "files": 1,
+        "candidate_count": 1,
+        "invalid": [],
+    }
+
+
 def test_indexed_markdown_candidate_cards_are_validated(tmp_path):
     lesson_root = tmp_path / "lessons-proposed"
     lesson_root.mkdir()
