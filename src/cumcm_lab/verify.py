@@ -38,7 +38,7 @@ def _recorded_reproduction_commands(reproduction: dict[str, Any]) -> list[str]:
     confinement are handled separately by ``_safe_workspace_invocation``.
     """
 
-    for command_key in ("run_command", "primary_command", "command"):
+    for command_key in ("run_command", "primary_command", "command", "portable_command"):
         run_command = reproduction.get(command_key)
         if isinstance(run_command, str) and run_command.strip():
             return [run_command.strip()]
@@ -319,6 +319,7 @@ def verify_case(
     ]
     command_recorded = bool(recorded_commands)
     randomness = reproduction.get("randomness") if isinstance(reproduction.get("randomness"), dict) else {}
+    randomness_declared_unused = randomness.get("used") is False
     reproduction_timeout_seconds = _reproduction_timeout_seconds()
     if invocations:
         code_text = "\n".join(
@@ -401,7 +402,8 @@ def verify_case(
             stdout = "\n".join(stdout_parts)
             stderr = "\n".join(stderr_parts)
             output_generated = any(path.is_file() for path in generated_results.rglob("*"))
-    status = "pass" if not missing and return_code == 0 and seed_found and command_recorded and output_generated else "fail"
+    randomness_controlled = seed_found or randomness_declared_unused
+    status = "pass" if not missing and return_code == 0 and randomness_controlled and command_recorded and output_generated else "fail"
     report = {
         "status": status,
         "checked_at": now_iso(),
@@ -421,6 +423,8 @@ def verify_case(
         "stdout": stdout,
         "stderr": stderr,
         "random_seed_detected": seed_found,
+        "randomness_declared_unused": randomness_declared_unused,
+        "randomness_controlled": randomness_controlled,
         "run_command_recorded": command_recorded,
         "reproduction_timeout_seconds": reproduction_timeout_seconds,
         "outputs_regenerated": output_generated,

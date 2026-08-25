@@ -8,6 +8,7 @@ from cumcm_lab.verify import (
     DEFAULT_REPRODUCTION_TIMEOUT_SECONDS,
     _isolated_reproduction_arguments,
     _powershell_reproduction_command,
+    _recorded_reproduction_commands,
     _reproduction_timeout_seconds,
     _safe_workspace_invocation,
     verify_case,
@@ -29,6 +30,12 @@ def test_reproduction_timeout_is_configurable_and_bounded(monkeypatch: pytest.Mo
 
     monkeypatch.setenv("CUMCM_REPRODUCTION_TIMEOUT_SECONDS", "not-an-integer")
     assert _reproduction_timeout_seconds() == DEFAULT_REPRODUCTION_TIMEOUT_SECONDS
+
+
+def test_recorded_reproduction_commands_accepts_portable_command() -> None:
+    assert _recorded_reproduction_commands({"portable_command": "python code/solve.py"}) == [
+        "python code/solve.py"
+    ]
 
 
 def test_powershell_reproduction_passes_declared_workspace() -> None:
@@ -91,6 +98,28 @@ def test_verify_accepts_top_level_command_and_seed(tmp_path: Path) -> None:
     assert report["status"] == "pass"
     assert report["random_seed_detected"] is True
     assert report["run_command_recorded"] is True
+
+
+def test_verify_accepts_declared_deterministic_pipeline_without_fake_seed(tmp_path: Path) -> None:
+    source = tmp_path / "source"
+    for directory in ("code", "results", "paper"):
+        (source / directory).mkdir(parents=True, exist_ok=True)
+    (source / "solution-report.yaml").write_text("status: pass\n", encoding="utf-8")
+    (source / "reproducibility.yaml").write_text(
+        "portable_command: python code/run.py\nrandomness:\n  used: false\n",
+        encoding="utf-8",
+    )
+    (source / "code" / "run.py").write_text(
+        "from pathlib import Path\nPath('results/out.txt').write_text('ok')\n",
+        encoding="utf-8",
+    )
+
+    report = verify_case(tmp_path, source_root=source)
+
+    assert report["status"] == "pass"
+    assert report["random_seed_detected"] is False
+    assert report["randomness_declared_unused"] is True
+    assert report["randomness_controlled"] is True
 
 
 def test_verify_accepts_named_generate_all_pipeline(tmp_path: Path) -> None:
