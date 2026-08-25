@@ -164,3 +164,20 @@ def test_traffic_queue_semantic_section_headings_are_recognized(tmp_path):
     report = lint_paper(paper, ROOT / "config" / "competition-rules.yaml")
     required = next(item for item in report["checks"] if item["id"] == "required_sections")
     assert required["status"] == "pass"
+
+
+def test_lunar_landing_semantic_section_headings_are_recognized(tmp_path):
+    paper = tmp_path / "main.tex"
+    paper.write_text(
+        "\\begin{abstract}轨迹模型得到 1214.08 kg 的定量结果。关键词：月球着陆。\\end{abstract}\n"
+        "\\section{问题与依赖关系}\\section{数据、坐标与假设}\n"
+        "\\section{DEM 选址和垂直基准}\\section{准备轨道}\n"
+        "\\section{变质量参考轨迹与联合搜索}\\section{闭环制导与控制策略}\n"
+        "\\section{结果与验证}\\section{自由落体、局限与结论}\n"
+        "\\begin{thebibliography}{1}\\bibitem{x} x\\end{thebibliography}\n"
+        "\\appendix\\section{复现}\n",
+        encoding="utf-8",
+    )
+    report = lint_paper(paper, ROOT / "config" / "competition-rules.yaml")
+    required = next(item for item in report["checks"] if item["id"] == "required_sections")
+    assert required["status"] == "pass"
