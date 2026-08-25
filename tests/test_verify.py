@@ -113,6 +113,28 @@ def test_verify_accepts_named_generate_all_pipeline(tmp_path: Path) -> None:
     assert report["run_scripts"] == [str(source / "code" / "run.py")]
 
 
+def test_verify_accepts_named_sensitivity_seeds(tmp_path: Path) -> None:
+    source = tmp_path / "source"
+    for directory in ("code", "results", "paper"):
+        (source / directory).mkdir(parents=True, exist_ok=True)
+    (source / "solution-report.yaml").write_text("status: pass\n", encoding="utf-8")
+    (source / "reproducibility.yaml").write_text(
+        "commands:\n  generate_all: python code/run.py\n"
+        "randomness:\n  coordinate_rounding_seed: 2015\n"
+        "  residual_block_bootstrap_seed: 2016\n",
+        encoding="utf-8",
+    )
+    (source / "code" / "run.py").write_text(
+        "from pathlib import Path\nPath('results/out.txt').write_text('ok')\n",
+        encoding="utf-8",
+    )
+
+    report = verify_case(tmp_path, source_root=source)
+
+    assert report["status"] == "pass"
+    assert report["random_seed_detected"] is True
+
+
 def test_verify_accepts_top_level_seed_and_full_pipeline_command(tmp_path: Path) -> None:
     source = tmp_path / "source"
     for directory in ("code", "results", "paper"):

@@ -198,3 +198,20 @@ def test_solar_shadow_semantic_model_headings_are_recognized(tmp_path):
     report = lint_paper(paper, ROOT / "config" / "competition-rules.yaml")
     required = next(item for item in report["checks"] if item["id"] == "required_sections")
     assert required["status"] == "pass"
+
+
+def test_revised_solar_shadow_headings_are_recognized(tmp_path):
+    paper = tmp_path / "main.tex"
+    paper.write_text(
+        "\\begin{abstract}太阳模型得到 0.1 度的定量结果。关键词：影子。\\end{abstract}\n"
+        "\\section{问题重述}\\section{数据审计与问题分析}\n"
+        "\\section{模型假设与符号}\\section{太阳影子正向模型}\n"
+        "\\section{逆模型、选择与视频扩展}\\section{验证与稳健性}\n"
+        "\\section{模型评价与结论}\n"
+        "\\begin{thebibliography}{1}\\bibitem{x} x\\end{thebibliography}\n"
+        "\\appendix\\section{复现与支撑材料}\n",
+        encoding="utf-8",
+    )
+    report = lint_paper(paper, ROOT / "config" / "competition-rules.yaml")
+    required = next(item for item in report["checks"] if item["id"] == "required_sections")
+    assert required["status"] == "pass"

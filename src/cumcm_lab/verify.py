@@ -329,6 +329,8 @@ def verify_case(
             reproduction.get("random_seed") is not None
             or reproduction.get("seed") is not None
             or randomness.get("seed") is not None
+            or randomness.get("coordinate_rounding_seed") is not None
+            or randomness.get("residual_block_bootstrap_seed") is not None
             or "SEED" in code_text
             or "random.seed" in code_text
             or "np.random.seed" in code_text
