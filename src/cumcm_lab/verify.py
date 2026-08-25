@@ -79,6 +79,7 @@ def _recorded_reproduction_commands(reproduction: dict[str, Any]) -> list[str]:
             "one_numeric_run",
             "numeric_run",
             "primary_run",
+            "generate_all",
             "all",
             "run_all",
         ):
