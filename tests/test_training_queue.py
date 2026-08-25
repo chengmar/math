@@ -14,10 +14,12 @@ from cumcm_lab.training_queue import (
     mark_phase_interrupted_user,
     mark_phase_success,
     recover_phase_success,
+    reopen_phase_after_infrastructure_repair,
     recover_unstarted_phase,
     mark_case_deferred_platform_safety,
     next_runnable_item,
     queue_summary,
+    set_queue_max_retries,
     set_stop_requested,
 )
 
@@ -40,11 +42,13 @@ def test_queue_creation_hard_rejects_2023_and_non_training_years(tmp_path):
         create_training_queue(["2002A"], tmp_path / "q.json")
 
 
-def test_queue_rejects_duplicates_and_nondefault_retry_policy(tmp_path):
+def test_queue_rejects_duplicates_and_unsupported_retry_policy(tmp_path):
     with pytest.raises(QueueError, match="重复"):
         create_training_queue(["2003A", "2003A"], tmp_path / "q.json")
-    with pytest.raises(QueueError, match="max_retries=1"):
-        create_training_queue(["2003A"], tmp_path / "q.json", max_retries=2)
+    queue = create_training_queue(["2003A"], tmp_path / "q.json", max_retries=2)
+    assert queue["max_retries"] == 2
+    with pytest.raises(QueueError, match="max_retries"):
+        create_training_queue(["2004A"], tmp_path / "q2.json", max_retries=3)
 
 
 def test_phase_progress_is_an_ordered_queue_layer(tmp_path):
@@ -75,6 +79,43 @@ def test_transient_error_retries_once_then_blocks(tmp_path):
     assert item["status"] == "blocked"
     assert item["blocked_reason"] == "retry_exhausted"
     assert next_runnable_item(load_training_queue(path)) is None
+
+
+def test_two_retry_policy_allows_three_total_attempts(tmp_path):
+    path = tmp_path / "q.json"
+    create_training_queue(["2003A"], path, max_retries=2)
+    for expected_attempt in (1, 2):
+        _, attempt = begin_phase(path, "2003A")
+        assert attempt == expected_attempt
+        item = mark_phase_failure(path, "2003A", "solve", "temporary", transient=True)
+        assert item["status"] == "pending"
+    _, attempt = begin_phase(path, "2003A")
+    assert attempt == 3
+    item = mark_phase_failure(path, "2003A", "solve", "temporary", transient=True)
+    assert item["status"] == "blocked"
+
+
+def test_tested_infrastructure_repair_reopens_without_erasing_attempts(tmp_path):
+    path = tmp_path / "q.json"
+    create_training_queue(["2016A"], path)
+    begin_phase(path, "2016A")
+    mark_phase_failure(path, "2016A", "solve", "python missing", transient=True)
+    begin_phase(path, "2016A")
+    blocked = mark_phase_failure(path, "2016A", "solve", "python still missing", transient=True)
+    assert blocked["status"] == "blocked"
+
+    set_queue_max_retries(path, 2)
+    reopened = reopen_phase_after_infrastructure_repair(
+        path,
+        "2016A",
+        "solve",
+        repair_id="session-runtime-python-path",
+    )
+
+    assert reopened["status"] == "pending"
+    assert reopened["attempts"]["solve"] == 2
+    _, attempt = begin_phase(path, "2016A")
+    assert attempt == 3
 
 
 def test_retry_exhausted_phase_can_be_advanced_by_evidence_backed_recovery(tmp_path):

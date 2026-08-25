@@ -6,6 +6,7 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 import time
 import uuid
 from pathlib import Path
@@ -568,6 +569,20 @@ def run_stage_session(
     write_json(metadata_path, metadata)
     environment = dict(os.environ if base_env is None else base_env)
     environment["CODEX_HOME"] = str(codex_home)
+    python_dir = str(Path(sys.executable).resolve().parent)
+    inherited_path = environment.get("PATH", "")
+    environment["PATH"] = os.pathsep.join(
+        item for item in (python_dir, inherited_path) if item
+    )
+    environment.setdefault("PYTHONUTF8", "1")
+    environment.setdefault("PYTHONIOENCODING", "utf-8")
+    metadata["session_runtime"] = {
+        "python_executable": str(Path(sys.executable).resolve()),
+        "python_path_prepend": python_dir,
+        "python_utf8": environment["PYTHONUTF8"],
+        "python_io_encoding": environment["PYTHONIOENCODING"],
+    }
+    write_json(metadata_path, metadata)
     if runner is None:
         environment["RUST_LOG"] = "codex_core::session::session=debug"
     exit_code: int | None = None

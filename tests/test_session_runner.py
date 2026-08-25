@@ -130,7 +130,11 @@ def test_fake_runner_receives_stdin_and_writes_auditable_outputs(tmp_path: Path)
     call = calls[0]
     assert call["input"] == prompt
     assert call["cwd"] == str(workspace.resolve())
-    assert call["env"] == {"SAFE_TEST_ENV": "1", "CODEX_HOME": str(codex_home.resolve())}
+    assert call["env"]["SAFE_TEST_ENV"] == "1"
+    assert call["env"]["CODEX_HOME"] == str(codex_home.resolve())
+    assert call["env"]["PYTHONUTF8"] == "1"
+    assert call["env"]["PYTHONIOENCODING"] == "utf-8"
+    assert call["env"]["PATH"].split(os.pathsep)[0] == str(Path(sys.executable).resolve().parent)
     assert call["shell"] is False
     assert call["check"] is False
     assert call["command"][-1] == "-"

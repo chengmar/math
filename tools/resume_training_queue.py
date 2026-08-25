@@ -14,7 +14,7 @@ trainer = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(trainer / "src"))
 
 from cumcm_lab.autopilot import CodexPhaseExecutor, resume_autopilot
-from cumcm_lab.training_queue import TRAIN_PHASES
+from cumcm_lab.training_queue import TRAIN_PHASES, set_queue_max_retries
 
 
 def main() -> int:
@@ -27,10 +27,11 @@ def main() -> int:
     parser.add_argument("--model", default="gpt-5.6-sol")
     parser.add_argument("--reasoning", "--reasoning-effort", dest="reasoning_effort", choices=["low", "medium", "high", "xhigh", "max"], default="max")
     parser.add_argument("--max-cases", type=int)
-    parser.add_argument("--max-retries", type=int, choices=[1], default=1)
+    parser.add_argument("--max-retries", type=int, choices=[1, 2], default=1)
     parser.add_argument("--stop-after-phase", choices=TRAIN_PHASES)
     args = parser.parse_args()
     try:
+        set_queue_max_retries(args.queue, args.max_retries)
         executor = CodexPhaseExecutor(
             args.trainer_root,
             args.codex_home,

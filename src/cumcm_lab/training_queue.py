@@ -103,8 +103,8 @@ def create_training_queue(
     queue_path = Path(queue_path)
     if queue_path.exists() and not overwrite:
         raise FileExistsError(f"训练队列已存在，拒绝覆盖：{queue_path}")
-    if max_retries != 1:
-        raise QueueError("安全策略固定 max_retries=1。")
+    if max_retries not in {1, 2}:
+        raise QueueError("安全策略仅允许 max_retries=1 或 2。")
     blocked = {str(key).upper(): str(value) for key, value in (blocked or {}).items()}
     normalized: list[tuple[int, str]] = []
     seen: set[str] = set()
@@ -122,7 +122,7 @@ def create_training_queue(
         "queue_id": str(uuid.uuid4()),
         "created_at": created_at,
         "updated_at": created_at,
-        "max_retries": 1,
+        "max_retries": max_retries,
         "stop_requested": False,
         "items": [
             _new_item(case_id, ordinal, blocked.get(case_id))
@@ -149,7 +149,7 @@ def write_public_queue_plan(
         "schema_version": QUEUE_SCHEMA_VERSION,
         "generated_at": now_iso(),
         "allowed_statuses": sorted(PUBLIC_QUEUE_STATUSES),
-        "max_retries": 1,
+        "max_retries": queue["max_retries"],
         "items": [
             {
                 "ordinal": item["ordinal"],
@@ -180,8 +180,9 @@ def _write_queue(path: Path, value: Any) -> None:
 def validate_training_queue(queue: Mapping[str, Any]) -> None:
     if queue.get("schema_version") != QUEUE_SCHEMA_VERSION:
         raise QueueError("训练队列 schema_version 无效。")
-    if queue.get("max_retries") != 1:
-        raise QueueError("训练队列 max_retries 必须等于 1。")
+    max_retries = queue.get("max_retries")
+    if max_retries not in {1, 2}:
+        raise QueueError("训练队列 max_retries 必须等于 1 或 2。")
     items = queue.get("items")
     if not isinstance(items, list):
         raise QueueError("训练队列 items 必须是数组。")
@@ -215,7 +216,10 @@ def validate_training_queue(queue: Mapping[str, Any]) -> None:
         attempts = item.get("attempts")
         if not isinstance(attempts, dict) or set(attempts) != set(TRAIN_PHASES):
             raise QueueError(f"阶段尝试记录不完整：{case_id}")
-        if any(not isinstance(value, int) or value < 0 or value > 2 for value in attempts.values()):
+        if any(
+            not isinstance(value, int) or value < 0 or value > int(max_retries) + 1
+            for value in attempts.values()
+        ):
             raise QueueError(f"阶段尝试次数越界：{case_id}")
         if item.get("status") == "completed":
             if completed != list(TRAIN_PHASES) or phase is not None:
@@ -237,6 +241,68 @@ def save_training_queue(queue_path: Path, queue: dict[str, Any]) -> None:
     queue["updated_at"] = now_iso()
     validate_training_queue(queue)
     _write_queue(Path(queue_path), queue)
+
+
+def set_queue_max_retries(queue_path: Path, max_retries: int) -> dict[str, Any]:
+    """Apply the explicit one- or two-retry policy without altering attempts."""
+
+    if max_retries not in {1, 2}:
+        raise QueueError("训练队列 max_retries 仅允许 1 或 2。")
+    queue = load_training_queue(queue_path)
+    queue["max_retries"] = max_retries
+    save_training_queue(queue_path, queue)
+    return queue
+
+
+def reopen_phase_after_infrastructure_repair(
+    queue_path: Path,
+    case_id: str,
+    phase: str,
+    *,
+    repair_id: str,
+    max_repair_cycles: int = 2,
+) -> dict[str, Any]:
+    """Reopen the current phase after a tested infrastructure repair.
+
+    Attempts are preserved because prior model sessions remain part of the audit
+    trail. The retry policy must still leave another attempt available.
+    """
+
+    if not repair_id.strip():
+        raise QueueError("基础设施恢复必须提供非空 repair_id。")
+    queue = load_training_queue(queue_path)
+    item = _find_item(queue, case_id)
+    if item.get("status") not in {"blocked", "pending", "running"} or item.get("current_phase") != phase:
+        raise QueueError(f"只能恢复当前基础设施受阻阶段：{case_id}/{phase}")
+    attempts = int(item.get("attempts", {}).get(phase, 0))
+    if attempts < 1:
+        raise QueueError(f"基础设施恢复缺少既有尝试：{case_id}/{phase}")
+    if attempts >= int(queue["max_retries"]) + 1:
+        raise QueueError(f"基础设施恢复后仍无可用重试：{case_id}/{phase}")
+    repairs = list(item.get("infrastructure_repairs") or [])
+    if len(repairs) >= max_repair_cycles:
+        raise QueueError(f"基础设施修复轮次已耗尽：{case_id}/{phase}")
+    repairs.append(
+        {
+            "phase": phase,
+            "repair_id": repair_id.strip(),
+            "reopened_at": now_iso(),
+            "attempt_count_preserved": attempts,
+        }
+    )
+    item["infrastructure_repairs"] = repairs
+    item["status"] = "pending"
+    item["lifecycle_status"] = {
+        "solve": "ready",
+        "audit": "blind_v1_frozen",
+        "blind-revision": "audited",
+        "reflection": "blind_final_frozen",
+    }[phase]
+    item["blocked_reason"] = "infrastructure_repaired"
+    item["last_error"] = None
+    item["updated_at"] = now_iso()
+    save_training_queue(queue_path, queue)
+    return item
 
 
 def queue_summary(queue: Mapping[str, Any]) -> dict[str, Any]:
