@@ -260,8 +260,28 @@ def test_yaml_card_container_rejects_wrong_case_or_non_candidate_card(tmp_path):
 
     result = _validate_candidate_proposals(lesson_root, "2008A")
 
-    assert result["candidate_count"] == 1
+    assert result["candidate_count"] == 0
     assert result["invalid"] == ["cards.yaml"]
+
+
+def test_legacy_yaml_allows_demo_without_counting_it_as_candidate(tmp_path):
+    lesson_root = tmp_path / "lessons-proposed"
+    lesson_root.mkdir()
+    (lesson_root / "candidate.yaml").write_text(
+        "case_id: 2018A\nstatus: candidate\ntitle: reusable lesson\n",
+        encoding="utf-8",
+    )
+    (lesson_root / "demo.yaml").write_text(
+        "case_id: 2018A\npackage_status: demo\nstatus: demo\n"
+        "title: non-promotable relevance example\n",
+        encoding="utf-8",
+    )
+
+    assert _validate_candidate_proposals(lesson_root, "2018A") == {
+        "files": 2,
+        "candidate_count": 1,
+        "invalid": [],
+    }
 
 
 def test_yaml_card_container_accepts_state_alias(tmp_path):

@@ -450,7 +450,7 @@ def _candidate_knowledge_statuses(payload: Any) -> list[str]:
 
 
 def _validate_candidate_proposals(lesson_root: Path, case_id: str) -> dict[str, Any]:
-    """Validate either legacy YAML proposals or indexed Markdown candidate cards."""
+    """Validate candidate proposals and explicitly non-promotable demo material."""
 
     lesson_root = Path(lesson_root)
     if not lesson_root.is_dir():
@@ -576,18 +576,23 @@ def _validate_candidate_proposals(lesson_root: Path, case_id: str) -> dict[str, 
     lesson_files = sorted(lesson_root.glob("*.yaml")) + sorted(lesson_root.glob("*.yml"))
     invalid = []
     candidate_count = 0
+    allowed_legacy_statuses = {"candidate", "demo"}
     for path in lesson_files:
         payload = yaml.safe_load(path.read_text(encoding="utf-8-sig")) or {}
         statuses = _candidate_knowledge_statuses(payload)
-        candidate_count += len(statuses)
+        candidate_count += sum(status == "candidate" for status in statuses)
         metadata_valid = not isinstance(payload, dict) or (
             (not payload.get("case_id") or str(payload.get("case_id")) == case_id)
             and (
                 not payload.get("package_status")
-                or str(payload.get("package_status")).casefold() == "candidate"
+                or str(payload.get("package_status")).casefold() in allowed_legacy_statuses
             )
         )
-        if not metadata_valid or not statuses or any(status != "candidate" for status in statuses):
+        if (
+            not metadata_valid
+            or not statuses
+            or any(status not in allowed_legacy_statuses for status in statuses)
+        ):
             invalid.append(path.name)
     return {"files": len(lesson_files), "candidate_count": candidate_count, "invalid": invalid}
 
@@ -1265,7 +1270,7 @@ class CodexPhaseExecutor:
             ).get("status"),
             "independent_ephemeral_sessions": session_contract_pass,
             "git_leak_guard": git_report["status"],
-            "candidate_only": True,
+            "candidate_or_demo_only": True,
             "candidate_count": candidate_count,
             "knowledge_repository_unchanged": True,
         }
