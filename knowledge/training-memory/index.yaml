@@ -1,7 +1,7 @@
 schema_version: 1
 collection: training-memory
 status: provisional_training
-version: 1
+version: 7
 created_at: '2026-08-24'
 active_card_limit: 25
 solve_retrieval_limit: 5
@@ -11,18 +11,63 @@ current_active_count: 15
 machine_verified_count: 0
 verified_count: 0
 cards:
-  - TM-001-EVIDENCE-LAYERS
-  - TM-002-TIME-ORDERED-VALIDATION
-  - TM-003-CONSERVATION-INVARIANTS
-  - TM-004-BOUNDED-LONG-HORIZON
-  - TM-005-CAUSAL-TIMELINE
-  - TM-006-SMALL-DENOMINATOR-GUARD
-  - TM-007-FIT-EVALUATE-SEPARATION
-  - TM-008-IMMUTABLE-INPUT-PROVENANCE
-  - TM-009-CONSTRAINT-SCOPE
-  - TM-010-INVARIANTS-BEFORE-OBJECTIVE
-  - TM-011-STRUCTURE-BEFORE-SOLVER
-  - TM-012-REPRODUCIBILITY-TIERS
-  - TM-013-SINGLE-SOURCE-RESULTS
-  - TM-014-UNCERTAINTY-BY-SOURCE
-  - TM-015-THRESHOLD-PROVENANCE
+- TM-001-EVIDENCE-LAYERS
+- TM-002-TIME-ORDERED-VALIDATION
+- TM-003-CONSERVATION-INVARIANTS
+- TM-004-BOUNDED-LONG-HORIZON
+- TM-005-CAUSAL-TIMELINE
+- TM-006-SMALL-DENOMINATOR-GUARD
+- TM-007-FIT-EVALUATE-SEPARATION
+- TM-008-IMMUTABLE-INPUT-PROVENANCE
+- TM-009-CONSTRAINT-SCOPE
+- TM-010-INVARIANTS-BEFORE-OBJECTIVE
+- TM-011-STRUCTURE-BEFORE-SOLVER
+- TM-012-REPRODUCIBILITY-TIERS
+- TM-013-SINGLE-SOURCE-RESULTS
+- TM-014-UNCERTAINTY-BY-SOURCE
+- TM-015-THRESHOLD-PROVENANCE
+case_updates:
+- case_id: 2010A
+  status: completed
+  candidate_count_reviewed: 32
+  cards_added: 0
+  decision: retain_candidates_without_forced_provisional_card
+  reason: 单题 Reflection candidate 尚缺跨案例适用性证据；完成更新审查但不强行套用或升级。
+  updated_at: '2026-08-27T21:29:25+08:00'
+- case_id: 2011A
+  status: completed
+  candidate_count_reviewed: 34
+  cards_added: 0
+  decision: retain_candidates_without_forced_provisional_card
+  reason: 单题 Reflection candidate 尚缺跨案例适用性证据；完成更新审查但不强行套用或升级。
+  updated_at: '2026-08-27T21:30:23+08:00'
+- case_id: 2012A
+  status: completed
+  candidate_count_reviewed: 8
+  cards_added: 0
+  decision: retain_candidates_without_forced_provisional_card
+  reason: 单题 Reflection candidate 尚缺跨案例适用性证据；完成更新审查但不强行套用或升级。
+  updated_at: '2026-08-27T21:31:02+08:00'
+- case_id: 2013A
+  status: completed
+  candidate_count_reviewed: 5
+  cards_added: 0
+  decision: retain_candidates_without_forced_provisional_card
+  reason: 单题 Reflection candidate 尚缺跨案例适用性证据；完成更新审查但不强行套用或升级。
+  updated_at: '2026-08-27T21:31:39+08:00'
+- case_id: 2014A
+  status: completed
+  candidate_count_reviewed: 4
+  cards_added: 0
+  decision: retain_candidates_without_forced_provisional_card
+  reason: 单题 Reflection candidate 尚缺跨案例适用性证据；完成更新审查但不强行套用或升级。
+  updated_at: '2026-08-27T21:32:14+08:00'
+- case_id: 2015A
+  status: completed
+  candidate_count_reviewed: 7
+  cards_added: 0
+  decision: retain_candidates_without_forced_provisional_card
+  reason: 单题 Reflection candidate 尚缺跨案例适用性证据；完成更新审查但不强行套用或升级。
+  updated_at: '2026-08-27T21:32:52+08:00'
+last_case_update: 2015A
+last_updated: '2026-08-27T21:32:52+08:00'

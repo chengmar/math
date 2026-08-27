@@ -1317,6 +1317,7 @@ class CodexPhaseExecutor:
             index["case_updates"] = updates
             index["last_case_update"] = case_id
             index["last_updated"] = now_iso()
+            index["version"] = int(index.get("version", 0)) + 1
             write_yaml(index_path, index)
         after_hash = sha256_file(index_path)
         report = {
