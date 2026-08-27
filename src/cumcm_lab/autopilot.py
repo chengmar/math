@@ -409,6 +409,7 @@ def _candidate_knowledge_statuses(payload: Any) -> list[str]:
         "lessons",
         "expression_lessons",
         "failure_modes",
+        "items",
         "patterns",
         "validation_patterns",
     }
@@ -1592,13 +1593,19 @@ class CodexPhaseExecutor:
             reflection_workspace = case_dir / "workspaces" / "reflection"
             refs = reflection_workspace / "approved-references"
             derived_refs = reflection_workspace / ".reflection-review"
+            extracted_refs = reflection_workspace / "reference-extracts"
             reference_count = len([path for path in refs.iterdir() if path.is_file()]) if refs.is_dir() else 0
             derived_reference_count = (
                 len([path for path in derived_refs.rglob("*") if path.is_file()])
                 if derived_refs.is_dir()
                 else 0
             )
-            for cleanup_target in (refs, derived_refs):
+            extracted_reference_count = (
+                len([path for path in extracted_refs.rglob("*") if path.is_file()])
+                if extracted_refs.is_dir()
+                else 0
+            )
+            for cleanup_target in (refs, derived_refs, extracted_refs):
                 if not cleanup_target.exists():
                     continue
                 if not cleanup_target.resolve().is_relative_to(reflection_workspace.resolve()):
@@ -1614,13 +1621,14 @@ class CodexPhaseExecutor:
             write_json(
                 case_dir / "reports" / "reflection-reference-cleanup.json",
                 {
-                    "status": "pass" if not refs.exists() and not derived_refs.exists() else "fail",
+                    "status": "pass" if not refs.exists() and not derived_refs.exists() and not extracted_refs.exists() else "fail",
                     "removed_reference_count": reference_count,
                     "removed_derived_reference_count": derived_reference_count,
+                    "removed_extracted_reference_count": extracted_reference_count,
                     "removed_at": now_iso(),
                 },
             )
-            if refs.exists() or derived_refs.exists():
+            if refs.exists() or derived_refs.exists() or extracted_refs.exists():
                 raise SystemAutopilotError("Reflection 临时参考材料清理失败。")
             complete_phase(self.trainer_root, case_id, "reflection")
             from .state import transition

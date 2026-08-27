@@ -1,21 +1,28 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-25T11:02:08+08:00",
+  "generated_at": "2026-08-28T00:07:55+08:00",
   "system_status": "continuous_training",
   "execution_policy": {
     "continuous_mode": true,
+    "strict_serial_cases": true,
     "training_paused": false,
     "new_model_sessions_allowed": true,
     "auto_start_next_phase": true,
     "auto_start_next_case": true,
-    "first_case": "2010A",
+    "current_case": "2016A",
+    "current_phase": "reflection",
+    "first_case": "2016A",
     "final_training_case": "2021A",
     "max_cases": "all_remaining",
     "stop_after_current_case": false,
     "stop_on_usage_limit": true,
     "retry_on_usage_limit": false,
     "stop_before_2023": true,
-    "max_retries_per_atomic_phase": 1,
+    "reuse_valid_existing_outputs": true,
+    "max_retries_per_atomic_phase": 2,
+    "max_transient_retries_per_model_phase": 2,
+    "max_blind_revision_rounds": 2,
+    "auto_publish_sanitized_final_snapshot": true,
     "model": "gpt-5.6-sol",
     "reasoning": "max",
     "fallback_allowed": false,
@@ -24,21 +31,22 @@
   "queue": {
     "queue_id": "acfc8cf5-1648-4223-a161-0435d94e04b4",
     "stop_requested": false,
-    "max_retries": 1,
+    "max_retries": 2,
     "counts": {
       "blocked": 0,
-      "completed": 11,
+      "completed": 13,
+      "completed_with_caveats": 0,
       "deferred_platform_safety": 1,
-      "pending": 7,
+      "pending": 5,
       "running": 0
     },
     "current": {
-      "case_id": "2015A",
-      "phase": "audit",
+      "case_id": "2017A",
+      "phase": "solve",
       "status": "pending"
     },
     "total": 19,
-    "updated_at": "2026-08-25T11:02:08+08:00"
+    "updated_at": "2026-08-28T00:07:53+08:00"
   },
   "cases": [
     {
@@ -458,7 +466,7 @@
         }
       },
       "fallback_detected": false,
-      "candidate_count": 28,
+      "candidate_count": 0,
       "machine_verified_generated": 0
     },
     {
@@ -558,7 +566,7 @@
         }
       },
       "fallback_detected": false,
-      "candidate_count": 0,
+      "candidate_count": 5,
       "machine_verified_generated": 0
     },
     {
@@ -608,56 +616,107 @@
         }
       },
       "fallback_detected": false,
-      "candidate_count": 4,
+      "candidate_count": 0,
       "machine_verified_generated": 0
     },
     {
       "case_id": "2015A",
-      "status": "pending",
-      "current_phase": "audit",
+      "status": "completed",
+      "current_phase": null,
       "completed_phases": [
-        "solve"
+        "solve",
+        "audit",
+        "blind-revision",
+        "reflection"
       ],
       "attempts": {
         "solve": 1,
-        "audit": 0,
-        "blind-revision": 0,
-        "reflection": 0
+        "audit": 1,
+        "blind-revision": 2,
+        "reflection": 2
       },
       "blind_v1": true,
-      "audit": false,
-      "blind_final": false,
-      "reflection": false,
+      "audit": true,
+      "blind_final": true,
+      "reflection": true,
       "sessions": {
         "solve": {
           "thread_id": "01a03686-d545-76a2-824e-90031f911250",
           "model": "gpt-5.6-sol",
           "reasoning_effort": "max",
           "fallback": false
+        },
+        "audit": {
+          "thread_id": "01a036de-40b2-7191-ad50-3ff7893fb378",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        },
+        "blind-revision": {
+          "thread_id": "01a036fd-f602-78f1-ac81-ac47390bd8ee",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        },
+        "reflection": {
+          "thread_id": "01a03754-829a-7340-90dd-f4d2788380bd",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
         }
       },
       "fallback_detected": false,
-      "candidate_count": 0,
+      "candidate_count": 7,
       "machine_verified_generated": 0
     },
     {
       "case_id": "2016A",
-      "status": "pending",
-      "current_phase": "solve",
-      "completed_phases": [],
+      "status": "completed",
+      "current_phase": null,
+      "completed_phases": [
+        "solve",
+        "audit",
+        "blind-revision",
+        "reflection"
+      ],
       "attempts": {
-        "solve": 0,
-        "audit": 0,
-        "blind-revision": 0,
-        "reflection": 0
+        "solve": 1,
+        "audit": 1,
+        "blind-revision": 3,
+        "reflection": 2
       },
-      "blind_v1": false,
-      "audit": false,
-      "blind_final": false,
-      "reflection": false,
-      "sessions": {},
+      "blind_v1": true,
+      "audit": true,
+      "blind_final": true,
+      "reflection": true,
+      "sessions": {
+        "solve": {
+          "thread_id": "01a0372f-29cd-7f42-8a3c-6e36c0a7fb85",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        },
+        "audit": {
+          "thread_id": "01a03783-8f5c-7173-b1b7-0114a70afc3e",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        },
+        "blind-revision": {
+          "thread_id": "01a037c0-e85b-73e1-ac56-b0cf523c1060",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        },
+        "reflection": {
+          "thread_id": "01a04396-ee4c-77b0-bb90-5ae0071edaa2",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        }
+      },
       "fallback_detected": false,
-      "candidate_count": 0,
+      "candidate_count": 22,
       "machine_verified_generated": 0
     },
     {
@@ -675,7 +734,14 @@
       "audit": false,
       "blind_final": false,
       "reflection": false,
-      "sessions": {},
+      "sessions": {
+        "solve": {
+          "thread_id": "01a037aa-fb1e-7c50-b73b-519baeaba91f",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        }
+      },
       "fallback_detected": false,
       "candidate_count": 0,
       "machine_verified_generated": 0
@@ -686,7 +752,7 @@
       "current_phase": "solve",
       "completed_phases": [],
       "attempts": {
-        "solve": 0,
+        "solve": 1,
         "audit": 0,
         "blind-revision": 0,
         "reflection": 0
@@ -761,7 +827,7 @@
       "machine_verified_generated": 0
     }
   ],
-  "new_candidate_count": 124,
+  "new_candidate_count": 126,
   "new_machine_verified_count": 0,
   "final_test": {
     "case_id": "2023A",

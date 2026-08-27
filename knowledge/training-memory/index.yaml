@@ -1,13 +1,13 @@
 schema_version: 1
 collection: training-memory
 status: provisional_training
-version: 7
+version: 9
 created_at: '2026-08-24'
 active_card_limit: 25
 solve_retrieval_limit: 5
 first_allowed_case: 2011A
 final_allowed_case: 2021A
-current_active_count: 15
+current_active_count: 18
 machine_verified_count: 0
 verified_count: 0
 cards:
@@ -26,6 +26,9 @@ cards:
 - TM-013-SINGLE-SOURCE-RESULTS
 - TM-014-UNCERTAINTY-BY-SOURCE
 - TM-015-THRESHOLD-PROVENANCE
+- TM-016-MIXED-DESIGN-DOMAIN
+- TM-017-UNIT-INVARIANT-MULTIOBJECTIVE
+- TM-018-AUDIT-COUNTEREXAMPLE-REGRESSION
 case_updates:
 - case_id: 2010A
   status: completed
@@ -69,5 +72,13 @@ case_updates:
   decision: retain_candidates_without_forced_provisional_card
   reason: 单题 Reflection candidate 尚缺跨案例适用性证据；完成更新审查但不强行套用或升级。
   updated_at: '2026-08-27T21:32:52+08:00'
-last_case_update: 2015A
-last_updated: '2026-08-27T21:32:52+08:00'
+- case_id: 2016A
+  status: completed
+  candidate_count_reviewed: 22
+  cards_added: 3
+  added_card_ids: [TM-016-MIXED-DESIGN-DOMAIN, TM-017-UNIT-INVARIANT-MULTIOBJECTIVE, TM-018-AUDIT-COUNTEREXAMPLE-REGRESSION]
+  decision: add_generalized_bounded_provisional_cards
+  reason: 三项经验已去除单题变量与数值，补全适用和不适用边界、最低基线、验证、反例与复杂度；仅进入 provisional_training，等待后续年份正负迁移证据。
+  updated_at: '2026-08-28T00:10:00+08:00'
+last_case_update: 2016A
+last_updated: '2026-08-28T00:10:00+08:00'

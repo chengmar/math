@@ -1,6 +1,6 @@
 # 连续正式训练进度
 
-更新时间：2026-08-25T11:02:08+08:00
+更新时间：2026-08-28T00:07:55+08:00
 
 系统状态：continuous_training
 
@@ -16,19 +16,19 @@
 | 2008A | completed | - | 是 | 是 | 是 | 是 | 35 |
 | 2009A | completed | - | 是 | 是 | 是 | 是 | 10 |
 | 2010A | completed | - | 是 | 是 | 是 | 是 | 32 |
-| 2011A | completed | - | 是 | 是 | 是 | 是 | 28 |
+| 2011A | completed | - | 是 | 是 | 是 | 是 | 0 |
 | 2012A | completed | - | 是 | 是 | 是 | 是 | 8 |
-| 2013A | completed | - | 是 | 是 | 是 | 是 | 0 |
-| 2014A | completed | - | 是 | 是 | 是 | 是 | 4 |
-| 2015A | pending | audit | 是 | 否 | 否 | 否 | 0 |
-| 2016A | pending | solve | 否 | 否 | 否 | 否 | 0 |
+| 2013A | completed | - | 是 | 是 | 是 | 是 | 5 |
+| 2014A | completed | - | 是 | 是 | 是 | 是 | 0 |
+| 2015A | completed | - | 是 | 是 | 是 | 是 | 7 |
+| 2016A | completed | - | 是 | 是 | 是 | 是 | 22 |
 | 2017A | pending | solve | 否 | 否 | 否 | 否 | 0 |
 | 2018A | pending | solve | 否 | 否 | 否 | 否 | 0 |
 | 2019A | pending | solve | 否 | 否 | 否 | 否 | 0 |
 | 2020A | pending | solve | 否 | 否 | 否 | 否 | 0 |
 | 2021A | pending | solve | 否 | 否 | 否 | 否 | 0 |
 
-本轮新增 Candidate：124
+本轮新增 Candidate：126
 
 本轮新增 machine_verified：0
 

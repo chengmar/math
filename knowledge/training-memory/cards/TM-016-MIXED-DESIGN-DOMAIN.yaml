@@ -1,0 +1,19 @@
+id: TM-016-MIXED-DESIGN-DOMAIN
+title: 离散结构与连续控制量必须覆盖完整合法设计域
+type: method_card
+status: provisional_training
+source_cases: [2016A]
+source_kind: generalized_reflection_candidate
+origin_year: 2016
+tags: [mixed_design, discrete, continuous, pareto, search_coverage]
+applicable_conditions: [方案同时包含整数或类别结构变量与连续控制量, 需要比较可行方案或构造 Pareto 集]
+inapplicable_conditions: [所有变量均连续且可行域已由严格凸性或解析证明完整刻画]
+minimum_baseline: 枚举声明范围内的合法离散结构，并为每个结构求至少一个可验证的连续可行基线
+recommended_action: 对每个离散结构保留完整连续可行区间，记录候选数、可行数和非支配数，再做网格加密、边界扩张与局部连续精化
+why_it_may_help: 先四舍五入结构变量或每个结构只保留一个连续点，会漏掉合法方案并制造假最优
+required_validation: [整数合法性断言, 搜索边界扩张, 网格加密, 第二方案与分差, 已知遗漏反例回归]
+failure_modes: [连续解未投影到合法结构, 静默缩小离散域, 用单一权重替代 Pareto 覆盖, 未报告搜索覆盖率]
+counterexamples: [扩大一个离散边界后出现更优可行解, 同一结构的非最小控制量形成新的非支配方案]
+complexity_cost: 中；增加分层枚举、连续可行区间求解和覆盖率报告
+evidence_summary: 2016A Audit 与 Reflection 均发现先压缩混合设计域会遗漏合法结构；仅作为待后续年份检验的训练假设
+last_updated: '2026-08-28'

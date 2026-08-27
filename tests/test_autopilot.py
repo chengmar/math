@@ -211,6 +211,18 @@ def test_candidate_status_parser_accepts_reflection_skill_collections():
     ]
 
 
+def test_candidate_status_parser_accepts_generic_items_container():
+    payload = {
+        "case_id": "2016A",
+        "items": [
+            {"id": "FM-1", "status": "candidate", "evidence_status": "pass"},
+            {"id": "WL-1", "status": "candidate", "evidence_status": "needs_review"},
+        ],
+    }
+
+    assert _candidate_knowledge_statuses(payload) == ["candidate", "candidate"]
+
+
 def test_yaml_card_containers_are_counted_without_treating_evidence_as_lifecycle(tmp_path):
     lesson_root = tmp_path / "lessons-proposed"
     lesson_root.mkdir()
