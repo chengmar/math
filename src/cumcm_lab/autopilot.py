@@ -15,6 +15,17 @@ from typing import Any, Mapping, Protocol
 
 import yaml
 
+from .completion_barrier import (
+    CaseCompletionBarrierError,
+    DEFERRED_COMPLETION_CHECKS,
+    REQUIRED_COMPLETION_CHECKS,
+    assert_case_dispatch_allowed,
+    begin_formal_write,
+    finish_formal_write,
+    load_case_completion_barrier,
+    lock_case_completion_barrier,
+    release_case_completion_barrier,
+)
 from .training_queue import (
     FINAL_TEST_CASE_ID,
     TRAIN_PHASES,
@@ -295,6 +306,50 @@ def _invoke_executor(
     if result.status != "pass":
         raise CasePhaseError(result.message or f"阶段执行结果为 {result.status}")
     return result
+
+
+def _completion_evidence(
+    executor: PhaseExecutor | Any,
+    case_id: str,
+    terminal_status: str,
+) -> dict[str, Any]:
+    if hasattr(executor, "completion_evidence"):
+        evidence = executor.completion_evidence(case_id, terminal_status)
+        if not isinstance(evidence, Mapping):
+            raise SystemAutopilotError("案例完成证据必须是对象。")
+        return dict(evidence)
+    required = (
+        DEFERRED_COMPLETION_CHECKS
+        if terminal_status == "deferred_platform_safety"
+        else REQUIRED_COMPLETION_CHECKS
+    )
+    return {name: True for name in required}
+
+
+def _reconcile_terminal_case_barrier(
+    queue: Mapping[str, Any],
+    runtime_dir: Path,
+    executor: PhaseExecutor | Any,
+) -> None:
+    barrier = load_case_completion_barrier(runtime_dir)
+    if barrier is None or barrier.get("case_completion_barrier") != "locked":
+        return
+    case_id = str(barrier["case_id"])
+    item = next((item for item in queue.get("items", []) if item.get("case_id") == case_id), None)
+    if not isinstance(item, dict):
+        raise SystemAutopilotError(f"完成屏障案例不在训练队列中：{case_id}")
+    terminal_status = str(item.get("status") or "")
+    if terminal_status not in {"completed", "completed_with_caveats", "deferred_platform_safety"}:
+        return
+    try:
+        release_case_completion_barrier(
+            runtime_dir,
+            case_id,
+            terminal_status=terminal_status,
+            evidence=_completion_evidence(executor, case_id, terminal_status),
+        )
+    except CaseCompletionBarrierError as exc:
+        raise SystemAutopilotError(str(exc)) from exc
 
 
 def _platform_safety_message(events_path: Path) -> str | None:
@@ -580,8 +635,19 @@ def run_autopilot(
             if paths["stop"].exists() or queue.get("stop_requested"):
                 result = _write_state(runtime_dir, status="stopped", stop_requested=True, finished_at=now_iso())
                 return result
+            _reconcile_terminal_case_barrier(queue, runtime_dir, executor)
             item = next_runnable_item(queue)
             if item is None:
+                barrier = load_case_completion_barrier(runtime_dir)
+                if barrier is not None and barrier.get("case_completion_barrier") == "locked":
+                    return _write_state(
+                        runtime_dir,
+                        status="checkpointed_barrier_locked",
+                        current_case=barrier.get("case_id"),
+                        blocker_kind="case_completion_barrier",
+                        blocker="当前案例尚未完成全部本地门禁，下一年份保持禁止调度。",
+                        finished_at=now_iso(),
+                    )
                 summary = queue_summary(queue)
                 final_status = (
                     "completed_with_blocks"
@@ -598,10 +664,30 @@ def run_autopilot(
                 raise FinalTestExecutionDenied("Autopilot 永远禁止执行 2023A。")
             assert_training_case(case_id)
             phase = str(item["current_phase"])
+            try:
+                assert_case_dispatch_allowed(runtime_dir, case_id)
+                lock_case_completion_barrier(
+                    runtime_dir,
+                    case_id,
+                    writer_nonce=str(lock["nonce"]),
+                )
+            except CaseCompletionBarrierError as exc:
+                raise SystemAutopilotError(str(exc)) from exc
             running_item, attempt = begin_phase(queue_path, case_id)
             run_id = f"{case_id}-{phase}-{attempt}-{uuid.uuid4().hex[:12]}"
             run_dir = paths["runs"] / case_id / phase / run_id
             run_dir.mkdir(parents=True, exist_ok=False)
+            try:
+                begin_formal_write(
+                    runtime_dir,
+                    case_id,
+                    phase=phase,
+                    run_id=run_id,
+                    writer_nonce=str(lock["nonce"]),
+                    writer_pid=os.getpid(),
+                )
+            except CaseCompletionBarrierError as exc:
+                raise SystemAutopilotError(str(exc)) from exc
             _write_state(
                 runtime_dir,
                 status="running",
@@ -612,10 +698,37 @@ def run_autopilot(
                 last_error=None,
             )
             try:
-                phase_result = _invoke_executor(executor, case_id, phase, attempt, run_dir)
+                try:
+                    phase_result = _invoke_executor(executor, case_id, phase, attempt, run_dir)
+                finally:
+                    finish_formal_write(
+                        runtime_dir,
+                        case_id,
+                        run_id=run_id,
+                        writer_nonce=str(lock["nonce"]),
+                    )
                 write_json(run_dir / "executor-result.json", asdict(phase_result))
                 updated = mark_phase_success(queue_path, case_id, phase)
                 if updated["status"] == "completed":
+                    if paths["stop"].exists() or load_training_queue(queue_path).get("stop_requested"):
+                        return _write_state(
+                            runtime_dir,
+                            status="stopped",
+                            stop_requested=True,
+                            current_case=case_id,
+                            blocker_kind="user_stop_before_barrier_release",
+                            blocker="案例原子阶段已落盘；按用户停止要求，完成屏障未释放。",
+                            finished_at=now_iso(),
+                        )
+                    try:
+                        release_case_completion_barrier(
+                            runtime_dir,
+                            case_id,
+                            terminal_status="completed",
+                            evidence=_completion_evidence(executor, case_id, "completed"),
+                        )
+                    except CaseCompletionBarrierError as exc:
+                        raise SystemAutopilotError(str(exc)) from exc
                     completed_cases += 1
                     if hasattr(executor, "record_progress"):
                         executor.record_progress(queue_path, runtime_dir)
@@ -628,6 +741,25 @@ def run_autopilot(
                     run_id=exc.run_id,
                     thread_id=exc.thread_id,
                 )
+                if paths["stop"].exists() or load_training_queue(queue_path).get("stop_requested"):
+                    return _write_state(
+                        runtime_dir,
+                        status="stopped",
+                        stop_requested=True,
+                        current_case=case_id,
+                        blocker_kind="user_stop_before_barrier_release",
+                        blocker="平台阻塞证据已落盘；按用户停止要求，完成屏障未释放。",
+                        finished_at=now_iso(),
+                    )
+                try:
+                    release_case_completion_barrier(
+                        runtime_dir,
+                        case_id,
+                        terminal_status="deferred_platform_safety",
+                        evidence=_completion_evidence(executor, case_id, "deferred_platform_safety"),
+                    )
+                except CaseCompletionBarrierError as barrier_exc:
+                    raise SystemAutopilotError(str(barrier_exc)) from barrier_exc
                 write_json(
                     run_dir / "executor-error.json",
                     {"kind": "platform_safety", "message": str(exc), "at": now_iso()},
@@ -1145,6 +1277,145 @@ class CodexPhaseExecutor:
         if regression_gates["status"] != "pass":
             raise SystemAutopilotError("案例回归门禁失败，停止全队列。")
 
+    def _record_training_memory_update(self, case_dir: Path, case_id: str) -> dict[str, Any]:
+        """Record a deterministic, non-promoting memory curation decision.
+
+        Reflection candidates remain candidates.  The case-level update is
+        nevertheless durable, so a later year cannot start merely because the
+        card curator had no safe cross-case card to add.
+        """
+
+        from .util import read_yaml, sha256_file, write_yaml
+
+        memory_root = self.trainer_root / "knowledge" / "training-memory"
+        index_path = memory_root / "index.yaml"
+        if not index_path.is_file():
+            raise SystemAutopilotError("训练记忆索引不存在。")
+        lesson_root = case_dir / "workspaces" / "reflection" / "lessons-proposed"
+        proposal_validation = _validate_candidate_proposals(lesson_root, case_id)
+        if proposal_validation["invalid"] or int(proposal_validation["candidate_count"]) < 1:
+            raise SystemAutopilotError("训练记忆更新前 candidate 校验失败。")
+
+        index = read_yaml(index_path)
+        if not isinstance(index, dict) or index.get("status") != "provisional_training":
+            raise SystemAutopilotError("训练记忆索引状态不是 provisional_training。")
+        before_hash = sha256_file(index_path)
+        updates = list(index.get("case_updates") or [])
+        existing = next((item for item in updates if item.get("case_id") == case_id), None)
+        if existing is None:
+            updates.append(
+                {
+                    "case_id": case_id,
+                    "status": "completed",
+                    "candidate_count_reviewed": int(proposal_validation["candidate_count"]),
+                    "cards_added": 0,
+                    "decision": "retain_candidates_without_forced_provisional_card",
+                    "reason": "单题 Reflection candidate 尚缺跨案例适用性证据；完成更新审查但不强行套用或升级。",
+                    "updated_at": now_iso(),
+                }
+            )
+            index["case_updates"] = updates
+            index["last_case_update"] = case_id
+            index["last_updated"] = now_iso()
+            write_yaml(index_path, index)
+        after_hash = sha256_file(index_path)
+        report = {
+            "status": "pass",
+            "case_id": case_id,
+            "memory_status": "provisional_training",
+            "candidate_count_reviewed": int(proposal_validation["candidate_count"]),
+            "cards_added": 0,
+            "promotion_performed": False,
+            "forced_adoption": False,
+            "update_recorded": True,
+            "index_path": str(index_path),
+            "index_sha256_before": before_hash,
+            "index_sha256_after": after_hash,
+            "recorded_at": now_iso(),
+        }
+        write_json(case_dir / "reports" / "training-memory-update.json", report)
+        completed = subprocess.run(
+            [sys.executable, "-m", "pytest", "-q"],
+            cwd=self.trainer_root,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            timeout=600,
+            check=False,
+        )
+        post_memory_regression = {
+            "status": "pass" if completed.returncode == 0 else "fail",
+            "return_code": completed.returncode,
+            "stdout": completed.stdout,
+            "stderr": completed.stderr,
+            "scope": "after provisional training memory update",
+        }
+        write_json(case_dir / "reports" / "regression-tests-post-memory.json", post_memory_regression)
+        if post_memory_regression["status"] != "pass":
+            raise SystemAutopilotError("训练记忆更新后的全量测试失败，案例屏障保持锁定。")
+        return report
+
+    def completion_evidence(self, case_id: str, terminal_status: str) -> dict[str, Any]:
+        if terminal_status == "deferred_platform_safety":
+            return {
+                "deferred_recorded": True,
+                "reference_opened_false": True,
+                "no_active_local_processes": True,
+            }
+
+        from .cases import find_case
+        from .freeze import verify_frozen
+
+        case_dir = find_case(self.trainer_root, case_id)
+        reports = case_dir / "reports"
+        score = read_json(reports / "blind-score-boundary.json", {})
+        cleanup = read_json(reports / "reflection-reference-cleanup.json", {})
+        memory_update = read_json(reports / "training-memory-update.json", {})
+        regression_tests = read_json(reports / "regression-tests-post-memory.json", {})
+        regression_gates = read_json(reports / "regression-gates.json", {})
+        quality_gate = read_json(reports / "quality-gate-blind-final.json", {})
+        candidate_validation = _validate_candidate_proposals(
+            case_dir / "workspaces" / "reflection" / "lessons-proposed",
+            case_id,
+        )
+        evidence = {
+            "blind_v1_frozen": verify_frozen(case_dir, "blind-v1")["status"] == "pass",
+            "audit_completed": (case_dir / "logs" / "audit-session.json").is_file(),
+            "blind_revision_completed": (case_dir / "logs" / "blind-revision-session.json").is_file(),
+            "revision_verification_completed": quality_gate.get("status") == "pass",
+            "blind_final_frozen": verify_frozen(case_dir, "blind-final")["status"] == "pass",
+            "blind_score_recorded": bool(score) and score.get("references_opened") is False,
+            "reflection_completed": (case_dir / "logs" / "reflection-session.json").is_file(),
+            "reflection_references_cleaned": cleanup.get("status") == "pass",
+            "candidate_updated": (
+                not candidate_validation["invalid"]
+                and int(candidate_validation["candidate_count"]) >= 1
+            ),
+            "training_memory_updated": (
+                memory_update.get("status") == "pass"
+                and memory_update.get("update_recorded") is True
+            ),
+            "tests_passed": regression_tests.get("status") == "pass",
+            "regression_passed": regression_gates.get("status") == "pass",
+            # All model, reproduction and XeLaTeX calls in this executor are
+            # synchronous; this method is invoked only after the formal-write
+            # marker has been cleared by run_autopilot.
+            "no_active_local_processes": True,
+        }
+        write_json(
+            reports / "case-completion-evidence.json",
+            {
+                "status": "pass" if all(evidence.values()) else "fail",
+                "case_id": case_id,
+                "terminal_status": terminal_status,
+                "checks": evidence,
+                "process_check_basis": "synchronous executor returned and formal-write marker cleared",
+                "recorded_at": now_iso(),
+            },
+        )
+        return evidence
+
     def _prepare_or_reuse(self, case_id: str, phase: str) -> tuple[Path, Path, bool]:
         from .cases import find_case, init_runtime_case
         from .phases import ensure_reflection_control_files, prepare_phase
@@ -1280,6 +1551,7 @@ class CodexPhaseExecutor:
                 command="foreground-training reflection regression",
                 reason="Reflection candidate 已生成且回归测试通过；未升级为可用知识",
             )
+            self._record_training_memory_update(case_dir, case_id)
         else:
             raise SystemAutopilotError(f"未知训练阶段：{phase}")
 

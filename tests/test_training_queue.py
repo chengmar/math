@@ -231,18 +231,18 @@ def test_prestart_infrastructure_recovery_rolls_back_attempt_accounting(tmp_path
     assert item["prestart_recovery"]["attempt_count_preserved"] == 0
 
 
-def test_case_error_blocks_only_that_item_and_stop_is_durable(tmp_path):
+def test_case_error_preserves_strict_prefix_and_stop_is_durable(tmp_path):
     path = tmp_path / "q.json"
     create_training_queue(["2003A", "2004A"], path)
     begin_phase(path, "2003A")
     mark_phase_failure(path, "2003A", "solve", "broken source", transient=False)
-    assert next_runnable_item(load_training_queue(path))["case_id"] == "2004A"
+    assert next_runnable_item(load_training_queue(path)) is None
     set_stop_requested(path, True)
     stopped = load_training_queue(path)
     assert stopped["stop_requested"] is True
     assert next_runnable_item(stopped) is None
     set_stop_requested(path, False)
-    assert next_runnable_item(load_training_queue(path))["case_id"] == "2004A"
+    assert next_runnable_item(load_training_queue(path)) is None
 
 
 def test_platform_safety_defer_is_not_completed_and_next_year_is_runnable(tmp_path):

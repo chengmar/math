@@ -75,7 +75,7 @@ def test_autopilot_retries_a_transient_stage_only_once(tmp_path):
     assert load_training_queue(queue_path)["items"][0]["attempts"]["solve"] == 2
 
 
-def test_case_failure_does_not_prevent_later_case_check(tmp_path):
+def test_case_failure_keeps_later_case_behind_completion_barrier(tmp_path):
     queue_path = tmp_path / "queue.json"
     runtime = tmp_path / "runtime"
     create_training_queue(["2003A", "2004A"], queue_path)
@@ -87,9 +87,10 @@ def test_case_failure_does_not_prevent_later_case_check(tmp_path):
 
     result = run_autopilot(queue_path, runtime, executor)
     queue = load_training_queue(queue_path)
-    assert result["status"] == "completed_with_blocks"
+    assert result["status"] == "checkpointed_barrier_locked"
     assert queue["items"][0]["status"] == "blocked"
-    assert queue["items"][1]["status"] == "completed"
+    assert queue["items"][1]["status"] == "pending"
+    assert queue["items"][1]["attempts"]["solve"] == 0
 
 
 def test_single_case_limit_checkpoints_after_case_failure(tmp_path):

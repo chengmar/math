@@ -13,7 +13,14 @@ from .util import now_iso, read_json, read_yaml, write_json, write_yaml
 QUEUE_SCHEMA_VERSION = 1
 FINAL_TEST_CASE_ID = "2023A"
 TRAIN_PHASES = ("solve", "audit", "blind-revision", "reflection")
-ITEM_STATUSES = {"pending", "running", "blocked", "deferred_platform_safety", "completed"}
+ITEM_STATUSES = {
+    "pending",
+    "running",
+    "blocked",
+    "deferred_platform_safety",
+    "completed",
+    "completed_with_caveats",
+}
 PUBLIC_QUEUE_STATUSES = {
     "pending",
     "ready",
@@ -30,6 +37,7 @@ PUBLIC_QUEUE_STATUSES = {
     "shadow_evaluation",
     "regression_pending",
     "completed",
+    "completed_with_caveats",
     "failed",
     "deferred_platform_safety",
     "leakage_invalid",
@@ -221,7 +229,7 @@ def validate_training_queue(queue: Mapping[str, Any]) -> None:
             for value in attempts.values()
         ):
             raise QueueError(f"阶段尝试次数越界：{case_id}")
-        if item.get("status") == "completed":
+        if item.get("status") in {"completed", "completed_with_caveats"}:
             if completed != list(TRAIN_PHASES) or phase is not None:
                 raise QueueError(f"已完成案例的阶段记录不完整：{case_id}")
 
@@ -332,10 +340,15 @@ def next_runnable_item(queue: Mapping[str, Any]) -> dict[str, Any] | None:
     if queue.get("stop_requested"):
         return None
     for item in queue.get("items", []):
+        if item.get("status") in {"completed", "completed_with_caveats", "deferred_platform_safety"}:
+            continue
         if item.get("status") in {"pending", "running"}:
             # Repeat the final-test guard even for manually edited in-memory data.
             assert_training_case(str(item.get("case_id", "")))
             return item
+        # Strict prefix ordering: an unfinished/blocked earlier case must never
+        # be skipped in favour of a later year.
+        return None
     return None
 
 
