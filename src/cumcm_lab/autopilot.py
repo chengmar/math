@@ -1417,6 +1417,74 @@ class CodexPhaseExecutor:
         )
         return evidence
 
+    def _archive_invalidated_solve_workspace(self, case_dir: Path, case_id: str) -> Path | None:
+        """Preserve a prematurely started Solve before preparing a fresh generation."""
+
+        from .util import read_yaml, write_yaml
+
+        report_path = case_dir / "reports" / "old-solve-formal-invalidation.json"
+        if not report_path.is_file():
+            return None
+        report = read_json(report_path)
+        if (
+            report.get("status") != "invalidated_for_formal_training"
+            or report.get("case_id") != case_id
+            or report.get("formal_score_eligible") is not False
+            or report.get("reference_opened") is not False
+        ):
+            raise SystemAutopilotError("旧 Solve 正式失效报告不完整，拒绝准备替代工作区。")
+        if report.get("replacement_workspace_prepared") is True:
+            return None
+
+        workspace_root = (case_dir / "workspaces").resolve()
+        source = (workspace_root / "solve").resolve()
+        generation = int(read_json(report_path).get("replacement_generation") or 2)
+        archive = (workspace_root / f"solve-invalidated-formal-generation-{generation - 1}").resolve()
+        if not source.is_relative_to(workspace_root) or not archive.is_relative_to(workspace_root):
+            raise SystemAutopilotError("旧 Solve 工作区归档目标越界。")
+
+        state_data = read_yaml(case_dir / "case-state.yaml")
+        state = state_data.get("state")
+        if archive.is_dir() and source.is_dir() and state in {"solve_ready", "solving"}:
+            report["replacement_workspace_prepared"] = True
+            report["replacement_workspace"] = source.relative_to(case_dir).as_posix()
+            report["replacement_workspace_prepared_at"] = now_iso()
+            write_json(report_path, report)
+            return archive
+        if archive.is_dir() and not source.exists() and state == "initialized":
+            return archive
+        if state != "solving" or not source.is_dir() or archive.exists():
+            raise SystemAutopilotError(
+                f"旧 Solve 归档前置状态异常：state={state}, source={source.exists()}, archive={archive.exists()}"
+            )
+
+        source.replace(archive)
+        state_data["state"] = "initialized"
+        state_data.setdefault("history", []).append(
+            {
+                "from": "solving",
+                "to": "initialized",
+                "timestamp": now_iso(),
+                "command": "invalidate premature solve and prepare formal generation 2",
+                "actor": "cumcm_lab",
+                "reason": "前一案例完成屏障尚未释放且 Blind V1 未形成；无损归档旧工作区后从头创建正式 Solve。",
+                "git_commit": None,
+                "manifest_hash": None,
+                "recovery_transition": True,
+            }
+        )
+        write_yaml(case_dir / "case-state.yaml", state_data)
+        case_meta = read_yaml(case_dir / "case.yaml")
+        case_meta["status"] = "initialized"
+        write_yaml(case_dir / "case.yaml", case_meta)
+        report["replacement_generation"] = generation
+        report["archived_workspace"] = archive.relative_to(case_dir).as_posix()
+        report["archived_without_deletion"] = True
+        report["replacement_workspace_prepared"] = False
+        report["archived_at"] = now_iso()
+        write_json(report_path, report)
+        return archive
+
     def _prepare_or_reuse(self, case_id: str, phase: str) -> tuple[Path, Path, bool]:
         from .cases import find_case, init_runtime_case
         from .phases import ensure_reflection_control_files, prepare_phase
@@ -1428,12 +1496,23 @@ class CodexPhaseExecutor:
             if phase != "solve":
                 raise
             case_dir = init_runtime_case(self.trainer_root, case_id)
+        if phase == "solve":
+            invalidated_archive = self._archive_invalidated_solve_workspace(case_dir, case_id)
+        else:
+            invalidated_archive = None
         state = load_state(case_dir)["state"]
         workspace = case_dir / "workspaces" / phase
         if state in self.COMPLETED_STATES[phase]:
             return case_dir, workspace, True
         if state == self.PREREQUISITES[phase]:
             workspace = prepare_phase(self.trainer_root, case_id, phase)
+            if phase == "solve" and invalidated_archive is not None:
+                invalidation_path = case_dir / "reports" / "old-solve-formal-invalidation.json"
+                invalidation = read_json(invalidation_path)
+                invalidation["replacement_workspace_prepared"] = True
+                invalidation["replacement_workspace"] = workspace.relative_to(case_dir).as_posix()
+                invalidation["replacement_workspace_prepared_at"] = now_iso()
+                write_json(invalidation_path, invalidation)
         elif state not in self.READY_STATES[phase]:
             raise SystemAutopilotError(f"队列与案例状态不一致：{case_id}/{phase}: {state}")
         if phase == "reflection" and state in self.READY_STATES[phase]:

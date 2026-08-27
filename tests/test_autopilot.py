@@ -6,6 +6,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+import yaml
 
 from cumcm_lab.autopilot import (
     AlreadyRunningError,
@@ -490,3 +491,55 @@ def test_compile_paper_finds_configured_miktex_when_not_on_path(tmp_path, monkey
 
     assert report["status"] == "pass"
     assert Path(report["engine"]) == engine.resolve()
+
+
+def test_invalidated_solve_workspace_is_archived_before_fresh_generation(tmp_path):
+    trainer_root = tmp_path / "trainer"
+    case_dir = tmp_path / "runtime-cases" / "2017A"
+    old_workspace = case_dir / "workspaces" / "solve"
+    old_workspace.mkdir(parents=True)
+    (trainer_root / "pyproject.toml").parent.mkdir(parents=True)
+    (trainer_root / "pyproject.toml").write_text("[project]\nname='test'\n", encoding="utf-8")
+    (old_workspace / "partial-model-output.md").write_text("preserve me", encoding="utf-8")
+    (case_dir / "reports").mkdir()
+    (case_dir / "reports" / "old-solve-formal-invalidation.json").write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "case_id": "2017A",
+                "status": "invalidated_for_formal_training",
+                "reference_opened": False,
+                "formal_score_eligible": False,
+                "knowledge_generation_allowed": False,
+                "replacement_generation": 2,
+            }
+        ),
+        encoding="utf-8",
+    )
+    (case_dir / "case-state.yaml").write_text("state: solving\nhistory: []\n", encoding="utf-8")
+    (case_dir / "case.yaml").write_text("case_id: 2017A\nstatus: solving\n", encoding="utf-8")
+    executor = CodexPhaseExecutor(trainer_root, trainer_root)
+
+    archive = executor._archive_invalidated_solve_workspace(case_dir, "2017A")
+
+    assert archive == case_dir / "workspaces" / "solve-invalidated-formal-generation-1"
+    assert (archive / "partial-model-output.md").read_text(encoding="utf-8") == "preserve me"
+    assert not old_workspace.exists()
+    assert yaml.safe_load((case_dir / "case-state.yaml").read_text(encoding="utf-8"))["state"] == "initialized"
+    invalidation = json.loads(
+        (case_dir / "reports" / "old-solve-formal-invalidation.json").read_text(encoding="utf-8")
+    )
+    assert invalidation["archived_without_deletion"] is True
+    assert invalidation["replacement_workspace_prepared"] is False
+
+    old_workspace.mkdir()
+    (old_workspace / "phase-lock.json").write_text("{}", encoding="utf-8")
+    state = yaml.safe_load((case_dir / "case-state.yaml").read_text(encoding="utf-8"))
+    state["state"] = "solving"
+    (case_dir / "case-state.yaml").write_text(yaml.safe_dump(state), encoding="utf-8")
+    executor._archive_invalidated_solve_workspace(case_dir, "2017A")
+    invalidation = json.loads(
+        (case_dir / "reports" / "old-solve-formal-invalidation.json").read_text(encoding="utf-8")
+    )
+    assert invalidation["replacement_workspace_prepared"] is True
+    assert (archive / "partial-model-output.md").is_file()
