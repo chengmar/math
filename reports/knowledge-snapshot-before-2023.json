@@ -2,9 +2,9 @@
   "schema_version": 1,
   "snapshot": "knowledge-snapshot-before-2023",
   "status": "training_complete_ready_for_final_test",
-  "generated_at": "2026-08-28T21:09:57+08:00",
+  "generated_at": "2026-08-28T21:13:37+08:00",
   "source": {
-    "git_commit": "b469e4bf7a20fcc3899808951860343c67c02f3b",
+    "git_commit": "65461ff2acddbf5bfcd2b748503c7e391d914520",
     "git_branch": "training/full-corpus-v1",
     "git_worktree_dirty_before_finalization": false,
     "codex_cli_version": "codex-cli 0.150.0-alpha.8"
@@ -18,7 +18,7 @@
       "cumcm-a-evaluate": "ae47af98ac4590f3dff333eaec8952948b651291ab6378459c7061dd82355915"
     },
     "training_memory_tree_sha256": "4efa9dea17d350dadd8fd1d9a7608301b106cf1a2a849ffd5bc25a2d8ad72226",
-    "model_policy_sha256": "9a422c6db5c9eaaf3ec70637f6d514008188abf65f511a8418a41031d714b577"
+    "model_policy_sha256": "d3abc80fc4a26005ffdc36b2790134dce1cc293be125687c0dbb393e5f7c7436"
   },
   "case_status": {
     "completed": [
@@ -375,7 +375,7 @@
     "session_count": 24
   },
   "quality_gates": {
-    "pytest": "197 passed",
+    "pytest": "198 passed",
     "regression": "pass",
     "git_leak_guard": "pass",
     "secret_scan": "pass"
