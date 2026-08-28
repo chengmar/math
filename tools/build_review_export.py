@@ -862,6 +862,9 @@ def build_knowledge_rows(runtime_cases: Path) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     for case_id in COMPLETED_CASES:
         lesson_root = runtime_cases / case_id / "workspaces" / "reflection" / "lessons-proposed"
+        validation = _validate_candidate_proposals(lesson_root, case_id)
+        if validation["invalid"]:
+            continue
         for entry in candidate_entries(lesson_root, case_id):
             rows.append({
                 "card_id": entry["card_id"],

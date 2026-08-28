@@ -79,3 +79,21 @@ def test_final_report_is_part_of_sanitized_export_whitelist() -> None:
     source = MODULE_PATH.read_text(encoding="utf-8")
     assert "FULL-TRAINING-2016-2021-COMPLETION-REPORT.md" in source
     assert "FINAL_TRAINING_REPORT.md" in source
+
+
+def test_invalid_legacy_candidate_package_is_excluded_from_knowledge_rows(tmp_path: Path) -> None:
+    lessons = tmp_path / "2004A" / "workspaces" / "reflection" / "lessons-proposed"
+    lessons.mkdir(parents=True)
+    (lessons / "broken.yaml").write_text(
+        "case_id: wrong-case\nstatus: candidate\n",
+        encoding="utf-8",
+    )
+
+    original_cases = review_export.COMPLETED_CASES
+    review_export.COMPLETED_CASES = ("2004A",)
+    try:
+        rows = review_export.build_knowledge_rows(tmp_path)
+    finally:
+        review_export.COMPLETED_CASES = original_cases
+
+    assert rows == []
