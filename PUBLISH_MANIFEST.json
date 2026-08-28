@@ -3,8 +3,8 @@
   "source_git_commit": "0ededa4115aaa9152c8d2c50be2b28b6a51461be",
   "source_git_branch": "training/full-corpus-v1",
   "source_worktree_dirty": false,
-  "export_file_count": 1083,
-  "export_total_size": 7062282,
+  "export_file_count": 1084,
+  "export_total_size": 7069475,
   "test_result": "199 passed",
   "leak_scan_result": "pass",
   "secret_scan_result": "pass",
@@ -13,6 +13,6 @@
   "raw_data_exported": 0,
   "test_2023_content_exported": 0,
   "auth_files_exported": 0,
-  "publish_commit": null,
+  "publish_commit": "dadbb3299ea30ad4daf323de2704d148f12aa4fb",
   "hash_manifest_scope": "all export files except PUBLISH_MANIFEST.json and EXPORT_FILES.sha256 (self-reference exclusion)"
 }

@@ -1,6 +1,6 @@
 {
   "status": "pass",
-  "checked_files": 1083,
+  "checked_files": 1084,
   "findings": [],
   "secret_keyword_mentions_classified_as_code_or_documentation": 18,
   "real_problem_files_exported": 0,
