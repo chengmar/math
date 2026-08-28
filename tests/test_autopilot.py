@@ -223,6 +223,40 @@ def test_candidate_status_parser_accepts_generic_items_container():
     assert _candidate_knowledge_statuses(payload) == ["candidate", "candidate"]
 
 
+def test_candidate_status_parser_accepts_knowledge_state_entries(tmp_path):
+    payload = {
+        "knowledge_state": "candidate",
+        "entries": [
+            {"id": "MC-1", "knowledge_state": "candidate", "evidence_status": "pass"},
+            {"id": "MC-2", "knowledge_state": "candidate", "transfer_status": "needs_review"},
+        ],
+    }
+
+    assert _candidate_knowledge_statuses(payload) == [
+        "candidate",
+        "candidate",
+        "candidate",
+    ]
+
+    lesson_root = tmp_path / "lessons-proposed"
+    lesson_root.mkdir()
+    (lesson_root / "method-cards.yaml").write_text(
+        "schema_version: 1\n"
+        "knowledge_state: candidate\n"
+        "entries:\n"
+        "  - id: MC-1\n"
+        "    knowledge_state: candidate\n"
+        "    evidence_status: pass\n",
+        encoding="utf-8",
+    )
+
+    assert _validate_candidate_proposals(lesson_root, "2019A") == {
+        "files": 1,
+        "candidate_count": 2,
+        "invalid": [],
+    }
+
+
 def test_yaml_card_containers_are_counted_without_treating_evidence_as_lifecycle(tmp_path):
     lesson_root = tmp_path / "lessons-proposed"
     lesson_root.mkdir()

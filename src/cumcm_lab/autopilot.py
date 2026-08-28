@@ -417,7 +417,7 @@ def _candidate_knowledge_statuses(payload: Any) -> list[str]:
     def visit(value: Any) -> None:
         if isinstance(value, dict):
             for key, child in value.items():
-                if key == "knowledge_status" and isinstance(child, str):
+                if key in {"knowledge_status", "knowledge_state"} and isinstance(child, str):
                     statuses.append(child.casefold())
                 elif (key in proposal_collections or key.endswith("_cards")) and isinstance(child, list):
                     for card in child:
@@ -426,6 +426,7 @@ def _candidate_knowledge_statuses(payload: Any) -> list[str]:
                                 str(
                                     card.get("status")
                                     or card.get("knowledge_status")
+                                    or card.get("knowledge_state")
                                     or card.get("state")
                                     or ""
                                 ).casefold()
@@ -440,7 +441,11 @@ def _candidate_knowledge_statuses(payload: Any) -> list[str]:
 
     top_value = None
     if isinstance(payload, dict):
-        top_value = payload.get("status") or payload.get("knowledge_status") or payload.get("state")
+        top_value = (
+            payload.get("status")
+            or payload.get("knowledge_status")
+            or payload.get("state")
+        )
     if isinstance(top_value, str):
         top_status = top_value.casefold()
         if top_status in {"candidate", "demo", "verified", "machine_verified", "deprecated"}:
@@ -501,6 +506,7 @@ def _validate_candidate_proposals(lesson_root: Path, case_id: str) -> dict[str, 
                     payload.get("proposal_state")
                     or payload.get("status")
                     or payload.get("knowledge_status")
+                    or payload.get("knowledge_state")
                     or payload.get("state")
                     or ""
                 ).casefold()
