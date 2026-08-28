@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-28T16:45:31+08:00",
-  "system_status": "continuous_training",
+  "generated_at": "2026-08-28T20:54:18+08:00",
+  "system_status": "ready_for_final_test",
   "execution_policy": {
     "continuous_mode": true,
     "strict_serial_cases": true,
@@ -34,19 +34,15 @@
     "max_retries": 2,
     "counts": {
       "blocked": 0,
-      "completed": 17,
+      "completed": 18,
       "completed_with_caveats": 0,
       "deferred_platform_safety": 1,
-      "pending": 1,
+      "pending": 0,
       "running": 0
     },
-    "current": {
-      "case_id": "2021A",
-      "phase": "solve",
-      "status": "pending"
-    },
+    "current": null,
     "total": 19,
-    "updated_at": "2026-08-28T16:44:11+08:00"
+    "updated_at": "2026-08-28T20:54:17+08:00"
   },
   "cases": [
     {
@@ -921,26 +917,56 @@
     },
     {
       "case_id": "2021A",
-      "status": "pending",
-      "current_phase": "solve",
-      "completed_phases": [],
+      "status": "completed",
+      "current_phase": null,
+      "completed_phases": [
+        "solve",
+        "audit",
+        "blind-revision",
+        "reflection"
+      ],
       "attempts": {
-        "solve": 0,
-        "audit": 0,
-        "blind-revision": 0,
-        "reflection": 0
+        "solve": 1,
+        "audit": 1,
+        "blind-revision": 2,
+        "reflection": 2
       },
-      "blind_v1": false,
-      "audit": false,
-      "blind_final": false,
-      "reflection": false,
-      "sessions": {},
+      "blind_v1": true,
+      "audit": true,
+      "blind_final": true,
+      "reflection": true,
+      "sessions": {
+        "solve": {
+          "thread_id": "01a0478c-a391-7d10-9818-919ec4ba02e7",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        },
+        "audit": {
+          "thread_id": "01a047ce-52be-7fb2-be99-72510156e602",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        },
+        "blind-revision": {
+          "thread_id": "01a047fd-507e-7c12-96b8-85053f9a867e",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        },
+        "reflection": {
+          "thread_id": "01a04840-8120-7ac1-9c76-3a3cfa43fe04",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        }
+      },
       "fallback_detected": false,
-      "candidate_count": 0,
+      "candidate_count": 6,
       "machine_verified_generated": 0
     }
   ],
-  "new_candidate_count": 311,
+  "new_candidate_count": 317,
   "new_machine_verified_count": 0,
   "final_test": {
     "case_id": "2023A",

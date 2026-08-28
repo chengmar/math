@@ -1,8 +1,8 @@
 # 连续正式训练进度
 
-更新时间：2026-08-28T16:45:31+08:00
+更新时间：2026-08-28T20:54:18+08:00
 
-系统状态：continuous_training
+系统状态：ready_for_final_test
 
 这是最小复制工作区隔离，不是Windows绝对路径安全证明。
 
@@ -26,9 +26,9 @@
 | 2018A | completed | - | 是 | 是 | 是 | 是 | 6 |
 | 2019A | completed | - | 是 | 是 | 是 | 是 | 41 |
 | 2020A | completed | - | 是 | 是 | 是 | 是 | 40 |
-| 2021A | pending | solve | 否 | 否 | 否 | 否 | 0 |
+| 2021A | completed | - | 是 | 是 | 是 | 是 | 6 |
 
-本轮新增 Candidate：311
+本轮新增 Candidate：317
 
 本轮新增 machine_verified：0
 

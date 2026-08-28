@@ -259,6 +259,38 @@ def test_candidate_status_parser_inherits_file_level_status_for_collections(tmp_
     }
 
 
+def test_standalone_candidate_card_accepts_prose_failure_modes(tmp_path):
+    payload = {
+        "case_id": "2021A",
+        "status": "candidate",
+        "title": "finite receiver focal region",
+        "failure_modes": [
+            "edge rays miss the receiver",
+            "the extra degree of freedom violates a hard constraint",
+        ],
+    }
+
+    assert _candidate_knowledge_statuses(payload) == ["candidate"]
+
+    lesson_root = tmp_path / "lessons-proposed"
+    lesson_root.mkdir()
+    (lesson_root / "method-card.yaml").write_text(
+        "case_id: 2021A\n"
+        "status: candidate\n"
+        "title: finite receiver focal region\n"
+        "failure_modes:\n"
+        "  - edge rays miss the receiver\n"
+        "  - the extra degree of freedom violates a hard constraint\n",
+        encoding="utf-8",
+    )
+
+    assert _validate_candidate_proposals(lesson_root, "2021A") == {
+        "files": 1,
+        "candidate_count": 1,
+        "invalid": [],
+    }
+
+
 def test_candidate_status_parser_accepts_knowledge_state_entries(tmp_path):
     payload = {
         "knowledge_state": "candidate",

@@ -445,6 +445,12 @@ def _candidate_knowledge_statuses(payload: Any) -> list[str]:
                                 or ""
                             ).casefold()
                             statuses.append(card_status)
+                        elif key == "failure_modes" and isinstance(card, str):
+                            # A standalone method card commonly records prose failure
+                            # modes as a string list.  Those entries are supporting
+                            # content, not nested knowledge proposals with their own
+                            # lifecycle status.
+                            continue
                         else:
                             statuses.append("")
                 else:
