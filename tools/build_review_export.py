@@ -234,9 +234,26 @@ def safe_source_text(path: Path) -> str:
     return data.decode("utf-8-sig")
 
 
-def copy_sanitized(src: Path, dst: Path, *, case_text: bool = False, paper: bool = False, reflection: bool = False) -> None:
+def copy_sanitized(
+    src: Path,
+    dst: Path,
+    *,
+    case_text: bool = False,
+    paper: bool = False,
+    reflection: bool = False,
+    framework: bool = False,
+) -> None:
     text = safe_source_text(src)
-    text = sanitize_case_text(text, paper=paper, reflection=reflection) if case_text else sanitize_common(text)
+    if case_text:
+        text = sanitize_case_text(text, paper=paper, reflection=reflection)
+    elif framework:
+        # Framework code is already protected by the repository leak and secret
+        # gates.  Replacing long quoted literals with a bare marker can make
+        # Python, PowerShell, YAML, or JSON syntactically invalid, so framework
+        # files receive identity/path normalization only.
+        text = normalize_path_text(text)
+    else:
+        text = sanitize_common(text)
     write_text(dst, text)
 
 
@@ -257,16 +274,16 @@ def copy_framework(trainer: Path, export: Path) -> list[str]:
             if source.stat().st_size > MAX_TEXT_BYTES:
                 continue
             destination = export / relative
-            copy_sanitized(source, destination)
+            copy_sanitized(source, destination, framework=True)
             copied.append(relative.as_posix())
     for name in ROOT_FILES:
         source = trainer / name
         if source.is_file():
-            copy_sanitized(source, export / name)
+            copy_sanitized(source, export / name, framework=True)
             copied.append(name)
     source_readme = trainer / "README.md"
     if source_readme.is_file():
-        copy_sanitized(source_readme, export / "docs" / "FRAMEWORK_README.md")
+        copy_sanitized(source_readme, export / "docs" / "FRAMEWORK_README.md", framework=True)
         copied.append("docs/FRAMEWORK_README.md")
     return sorted(set(copied))
 

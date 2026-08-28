@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import ast
 from pathlib import Path
 
 
@@ -97,3 +98,15 @@ def test_invalid_legacy_candidate_package_is_excluded_from_knowledge_rows(tmp_pa
         review_export.COMPLETED_CASES = original_cases
 
     assert rows == []
+
+
+def test_framework_sanitization_preserves_python_long_string_syntax(tmp_path: Path) -> None:
+    source = tmp_path / "source.py"
+    destination = tmp_path / "exported.py"
+    source.write_text("VALUE = " + repr("x" * 220) + "\n", encoding="utf-8")
+
+    review_export.copy_sanitized(source, destination, framework=True)
+
+    exported = destination.read_text(encoding="utf-8")
+    ast.parse(exported)
+    assert "<LONG_QUOTE_REDACTED>" not in exported
