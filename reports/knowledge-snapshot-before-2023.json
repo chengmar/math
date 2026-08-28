@@ -1,0 +1,396 @@
+{
+  "schema_version": 1,
+  "snapshot": "knowledge-snapshot-before-2023",
+  "status": "training_complete_ready_for_final_test",
+  "generated_at": "2026-08-28T21:07:39+08:00",
+  "source": {
+    "git_commit": "bf57da86632c6999cd643f2fb45e612dcc00a4f4",
+    "git_branch": "training/full-corpus-v1",
+    "git_worktree_dirty": true,
+    "codex_cli_version": "codex-cli 0.150.0-alpha.8"
+  },
+  "integrity": {
+    "AGENTS.md": "2f9b19cf0d4cb8e2964aeb58cddcb9dca7abcfd999c9a63ac9e945faac4b7a10",
+    "skills": {
+      "cumcm-a-solve": "45aab1c11080ed5ec907bb8499e9e48436bf178474702b70c58bf6620eba8df1",
+      "cumcm-a-audit": "6832414ee9c863e557147d37727dc427687fb9274a0b817d0e88928a1a8d1591",
+      "cumcm-a-reflect": "b797e56b747e9a5a39fdbb91eb125ed710919c88f49fde7faa0ef6b0facab091",
+      "cumcm-a-evaluate": "ae47af98ac4590f3dff333eaec8952948b651291ab6378459c7061dd82355915"
+    },
+    "training_memory_tree_sha256": "4efa9dea17d350dadd8fd1d9a7608301b106cf1a2a849ffd5bc25a2d8ad72226",
+    "model_policy_sha256": "074ee016563a78c07114ce1f312310ff0a47bc1bd0c8f4f72ec5c4ea9f3efc6c"
+  },
+  "case_status": {
+    "completed": [
+      "2004A",
+      "2005A",
+      "2006A",
+      "2007A",
+      "2008A",
+      "2009A",
+      "2010A",
+      "2011A",
+      "2012A",
+      "2013A",
+      "2014A",
+      "2015A",
+      "2016A",
+      "2017A",
+      "2018A",
+      "2019A",
+      "2020A",
+      "2021A"
+    ],
+    "completed_with_caveats": [],
+    "deferred_platform_safety": [
+      "2003A"
+    ],
+    "incomplete": []
+  },
+  "candidates": {
+    "by_case": {
+      "2004A": 20,
+      "2005A": 7,
+      "2006A": 35,
+      "2007A": 6,
+      "2008A": 35,
+      "2009A": 10,
+      "2010A": 32,
+      "2011A": 35,
+      "2012A": 8,
+      "2013A": 5,
+      "2014A": 0,
+      "2015A": 7,
+      "2016A": 22,
+      "2017A": 8,
+      "2018A": 6,
+      "2019A": 41,
+      "2020A": 40,
+      "2021A": 6
+    },
+    "total_valid_candidates": 323,
+    "round_2016_2021_valid_candidates": 123,
+    "legacy_invalid_candidate_packages": [
+      "2014A"
+    ]
+  },
+  "training_memory": {
+    "version": 15,
+    "active_card_limit": 25,
+    "current_active_count": 22,
+    "status_counts": {
+      "provisional_training": 22
+    },
+    "provisional_at_risk_count": 0,
+    "machine_verified_count": 0,
+    "verified_count": 0,
+    "cards": [
+      {
+        "id": "TM-001-EVIDENCE-LAYERS",
+        "status": "provisional_training",
+        "source_cases": [
+          "2007A",
+          "2009A"
+        ],
+        "actual_usage_years": []
+      },
+      {
+        "id": "TM-002-TIME-ORDERED-VALIDATION",
+        "status": "provisional_training",
+        "source_cases": [
+          "2007A",
+          "2009A"
+        ],
+        "actual_usage_years": []
+      },
+      {
+        "id": "TM-003-CONSERVATION-INVARIANTS",
+        "status": "provisional_training",
+        "source_cases": [
+          "2007A",
+          "2009A"
+        ],
+        "actual_usage_years": []
+      },
+      {
+        "id": "TM-004-BOUNDED-LONG-HORIZON",
+        "status": "provisional_training",
+        "source_cases": [
+          "2007A"
+        ],
+        "actual_usage_years": []
+      },
+      {
+        "id": "TM-005-CAUSAL-TIMELINE",
+        "status": "provisional_training",
+        "source_cases": [
+          "2009A"
+        ],
+        "actual_usage_years": []
+      },
+      {
+        "id": "TM-006-SMALL-DENOMINATOR-GUARD",
+        "status": "provisional_training",
+        "source_cases": [
+          "2009A"
+        ],
+        "actual_usage_years": []
+      },
+      {
+        "id": "TM-007-FIT-EVALUATE-SEPARATION",
+        "status": "provisional_training",
+        "source_cases": [
+          "2007A",
+          "2009A"
+        ],
+        "actual_usage_years": []
+      },
+      {
+        "id": "TM-008-IMMUTABLE-INPUT-PROVENANCE",
+        "status": "provisional_training",
+        "source_cases": [
+          "2009A"
+        ],
+        "actual_usage_years": []
+      },
+      {
+        "id": "TM-009-CONSTRAINT-SCOPE",
+        "status": "provisional_training",
+        "source_cases": [
+          "2006A"
+        ],
+        "actual_usage_years": []
+      },
+      {
+        "id": "TM-010-INVARIANTS-BEFORE-OBJECTIVE",
+        "status": "provisional_training",
+        "source_cases": [
+          "2004A",
+          "2006A"
+        ],
+        "actual_usage_years": []
+      },
+      {
+        "id": "TM-011-STRUCTURE-BEFORE-SOLVER",
+        "status": "provisional_training",
+        "source_cases": [
+          "2004A",
+          "2008A"
+        ],
+        "actual_usage_years": []
+      },
+      {
+        "id": "TM-012-REPRODUCIBILITY-TIERS",
+        "status": "provisional_training",
+        "source_cases": [
+          "2005A",
+          "2008A",
+          "2009A"
+        ],
+        "actual_usage_years": []
+      },
+      {
+        "id": "TM-013-SINGLE-SOURCE-RESULTS",
+        "status": "provisional_training",
+        "source_cases": [
+          "2004A",
+          "2006A"
+        ],
+        "actual_usage_years": []
+      },
+      {
+        "id": "TM-014-UNCERTAINTY-BY-SOURCE",
+        "status": "provisional_training",
+        "source_cases": [
+          "2004A",
+          "2005A",
+          "2007A"
+        ],
+        "actual_usage_years": []
+      },
+      {
+        "id": "TM-015-THRESHOLD-PROVENANCE",
+        "status": "provisional_training",
+        "source_cases": [
+          "2005A",
+          "2006A",
+          "2009A"
+        ],
+        "actual_usage_years": []
+      },
+      {
+        "id": "TM-016-MIXED-DESIGN-DOMAIN",
+        "status": "provisional_training",
+        "source_cases": [
+          "2016A"
+        ],
+        "actual_usage_years": []
+      },
+      {
+        "id": "TM-017-UNIT-INVARIANT-MULTIOBJECTIVE",
+        "status": "provisional_training",
+        "source_cases": [
+          "2016A"
+        ],
+        "actual_usage_years": []
+      },
+      {
+        "id": "TM-018-AUDIT-COUNTEREXAMPLE-REGRESSION",
+        "status": "provisional_training",
+        "source_cases": [
+          "2016A"
+        ],
+        "actual_usage_years": []
+      },
+      {
+        "id": "TM-019-PHYSICAL-EFFECTIVE-PARAMETER",
+        "status": "provisional_training",
+        "source_cases": [
+          "2017A"
+        ],
+        "actual_usage_years": []
+      },
+      {
+        "id": "TM-020-FULL-ESTIMATOR-PERTURBATION",
+        "status": "provisional_training",
+        "source_cases": [
+          "2017A"
+        ],
+        "actual_usage_years": []
+      },
+      {
+        "id": "TM-021-SCALE-BUDGET-BEFORE-HIGH-FIDELITY",
+        "status": "provisional_training",
+        "source_cases": [
+          "2018A"
+        ],
+        "actual_usage_years": []
+      },
+      {
+        "id": "TM-022-PARAMETER-STATE-LIVENESS",
+        "status": "provisional_training",
+        "source_cases": [
+          "2018A"
+        ],
+        "actual_usage_years": []
+      }
+    ],
+    "tree_sha256": "4efa9dea17d350dadd8fd1d9a7608301b106cf1a2a849ffd5bc25a2d8ad72226"
+  },
+  "usage": {
+    "by_case": [
+      {
+        "case_id": "2004A",
+        "cards": []
+      },
+      {
+        "case_id": "2005A",
+        "cards": []
+      },
+      {
+        "case_id": "2006A",
+        "cards": []
+      },
+      {
+        "case_id": "2007A",
+        "cards": []
+      },
+      {
+        "case_id": "2008A",
+        "cards": []
+      },
+      {
+        "case_id": "2009A",
+        "cards": []
+      },
+      {
+        "case_id": "2010A",
+        "cards": []
+      },
+      {
+        "case_id": "2011A",
+        "cards": []
+      },
+      {
+        "case_id": "2012A",
+        "cards": []
+      },
+      {
+        "case_id": "2013A",
+        "cards": []
+      },
+      {
+        "case_id": "2014A",
+        "cards": []
+      },
+      {
+        "case_id": "2015A",
+        "cards": []
+      },
+      {
+        "case_id": "2016A",
+        "cards": []
+      },
+      {
+        "case_id": "2017A",
+        "cards": []
+      },
+      {
+        "case_id": "2018A",
+        "cards": []
+      },
+      {
+        "case_id": "2019A",
+        "cards": []
+      },
+      {
+        "case_id": "2020A",
+        "cards": []
+      },
+      {
+        "case_id": "2021A",
+        "cards": []
+      }
+    ],
+    "decision_counts": {
+      "adapt": 0,
+      "adopt": 0,
+      "reject": 0,
+      "retrieved_only": 0
+    },
+    "usage_years_by_card": {},
+    "positive_cross_case_evidence_records": 0,
+    "negative_cross_case_evidence_records": 0
+  },
+  "session_contract": {
+    "requested_model": "gpt-5.6-sol",
+    "actual_models": [
+      "gpt-5.6-sol"
+    ],
+    "reasoning_values": [
+      "max"
+    ],
+    "fallback_detected": false,
+    "all_ephemeral": true,
+    "session_count": 24
+  },
+  "quality_gates": {
+    "pytest": "195 passed",
+    "regression": "pass",
+    "git_leak_guard": "pass",
+    "secret_scan": "pass"
+  },
+  "runtime": {
+    "active_training_processes": 0,
+    "pid_present": false,
+    "lock_present": false,
+    "nonce_present": false,
+    "queue_stop_requested": true
+  },
+  "final_test": {
+    "status": "test_sealed",
+    "consumed": false,
+    "content_accessed": false,
+    "content_exported": false
+  }
+}

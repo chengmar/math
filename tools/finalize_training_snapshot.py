@@ -189,6 +189,13 @@ def finalize(args: argparse.Namespace) -> dict[str, Any]:
     runtime_cases = args.runtime_cases.resolve()
     runtime = trainer / "runtime"
     queue_path = runtime / "training-queue-state.json"
+    source = {
+        "git_commit": command_output(["git", "rev-parse", "HEAD"], trainer),
+        "git_branch": command_output(["git", "branch", "--show-current"], trainer),
+        "git_worktree_dirty_before_finalization": bool(
+            command_output(["git", "status", "--porcelain"], trainer)
+        ),
+    }
     if (runtime / "autopilot.lock").exists() or (runtime / "autopilot.pid").exists():
         raise RuntimeError("active or stale autopilot lock/pid must be cleared before finalization")
 
@@ -284,9 +291,7 @@ def finalize(args: argparse.Namespace) -> dict[str, Any]:
         "status": FINAL_STATUS,
         "generated_at": completed_at,
         "source": {
-            "git_commit": command_output(["git", "rev-parse", "HEAD"], trainer),
-            "git_branch": command_output(["git", "branch", "--show-current"], trainer),
-            "git_worktree_dirty": bool(command_output(["git", "status", "--porcelain"], trainer)),
+            **source,
             "codex_cli_version": command_output([codex, "--version"], trainer),
         },
         "integrity": {

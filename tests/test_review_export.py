@@ -73,3 +73,9 @@ def test_metrics_do_not_count_demo_as_candidate(tmp_path: Path) -> None:
     metric = review_export.metrics_for_case("2018A", {"status": "completed"}, case_dir)
 
     assert metric["candidate_count"] == 1
+
+
+def test_final_report_is_part_of_sanitized_export_whitelist() -> None:
+    source = MODULE_PATH.read_text(encoding="utf-8")
+    assert "FULL-TRAINING-2016-2021-COMPLETION-REPORT.md" in source
+    assert "FINAL_TRAINING_REPORT.md" in source

@@ -1,20 +1,20 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-28T20:54:18+08:00",
-  "system_status": "ready_for_final_test",
+  "generated_at": "2026-08-28T21:07:39+08:00",
+  "system_status": "training_complete_ready_for_final_test",
   "execution_policy": {
-    "continuous_mode": true,
+    "continuous_mode": false,
     "strict_serial_cases": true,
-    "training_paused": false,
-    "new_model_sessions_allowed": true,
-    "auto_start_next_phase": true,
-    "auto_start_next_case": true,
-    "current_case": "2017A",
-    "current_phase": "solve",
+    "training_paused": true,
+    "new_model_sessions_allowed": false,
+    "auto_start_next_phase": false,
+    "auto_start_next_case": false,
+    "current_case": null,
+    "current_phase": null,
     "first_case": "2016A",
     "final_training_case": "2021A",
     "max_cases": "all_remaining",
-    "stop_after_current_case": false,
+    "stop_after_current_case": true,
     "stop_on_usage_limit": true,
     "retry_on_usage_limit": false,
     "stop_before_2023": true,
@@ -30,7 +30,7 @@
   },
   "queue": {
     "queue_id": "acfc8cf5-1648-4223-a161-0435d94e04b4",
-    "stop_requested": false,
+    "stop_requested": true,
     "max_retries": 2,
     "counts": {
       "blocked": 0,
@@ -42,7 +42,7 @@
     },
     "current": null,
     "total": 19,
-    "updated_at": "2026-08-28T20:54:17+08:00"
+    "updated_at": "2026-08-28T21:07:39+08:00"
   },
   "cases": [
     {

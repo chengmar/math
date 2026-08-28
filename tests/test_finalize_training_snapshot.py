@@ -36,3 +36,9 @@ def test_summarize_usage_records_decisions_and_years(tmp_path: Path) -> None:
     assert result["decision_counts"]["adapt"] == 1
     assert result["decision_counts"]["adopt"] == 0
     assert result["usage_years_by_card"] == {"TM-001": ["2004A"]}
+
+
+def test_final_source_field_names_describe_pre_finalization_state() -> None:
+    source = MODULE_PATH.read_text(encoding="utf-8")
+    assert "git_worktree_dirty_before_finalization" in source
+    assert '"git_worktree_dirty"' not in source

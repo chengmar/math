@@ -1051,6 +1051,9 @@ def build(args: argparse.Namespace) -> int:
     snapshot = trainer / "reports" / "knowledge-snapshot-before-2023.json"
     if snapshot.is_file():
         copy_sanitized(snapshot, export / "audit" / "status" / "knowledge-snapshot-before-2023.json")
+    final_report = lab_root / "setup-reports" / "FULL-TRAINING-2016-2021-COMPLETION-REPORT.md"
+    if final_report.is_file():
+        copy_sanitized(final_report, export / "FINAL_TRAINING_REPORT.md")
     for case_id in COMPLETED_CASES:
         export_completed_case(case_id, items[case_id], runtime_cases / case_id, export, next(row for row in metrics if row["case_id"] == case_id))
     run_root = trainer / "runtime" / "autopilot-runs"
