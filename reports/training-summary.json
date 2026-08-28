@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-28T11:54:59+08:00",
+  "generated_at": "2026-08-28T16:45:31+08:00",
   "system_status": "continuous_training",
   "execution_policy": {
     "continuous_mode": true,
@@ -30,23 +30,23 @@
   },
   "queue": {
     "queue_id": "acfc8cf5-1648-4223-a161-0435d94e04b4",
-    "stop_requested": true,
+    "stop_requested": false,
     "max_retries": 2,
     "counts": {
       "blocked": 0,
-      "completed": 16,
+      "completed": 17,
       "completed_with_caveats": 0,
       "deferred_platform_safety": 1,
-      "pending": 2,
+      "pending": 1,
       "running": 0
     },
     "current": {
-      "case_id": "2020A",
+      "case_id": "2021A",
       "phase": "solve",
       "status": "pending"
     },
     "total": 19,
-    "updated_at": "2026-08-28T11:53:53+08:00"
+    "updated_at": "2026-08-28T16:44:11+08:00"
   },
   "cases": [
     {
@@ -116,7 +116,7 @@
         }
       },
       "fallback_detected": false,
-      "candidate_count": 0,
+      "candidate_count": 20,
       "machine_verified_generated": 0
     },
     {
@@ -216,7 +216,7 @@
         }
       },
       "fallback_detected": false,
-      "candidate_count": 0,
+      "candidate_count": 35,
       "machine_verified_generated": 0
     },
     {
@@ -466,7 +466,7 @@
         }
       },
       "fallback_detected": false,
-      "candidate_count": 0,
+      "candidate_count": 35,
       "machine_verified_generated": 0
     },
     {
@@ -766,7 +766,7 @@
         }
       },
       "fallback_detected": false,
-      "candidate_count": 9,
+      "candidate_count": 8,
       "machine_verified_generated": 0
     },
     {
@@ -871,22 +871,52 @@
     },
     {
       "case_id": "2020A",
-      "status": "pending",
-      "current_phase": "solve",
-      "completed_phases": [],
+      "status": "completed",
+      "current_phase": null,
+      "completed_phases": [
+        "solve",
+        "audit",
+        "blind-revision",
+        "reflection"
+      ],
       "attempts": {
-        "solve": 0,
-        "audit": 0,
-        "blind-revision": 0,
-        "reflection": 0
+        "solve": 2,
+        "audit": 1,
+        "blind-revision": 2,
+        "reflection": 2
       },
-      "blind_v1": false,
-      "audit": false,
-      "blind_final": false,
-      "reflection": false,
-      "sessions": {},
+      "blind_v1": true,
+      "audit": true,
+      "blind_final": true,
+      "reflection": true,
+      "sessions": {
+        "solve": {
+          "thread_id": "01a04682-eb0e-7be2-9c66-434538054f65",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        },
+        "audit": {
+          "thread_id": "01a046bb-7b16-75c1-9256-0c79fdb1c4ff",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        },
+        "blind-revision": {
+          "thread_id": "01a046d7-f917-7d72-b1e5-de85b361ed9d",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        },
+        "reflection": {
+          "thread_id": "01a04724-5dae-7441-bd54-aeca2fae55c2",
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "fallback": false
+        }
+      },
       "fallback_detected": false,
-      "candidate_count": 0,
+      "candidate_count": 40,
       "machine_verified_generated": 0
     },
     {
@@ -910,7 +940,7 @@
       "machine_verified_generated": 0
     }
   ],
-  "new_candidate_count": 182,
+  "new_candidate_count": 311,
   "new_machine_verified_count": 0,
   "final_test": {
     "case_id": "2023A",

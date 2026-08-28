@@ -414,36 +414,49 @@ def _candidate_knowledge_statuses(payload: Any) -> list[str]:
         "validation_patterns",
     }
 
-    def visit(value: Any) -> None:
+    lifecycle_values = {"candidate", "demo", "verified", "machine_verified", "deprecated"}
+
+    def visit(value: Any, inherited_status: str = "") -> None:
         if isinstance(value, dict):
+            local_status = inherited_status
+            for lifecycle_key in (
+                "knowledge_status",
+                "knowledge_state",
+                "package_status",
+                "proposal_state",
+                "collection_state",
+            ):
+                lifecycle_value = value.get(lifecycle_key)
+                if isinstance(lifecycle_value, str) and lifecycle_value.casefold() in lifecycle_values:
+                    local_status = lifecycle_value.casefold()
+                    break
             for key, child in value.items():
                 if key in {"knowledge_status", "knowledge_state"} and isinstance(child, str):
                     statuses.append(child.casefold())
                 elif (key in proposal_collections or key.endswith("_cards")) and isinstance(child, list):
                     for card in child:
                         if isinstance(card, dict):
-                            statuses.append(
-                                str(
-                                    card.get("status")
-                                    or card.get("knowledge_status")
-                                    or card.get("knowledge_state")
-                                    or card.get("state")
-                                    or ""
-                                ).casefold()
-                            )
+                            card_status = str(
+                                card.get("status")
+                                or card.get("knowledge_status")
+                                or card.get("knowledge_state")
+                                or card.get("state")
+                                or local_status
+                                or ""
+                            ).casefold()
+                            statuses.append(card_status)
                         else:
                             statuses.append("")
                 else:
-                    visit(child)
+                    visit(child, local_status)
         elif isinstance(value, list):
             for child in value:
-                visit(child)
+                visit(child, inherited_status)
 
     top_value = None
     if isinstance(payload, dict):
         top_value = (
             payload.get("status")
-            or payload.get("knowledge_status")
             or payload.get("state")
         )
     if isinstance(top_value, str):

@@ -1,7 +1,7 @@
 schema_version: 1
 collection: training-memory
 status: provisional_training
-version: 13
+version: 14
 created_at: '2026-08-24'
 active_card_limit: 25
 solve_retrieval_limit: 5
@@ -114,5 +114,12 @@ case_updates:
   decision: retain_candidates_without_forced_provisional_card
   reason: 单题 Reflection candidate 尚缺跨案例适用性证据；完成更新审查但不强行套用或升级。
   updated_at: '2026-08-28T11:46:34+08:00'
-last_case_update: 2019A
-last_updated: '2026-08-28T11:46:34+08:00'
+- case_id: 2020A
+  status: completed
+  candidate_count_reviewed: 40
+  cards_added: 0
+  decision: retain_candidates_without_forced_provisional_card
+  reason: 单题 Reflection candidate 尚缺跨案例适用性证据；完成更新审查但不强行套用或升级。
+  updated_at: '2026-08-28T16:43:12+08:00'
+last_case_update: 2020A
+last_updated: '2026-08-28T16:43:12+08:00'

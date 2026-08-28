@@ -223,6 +223,42 @@ def test_candidate_status_parser_accepts_generic_items_container():
     assert _candidate_knowledge_statuses(payload) == ["candidate", "candidate"]
 
 
+def test_candidate_status_parser_inherits_file_level_status_for_collections(tmp_path):
+    payload = {
+        "case_id": "2020A",
+        "knowledge_status": "candidate",
+        "failure_modes": [
+            {"id": "FM-1", "evidence_status": "fail"},
+            {"id": "FM-2", "evidence_status": "needs_review"},
+        ],
+    }
+
+    assert _candidate_knowledge_statuses(payload) == [
+        "candidate",
+        "candidate",
+        "candidate",
+    ]
+
+    lesson_root = tmp_path / "lessons-proposed"
+    lesson_root.mkdir()
+    (lesson_root / "failure-modes.yaml").write_text(
+        "case_id: 2020A\n"
+        "knowledge_status: candidate\n"
+        "failure_modes:\n"
+        "  - id: FM-1\n"
+        "    evidence_status: fail\n"
+        "  - id: FM-2\n"
+        "    evidence_status: needs_review\n",
+        encoding="utf-8",
+    )
+
+    assert _validate_candidate_proposals(lesson_root, "2020A") == {
+        "files": 1,
+        "candidate_count": 3,
+        "invalid": [],
+    }
+
+
 def test_candidate_status_parser_accepts_knowledge_state_entries(tmp_path):
     payload = {
         "knowledge_state": "candidate",
