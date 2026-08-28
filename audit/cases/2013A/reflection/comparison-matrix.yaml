@@ -1,0 +1,146 @@
+schema_version: 1
+case_id: 2013A
+artifact_state: candidate
+scope:
+  selected_references: [R1, R2, R3]
+  registered_not_selected: [R4]
+  current_comparison_set_only: true
+  world_novelty_claimed: false
+frozen_evidence:
+  manifest: blind-final/FROZEN_BLIND_FINAL.json
+  manifest_entry_count: 124
+  file_hash_status: pass
+  file_hash_pass_count: 124
+  file_hash_fail_count: 0
+  expected_tree_sha256: 33c63844e6c689024834ae957e9fce92ac6a8cf78832dbc875ea0d274a6ab2d4
+  recomputed_tree_sha256: 33c63844e6c689024834ae957e9fce92ac6a8cf78832dbc875ea0d274a6ab2d4
+  tree_hash_status: pass
+  audit_prerequisite_status: pass
+  clean_reproduction_status: pass
+  clean_reproduction_file_count: 29
+references:
+  - id: R1
+    archive:<SOURCE_FILE_REDACTED>
+    sha256: <REFERENCE_HASH_REDACTED>
+    text_extraction_status: pass
+    code_inventory_status: pass
+    original_execution_status: needs_review
+    external_validity_status: needs_review
+  - id: R2
+    archive:<SOURCE_FILE_REDACTED>
+    sha256: <REFERENCE_HASH_REDACTED>
+    text_extraction_status: pass
+    code_inventory_status: pass
+    literal_reimplementation_status: pass
+    paper_code_run_count_consistency_status: fail
+    external_validity_status: needs_review
+  - id: R3
+    archive:<SOURCE_FILE_REDACTED>
+    sha256: <REFERENCE_HASH_REDACTED>
+    text_extraction_status: pass
+    code_inventory_status: pass
+    solveproblem4_reimplementation_status: pass
+    stated_flow_code_flow_consistency_status: fail
+    external_validity_status: needs_review
+  - id: R4
+    archive:<SOURCE_FILE_REDACTED>
+    sha256: <REFERENCE_HASH_REDACTED>
+    archive_extraction_status: pass
+    pdf_text_extraction_status: needs_review
+    code_inventory_status: pass
+    selected_for_substantive_comparison: false
+question_results:
+  q1:
+    blind:
+      method_status: pass
+      case_numeric_status: needs_review
+      method: complete_cycle_saturated_PCU_with_robust_segmentation
+    R1:
+      reported_range_pcu_min: [18.4615, 30.0]
+      source_observation_status: needs_review
+    R2:
+      reported_range_pcu_h: [1020, 1620]
+      source_observation_status: needs_review
+    R3:
+      recomputed_video1_capacity_pcu_h: 1370.45
+      recomputed_video2_capacity_pcu_h: 1752.63
+      arithmetic_status: pass
+      source_observation_status: needs_review
+  q2:
+    blind_strict_rank_status: fail
+    blind_descriptive_proxy_status: pass
+    reference_conclusion_agreement_status: fail
+    conflict:
+      R1: significant_video2_higher
+      R2: no_significant_difference
+      R3: raw_difference_but_adjusted_near_equal
+  q3:
+    blind_pre_boundary_formula_status: pass
+    blind_case_specific_status: needs_review
+    reference_holdout_validation_status: needs_review
+    common_conservation_structure_status: pass
+  q4:
+    blind:
+      constant_engineering_baseline_min: 5.306
+      detailed_signal_grid_min: [3.321, 4.040]
+      case_specific_status: needs_review
+    R1:
+      listed_run_count: 7
+      recomputed_mean_s: 391.143
+      recomputed_mean_min: 6.519
+      paper_interval_min: [5.5, 7.5]
+      table_arithmetic_status: pass
+      stochastic_reproduction_status: needs_review
+    R2:
+      paper_mean_min: 8.36
+      paper_interval_min: [8.0, 8.4]
+      source_loop_count: 50
+      paper_stated_run_count: 100
+      reimplementation_run_count: 2000
+      reimplementation_mean_min: 8.122
+      reimplementation_empirical_95_min: [5.883, 10.983]
+      narrow_interval_consistency_status: fail
+    R3:
+      paper_difference_mean_s: 339.8536
+      reimplementation_run_count: 10000
+      reimplementation_mean_s: 340.399
+      reimplementation_empirical_95_s: [129, 724]
+      mean_reproduction_status: pass
+      effective_mean_flow_pcu_h: 2355
+      stated_total_flow_pcu_h: 1500
+      flow_consistency_status: fail
+dimensions:
+  model:
+    blind_status: pass
+    reference_cross_agreement_status: fail
+    judgment: blind_macroscopic_model_is_more_identifiable_under_missing_video
+  results:
+    arithmetic_reproduction_status: pass
+    case_truth_status: needs_review
+    judgment: outputs_are_not_commensurate_without_common_inputs_and_queue_definition
+  validation:
+    blind_internal_status: pass
+    blind_external_status: needs_review
+    reference_holdout_status: needs_review
+  complexity:
+    blind: low_to_medium
+    R1: medium
+    R2: high
+    R3: medium_to_high
+    measured_runtime_comparison_status: needs_review
+  interpretability:
+    blind: high
+    R1: medium
+    R2: low_to_medium
+    R3: high_for_difference_model_medium_for_CA
+  expression:
+    blind: strong_evidence_boundaries_weak_empirical_narrative
+    R1: rich_narrative_overstrong_validation_language
+    R2: method_stacking_and_inference_overreach
+    R3: strong_mechanism_narrative_underreported_uncertainty
+overall:
+  frozen_history_preserved_status: pass
+  reference_default_correctness_status: fail
+  candidate_generation_status: pass
+  direct_upgrade_status: fail
+  case_specific_truth_status: needs_review

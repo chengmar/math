@@ -1,0 +1,18 @@
+{
+  "generated_at": "2026-08-28T21:16:41+08:00",
+  "source_git_commit": "0ededa4115aaa9152c8d2c50be2b28b6a51461be",
+  "source_git_branch": "training/full-corpus-v1",
+  "source_worktree_dirty": false,
+  "export_file_count": 1083,
+  "export_total_size": 7062282,
+  "test_result": "199 passed",
+  "leak_scan_result": "pass",
+  "secret_scan_result": "pass",
+  "real_problem_files_exported": 0,
+  "reference_papers_exported": 0,
+  "raw_data_exported": 0,
+  "test_2023_content_exported": 0,
+  "auth_files_exported": 0,
+  "publish_commit": null,
+  "hash_manifest_scope": "all export files except PUBLISH_MANIFEST.json and EXPORT_FILES.sha256 (self-reference exclusion)"
+}

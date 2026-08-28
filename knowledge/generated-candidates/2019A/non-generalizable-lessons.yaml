@@ -1,0 +1,40 @@
+schema_version: 1
+artifact: "non_generalizable_case_items"
+knowledge_state: "candidate"
+entries:
+  - id: "NG-01"
+    item: "0.287601160561 ms and 0.751794338534 ms steady opening times"
+    knowledge_state: "candidate"
+    reason: "they depend on this task's geometry, pulse, pressure targets, and constitutive table"
+    case_evidence_status: pass
+    reuse_status: fail
+  - id: "NG-02"
+    item: "0.023226638 to 0.027530254 rad/ms P2 structural interval"
+    knowledge_state: "candidate"
+    reason: "the endpoints are specific to this pump/nozzle geometry and the two selected topology interpretations"
+    case_evidence_status: pass
+    reuse_status: fail
+  - id: "NG-03"
+    item: "approximately 50 ms injection phase offset"
+    knowledge_state: "candidate"
+    reason: "the offset follows this task's pulse waveform and period"
+    case_evidence_status: pass
+    reuse_status: fail
+  - id: "NG-04"
+    item: "the six constrained relief scenarios and their representative 1200 rpm setting"
+    knowledge_state: "candidate"
+    reason: "the family uses assumed delay, dwell, switching, and replenishment limits rather than measured hardware data"
+    case_evidence_status: needs_review
+    reuse_status: fail
+  - id: "NG-05"
+    item: "R-A and R-B are locally more reliable than R-C"
+    knowledge_state: "candidate"
+    reason: "this is only a claim-level comparison inside a three-document approved set, not a ranking of authors or the wider literature"
+    case_evidence_status: needs_review
+    reuse_status: fail
+  - id: "NG-06"
+    item: "an acoustic transit-to-rise ratio near 1.56"
+    knowledge_state: "candidate"
+    reason: "the estimate ignores pipe-wall compliance and uses this task's 0.5 m length, 100 MPa density, modulus, and 0.2 ms rise time"
+    case_evidence_status: needs_review
+    reuse_status: fail

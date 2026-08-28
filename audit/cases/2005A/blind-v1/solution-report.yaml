@@ -1,0 +1,104 @@
+phase: solve
+case_id: 2005A
+overall_status: needs_review
+scope:
+  blind_solution: pass
+  online_search_of_problem_or_solution: pass
+  reference_solution_access: pass
+  cross_phase_resume: pass
+  note: 上述pass表示遵守限制，即未联网检索、未读取参考解答、未跨阶段。
+questions:
+  q1:
+    coverage: pass
+    method: GB3838-2002四指标最差项定级，Nemerow指数辅助排序
+    primary_results:
+      observations: 476
+      I_to_III_pct: 84.4538
+      IV_to_V_pct: 11.9748
+      inferior_V_pct: 3.5714
+      worst_station: 江西南昌滁槎
+    validation: pass
+    artifacts:
+      - results/<SOURCE_FILE_REDACTED>
+      - figures/<SOURCE_FILE_REDACTED>
+      - figures/<SOURCE_FILE_REDACTED>
+  q2:
+    coverage: pass
+    method: 一阶衰减质量平衡
+    primary_parameter_k_per_day: 0.2
+    primary_results:
+      top_segment: 宜昌—岳阳
+      CODMn_mean_positive_t_per_day: 3979.2473
+      NH3N_mean_positive_t_per_day: 385.0373
+      CODMn_top_bootstrap_pct: 89.42
+      NH3N_top_bootstrap_pct: 94.66
+    internal_mass_balance: pass
+    physical_source_attribution_to_specific_outfalls: needs_review
+    artifacts:
+      - results/<SOURCE_FILE_REDACTED>
+      - results/<SOURCE_FILE_REDACTED>
+      - figures/<SOURCE_FILE_REDACTED>
+  q3:
+    coverage: pass
+    selected_models:
+      quality: linear_simplex
+      wastewater: linear_ols
+      river_flow: historical_mean
+    rolling_validation: pass
+    primary_results:
+      wastewater_2005_1e8_t: 290.5
+      wastewater_2014_1e8_t: 406.2727
+      IV_V_2005_pct: 24.0654
+      IV_V_2014_pct: 40.4491
+      inferior_V_2005_pct: 7.08
+      inferior_V_2014_pct: 14.82
+    long_horizon_external_accuracy: needs_review
+    artifacts:
+      - results/<SOURCE_FILE_REDACTED>
+      - results/<SOURCE_FILE_REDACTED>
+      - figures/<SOURCE_FILE_REDACTED>
+      - figures/<SOURCE_FILE_REDACTED>
+  q4:
+    coverage: pass
+    method: 历史安全污染压力包络
+    primary_results:
+      safe_pressure_cap_pct: 2.1759697
+      treatment_2005_1e8_t: 75.2072
+      treatment_2014_1e8_t: 190.98
+    internal_constraint_check: pass
+    guarantee_of_future_no_inferior_V: needs_review
+    artifacts:
+      - results/<SOURCE_FILE_REDACTED>
+      - results/<SOURCE_FILE_REDACTED>
+      - figures/<SOURCE_FILE_REDACTED>
+  q5:
+    coverage: pass
+    evidence_linked_recommendations: pass
+required_outputs:
+  problem-analysis.md: pass
+  data-audit.md: pass
+  assumptions.yaml: pass
+  variables.yaml: pass
+  model-selection.md: pass
+  solution-report.yaml: pass
+  reproducibility.yaml: pass
+  code: pass
+  results: pass
+  figures: pass
+  paper/main.tex: pass
+  paper/paper.md: pass
+verification:
+  numeric_pipeline_rerun_from_audited_docx: pass
+  raw_doc_com_conversion_repeatability: needs_review
+  fixed_seed: pass
+  boundary_checks: pass
+  sensitivity_analysis: pass
+  paper_result_consistency: pass
+  xelatex_compile: pass
+  source_data_external_correctness: needs_review
+  mathematical_correctness_beyond_internal_checks: needs_review
+freeze: false
+cross_phase_resume: false
+audit_invoked: false
+reflect_invoked: false
+evaluate_invoked: false

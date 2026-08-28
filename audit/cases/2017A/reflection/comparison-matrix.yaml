@@ -1,0 +1,134 @@
+schema_version: "1.0"
+knowledge_status: candidate
+judgment_vocabulary:
+  - pass
+  - fail
+  - needs_review
+scope:
+  frozen_solution: blind-final
+  reference_count: 4
+  internet_used: false
+  dummy_detected: false
+  freeze_manifest:
+    listed_files: 436
+    matched_files: 436
+    status: pass
+sources:
+  B:
+    kind: frozen_blind_final
+    detector_spacing_mm: 0.2756171400
+    center_mm: [40.7713647, 56.2422089]
+    first_detector_normal_deg: 29.6741378
+    angle_model: fixed_1_degree
+    fitted_gain: 1.78059186
+    calibration_projection_nrmse: 0.0137158742
+    reconstruction: nonnegative_SIRT_80
+  R1:
+    file:<SOURCE_FILE_REDACTED>
+    title: <REFERENCE_TITLE_REDACTED>
+    detector_spacing_mm: 0.2808
+    center_mm: [40.7397, 56.2484]
+    first_detector_normal_deg: 29.6031
+    reconstruction: FBP
+  R2:
+    file:<SOURCE_FILE_REDACTED>
+    title: <REFERENCE_TITLE_REDACTED>
+    detector_spacing_mm: 0.2768
+    center_mm: [40.6960, 56.2149]
+    first_detector_normal_deg_approx: 29.7039
+    reported_gain: 1.7724515
+    reconstruction: RL_filtered_backprojection
+  R3:
+    file:<SOURCE_FILE_REDACTED>
+    title: <REFERENCE_TITLE_REDACTED>
+    detector_spacing_mm: 0.2768
+    center_mm: [40.8436, 56.1495]
+    first_detector_normal_deg: 29.6463
+    reconstruction: object_specific_FBP_or_Wiener
+  R4:
+    file:<SOURCE_FILE_REDACTED>
+    title: <REFERENCE_TITLE_REDACTED>
+    detector_spacing_mm: 0.2776
+    center_mm: [40.7004, 55.5520]
+    first_detector_normal_deg: 29.7848
+    reported_gain: 1.776974
+    reconstruction: backprojection_with_filter_comparison
+reimplemented_checks:
+  circle_quadratic_spacing:
+    estimate_count: 85
+    mean_mm: 0.2767541234
+    sample_sd_mm: 0.0000001216
+    status: pass
+    interpretation: supports_the_continuous_circle_chord_scale_not_an_external_ground_truth
+  adjacent_ratio_spacing:
+    estimate_mm: 0.2767542179
+    objective: 0.0000000005470596
+    status: pass
+  common_forward_projector:
+    B: {fitted_gain: 1.780591862, projection_nrmse: 0.013715874, status: pass}
+    R1: {fitted_gain: 1.795880130, projection_nrmse: 0.041691044, status: needs_review}
+    R2_approx: {fitted_gain: 1.784331370, projection_nrmse: 0.016730692, status: needs_review}
+    R3_reported: {fitted_gain: 1.784248510, projection_nrmse: 0.020182139, status: pass}
+    R3_fixed_angle_counterfactual: {fitted_gain: 1.784216869, projection_nrmse: 0.020200288, status: pass}
+    R4_reported: {fitted_gain: 1.787719834, projection_nrmse: 0.040040468, status: pass}
+  r4_text_layer_correction:
+    extracted_value: 110.7974
+    printed_page_value: 10.7974
+    method: headless_raster_inspection_at_220_dpi
+    status: pass
+results_comparison:
+  problem_2_rmse_vs_B:
+    R1: 0.0135956
+    R2: 0.0193228
+    R3: 0.0104898
+    R4: 0.0192869
+    interpretation_status: needs_review
+  problem_3_rmse_vs_B:
+    R1: 0.1877106
+    R2: 0.3994117
+    R3: 0.1471628
+    R4: 0.4861883
+    interpretation_status: needs_review
+dimension_matrix:
+  - dimension: problem_decomposition
+    B: joint_geometry_gain_calibration_then_baseline_and_nonnegative_iterative_reconstruction
+    R1: support_edge_trajectory_then_FBP
+    R2: scalar_optimization_then_per_angle_search_and_RL_backprojection
+    R3: separated_quadratic_chord_fits_then_object_specific_filtering
+    R4: support_intersection_then_per_angle_equations_and_filter_comparison
+  - dimension: validation
+    B: holdout_refit_projection_residual_counterexamples_and_full_estimator_noise
+    R1: geometric_visual_checks
+    R2: five_spacing_noise_runs_and_coarse_ranges
+    R3: five_angle_runs_at_three_noise_levels
+    R4: smoothness_score_and_template_filter_error
+  - dimension: robustness
+    B: three_seeds_120_paired_full_estimator_replicates
+    R1: insufficient_new_template_evidence
+    R2: partial_estimator_only
+    R3: angle_only_with_unseeded_noise_semantics
+    R4: no_resampling_interval
+  - dimension: complexity
+    B: high_but_staged_and_cached
+    R1: low
+    R2: very_high_per_angle_grid_search
+    R3: medium
+    R4: medium_high
+  - dimension: interpretability
+    B: strong_evidence_layers_but_physical_meaning_of_effective_spacing_is_open
+    R1: visually_intuitive_but_manual
+    R2: clear_scalar_objective_but_weak_global_angle_consistency
+    R3: strongest_analytic_geometry_and_spectral_reasoning
+    R4: intuitive_geometry_but_ad_hoc_region_selection
+  - dimension: reproducibility
+    B: clean_reproduction_and_authoritative_hash_manifest
+    R1: insufficient_approved_dependencies
+    R2: insufficient_approved_dependencies
+    R3: insufficient_approved_dependencies
+    R4: insufficient_approved_dependencies
+overall:
+  blind_validation_advantage: pass
+  references_assumed_correct: false
+  physical_vs_effective_spacing_identifiability: needs_review
+  cross_algorithm_uncertainty_for_problem_3: needs_review
+  direct_promotion_to_verified: fail

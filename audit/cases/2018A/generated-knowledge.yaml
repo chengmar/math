@@ -1,0 +1,20 @@
+case_id: 2018A
+status: candidate_only
+candidate_count: 6
+machine_verified_count: 0
+verified_count: 0
+exported_files:
+- file: 2018A-case-specific-rc-budget.yaml
+  sha256: c11283e9be481c52eb8a08d0aea7cdb15fba1a65be072f18d50e0c43093ceedf
+- file: demo-reference-relevance-gate.yaml
+  sha256: 8e113d9195606f44588860d72f42b09a175c5ad15fab530d83d954d45aa7b748
+- file: expression-experience-active-constraint-table.yaml
+  sha256: a4078e610378f5bb5f0cc083caa5ce13f1c0f98ac52a37862d1ed0b5d8755d2b
+- file: failure-mode-parameter-state-liveness.yaml
+  sha256: 1bd0f2e08cd8cdd3d04af86757f04a075264da81ebd712dc914ed52d8cbbbee3
+- file: method-card-layer-rc-before-pde.yaml
+  sha256: 4bb933925735bd7c27753e15ba0a578c39388f2cd0ff20e606caae414ee2b295
+- file: non-generalizable-endpoint-fit.yaml
+  sha256: d4a9f757da01392e955d08fca77180ee01919ad4a1b60a1dee9f413c9d0fa4dd
+- file: validation-pattern-two-axis-reference-check.yaml
+  sha256: 4e3de8de5198e8753c6baf2a30e3613aabf5062626dbc49dea7413aba197cc75

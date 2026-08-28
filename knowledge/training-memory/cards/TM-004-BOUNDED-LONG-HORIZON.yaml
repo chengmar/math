@@ -1,0 +1,19 @@
+id: TM-004-BOUNDED-LONG-HORIZON
+title: 长期比例或容量驱动采用有界或分阶段路径
+type: method_card
+status: provisional_training
+source_cases: [2007A]
+source_kind: reference_learned_then_conditioned
+origin_year: 2007
+tags: [forecast, long_horizon, bounded, scenario, sensitivity]
+applicable_conditions: [比例、渗透率或容量驱动需外推且存在物理或逻辑边界]
+inapplicable_conditions: [仅短期插值且线性基线已通过留出, 分类口径会重定义]
+minimum_baseline: 持久性或短期线性趋势并检查预测范围
+recommended_action: 长期候选使用显式上界或政策阶段，同时把上界、速度和阶段作为情景而非事实
+why_it_may_help: 无界线性外推会产生负值或超过逻辑上限
+required_validation: [范围约束, 与短期基线同折比较, 联合情景包络]
+failure_modes: [凭空固定上界, 把政策情景写成预测事实]
+counterexamples: [线性短期很好但长期越界]
+complexity_cost: 中；增加情景和参数敏感性
+evidence_summary: 一个高可信长期预测案例支持有界路径作为条件候选
+last_updated: '2026-08-24'

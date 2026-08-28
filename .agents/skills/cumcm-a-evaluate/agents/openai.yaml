@@ -1,0 +1,6 @@
+interface:
+  display_name: "CUMCM A 盲测评估"
+  short_description: "执行开发集或考试集严格盲测并冻结不可补改的提交"
+  default_prompt: "Use $cumcm-a-evaluate to run the current isolated blind evaluation."
+policy:
+  allow_implicit_invocation: false

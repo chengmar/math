@@ -1,0 +1,219 @@
+schema_version: 1
+case_id: "2015A"
+phase: "reflection"
+artifact: "comparison_matrix"
+proposal_state: "candidate"
+judgment_vocabulary:
+  - "pass"
+  - "fail"
+  - "needs_review"
+scope:
+  blind_snapshot: "blind-final"
+  approved_reference_count: 4
+  network_search_used: false
+freeze_gate:
+  status: "pass"
+  manifest_entries: 160
+  payload_entries: 160
+  manifest_observed_sha256: "14e889a4e369c3fcaa4f0d38cca4d563f15c1e5f514e95ac4194b8024df4cf3e"
+  tree_sha256: "0ed72b3e904a8c13c5b633864a383e234375d56f0072d701264195f626311874"
+  audit_requirement_status: "pass"
+  note: "审计报告总体 fail 不阻断 reflection；外部冻结证据具有权威性。"
+systems:
+  - id: "Blind"
+    kind: "frozen_blind_final"
+    title: <REFERENCE_TITLE_REDACTED>
+    model:
+      decomposition: "统一 ENU 前向模型；已知地点计算、已知日期反演、未知日期多分支反演、视频标定门槛"
+      objective: "解析消去二维旋转和尺度后的端点残差；长度目标作对照"
+      optimization: "确定性日期/经纬度搜索加解析内层"
+      branches: "手性镜像和季节配对显式枚举"
+    validation:
+      internal_status: "pass"
+      external_truth_status: "needs_review"
+      reproducibility_status: "pass"
+      evidence: "时间留出、块 bootstrap、联合簇、前缀漂移、污染和结构压力测试；30/30 重跑一致"
+    q4:
+      method_status: "pass"
+      real_data_numeric_status: "fail"
+      note: "单位一致的单应模型有合成检验；视频和地面控制缺失。"
+    complexity:
+      status: "pass"
+      evidence: "解析消元降低外层维度，完整生成约 186 s。"
+    interpretability:
+      status: "pass"
+      evidence: "物理向量、分支来源、失败门槛均可追踪。"
+    expression:
+      status: "needs_review"
+      evidence: "证据链完整，但正文审计负担较重；LaTeX 环境未复核。"
+  - id: "R1"
+    kind: "approved_reference"
+    file: "<SOURCE_FILE_REDACTED>"
+    title: <REFERENCE_TITLE_REDACTED>
+    sha256: <REFERENCE_HASH_REDACTED>
+    pages: 26
+    model:
+      objective: "影长最小二乘和遗传算法；短时二次外推太阳正午"
+      optimization: "GA，100 个种群、100 代、20 次"
+    validation:
+      direct_rerun_status: "needs_review"
+      external_truth_status: "needs_review"
+      reproducibility_status: "needs_review"
+    q4:
+      metric_calibration_status: "fail"
+      note: "相似变换和像素比例不足以自动建立地面欧氏度量。"
+    complexity:
+      status: "needs_review"
+      evidence: "随机种子、函数评估数和运行时缺失。"
+    interpretability:
+      status: "needs_review"
+      evidence: "公式直观，但短时外推和 GA 模态的物理联系较弱。"
+    expression:
+      status: "needs_review"
+      evidence: "流程易读，独立验证和复现信息不足。"
+  - id: "R2"
+    kind: "approved_reference"
+    file: "<SOURCE_FILE_REDACTED>"
+    title: <REFERENCE_TITLE_REDACTED>
+    sha256: <REFERENCE_HASH_REDACTED>
+    pages: 27
+    model:
+      objective: "角度差和归一化长度双目标"
+      optimization: "0.01 度网格加 20 粒子、1000 代 PSO"
+    validation:
+      direct_rerun_status: "needs_review"
+      external_truth_status: "needs_review"
+      manual_filter_audit_status: "fail"
+      frame_phase_sensitivity_status: "pass"
+    q4:
+      method_status: "needs_review"
+      note: "使用消失线/透视关系并报告取帧起点敏感性；视频缺失。"
+    complexity:
+      status: "needs_review"
+      evidence: "字面网格成本极高，运行时、种子和人工筛选规则缺失。"
+    interpretability:
+      status: "needs_review"
+      evidence: "双目标直观，人工地域筛选不透明。"
+    expression:
+      status: "needs_review"
+      evidence: "表图较丰富，筛选与复杂度披露不足。"
+  - id: "R3"
+    kind: "approved_reference"
+    file: "<SOURCE_FILE_REDACTED>"
+    title: <REFERENCE_TITLE_REDACTED>
+    sha256: <REFERENCE_HASH_REDACTED>
+    pages: 32
+    model:
+      objective: "先长度残差、后横纵坐标残差"
+      optimization: "两阶段 L-M/lsqcurvefit"
+    validation:
+      synthetic_code_consistency_status: "pass"
+      synthetic_independence_status: "fail"
+      direct_rerun_status: "needs_review"
+      external_truth_status: "needs_review"
+    q4:
+      metric_calibration_status: "fail"
+      note: "竖杆像素高和水平影长像素比不能在一般透视下自动恢复地面度量。"
+    complexity:
+      status: "needs_review"
+      evidence: "局部求解成本可能较低，初值探索成本未量化。"
+    interpretability:
+      status: "pass"
+      evidence: "先长度后方向的两阶段结构清晰。"
+    expression:
+      status: "needs_review"
+      evidence: "主线集中，但合成验证须明确限定为代码自洽。"
+  - id: "R4"
+    kind: "approved_reference"
+    file: "<SOURCE_FILE_REDACTED>"
+    title: <REFERENCE_TITLE_REDACTED>
+    sha256: <REFERENCE_HASH_REDACTED>
+    pages: 40
+    model:
+      objective: "影长残差和轨迹斜率残差；方向后验检查"
+      optimization: "拟牛顿、人工鱼群、fmincon"
+    validation:
+      external_transport_design_status: "pass"
+      external_transport_reproduction_status: "needs_review"
+      constraint_consistency_status: "fail"
+      direct_rerun_status: "needs_review"
+    q4:
+      method_status: "needs_review"
+      rod_height_sensitivity_status: "pass"
+      note: "使用 Canny、单应性并报告杆高敏感性；视频和控制数据缺失。"
+    complexity:
+      status: "needs_review"
+      evidence: "多算法串联，评估次数和运行时未完整报告。"
+    interpretability:
+      status: "needs_review"
+      evidence: "方向后验检查直观，纬度约束与结果冲突。"
+    expression:
+      status: "needs_review"
+      evidence: "覆盖全面，但约束矛盾和外部案例证据链需修正。"
+common_forward_rescoring:
+  status: "pass"
+  interpretation_status: "needs_review"
+  model_dependency_note: "只衡量候选对 Blind 太阳公式和二维旋转—缩放观测模型的相容性，不是外部真值误差。"
+  frozen_candidate_reproduction_tolerance_mm: 0.000001
+  datasets:
+    - id: "attachment_1"
+      blind_endpoint_rmse_mm: [0.346472]
+      reference_endpoint_rmse_mm:
+        R1: [13.450591]
+        R2: [5.792958]
+        R3: [1.366927]
+        R4: [5.304197, 99.150356]
+    - id: "attachment_2"
+      blind_endpoint_rmse_mm: [0.047041, 0.047947]
+      reference_endpoint_rmse_mm:
+        R1: []
+        R2: [17.430635, 15.975956]
+        R3: [6.952175]
+        R4: [8.352900]
+    - id: "attachment_3"
+      blind_endpoint_rmse_mm: [0.281245, 0.285324]
+      reference_endpoint_rmse_mm:
+        R1: []
+        R2: [21.783874, 39.034119]
+        R3: [43.754656]
+        R4: [26.233348]
+attribution:
+  independent_before_reference_access:
+    status: "pass"
+    items:
+      - "ENU 太阳向量与均时差"
+      - "复数旋转—尺度解析消元"
+      - "手性镜像和季节配对分支"
+      - "确定性年度搜索"
+      - "长度与二维目标对照"
+      - "缺视频时拒绝伪造问4数值"
+  learned_from_audit_revision:
+    status: "pass"
+    items:
+      - "问4的单应方向、齐次归一化和单位修正"
+      - "训练—选择—测试分离"
+      - "残差相关、块 bootstrap、联合簇、前缀漂移和污染压力测试"
+      - "边界测试与精度降级"
+  learned_after_reference_access:
+    status: "pass"
+    items:
+      - "R4 的外部案例迁移验证构想"
+      - "R2 的视频帧起点和奇偶采样敏感性"
+      - "把简化太阳公式作为版本消融基线"
+  common_not_novel:
+    status: "pass"
+    items:
+      - "太阳高度角和方位角"
+      - "最小二乘"
+      - "季节对称候选"
+      - "一般透视校正"
+      - "通用元启发式"
+uncertainties:
+  - status: "needs_review"
+    item: "缺少独立高精度太阳历，不能裁决问1公式版本的外部精度。"
+  - status: "needs_review"
+    item: "缺少视频、相机参数、地面控制和真实杆高，不能复核问4数值。"
+  - status: "needs_review"
+    item: "四篇附录代码无法原样执行。"
+  - status: "needs_review"
+    item: "统一前向重评分具有模型依赖性。"

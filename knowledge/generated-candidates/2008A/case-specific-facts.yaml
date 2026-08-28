@@ -1,0 +1,55 @@
+schema_version: 1
+case_id: 2008A
+package_status: candidate
+cards:
+  - id: 2008A-FACT-001
+    status: candidate
+    source: independent_blind
+    statement: "The target is a 100 mm square with centers A=(0,0), B=(30,0), C=(100,0), D=(100,100), E=(0,100) and equal radius 12 mm."
+    evidence_status: pass
+    evidence:
+      - blind-final/paper/paper.md
+      - blind-final/input/problem/<SOURCE_FILE_REDACTED>
+    transfer_limit: "Exact geometry is specific to case 2008A."
+
+  - id: 2008A-FACT-002
+    status: candidate
+    source: independent_blind
+    statement: <LONG_QUOTE_REDACTED>
+    evidence_status: pass
+    deterministic_rerun_status: pass
+    mathematical_truth_status: needs_review
+    transfer_limit: "These numbers belong only to the frozen input image and coordinate convention u right, v down."
+
+  - id: 2008A-FACT-003
+    status: candidate
+    source: independent_blind
+    statement: "On this image, projected physical centers differ from independently fitted ellipse centers by 0.264 to 0.649 px."
+    evidence_status: pass
+    evidence:
+      - blind-final/results/<SOURCE_FILE_REDACTED>
+    transfer_limit: "The magnitude is image-specific; only the qualitative perspective warning may transfer."
+
+  - id: 2008A-FACT-004
+    status: candidate
+    source: independent_blind
+    statement: "The selected pose model has in-sample edge RMSE 0.616 px and whole-circle holdout mean RMSE 0.818 px; the free homography holdout mean is 1.062 px."
+    evidence_status: pass
+    external_accuracy_status: needs_review
+    transfer_limit: "Thresholds and rankings must be recomputed for every new image."
+
+  - id: 2008A-FACT-005
+    status: candidate
+    source: reflection_derived
+    statement: "The closest approved numerical comparison is R2F: its ellipse and tangent results differ from the blind final by mean 1.081 px and 1.477 px respectively."
+    calculation_status: pass
+    ground_truth_interpretation_status: fail
+    transfer_limit: "Agreement among solutions sharing one image is not a truth label."
+
+  - id: 2008A-FACT-006
+    status: candidate
+    source: audit_revision
+    statement: "The external freeze manifest covers 268 payload files; every listed size and SHA-256 and the aggregate tree digest were independently matched."
+    evidence_status: pass
+    directory_closure_status: needs_review
+    transfer_limit: "Two unlisted pyc cache files exist outside the authoritative payload and must not be treated as frozen evidence."

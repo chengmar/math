@@ -1,0 +1,219 @@
+schema_version: 1
+case_id: "2005A"
+phase: reflection
+artifact_status: candidate
+overall_judgement: needs_review
+scope_note: >-
+  Relative only to the frozen blind solution and the four approved local PDFs;
+  no literature search and no claim of global novelty or correctness.
+
+sources:
+  B:
+    kind: frozen_blind_final
+    path: "blind-final"
+    freeze_manifest_check: pass
+    mathematical_status: needs_review
+  R178:
+    kind: approved_reference
+    path: <REFERENCE_ID>
+    title: <REFERENCE_TITLE_REDACTED>
+    sha256: <REFERENCE_HASH_REDACTED>
+    pages: 9
+    file_check: pass
+    full_reproduction: needs_review
+  R1BE:
+    kind: approved_reference
+    path: <REFERENCE_ID>
+    title: <REFERENCE_TITLE_REDACTED>
+    sha256: <REFERENCE_HASH_REDACTED>
+    pages: 6
+    file_check: pass
+    full_reproduction: needs_review
+  R622:
+    kind: approved_reference
+    path: <REFERENCE_ID>
+    title: <REFERENCE_TITLE_REDACTED>
+    sha256: <REFERENCE_HASH_REDACTED>
+    pages: 11
+    file_check: pass
+    full_reproduction: needs_review
+  R869:
+    kind: approved_reference
+    path: <REFERENCE_ID>
+    title: <REFERENCE_TITLE_REDACTED>
+    sha256: <REFERENCE_HASH_REDACTED>
+    pages: 6
+    file_check: pass
+    full_reproduction: needs_review
+
+dimensions:
+  problem_decomposition:
+    B: "regulatory grading -> mass-balance source attribution -> constrained forecast -> safe-pressure capacity"
+    R178: "continuous score -> three inverse models -> regression forecast -> regression capacity"
+    R1BE: "custom index -> decay increment -> accumulated polynomial/time series -> regression LP"
+    R622: "dynamic score -> interval source inversion -> regression/grey forecast -> hydrologic-period capacity"
+    R869: "variable-weight TOPSIS/grey relation -> midpoint source -> GM+ARMA -> regression cap"
+  assumptions:
+    B:
+      strengths: ["explicit equal station-month scope", "signed negative loads retained", "scenario language"]
+      risks: ["uniform first-order decay", "10-year linear continuation", "safe pressure is not causal"]
+    R178:
+      strengths: ["reaction-advection-diffusion framing", "branch cases"]
+      risks: ["rough spatial coverage", "empirical weights/distances", "deleted points"]
+    R1BE:
+      strengths: ["explicit decay coefficient", "explicit no-disaster scenario"]
+      risks: ["negative increments clamped", "fixed evaluation length", "high-order extrapolation"]
+    R622:
+      strengths: ["source-location bounds", "dry/wet/hydrological-year strata"]
+      risks: ["subjective dynamic weights", "small-sample regression and GM"]
+    R869:
+      strengths: ["midpoint source assumption stated", "steady one-dimensional model"]
+      risks: ["subjective S-curve anchors", "GM/ARMA details omitted"]
+  baselines:
+    B: ["reported class", "concentration difference", "persistence", "expanding mean"]
+    R178: []
+    R1BE: ["time series used as a complement, not a clean baseline"]
+    R622: ["method families discussed, no rolling numerical baseline"]
+    R869: []
+  validation:
+    B:
+      status: pass
+      items: ["476/476 class reproduction", "mass-balance identity", "rolling-origin baselines", "bootstrap", "k sensitivity", "boundary checks"]
+      external_validity: needs_review
+    R178:
+      status: needs_review
+      items: ["F tests", "three-method triangulation", "two capacity methods compared"]
+    R1BE:
+      status: needs_review
+      items: ["in-sample RMSE", "80 percent interval", "self-critique"]
+    R622:
+      status: needs_review
+      items: ["physical bounds", "hydrologic-period scenarios", "post-hoc critique"]
+    R869:
+      status: needs_review
+      items: ["no substantive validation section"]
+  complexity:
+    B: low_to_medium
+    R178: medium_to_high
+    R1BE: medium
+    R622: medium
+    R869: medium_to_high
+  interpretability:
+    B: high
+    R178: medium
+    R1BE: medium
+    R622: high
+    R869: medium
+
+questions:
+  q1:
+    B:
+      model: "worst-indicator regulatory grade; Nemerow only auxiliary"
+      result:
+        drinkable_pct: 84.4538
+        worst_station: "江西南昌滁槎"
+        primary_driver: "NH3-N"
+    R178:
+      model: "normalized weighted score plus approximate spatial coverage"
+      result: {river_score: 0.4331, primary_driver: "NH3-N"}
+    R1BE:
+      model: "custom additive pollution index"
+    R622:
+      model: "continuous threshold-sensitive weights plus Borda"
+      result: {worst_station: "江西南昌滁槎"}
+    R869:
+      model: "class-based S-curve weights plus TOPSIS and grey relation"
+      result: {worst_station: "江西南昌滁槎"}
+    consensus_status: pass
+    consensus: ["南昌滁槎 is worst in B/R622/R869", "NH3-N is prominent in B/R178"]
+    unresolved: "best definition of a river-wide scalar score"
+  q2:
+    B:
+      estimand: "mean positive downstream-arrival increment, t/day"
+      top_codmn: "宜昌—岳阳"
+      top_nh3n: "宜昌—岳阳"
+      sensitivity: pass
+    R178:
+      estimand: "source intensity from three reaction-diffusion inversions"
+      top_codmn: "宜昌—岳阳"
+      top_nh3n: "攀枝花—重庆 and 宜昌—岳阳"
+    R1BE:
+      estimand: "decay-adjusted increment with negatives clamped"
+      top_regions: ["岳阳及上游", "宜昌及上游", "重庆及上游"]
+    R622:
+      estimand: "source-location lower/upper bound and length-normalized midpoint"
+      top_codmn: "宜昌—岳阳"
+      top_nh3n: "宜昌—岳阳"
+      printed_value_reproduction: fail
+    R869:
+      estimand: "mid-segment equivalent continuous source, accumulated tonnes"
+      top_codmn: "九江—安庆"
+      top_nh3n: "宜昌—岳阳"
+      printed_value_reproduction: fail
+    cross_method_status: needs_review
+  q3:
+    B:
+      model: "linear component trends plus simplex; OLS wastewater; mean flow"
+      forecast_2014: {drinkable_pct: 44.7309, undrinkable_pct: 55.2691, wastewater_1e8_t: 406.2727}
+      rolling_validation: pass
+    R178:
+      forecast_end: {drinkable_pct: "below 50"}
+    R1BE:
+      forecast_end: {drinkable_pct: 0.62}
+      note: "accumulated-polynomial result; not reconciled with the milder aggregate time-series model"
+    R622:
+      forecast_2014: {mainstream_hydrological_drinkable_pct: 37.5592, mainstream_dry_drinkable_pct: 1.5004, wastewater_1e8_t: 469}
+    R869:
+      forecast_2014: {drinkable_pct: 44.20, undrinkable_pct: 55.80, wastewater_1e8_t: 531.32}
+    direction_consensus: pass
+    precise_forecast_status: needs_review
+  q4:
+    B:
+      mapping: "historical safe pollution-pressure envelope"
+      allowable_untreated_1e8_t: 215.2928
+      treatment_2005_1e8_t: 75.2072
+      treatment_2014_1e8_t: 190.9800
+      decade_total_1e8_t: 1330.9361
+    R178:
+      mapping: "regression threshold"
+      treatment_2005_1e8_t: 75.195
+      treatment_2014_1e8_t: 198.87
+      printed_equation_consistency: fail
+    R1BE:
+      mapping: "multivariate regression plus linear program"
+      decade_total_1e8_t: 1390.621
+      lp_arithmetic_reproduction: pass
+    R622:
+      mapping: "dry/wet allowable discharge"
+      allowable_untreated_1e8_t: {dry: 217, wet: 230}
+      treatment_2005_1e8_t: [73, 86]
+      treatment_2014_1e8_t: [239, 252]
+      arithmetic_reproduction: pass
+    R869:
+      mapping: "fixed regression cap"
+      allowable_untreated_1e8_t: 131.59
+      treatment_2005_1e8_t: 171.42
+      treatment_2014_1e8_t: 399.73
+      arithmetic_reproduction: pass
+    causal_validity: needs_review
+
+provenance_classes:
+  independently_developed:
+    - "regulatory grade as primary output"
+    - "signed mass-balance increments with k sensitivity"
+    - "rolling-origin model selection and simple baselines"
+    - "simplex-constrained composition forecast and bootstrap intervals"
+    - "safe-pressure envelope and removal-efficiency conversion"
+  audit_after_correction:
+    - "canonical pipeline reruns the actual solve_case chain"
+    - "training start/end/count fields and no-future check"
+    - "staging manifest coverage and build-order controls"
+  learned_after_references:
+    - "set-valued source attribution from unknown source location"
+    - "hydrologic-period treatment intervals"
+    - "threshold-sensitive continuous score as secondary diagnostic"
+    - "triangulation across alternative physical inversions"
+
+promotion:
+  direct_to_verified: fail
+  lessons_status_allowed: [candidate, demo]

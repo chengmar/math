@@ -1,0 +1,47 @@
+phase: solve
+entrypoint: code/solve.py
+working_directory: <RUNTIME_ROOT>/2016A/workspaces/solve
+runtime:
+  language: Python
+  version: 3.8.3
+  implementation_path_used: <ABSOLUTE_PATH> Files/NVIDIA Corporation/Nsight Systems 2022.4.2/host-windows-x64/python/bin/python.exe
+  standard_library_only: true
+  operating_system: Microsoft Windows NT 10.0.26200.0
+  powershell_version: 7.6.4
+randomness:
+  used: false
+  seed: null
+  reason: 所有方程求解、离散搜索和绘图均为确定性算法。
+command_used: >-
+  $env:PYTHONUTF8='1'; $env:PYTHONIOENCODING='utf-8'; &
+  '<ABSOLUTE_PATH>'
+  'code\solve.py'
+portable_command: python code/solve.py
+expected_stdout_keys:
+  - status
+  - q2_recommended_ball_mass_kg
+  - q3_selected_design
+  - q3_selected_link_count
+  - validation
+generated_manifest: results/generated-manifest.json
+rerun_comparison: reports/reproducibility-check.md
+numerical_tolerances:
+  horizontal_force_abs_n: 1.0e-6
+  vertical_force_abs_n: 1.0e-6
+  member_moment_abs_nm: 1.0e-6
+  chain_geometry_abs_m: 1.0e-8
+  independent_quadrature_endpoint_abs_m: 1.0e-7
+status:
+  source_and_command_recorded: pass
+  deterministic_algorithm: pass
+  two_run_hash_comparison: pass
+  latex_compilation: needs_review
+two_run_evidence:
+  run_1_manifest_sha256: E2F6FACE724FB359240025DAD855A7C0B3348012EEA1DFFA89122A611DD5DE81
+  run_2_manifest_sha256: E2F6FACE724FB359240025DAD855A7C0B3348012EEA1DFFA89122A611DD5DE81
+  manifest_entry_count_each_run: 27
+  comparison: pass
+notes:
+  - 系统中的 python 与 py 命令不可用，Chocolatey python3.13 shim 目标缺失，因此记录了实际可用解释器。
+  - 解释器启动时必须强制 UTF-8，以避免 Windows cp936 编解码初始化错误。
+  - 本机未检测到 XeLaTeX、latexmk 或 PDF 命令行检查器；论文源完整生成，但 PDF 编译与逐页检查不可伪造为 pass。

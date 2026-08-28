@@ -1,0 +1,38 @@
+schema_version: 1
+case_id: 2020A
+knowledge_status: candidate
+patterns:
+  - id: VP-FREEZE-FIRST-001
+    title: <REFERENCE_TITLE_REDACTED>
+    evidence_status: pass
+    steps:
+      - 核对阶段锁和外部边界。
+      - 对清单每个文件重算大小与 SHA-256。
+      - 按公开算法重算树哈希。
+      - 只有全部通过后读取批准参考。
+    limit: 证明载荷未变，不证明数学正确。
+  - id: VP-CLEAN-RERUN-002
+    title: <REFERENCE_TITLE_REDACTED>
+    evidence_status: pass
+    result: 本会话 37/37 solve 生成文件及两个 oracle 产物哈希一致。
+    limit: 证明确定性复现，不证明模型外部有效。
+  - id: VP-ANALYTIC-MUTATION-003
+    title: <REFERENCE_TITLE_REDACTED>
+    evidence_status: pass
+    result: 已知三角形单侧面积通过；全面积替代 Q3 被拒绝。
+    limit: 解析夹具必须覆盖真正易错的语义。
+  - id: VP-TIME-ORDERED-004
+    title: <REFERENCE_TITLE_REDACTED>
+    evidence_status: pass
+    result: M2 在三折滚动留出和 1000 次固定候选块比较中排名第一。
+    limit: 固定预测重采样不能给参数联合置信域。
+  - id: VP-MULTI-OPTIMIZER-005
+    title: <REFERENCE_TITLE_REDACTED>
+    evidence_status: pass
+    result: 35 次优化记录、10+10 个主种子、Sobol+SLSQP 替代屏幕。
+    global_optimality_status: needs_review
+  - id: VP-JOINT-CORNERS-006
+    title: <REFERENCE_TITLE_REDACTED>
+    evidence_status: pass
+    result: Q2/Q3/Q4 工程稳健性均出现 fail。
+    probability_interpretation_status: fail

@@ -1,0 +1,193 @@
+schema_version: 1
+case_id: 2008A
+phase: reflection
+overall_status: pass
+mathematical_truth_status: needs_review
+network_search_status: pass
+comparison_scope: "external-frozen blind final plus four approved reference PDFs"
+novelty_scope: "relative to this comparison set only"
+
+freeze_gate:
+  phase_check: pass
+  external_boundary: pass
+  manifest_entries_status: pass
+  manifest_entries_total: 268
+  manifest_entries_pass: 268
+  tree_sha256_status: pass
+  tree_sha256: 89655a778d2ac555447a2eb2d7ae403de641c9d51678d76a606d8b56102f00dc
+  directory_closure_status: needs_review
+  unlisted_non_authoritative_cache_files: 2
+  audit_prerequisite_status: pass
+  audit_report_overall_status: fail
+  audit_content_mathematics_status: needs_review
+  blind_copy_full_pipeline_status: pass
+  blind_copy_run_manifest_pass: 36
+  blind_copy_run_manifest_fail: 0
+  deterministic_comparison_status: pass
+  deterministic_comparison_pass: 33
+  deterministic_comparison_fail: 0
+  pdf_binary_repeatability_status: needs_review
+
+references:
+  - id: R0D
+    file:<SOURCE_FILE_REDACTED>
+    title: <REFERENCE_TITLE_REDACTED>
+    pages: 18
+    bytes: 445256
+    sha256: <REFERENCE_HASH_REDACTED>
+    hash_status: pass
+    readable_status: pass
+    full_reproduction_status: needs_review
+    appendix_line_intersection_status: fail
+    maximum_reported_center_reproduction_difference_px: 4.1570048903402625
+    overall_correctness_status: needs_review
+  - id: R203
+    file:<SOURCE_FILE_REDACTED>
+    title: <REFERENCE_TITLE_REDACTED>
+    pages: 27
+    bytes: 1267453
+    sha256: <REFERENCE_HASH_REDACTED>
+    hash_status: pass
+    readable_status: pass
+    full_reproduction_status: needs_review
+    printed_rotation_orthogonality_status: fail
+    printed_rotation_determinant: 0.0008267206527183084
+    printed_rotation_frobenius_RtR_minus_I: 1.2322716454468294
+    bounded_focal_validation_status: fail
+    overall_correctness_status: needs_review
+  - id: R2F
+    file:<SOURCE_FILE_REDACTED>
+    title: <REFERENCE_TITLE_REDACTED>
+    pages: 29
+    bytes: 719147
+    sha256: <REFERENCE_HASH_REDACTED>
+    hash_status: pass
+    readable_status: pass
+    coefficient_arithmetic_status: pass
+    maximum_coefficient_table_difference_px: 0.006578320730395168
+    full_reproduction_status: needs_review
+    two_model_internal_mean_difference_px: 0.5176044815140526
+    two_model_internal_max_difference_px: 0.569297855256801
+    circle_center_correctness_status: needs_review
+    overall_correctness_status: needs_review
+  - id: R62
+    file:<SOURCE_FILE_REDACTED>
+    title: <REFERENCE_TITLE_REDACTED>
+    pages: 14
+    bytes: 2216512
+    sha256: <REFERENCE_HASH_REDACTED>
+    hash_status: pass
+    pdf_open_status: pass
+    text_layer_status: fail
+    offline_ocr_and_visual_read_status: pass
+    formula_transcription_status: needs_review
+    equation_reimplementation_status: pass
+    identifiability_status: fail
+    all_equal_family_max_abs_residual: 0.0
+    full_reproduction_status: needs_review
+    overall_correctness_status: needs_review
+
+coordinate_convention:
+  image_u: right
+  image_v: down
+  image_width_px: 1024
+  image_height_px: 768
+  comparison_to_blind_is_ground_truth_status: fail
+
+reported_results:
+  blind_final:
+    centers_uv_px:
+      A: [321.997, 188.737]
+      B: [422.287, 196.190]
+      C: [639.517, 212.335]
+      D: [582.146, 502.460]
+      E: [283.656, 501.360]
+    B_holdout_error_px: 0.0005616694772383359
+    ABC_collinearity_distance_px: 0.0005240648813761615
+  R0D_tangent:
+    centers_uv_px:
+      A: [318.0, 191.0]
+      B: [415.0, 198.0]
+      C: [631.0, 215.0]
+      D: [579.0, 497.0]
+      E: [286.0, 498.0]
+    B_holdout_error_px: 2.6717171446852497
+    ABC_collinearity_distance_px: 0.43641861854696357
+    mean_difference_from_blind_px: 6.284824746597621
+    max_difference_from_blind_px: 8.92420943277335
+  R203_DE_calibration:
+    centers_uv_px:
+      A: [331.0, 193.0]
+      B: [422.0, 195.0]
+      C: [635.0, 199.0]
+      D: [585.0, 504.0]
+      E: [281.0, 497.0]
+    B_holdout_error_px: 0.20430620209941147
+    ABC_collinearity_distance_px: 0.20390765689431317
+    mean_difference_from_blind_px: 6.722585305220994
+    max_difference_from_blind_px: 14.079258290123123
+  R2F_ellipse_affine:
+    centers_uv_px:
+      A: [322.89682, 189.61023]
+      B: [423.00273, 197.06280]
+      C: [639.91289, 213.26380]
+      D: [582.75218, 503.07979]
+      E: [284.67960, 501.87983]
+    B_holdout_error_px: 0.026158861413120574
+    ABC_collinearity_distance_px: 0.01660189358956296
+    mean_difference_from_blind_px: 1.0814490892699316
+    max_difference_from_blind_px: 1.2538766547392013
+  R2F_tangent:
+    centers_uv_px:
+      A: [323.30371, 189.87734]
+      B: [423.29359, 197.51240]
+      C: [640.08497, 213.70159]
+      D: [582.23246, 503.31215]
+      E: [285.03296, 502.26962]
+    B_holdout_error_px: 0.17346279418416924
+    ABC_collinearity_distance_px: 0.11477115906994534
+    mean_difference_from_blind_px: 1.4765920959151093
+    max_difference_from_blind_px: 1.7343201376043713
+
+dimensions:
+  model:
+    blind_strength_status: pass
+    blind_strength: "shared exact planar projective model for all five circle boundaries"
+    blind_gap_status: needs_review
+    blind_gap: "principal point and distortion are assumed rather than calibrated"
+    reference_gain_status: pass
+    reference_gain: "tangent constructions provide an interpretable independent estimator"
+  results:
+    cross_set_agreement_status: needs_review
+    reason: "the nearest reference differs by about 1 to 1.5 px, but no external ground truth exists"
+  validation:
+    blind_group_holdout_status: pass
+    real_multi_pose_external_validation_status: needs_review
+    reference_pose_sweep_value_status: pass
+  complexity:
+    asymptotic_comparison_status: needs_review
+    wall_clock_benchmark_status: needs_review
+  interpretability:
+    blind_traceability_status: pass
+    tangent_geometry_explanatory_value_status: pass
+  expression:
+    blind_coordinate_and_evidence_chain_status: pass
+    competition_format_manual_review_status: needs_review
+
+provenance_classes:
+  independently_present_before_references:
+    - shared_circle_conic_homography
+    - ellipse_center_is_not_projected_circle_center
+    - full_boundary_group_holdout
+    - calibrated_pose_and_free_homography_comparison
+    - metric_two_camera_pose_composition
+  added_during_audit_driven_revision:
+    - single_authoritative_pipeline
+    - code_output_lineage_repair
+    - deterministic_repeatability_check
+    - extreme_input_rejection
+  learned_only_after_references:
+    - tangent_geometry_as_independent_cross_check
+    - distance_and_pose_domain_sweep
+    - cross_ratio_diagnostic
+    - multi_start_degeneracy_diagnostic

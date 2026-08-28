@@ -1,0 +1,214 @@
+case_id: 2011A
+phase: blind-revision
+skill: $cumcm-a-solve
+revision_completion_status: pass
+overall_scientific_status: needs_review
+blindness:
+  status: pass
+  allowed_inputs: [input, blind-v1, audit]
+  network_search_used: false
+  reference_papers_read: false
+  commentary_or_standard_answers_read: false
+  other_phase_skill_used: false
+  cross_phase_resume_used: false
+input_audit:
+  schema_status: pass
+  samples: 319
+  metals: 8
+  missing_values: 0
+  duplicate_ids: 0
+  duplicate_coordinates: 0
+  current_container_sha256: dce077e7f6a1170d742c4ccc36c4465b672e34affbfa7ffecdb1fa2afc96542e
+  container_copy_chain_status: needs_review
+  value2_semantic_identity_status: pass
+  close_coordinate_status: needs_review
+  background_spatial_validity_status: needs_review
+questions:
+  q1:
+    status: pass
+    requirement: 八元素空间分布与功能区污染程度
+    outputs: [results/<SOURCE_FILE_REDACTED>, results/<SOURCE_FILE_REDACTED>, figures/<SOURCE_FILE_REDACTED>]
+  q2:
+    status: pass
+    requirement: 重金属污染主要原因的统计证据
+    outputs: [results/<SOURCE_FILE_REDACTED>, results/<SOURCE_FILE_REDACTED>]
+    causal_status: needs_review
+  q3:
+    status: pass
+    requirement: 传播特征与污染源位置
+    outputs: [results/<SOURCE_FILE_REDACTED>, results/<SOURCE_FILE_REDACTED>]
+    direction_status: needs_review
+    exact_location_status: needs_review
+  q4:
+    status: pass
+    requirement: 模型优缺点、补充信息与后续模型
+    outputs: [paper/main.tex, paper/paper.md]
+    inverse_identifiability_status: needs_review
+baseline:
+  status: pass
+  spatial: constant_mean
+  zone: arithmetic_mean_enrichment
+  decomposition: correlation_matrix
+  hotspot: raw_maximum_sample
+main_model:
+  selection_status: pass
+  scientific_status: needs_review
+  q1: background_normalization + gaussian_nested + spatial_block_bootstrap
+  q2: zone_association + fold_local_scaled_nmf
+  q3: moran + detrended_constrained_variogram + fixed_design_direction_null + supported_kernel_hotspot
+  q4: conditional_well_posed_forward_pde + identifiability_plan
+question_coverage:
+  q1:
+    coverage_status: pass
+    outputs:
+      - results/<SOURCE_FILE_REDACTED>
+      - results/<SOURCE_FILE_REDACTED>
+      - results/<SOURCE_FILE_REDACTED>
+      - results/<SOURCE_FILE_REDACTED>
+      - figures/<SOURCE_FILE_REDACTED>
+    conclusion: Gaussian 模型族在块、连续区域及 1/2 km 缓冲留出中均排名第一；功能区点估计为工业、交通、生活、公园绿地、山区，工业首位空间块频率 82.32%。
+    exact_ranking_status: needs_review
+  q2:
+    coverage_status: pass
+    outputs:
+      - results/<SOURCE_FILE_REDACTED>
+      - results/<SOURCE_FILE_REDACTED>
+      - results/<SOURCE_FILE_REDACTED>
+      - results/<SOURCE_FILE_REDACTED>
+    conclusion: 工业/交通相关人类活动是主要关联线索；三分量只是统计共变模式。
+    causal_identity_status: needs_review
+  q3:
+    coverage_status: pass
+    outputs:
+      - results/<SOURCE_FILE_REDACTED>
+      - results/<SOURCE_FILE_REDACTED>
+      - results/<SOURCE_FILE_REDACTED>
+      - results/<SOURCE_FILE_REDACTED>
+      - results/<SOURCE_FILE_REDACTED>
+    conclusion: 八元素正空间聚集；方向 0/8 通过固定设计多重检验；Pb ID 6 反例被覆盖；八个精确热点中心均需复采。
+    direction_status: needs_review
+    exact_location_status: needs_review
+    physical_source_identity_status: needs_review
+  q4:
+    coverage_status: pass
+    outputs: [paper/main.tex, paper/paper.md, assumptions.yaml, variables.yaml]
+    conclusion: 给出域、时间、初值、边界、核归一化、量纲、正定/非负约束及可辨识性验证流程。
+    inverse_identifiability_status: needs_review
+model_selection:
+  spatial:
+    selected: gaussian_nested
+    block_cv_rmse_log2: 0.8277276315
+    idw_block_cv_rmse_log2: 0.8603181858
+    constant_block_cv_rmse_log2: 0.9767449526
+    full_fit_bandwidth_km: 2.0
+    family_selection_status: pass
+    physical_bandwidth_status: needs_review
+  zone:
+    selected: elementwise_zone_median_geometric_mean
+    block_bootstrap_replicates: 10000
+    industrial_rank1_frequency: 0.8232
+    traffic_exceeds_industrial_frequency: 0.1246
+    uncertainty_status: needs_review
+  decomposition:
+    selected: nmf
+    components: 3
+    fold_local_preprocessing_status: pass
+    cv_rmse: {2: 0.2146478699, 3: 0.1676944242, 4: 0.1390970203}
+    physical_uniqueness_status: needs_review
+  spatial_structure:
+    moran_status: pass
+    detrended_variogram_numerical_status: pass
+    physical_scale_status: needs_review
+    direction_pass_count: 0
+    direction_status: needs_review
+  hotspots:
+    model: gaussian_positive_enrichment_kernel
+    bandwidth_km: 1.0
+    all_sample_loo_status: pass
+    support_diagnostics_status: pass
+    block_bootstrap_status: pass
+    exact_center_status: needs_review
+key_results:
+  zone_ranking:
+    - {zone: 工业区, index: 2.156267927, rank: 1, block_rank1_frequency: 0.8232}
+    - {zone: 交通区, index: 1.850466642, rank: 2, block_rank1_frequency: 0.1070}
+    - {zone: 生活区, index: 1.715095507, rank: 3, block_rank1_frequency: 0.0692}
+    - {zone: 公园绿地区, index: 1.476321455, rank: 4, block_rank1_frequency: 0.0006}
+    - {zone: 山区, index: 1.002834604, rank: 5, block_rank1_frequency: 0.0}
+  nmf_components: [Hg-dominant, As-Cr-Ni covariation, Cd-Cu-Pb-Zn covariation]
+  moran_i_range: [0.1337167324, 0.4466460367]
+  direction_permutation_p_range: [0.1484257871, 0.88005997]
+  pb_counterexample:
+    removed_sample_id: 6
+    concentration_rank: 2
+    shift_km: 3.691205765
+    status: needs_review
+  descriptive_hotspot_centers_km:
+    As: [8.50, 16.50]
+    Cd: [8.75, 7.25]
+    Cr: [3.00, 6.00]
+    Cu: [1.25, 3.75]
+    Hg: [1.00, 3.50]
+    Ni: [3.00, 6.50]
+    Pb: [1.00, 3.50]
+    Zn: [3.25, 6.00]
+    status: needs_review
+audit_remediation:
+  AUD-001: {status: pass, evidence: reports/paper-consistency.json}
+  AUD-002: {status: pass, scientific_status: needs_review, evidence: results/<SOURCE_FILE_REDACTED>}
+  AUD-003: {status: pass, scientific_status: needs_review, evidence: results/<SOURCE_FILE_REDACTED>}
+  AUD-004: {status: pass, scientific_status: needs_review, evidence: results/<SOURCE_FILE_REDACTED>}
+  AUD-005: {status: pass, scientific_status: needs_review, evidence: results/<SOURCE_FILE_REDACTED>}
+  AUD-006: {status: pass, scientific_status: needs_review, evidence: paper/main.tex}
+  AUD-007: {status: pass, evidence: results/<SOURCE_FILE_REDACTED>}
+  AUD-008: {status: pass, container_status: needs_review, evidence: results/raw/extraction_manifest.json}
+  AUD-009: {status: pass, evidence: reproducibility.yaml}
+  AUD-010: {status: pass, scientific_status: needs_review, evidence: results/<SOURCE_FILE_REDACTED>}
+validation:
+  deterministic_seed_status: pass
+  spatial_block_isolation_status: pass
+  buffered_validation_status: pass
+  zone_cluster_bootstrap_status: pass
+  common_background_validation_status: needs_review
+  nmf_training_evaluation_separation_status: pass
+  variogram_fit_status: pass
+  propagation_direction_status: needs_review
+  source_location_status: needs_review
+  two_run_reproduction_status: pass
+  paper_build_chain_status: pass
+reproducibility:
+  status: pass
+  random_seed: 20260311
+  one_run_command: "& '.\\code\\run_all.ps1' -Workspace (Get-Location).Path"
+  two_run_command: "& '.\\code\\verify_reproduction.ps1' -Workspace (Get-Location).Path"
+  paper_build_command: "& '.\\code\\build_paper.ps1' -Workspace (Get-Location).Path"
+  numerical_report: reports/reproduction-check.json
+  paper_report: reports/paper-consistency.json
+limitations:
+  - 单期表层土没有时间箭头，不能识别传播方向、速度和因果顺序。
+  - 背景原始样本、样本数、坐标和母质缺失。
+  - 无风雨、径流、排水、排放、交通、土壤性质、深度和源端指纹。
+  - Gaussian 会平滑边界；NMF 分量不唯一；多个核热点支持稀疏或对样点敏感。
+required_artifacts:
+  problem-analysis.md: pass
+  data-audit.md: pass
+  assumptions.yaml: pass
+  variables.yaml: pass
+  model-selection.md: pass
+  solution-report.yaml: pass
+  reproducibility.yaml: pass
+  code: pass
+  results: pass
+  figures: pass
+  paper/main.tex: pass
+  paper/paper.md: pass
+phase_actions:
+  blind_v1_preservation_status: pass
+  blind_v1_file_count: 112
+  blind_v1_tree_sha256: c5b0e04d2c0a233bae1dd2209bfc2a3ebd09dd8114d48b613eca15fd921e572f
+  blind_v1_overwritten: false
+  frozen: false
+  external_freeze_required: true
+  audited_in_this_phase: false
+  reflected: false
+  evaluated: false

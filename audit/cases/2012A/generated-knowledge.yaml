@@ -1,0 +1,16 @@
+case_id: 2012A
+status: candidate_only
+candidate_count: 8
+machine_verified_count: 0
+verified_count: 0
+exported_files:
+- file: candidate-cards.yaml
+  sha256: f5e581070f511ad3466cd789b3de5ec2149343a927cc38761f337c94e72b5996
+- file: expression-lessons.md
+  sha256: 84f5daa178bf9b2541dd6c1152e3cf62c3e8bea56ace1b84d3d09c9610322280
+- file: failure-modes.md
+  sha256: 7fab1ead7e89835093fbcec005764c9f01c20974ae7fe07056b653fd310eba2b
+- file: index.md
+  sha256: c10675d82b16e30e7cd1147370605ba7935fdf9e871bc0fc614f7fe54230ebe4
+- file: validation-patterns.md
+  sha256: f89fc0a22952b1cb4872ae0b8bd74611e8aed9c9fd10100b048db1e31d1b6033

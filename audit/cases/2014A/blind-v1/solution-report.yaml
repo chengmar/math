@@ -1,0 +1,192 @@
+{
+  "case_id": "2014A",
+  "phase": "solve",
+  "overall_status": "needs_review",
+  "overall_status_reason": "internal numerical checks pass; external flight validity and TIFF compass orientation lack supplied evidence",
+  "problem_coverage": {
+    "question_1_orbit_points_and_velocities": "pass",
+    "question_2_six_stage_trajectory_and_control": "pass",
+    "question_3_error_and_sensitivity": "pass"
+  },
+  "key_results": {
+    "pericenter": {
+      "radius_m": 1749372.0,
+      "altitude_above_local_datum_m": 15000.0,
+      "longitude_deg_east": -39.78625117588689,
+      "latitude_deg_north": 42.291286378087825,
+      "position_moon_fixed_km": [
+        994.4106080099203,
+        -828.1074996709151,
+        1177.1524565875593
+      ],
+      "speed_mps": 1694.05575239148,
+      "direction_unit_moon_fixed": [
+        0.4962757718788713,
+        0.8496241989543389,
+        0.17846310206098157
+      ],
+      "velocity_mps_moon_fixed": [
+        840.7188261239238,
+        1439.310761609601,
+        302.3264446360336
+      ]
+    },
+    "apocenter": {
+      "radius_m": 1834372.0,
+      "altitude_above_local_datum_m": 100000.0,
+      "longitude_deg_east": 140.2137488241131,
+      "latitude_deg_north": -42.291286378087825,
+      "position_moon_fixed_km": [
+        -1042.7278908296084,
+        868.3443032049992,
+        -1234.3489584236138
+      ],
+      "speed_mps": 1615.5576402564955,
+      "direction_unit_moon_fixed": [
+        -0.4962757718788713,
+        -0.8496241989543389,
+        -0.17846310206098157
+      ],
+      "velocity_mps_moon_fixed": [
+        -801.7621149331002,
+        -1372.616865967487,
+        -288.3174280384935
+      ]
+    },
+    "approach_central_angle_deg": 14.853730589145071,
+    "fuel_consumed_kg": 1173.5792695044317,
+    "mass_at_4m_kg": 1226.4207304955683,
+    "powered_time_s": 572.7827397245292,
+    "thrust_range_N": [
+      1599.777230895676,
+      7100.070195946032
+    ],
+    "coarse_site": {
+      "row_zero_based": 1149,
+      "column_zero_based": 1149,
+      "row_one_based": 1150,
+      "column_one_based": 1150,
+      "east_offset_m": -0.5,
+      "north_offset_m": 0.5,
+      "distance_from_image_center_m": 0.7071067811865476,
+      "height_m": 99.0,
+      "rms_slope_deg": 7.010154803664956,
+      "roughness_rms_m": 1.3621280193328857,
+      "relief_sd_m": 1.0847846269607544,
+      "score": 7.856742013245821e-05,
+      "footprint_radius_m": 50.0
+    },
+    "fine_site": {
+      "row_zero_based": 330,
+      "column_zero_based": 572,
+      "row_one_based": 331,
+      "column_one_based": 573,
+      "east_offset_m": 7.25,
+      "north_offset_m": 16.95,
+      "distance_from_image_center_m": 18.43542784965947,
+      "height_m": 8.100000381469727,
+      "rms_slope_deg": 9.661057721204173,
+      "roughness_rms_m": 0.37205788493156433,
+      "relief_sd_m": 0.26938968896865845,
+      "score": 0.04280591011047363,
+      "footprint_radius_m": 5.0
+    },
+    "combined_landing_offset_m": {
+      "east_m": 6.75,
+      "north_m": 17.45,
+      "distance_m": 18.710024051294003
+    },
+    "free_fall_impact_speed_mps": 3.611447532837937
+  },
+  "validation": {
+    "input_identity": {
+      "status": "pass",
+      "files": {
+        "input/problem/<SOURCE_FILE_REDACTED>": "4c9d811f802b3584bd528eda46997335bac43281ef8e3b6bc383a183976bc765",
+        "input/attachments/<SOURCE_FILE_REDACTED>": "9d70f90b1b924bcd2df7eab2f9beb58294ee2702a09bfd149acf7d5acacbdce4",
+        "input/attachments/<SOURCE_FILE_REDACTED>": "64ec89a0531b57514b291416298826a0bd6f549a3009b54ff712cdd4a845d50e",
+        "input/attachments/file-cde3e1f9ab7216a1dfd1.tif": "c113d66b4f76b8df2659329570fe36dc3612ea80959fe093b8fc35887964ee3f",
+        "input/attachments/file-b91e320690f088c807c0.tif": "df8427dfae55eea185b8750569167c8017b9aed2868c07c9bfd8c3aeae39c7f8"
+      }
+    },
+    "execution_reintegration": {
+      "status": "pass",
+      "checks": [
+        {
+          "stage": "main_deceleration",
+          "max_abs_position_error_m": 0.013076045274829085,
+          "max_abs_velocity_error_mps": 6.103204119511929e-05,
+          "mass_error_kg": 3.437572195252869e-05,
+          "status": "pass"
+        },
+        {
+          "stage": "rapid_adjustment",
+          "max_abs_position_error_m": 0.00021000035922457715,
+          "max_abs_velocity_error_mps": 1.4081213194068505e-05,
+          "mass_error_kg": 0.00011873070366164029,
+          "status": "pass"
+        },
+        {
+          "stage": "coarse_avoidance",
+          "max_abs_position_error_m": 0.0009013225663636604,
+          "max_abs_velocity_error_mps": 3.917706907576035e-05,
+          "mass_error_kg": 1.6337359966200893e-05,
+          "status": "pass"
+        },
+        {
+          "stage": "fine_avoidance",
+          "max_abs_position_error_m": 3.797963724849751e-06,
+          "max_abs_velocity_error_mps": 3.8082373490268273e-07,
+          "mass_error_kg": 3.956632099288981e-06,
+          "status": "pass"
+        },
+        {
+          "stage": "slow_descent",
+          "max_abs_position_error_m": 1.2481117601659264e-06,
+          "max_abs_velocity_error_mps": 5.695252906501302e-07,
+          "mass_error_kg": 2.372557901253458e-07,
+          "status": "pass"
+        }
+      ]
+    },
+    "internal_constraints": {
+      "status": "pass",
+      "design_margin_status": "pass"
+    },
+    "dem_internal_safety": {
+      "status": "pass"
+    },
+    "external_flight_validity": {
+      "status": "needs_review",
+      "reason": "no flight telemetry, engine dynamics, navigation covariance, or stated TIFF orientation is supplied"
+    }
+  },
+  "traceability": {
+    "question_1": [
+      "results/orbit_solution.json",
+      "results/summary.json",
+      "paper/main.tex"
+    ],
+    "question_2": [
+      "results/<SOURCE_FILE_REDACTED>",
+      "results/<SOURCE_FILE_REDACTED>",
+      "figures/<SOURCE_FILE_REDACTED>",
+      "paper/main.tex"
+    ],
+    "question_3": [
+      "results/<SOURCE_FILE_REDACTED>",
+      "results/<SOURCE_FILE_REDACTED>",
+      "results/<SOURCE_FILE_REDACTED>",
+      "paper/main.tex"
+    ]
+  },
+  "limitations": [
+    "spherical Moon with local radius equal to mean radius plus nominal-site elevation",
+    "prograde due-east minimum-inclination approach is an engineering choice; the problem gives no incoming orbit plane",
+    "attitude-engine propellant, actuator lag, lunar rotation, mascons, and navigation delay are omitted",
+    "DEM rows/columns are treated as north/east only for an illustrative geographic offset; orientation is not stated",
+    "the hard terrain limits are engineering assumptions, not supplied spacecraft certification limits"
+  ],
+  "freeze_status": "not_frozen",
+  "reflection_status": "not_performed"
+}

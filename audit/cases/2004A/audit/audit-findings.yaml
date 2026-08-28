@@ -1,0 +1,45 @@
+phase: audit
+case_id: 2004A
+overall_status: fail
+gate_status: fail
+reproduction_status: needs_review
+mathematical_correctness_status: needs_review
+findings:
+  - id: AUD-001
+    severity: critical
+    category: freeze_integrity
+    evidence: >-
+      frozen-solution/results/checksums.sha256 records SHA-256
+      6013a396e8dc34f87b0c81651c64f59feb016d8e73a7354f55c8d1f962b209f2
+      for paper/<SOURCE_FILE_REDACTED>, while the file present in the audit copy hashes to
+      8ab06208fa23eb7d841636976d6601732ee9af37a6c4dc337d69c5c1272fb8a9.
+      The other 39 of 40 manifest entries matched.
+    affected_files:
+      - frozen-solution/results/checksums.sha256
+      - frozen-solution/paper/<SOURCE_FILE_REDACTED>
+    reason: >-
+      Exact frozen-artifact identity is not established. Auditing or reproducing
+      against this mixed state could attribute conclusions to a PDF different
+      from the one named by the manifest.
+    recommended_fix: >-
+      Determine the authoritative PDF without editing this audit copy, create a
+      new immutable frozen package, regenerate the SHA-256 manifest from that
+      package, and require every entry to pass before a new audit begins.
+    requires_human_review: true
+  - id: AUD-002
+    severity: major
+    category: freeze_metadata
+    evidence: >-
+      frozen-solution/solution-report.yaml is itself hash-matched by the
+      manifest and contains the explicit field "frozen: false".
+    affected_files:
+      - frozen-solution/solution-report.yaml
+      - frozen-solution/results/checksums.sha256
+    reason: >-
+      The protected metadata contradicts the premise that the delivered answer
+      is frozen; a directory name alone is not an auditable freeze attestation.
+    recommended_fix: >-
+      Complete the external freeze procedure and issue a new immutable package
+      whose protected metadata truthfully records the frozen state. Do not alter
+      the current audit copy in place.
+    requires_human_review: true

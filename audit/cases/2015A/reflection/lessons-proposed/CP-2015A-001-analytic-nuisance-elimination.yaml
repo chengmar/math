@@ -1,0 +1,43 @@
+schema_version: 1
+proposal_id: "CP-2015A-001"
+proposal_state: "candidate"
+title: <REFERENCE_TITLE_REDACTED>
+origin: "independent_blind_before_reference_access"
+origin_status: "pass"
+summary: "当候选物理轨迹与观测仅相差一个恒定二维旋转和正尺度时，先闭式求最优复数旋转—尺度，再只搜索真正的时空参数。"
+applicable_when:
+  - "观测和模型都是同一平面内的二维向量序列。"
+  - "全部样本共享一个恒定旋转和正尺度。"
+  - "目标函数是平方端点残差，或可在迭代重加权中反复求加权闭式解。"
+not_applicable_when:
+  - "相机引入一般射影、各向异性缩放或随时间变化的姿态。"
+  - "平移尚未通过杆底坐标或中心化消除。"
+  - "影轴约定随帧变化，或观测只提供长度而没有方向。"
+minimum_baseline:
+  - "把旋转角和杆高与经纬度/日期一起做联合非线性优化。"
+  - "只使用影长的目标函数。"
+validation_requirements:
+  - "在非退化合成数据上与联合优化的全局最优目标值一致。"
+  - "报告零向量、近共线、镜像手性和尺度符号边界。"
+  - "在留出数据上比较端点误差，而不只比较训练残差。"
+  - "报告解析分母的条件数或退化阈值。"
+counterexamples:
+  - "移动相机使旋转和尺度随时间变化。"
+  - "斜地面透视导致一般单应映射，不能用一个复数乘子表示。"
+  - "少数巨大异常点使普通最小二乘闭式解发生显著偏移。"
+source_case:
+  case_id: "2015A"
+  source_artifact: "blind-final"
+  reference_ids: []
+evidence_strength:
+  internal_derivation_status: "pass"
+  internal_reproduction_status: "pass"
+  cross_reference_distinctiveness_status: "pass"
+  external_truth_status: "needs_review"
+evidence:
+  - "冻结实现的 5 个公开候选 RMSE 被独立公式复现到 1e-6 mm 内。"
+  - "R1–R4 未见同等明确的恒定旋转—尺度闭式内层。"
+promotion_requirements:
+  - "在至少两个异源轨迹反演案例上比较准确度、运行时和退化行为。"
+  - "由独立实现复核加权、镜像和近退化情形。"
+  - "加入外部已知真值数据。"

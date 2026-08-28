@@ -1,0 +1,74 @@
+schema_version: 1
+case_id: 2004A
+phase: reflection
+knowledge_status: candidate
+failure_modes:
+  - id: CAND-2004A-F01
+    name: 欧氏最近替代合法接入
+    trigger: 将设施直接连接到最近商区而不检查白色步行道路
+    observed_evidence: 冻结盲解的A4和A9锚点
+    consequence: 热点排序与多篇道口模型显著反转
+    detection:
+      - 接入边叠加到原图逐条审查
+      - 检查边是否跨越草地、车道或围栏
+    observed_status: fail
+
+  - id: CAND-2004A-F02
+    name: 内部复算通过掩盖结构错误
+    trigger: 主程序和独立程序共享同一锚点或同一图抽象
+    observed_evidence: 冻结件Dijkstra与守恒均pass但接入图仍fail
+    consequence: 稳定地复现错误模型
+    detection:
+      - 独立审查从题面重建图
+      - 将结构有效性与算法正确性分开判定
+    observed_status: fail
+
+  - id: CAND-2004A-F03
+    name: 摘要与结果表不一致
+    trigger: 手工重复填写汇总数量
+    observed_evidence: R1的B区大型MS为10或11
+    consequence: 总数60或61无法确定
+    detection:
+      - 从结果表自动生成摘要数字
+      - 交叉求和
+    observed_status: fail
+
+  - id: CAND-2004A-F04
+    name: 印刷约束与公布解不一致
+    trigger: 公式转写、符号正值域或总供给约束未对最终表求值
+    observed_evidence: R3正整数约束与0值、总供给差约束
+    consequence: 所谓方案不是所写模型的可行解
+    detection:
+      - 解析结构化模型
+      - 输出逐约束残差
+    observed_status: fail
+
+  - id: CAND-2004A-F05
+    name: 可行解被称为最优解
+    trigger: 局部搜索或无证书求解后直接使用最优措辞
+    observed_evidence: R4存在目标1034.87对964.87的更优可行反例
+    consequence: 配置和结论失真
+    detection:
+      - 小规模穷举
+      - MILP最优间隙或对偶下界
+    observed_status: fail
+
+  - id: CAND-2004A-F06
+    name: 内部重复性冒充外部代表性
+    trigger: 三波比例接近或随机抽样字样被用来证明可迁移到奥运总体
+    observed_evidence: 多篇参考的代表性论证
+    consequence: 忽略33%回收率和场景迁移偏差
+    detection:
+      - 区分重复性、抽样偏差和运输性
+      - 要求抽样框与未响应者信息
+    observed_status: needs_review
+
+  - id: CAND-2004A-F07
+    name: 任意商业尺度产生伪唯一数量
+    trigger: 未给来源的容量、成本或毛利被固定后只报一个网点数
+    observed_evidence: 比较集给出43至200个
+    consequence: 数值看似精确但不可识别
+    detection:
+      - 参数来源表
+      - 情景前沿与断点分析
+    observed_status: needs_review

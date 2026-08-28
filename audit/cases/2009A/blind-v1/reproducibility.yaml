@@ -1,0 +1,64 @@
+schema_version: 1
+case_id: "2009A"
+phase: solve
+status: pass
+seed: 2009
+randomness_note: "The main algorithm is deterministic and uses no random draws; the seed is fixed for reproducibility policy compliance."
+workspace_assumption: "Run from the current minimal solve workspace; do not point the command at another phase or vault."
+primary_command: >-
+  powershell -NoProfile -ExecutionPolicy Bypass -File code/run_all.ps1
+  -Workspace <RUNTIME_ROOT>\2009A\workspaces\solve -VerifyPaper
+pipeline:
+  - order: 1
+    action: "<SOURCE_FILE_REDACTED> input through Excel COM in read-only mode."
+    script: code/extract_data.ps1
+    outputs: [results/<SOURCE_FILE_REDACTED>, results/input-metadata.json]
+  - order: 2
+    action: "Compute all question results, controller replays, sensitivity tables, figures, and TeX macros."
+    script: code/solve.py
+    outputs:
+      - results/metrics.json
+      - results/<SOURCE_FILE_REDACTED>
+      - results/<SOURCE_FILE_REDACTED>
+      - results/<SOURCE_FILE_REDACTED>
+      - results/<SOURCE_FILE_REDACTED>
+      - results/summary.md
+      - figures/<SOURCE_FILE_REDACTED>
+      - figures/<SOURCE_FILE_REDACTED>
+      - figures/<SOURCE_FILE_REDACTED>
+      - figures/<SOURCE_FILE_REDACTED>
+      - paper/generated-results.tex
+  - order: 3
+    action: "Compile paper/main.tex twice with XeLaTeX."
+    script: code/run_all.ps1
+    outputs: [paper/<SOURCE_FILE_REDACTED>]
+  - order: 4
+    action: "Independently recompute key quantities and check paper-result consistency."
+    script: code/verify.py
+    outputs: [results/verification.json]
+software:
+  operating_system: "Windows 11 10.0.26200"
+  powershell_requirement: "Windows PowerShell 5.1 or compatible"
+  excel_requirement: "Microsoft Excel COM automation available"
+  python: "3.12.13"
+  numpy: "2.5.2"
+  matplotlib: "3.11.1"
+  pyyaml: "available in the supplied environment"
+  tex_engine: "XeTeX 3.141592653-2.6-0.999998 (MiKTeX 26.5 Portable)"
+input_hashes_sha256:
+  input/problem/<SOURCE_FILE_REDACTED>: "34eafabb52ddbce55692e2fb23e9734a239cd28499f3807fbe2eea1644861113"
+  input/data/<SOURCE_FILE_REDACTED>: "2b217b9c96afd13a6d30934028be766883defdfb891c051826b70f3c2d4629bc"
+hash_policy: "results/run-manifest.json is regenerated from actual bytes on every run; hashes are not asserted before files exist."
+expected_checks:
+  phase_lock: pass
+  extraction: pass
+  numerical_generation: pass
+  xelatex_build: pass
+  independent_verification: pass
+  q4_acceptance: needs_review
+  mathematical_correctness: needs_review
+  hardware_feasibility: needs_review
+rerun_notes:
+  - "<SOURCE_FILE_REDACTED> file and never modifies it."
+  - "Generated outputs are overwritten deterministically; no frozen directory is created."
+  - "The PDF preview directory is diagnostic and is not required by the computation."

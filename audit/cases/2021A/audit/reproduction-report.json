@@ -1,0 +1,277 @@
+{
+  "schema_version": 1,
+  "case_id": "2021A",
+  "phase": "audit",
+  "generated_at": "2026-08-28T18:40:00.6210525+08:00",
+  "overall_status": "pass",
+  "network_used": false,
+  "reference_material_read": false,
+  "frozen_solution_modified": false,
+  "phase_and_path_validation": {
+    "status": "pass",
+    "command": "python <ABSOLUTE_PATH>",
+    "exit_code": 0,
+    "stdout": "[PASS] audit 阶段锁有效",
+    "stderr": "",
+    "phase": "audit",
+    "skill": "$cumcm-a-audit",
+    "allowed_paths_sha256_expected": "0160f147d51ca077d7952d50680bc25b7e4169222c0860489b3ceefa3bd736b5",
+    "allowed_paths_sha256_actual": "0160f147d51ca077d7952d50680bc25b7e4169222c0860489b3ceefa3bd736b5",
+    "forbidden_paths_sha256_expected": "f075bf741aa5e0dc4527893642bc07eb4bc70edc84733fa9b1801ed5ccaa0b47",
+    "forbidden_paths_sha256_actual": "f075bf741aa5e0dc4527893642bc07eb4bc70edc84733fa9b1801ed5ccaa0b47"
+  },
+  "frozen_manifest_validation": {
+    "status": "pass",
+    "manifest": "frozen-solution/FROZEN_BLIND_V1.json",
+    "manifest_sha256": "1e68ea7a31c7932bfe9cf939e5f6f30d460d542aff9bb87e851f2672bc5417a2",
+    "schema_version": 1,
+    "snapshot": "blind-v1",
+    "case_id": "2021A",
+    "listed_file_count": 64,
+    "verified_file_count": 64,
+    "missing_files": [],
+    "size_mismatches": [],
+    "sha256_mismatches": [],
+    "unlisted_nonexcluded_files": [],
+    "tree_sha256_expected": "cd959e705337e1eb757c9fc7192db8289503abda1cc4cdf5689ff8f026900032",
+    "tree_sha256_actual": "cd959e705337e1eb757c9fc7192db8289503abda1cc4cdf5689ff8f026900032",
+    "tree_algorithm": "SHA-256 of sorted manifest rows path + NUL + lowercase file SHA-256 + LF",
+    "outer_input_file_count": 5,
+    "outer_input_matches_frozen_copy": true,
+    "git_commit_recorded": "61a241281e61a3f1e6863a682a258c1cfc248f0a",
+    "git_commit_validation_status": "needs_review",
+    "git_commit_validation_note": "允许路径中的最小复制工作区不含可用于独立验证该提交的 Git 元数据。",
+    "manifest_reproduction_metadata_status": "needs_review",
+    "manifest_reproduction_metadata_note": "FROZEN 清单中的 run_command 为 null、dependencies 为空；实际命令和依赖由 reproducibility.yaml 与 code/requirements.txt 提供。"
+  },
+  "clean_environment": {
+    "status": "pass",
+    "isolation_method": "在 audit 根目录创建一次性 audit-repro-clean，仅复制代码、原始 input、静态论文和 verify.py 所需说明；未复制 results、figures、<SOURCE_FILE_REDACTED> 或 generated_numbers.tex。",
+    "working_directory": "<ABSOLUTE_PATH>",
+    "pre_run_state": {
+      "results_exists": false,
+      "figures_exists": false,
+      "result_xlsx_exists": false,
+      "generated_numbers_exists": false
+    },
+    "python_executable": "<ABSOLUTE_PATH>",
+    "environment_variables": {
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONNOUSERSITE": "1",
+      "MPLCONFIGDIR": "<ABSOLUTE_PATH>"
+    },
+    "environment": {
+      "python": "3.12.13 (main, Aug 7 2026, 02:26:41) [MSC v.1944 64 bit (AMD64)]",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "numpy": "2.5.2",
+      "pandas": "3.0.5",
+      "scipy": "1.18.1",
+      "matplotlib": "3.11.1",
+      "openpyxl": "3.1.5"
+    },
+    "requirements_status": "pass",
+    "requirements": [
+      "numpy==2.5.2",
+      "pandas==3.0.5",
+      "scipy==1.18.1",
+      "matplotlib==3.11.1",
+      "openpyxl==3.1.5"
+    ],
+    "temporary_copy_cleanup": {
+      "status": "pass",
+      "note": "五个审计交付物校验后，已删除一次性 audit-repro-clean；删除对象仅含复制输入和复现生成物。"
+    }
+  },
+  "executions": [
+    {
+      "id": "clean_solve_first_run",
+      "status": "pass",
+      "command": "python code/solve.py",
+      "working_directory": "<ABSOLUTE_PATH>",
+      "elapsed_seconds": 48.227355,
+      "exit_code": 0,
+      "stdout_capture_format": "JSON 被解析为 summary；终端末行单独记录，空白不作为语义输出。",
+      "stdout": {
+        "summary": {
+          "case_id": "2021A",
+          "phase": "solve",
+          "seed": 20210828,
+          "question_1": {
+            "ideal_focal_length_m": 140.32234069068346,
+            "ideal_focal_ratio": 0.4671182874100195,
+            "vertical_vertex_m": [
+              0.0,
+              0.0,
+              -300.73594886751823
+            ],
+            "max_ideal_radial_displacement_m": 0.3359356359974299
+          },
+          "question_2": {
+            "vertex_m": [
+              -49.37518262477121,
+              -36.93063606590306,
+              -294.34729555711033
+            ],
+            "active_node_count": 692,
+            "stroke_range_m": [
+              -0.2413915587435198,
+              0.18024018177503365
+            ],
+            "max_abs_edge_strain": 0.0006572819890615644,
+            "surface_distance_rms_m": 0.08455673281574295,
+            "surface_distance_max_abs_m": 0.1861932862925081,
+            "internal_constraint_status": "pass"
+          },
+          "question_3": {
+            "adjusted_reception_ratio": 0.010392369341844771,
+            "baseline_sphere_reception_ratio": 0.008106748141108082,
+            "relative_improvement": 0.28194057110848836,
+            "numerical_status": "pass",
+            "physical_external_validity_status": "needs_review"
+          }
+        },
+        "last_line": "INTERNAL_STATUS=pass"
+      },
+      "stderr": "Matplotlib is building the font cache; this may take a moment.",
+      "stderr_interpretation": "首次使用隔离 MPLCONFIGDIR 的缓存提示；无异常回溯，退出码为 0。"
+    },
+    {
+      "id": "clean_verify_run",
+      "status": "pass",
+      "command": "python code/verify.py",
+      "working_directory": "<ABSOLUTE_PATH>",
+      "elapsed_seconds": 100.7360985,
+      "exit_code": 0,
+      "stdout_capture_format": "verify.py 输出 JSON；下列对象保留全部判定与运行摘要，文件哈希另见 output_comparison。",
+      "stdout": {
+        "overall_status": "pass",
+        "runs": [
+          {
+            "return_code": 0,
+            "elapsed_seconds": 39.98742580000544,
+            "status": "pass",
+            "last_stdout_line": "INTERNAL_STATUS=pass",
+            "stderr_tail": ""
+          },
+          {
+            "return_code": 0,
+            "elapsed_seconds": 39.84860579999804,
+            "status": "pass",
+            "last_stdout_line": "INTERNAL_STATUS=pass",
+            "stderr_tail": ""
+          }
+        ],
+        "numeric_hash_reproduction": {
+          "status": "pass",
+          "file_count": 12,
+          "first_run_equals_second_run": true
+        },
+        "workbook_consistency": {
+          "status": "pass",
+          "vertex_max_abs_difference_m": 4.42889643181843e-7,
+          "node_row_count": 692,
+          "expected_node_row_count": 692,
+          "node_id_match": true,
+          "node_coordinate_max_abs_difference_m": 0.0,
+          "stroke_id_match": true,
+          "stroke_max_abs_difference_m": 0.0
+        },
+        "paper_result_consistency": {
+          "status": "pass",
+          "markdown_missing_claims": [],
+          "tex_missing_generated_claims": [],
+          "tex_uses_generated_numbers": true
+        },
+        "required_deliverables": {
+          "status": "pass",
+          "missing_paths": []
+        },
+        "internal_constraint_and_numerical_status": "pass",
+        "mathematical_correctness_status": "needs_review",
+        "physical_external_validity_status": "needs_review"
+      },
+      "stderr": ""
+    }
+  ],
+  "output_comparison": {
+    "status": "pass",
+    "first_clean_run_generated_file_count": 21,
+    "byte_identical_to_frozen_count": 20,
+    "byte_identical_files": [
+      "results/<SOURCE_FILE_REDACTED>",
+      "results/<SOURCE_FILE_REDACTED>",
+      "results/environment.json",
+      "results/<SOURCE_FILE_REDACTED>",
+      "results/ideal_paraboloid.json",
+      "results/input_audit.json",
+      "results/<SOURCE_FILE_REDACTED>",
+      "results/<SOURCE_FILE_REDACTED>",
+      "results/<SOURCE_FILE_REDACTED>",
+      "results/<SOURCE_FILE_REDACTED>",
+      "results/<SOURCE_FILE_REDACTED>",
+      "results/summary.json",
+      "results/validation_metrics.json",
+      "figures/<SOURCE_FILE_REDACTED>",
+      "figures/<SOURCE_FILE_REDACTED>",
+      "figures/<SOURCE_FILE_REDACTED>",
+      "figures/<SOURCE_FILE_REDACTED>",
+      "figures/<SOURCE_FILE_REDACTED>",
+      "figures/<SOURCE_FILE_REDACTED>",
+      "paper/generated_numbers.tex"
+    ],
+    "result_xlsx": {
+      "status": "pass",
+      "byte_hash_equal": false,
+      "first_clean_sha256": "ae463e83151cef7e2351e5dc5c25a5245738db4b133b60c3c0911bf87cfea844",
+      "frozen_sha256": "41f3ff7914590af4d281163cacd45a4ed6e976e6332b2b25830adcb4afe24150",
+      "zip_member_count_clean": 12,
+      "zip_member_count_frozen": 12,
+      "different_zip_members": [
+        "docProps/core.xml"
+      ],
+      "workbook_values_dimensions_merged_cells_and_basic_formats_equal": true,
+      "interpretation": "仅生成时间元数据不同；工作簿语义内容一致。"
+    }
+  },
+  "stability_checks": {
+    "status": "pass",
+    "five_seed_samples_per_panel": 32768,
+    "adjusted_ratio_range": [
+      0.010390494592756828,
+      0.010395768943826112
+    ],
+    "baseline_ratio_range": [
+      0.008104424074330976,
+      0.008110944078939796
+    ],
+    "relative_improvement_range": [
+      0.28162983847692735,
+      0.2824597036116314
+    ],
+    "active_mask_minimum_radial_boundary_margin_m": 0.03104120186233672,
+    "actuator_minimum_active_discriminant": 2.441467850642271,
+    "actuator_root_near_tie_count": 0
+  },
+  "latex": {
+    "status": "needs_review",
+    "xelatex_available": false,
+    "latexmk_available": false,
+    "all_five_figure_references_exist": true,
+    "generated_numbers_exists": true,
+    "note": "未伪造编译成功；需在具备 XeLaTeX 的环境实际编译并逐页检查。"
+  },
+  "post_audit_frozen_integrity": {
+    "status": "pass",
+    "verified_file_count": 64,
+    "tree_sha256_expected": "cd959e705337e1eb757c9fc7192db8289503abda1cc4cdf5689ff8f026900032",
+    "tree_sha256_actual": "cd959e705337e1eb757c9fc7192db8289503abda1cc4cdf5689ff8f026900032",
+    "manifest_sha256": "1e68ea7a31c7932bfe9cf939e5f6f30d460d542aff9bb87e851f2672bc5417a2"
+  },
+  "claims_boundary": {
+    "execution_reproducibility_status": "pass",
+    "frozen_byte_integrity_status": "pass",
+    "formal_mathematical_correctness_status": "fail",
+    "physical_external_validity_status": "needs_review",
+    "note": "复现一致不等于模型最优、数学正确或外部物理有效；相关反例见 counterexamples.md。"
+  }
+}

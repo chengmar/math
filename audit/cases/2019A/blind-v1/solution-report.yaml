@@ -1,0 +1,119 @@
+case_id: 2019A
+phase: solve
+skill: $cumcm-a-solve
+overall_status: needs_review
+status_reason: 数值附件、代码执行、守恒、收敛和模型内评价均有证据；真实装置外部有效性及喷嘴结构参数仍需实验复核。
+artifact_completeness:
+  status: pass
+  required_outputs:
+    problem-analysis.md: pass
+    data-audit.md: pass
+    assumptions.yaml: pass
+    variables.yaml: pass
+    model-selection.md: pass
+    solution-report.yaml: pass
+    reproducibility.yaml: pass
+    code/: pass
+    results/: pass
+    figures/: pass
+    paper/main.tex: pass
+    paper/paper.md: pass
+question_coverage:
+  problem_1_holding_100_mpa: pass
+  problem_1_transition_and_holding_150_mpa: pass
+  problem_2_cam_angular_speed: pass
+  problem_3_two_injectors: pass
+  problem_3_pump_and_relief_control: pass
+model_selection:
+  baseline: C0_cycle_mean_balance
+  selected: C1_coupled_variable_compressibility_ode_bottleneck_area
+  structural_sensitivity: C2_serial_orifice_resistance
+  status: needs_review
+key_results:
+  problem_1:
+    hold_100_open_ms: 0.294981034083401
+    hold_150_open_ms: 0.7554892514548198
+    hold_100_mean_mpa: 99.99921804224257
+    hold_150_mean_mpa: 149.99930351403052
+    transitions:
+    - target_time_s: 2
+      max_open_ms: 1.1615587026607985
+      post_hold_mean_mpa: 149.96841381071778
+    - target_time_s: 5
+      max_open_ms: 0.8446390076180552
+      post_hold_mean_mpa: 149.99240957532805
+    - target_time_s: 10
+      max_open_ms: 0.7802908880074212
+      post_hold_mean_mpa: 150.00107813568354
+    evidence: results/problem1-summary.json
+  problem_2:
+    omega_rad_per_ms: 0.027368179561051545
+    speed_rpm: 261.34686363407593
+    independent_eval_mean_mpa: 100.05100462441116
+    independent_eval_peak_to_peak_mpa: 4.990756760798277
+    evidence: results/problem2-summary.json
+  problem_3:
+    injector_offset_ms: 50
+    economy_speed_rpm: 522.394157579063
+    economy_peak_to_peak_mpa: 4.96583536591865
+    precision_speed_rpm: 1200.0000000000002
+    precision_cam_phase_rad: 4.6
+    precision_relief_close_mpa: 100.0
+    precision_relief_open_mpa: 100.19999999999999
+    precision_mean_mpa: 100.00388087183497
+    precision_peak_to_peak_mpa: 1.6430445243377676
+    relief_to_injection_volume_ratio: 1.2968238434287105
+    evidence: results/problem3-summary.json
+validation:
+  input_schema:
+    status: pass
+    evidence: results/data-audit.json
+  transformed_volume_balance:
+    status: pass
+    maximum_relative_residual: 6.530868273892106e-07
+  time_step_convergence:
+    status: pass
+    mean_difference_mpa: 0.003957845289406237
+  design_evaluation_separation:
+    status: pass
+    evidence: results/validation.json
+  code_full_rerun:
+    status: pass
+    evidence: results/verification.json
+  paper_compile:
+    status: needs_review
+    evidence: 当前环境未安装TeX引擎；paper/main.tex已完成静态一致性检查
+  external_experiment:
+    status: needs_review
+    evidence: 未提供获准实验装置数据
+training_memory:
+  source_status: provisional_training
+  used_count: 2
+  cards:
+    TM-001-EVIDENCE-LAYERS: adopt
+    TM-002-TIME-ORDERED-VALIDATION: reject
+    TM-007-FIT-EVALUATE-SEPARATION: adapt
+  evidence: reports/training-memory-usage.md
+limitations:
+- 集总压力模型忽略管内压力波和沿程损失。
+- 阀芯动力学、开闭延迟、最小驻留时间和驱动功率未给定。
+- 1200 rpm高稳压方案要求充分补油和约0.5 kHz级减压阀带宽。
+- 喷嘴瓶颈面积与串联阻力模型使问题2角速度相差约16.3%。
+- 高稳压方案回流量约为喷油量的1.30倍，能耗明显。
+failure_conditions:
+- 压力超出附件3的0至200 MPa范围。
+- 柱塞腔在下行阶段不能恢复至0.5 MPa并充分充满。
+- 减压阀实际响应时间或最小驻留时间无法实现计算回差控制。
+- 真实喷嘴的两处局部损失不能由瓶颈面积近似。
+evidence_boundary:
+  file_identity: pass
+  execution_reproducibility: pass
+  numerical_convergence: pass
+  model_internal_validation: pass
+  external_validity: needs_review
+phase_actions:
+  freeze_performed: false
+  reflection_performed: false
+  audit_performed: false
+  evaluation_performed: false
+  next_phase: none

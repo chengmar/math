@@ -1,0 +1,71 @@
+case_id: 2019A
+phase: blind-revision
+status: needs_review
+run_command: python code/run_all.py
+unit_test_command: python code/test_model.py
+manifest_record_command: python code/verify_outputs.py --record-manifest
+same_workspace_compare_command: python code/verify_outputs.py
+cross_workspace_compare_command: python code/verify_outputs.py --compare-workspace <other-workspace>
+randomness:
+  deterministic_model: true
+  seed: 2019
+  seed_used_for: 当前主算法无随机抽样；固定未来可能调用的随机过程
+environment:
+  os: Windows-11-10.0.26200-SP0
+  python: 3.12.13
+  packages:
+    numpy: 2.5.2
+    scipy: 1.18.1
+    openpyxl: 3.1.5
+    matplotlib: 3.11.1
+    PyYAML: 6.0.3
+    Pillow: 12.3.0
+input_identity:
+  status: pass
+  manifest: results/input-manifest.json
+  method: SHA-256 streamed by code/run_all.py
+path_portability:
+  status: pass
+  changes:
+    - data-audit.json只记录相对路径
+    - JSON、CSV、TeX宏统一UTF-8与LF
+    - 复现比较覆盖run_all.py生成的全部results与figures，排除校验器自引用文件
+  evidence: results/verification.json中的cross_workspace_generated_payload比较34项全部一致
+numerical_settings:
+  problem_1_holding_dt_ms: 0.02
+  problem_1_transition_dt_ms: 0.01
+  problem_2_long_calibration_dt_ms: 0.05
+  problem_2_calibration_window_ms: [80000, 90000]
+  problem_2_phase_evaluation_window_ms: [90000, 100000]
+  problem_3_final_dt_ms: 0.005
+  problem_3_convergence_fine_dt_ms: 0.0025
+  interpolation:
+    elasticity: piecewise_linear_on_0.5_mpa_table
+    density: trapezoidal_integral_of_1_over_E_then_linear_lookup
+    cam: periodic_cubic_spline
+    needle: PCHIP_with_expanded_constant_intervals
+  ode_solver: explicit_midpoint
+generated_payload:
+  status: pass
+  scope: run_all.py生成的全部results文件与figures PNG；排除rerun-baseline.json和verification.json
+  manifest: results/rerun-baseline.json
+  comparison: results/verification.json
+  compared_file_count: 34
+  changed_file_count: 0
+paper_compile:
+  status: needs_review
+  reason: 当前环境未检测到XeLaTeX、LuaLaTeX、pdfLaTeX、latexmk或Tectonic
+external_validity:
+  status: needs_review
+  reason: 获准输入不含实验台架观测和减压阀设备参数
+network_used: false
+forbidden_material_used: false
+blind_v1_preservation:
+  status: pass
+  audit_reference: audit/reproduction-report.json
+  tree_hash_algorithm: SHA256 over sorted entries as UTF-8 relative path + NUL + lowercase file SHA-256 + LF
+  audit_manifest_entry_count: 74
+  audit_expected_tree_sha256: 9adbecdb7a06f08ad8f492c9f26e520bd7ea40e5bab82b316ec5cb475b7d7b7e
+  final_file_count: 74
+  final_tree_sha256: 9adbecdb7a06f08ad8f492c9f26e520bd7ea40e5bab82b316ec5cb475b7d7b7e
+  final_check: 当前blind-v1的文件数与规范树摘要均匹配审计冻结记录

@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "id": "CP-2014A-003",
+  "title": "局部状态转移筛查必须由非线性闭环反例确认",
+  "status": "candidate",
+  "source_case": "2014A",
+  "provenance": {
+    "class": "learned_after_reference",
+    "reference": "REF-03",
+    "blind_baseline": "nonlinear seven-scenario closed-loop simulation"
+  },
+  "lesson": <LONG_QUOTE_REDACTED>,
+  "applicability": [
+    "a differentiable nominal trajectory and local linearization are available",
+    "disturbances are small enough for a local approximation over part of the horizon",
+    "full nonlinear simulations are materially more expensive than matrix propagation"
+  ],
+  "non_applicability": [
+    "contact, discontinuous mode switching, or saturation dominates",
+    "errors are large or the nominal trajectory is near a bifurcation",
+    "model derivatives are unavailable or numerically unreliable"
+  ],
+  "minimum_baseline": [
+    "direct nonlinear scenarios or Monte Carlo under the same compute budget",
+    "known saturation, switching, and delay counterexamples",
+    "a clearly defined failure metric rather than mean error alone"
+  ],
+  "validation_protocol": [
+    "derive or numerically compute the local state-transition matrices along the nominal path",
+    "rank times and disturbance directions by terminal or path-error amplification",
+    "run the ranked cases in the nonlinear delayed closed loop",
+    "also run unranked random cases and explicit saturation/switching counterexamples",
+    "compare worst-error discovery, failure recall, false screening, and compute cost against the baseline"
+  ],
+  "counterexamples": [
+    "linear propagation predicts small error before actuator saturation produces a terminal miss",
+    "a mode switch changes the Jacobian and invalidates a single transition matrix",
+    "delay creates a phase instability absent from instantaneous linearization",
+    "large terrain-relative error changes the active clearance constraint"
+  ],
+  "evidence_strength": "concept_only",
+  "evidence": [
+    {"source": "REF-03 paper", "status": "needs_review", "claim": "state-transition and feedforward concepts are described"},
+    {"source": "REF-03 supplied programs", "status": "fail", "claim": "the claimed method is not implemented"},
+    {"source": "blind-final nonlinear baseline", "status": "pass", "claim": "a small internal scenario set exists for comparison"},
+    {"source": "screening benefit", "status": "needs_review", "claim": "no cost or failure-recall experiment has been run"}
+  ],
+  "uncertainties": [
+    "no executable reference implementation",
+    "no demonstrated compute saving",
+    "local error metrics may not align with path-constraint failure"
+  ],
+  "promotion_gate": [
+    "implement the method independently",
+    "compare against equal-budget nonlinear sampling on this and at least two other cases",
+    "report failure recall and explicit nonlinear misses",
+    "retain a mandatory nonlinear confirmation stage"
+  ],
+  "do_not_claim": [
+    "REF-03 demonstrates the method numerically",
+    "linear screening proves nonlinear robustness",
+    "low terminal covariance guarantees path safety"
+  ]
+}

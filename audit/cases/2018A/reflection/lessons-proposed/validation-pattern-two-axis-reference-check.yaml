@@ -1,0 +1,45 @@
+schema_version: 1
+id: CAND-VALIDATION-TWO-AXIS-REFERENCE
+status: candidate
+type: validation_pattern
+title: <REFERENCE_TITLE_REDACTED>
+source_case: 2018A
+origin_classification: learned_during_reflection
+sources:
+  approved_references: [REF-01, REF-02, REF-03]
+  blind_evidence: [blind-final/results/independent_verification.json]
+axis_1_self_reproduction:
+  question: 论文数字是否由其打印公式和代码产生？
+  minimum_evidence:
+    - 输入与单位身份
+    - 公式/代码版本
+    - 相邻临界点
+    - 误差定义
+axis_2_common_model_stress:
+  question: 把各论文设计点放进同一公共模型后，约束结论是否敏感？
+  warning: 公共模型不是物理真值，只用于分离模型差异与数字抄录差异。
+decision_rules:
+  - 轴1 pass、轴2 fail：论文内部可复现，但对模型结构敏感。
+  - 轴1 fail：不得把该数字作为可靠比较基准。
+  - 轴1 pass、轴2 pass：只说明当前两套模型均支持，不等于外部验证。
+applicable_when:
+  - 多篇材料使用不同边界、离散或目标函数，却报告同一安全约束。
+not_applicable_when:
+  - 输入、单位或任务定义不同到无法建立同一比较语义。
+minimum_baseline:
+  - 至少复算一个已报告指标和一个相邻不可行点。
+  - 公共模型必须预先冻结，不能看参考结果后调参。
+  - 两个轴分别报告 pass/fail/needs_review。
+validation:
+  REF-01_Q1_self_reproduction: pass
+  REF-02_design_self_reproduction: pass
+  REF-03_self_reproduction: fail
+  common_model_interpretation: needs_review
+counterexamples:
+  - 多个模型可能共享同一错误物性或初值，因此双轴都 pass 仍可外部失真。
+  - 临界点对 0.1 mm 取整敏感时，必须报告连续根与制造网格两层结果。
+evidence_strength: needs_review
+evidence_reason: 当前案例有效区分了可复现性与模型敏感性，但只有一个题目。
+promotion_requirements:
+  - 在至少两个不同模型族的案例中重复双轴流程。
+  - 明确公共模型冻结时点并保留哈希证据。

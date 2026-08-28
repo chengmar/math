@@ -1,0 +1,182 @@
+schema_version: 2
+case_id: 2015A
+phase: blind-revision
+skill: cumcm-a-solve
+overall_status: needs_review
+overall_reason: "问1至问3的修订代码、结果和内部验证无 fail；但外部地点真实性、总体统计区间、附件4视频数值、完整视频标定与 LaTeX 编译均未获得允许证据。"
+scope:
+  blind_revision: true
+  network_search_used: false
+  reference_paper_read: false
+  commentary_read: false
+  vault_read: false
+  other_phase_skill_called: false
+  frozen_by_this_session: false
+phase_gate:
+  lock_phase_status: pass
+  allowed_paths_sha256_status: pass
+  forbidden_paths_sha256_status: pass
+  literal_python_check_status: needs_review
+  equivalent_condition_check_status: pass
+  note: "系统没有 python/py；完整脚本已读，其确定条件由 PowerShell 等价执行。未伪称 Python 字面执行成功。"
+v1_preservation:
+  status: pass
+  file_count: 78
+  tree_sha256_before: "56a819d92cd661c8c699d5d2a0a016678c24e806cba95a516f64240b8cb43faf"
+  tree_sha256_after_revision_build: "56a819d92cd661c8c699d5d2a0a016678c24e806cba95a516f64240b8cb43faf"
+  note: "该哈希是本最小复制工作区 blind-v1 的实际树哈希，不冒充外部冻结清单哈希。"
+input_audit:
+  immutable_expected_manifest_status: pass
+  source_workbook_preservation_status: pass
+  exact_sheet_set_status: pass
+  observations_per_sheet_status: pass
+  pre_conversion_missing_type_finite_checks_status: pass
+  monotonic_time_status: pass
+  attachment4_video_presence_status: fail
+  input_history_before_current_workspace_status: needs_review
+model_selection:
+  main_candidate_count: 3
+  maximum_main_candidates: 3
+  polynomial_degrees_inside_baseline_family: [1, 2, 3]
+  training_only_selection_status: pass
+  final_test_used_for_selection: fail
+  selected_model: full_vector_solar_inverse
+  selection_status: pass
+  selection_interpretation: "pass 仅表示训练内任务匹配与数值条件；不表示最终测试最优或地点真实。"
+  q2_final_test_rmse_mm:
+    nested_cubic_polynomial: 0.6833080899457991
+    length_only_inverse: 13.632064213427766
+    full_vector_solar_inverse: 1.0404662723973081
+question_coverage:
+  q1:
+    forward_model_status: pass
+    numerical_result_status: pass
+    figure_status: pass
+    key_results:
+      length_0900_m: 6.552652141464708
+      solar_noon_beijing: "11:58:33"
+      minimum_length_m: 3.662758218641293
+      length_1500_m: 6.684003410645878
+  q2:
+    inverse_search_status: pass
+    internal_fit_status: pass
+    parameter_stability_status: fail
+    external_location_truth_status: needs_review
+    reported_candidate_center_precision_status: pass
+    candidate_center_rounded:
+      latitude_deg: 18.4
+      longitude_deg: 109.7
+      inferred_height_m: 1.96
+    full_precision_source: results/<SOURCE_FILE_REDACTED>
+    full_fit_rmse_mm: 0.34647160970127314
+    prefix_8_to_21_location_drift_km: 19.987536852110367
+  q3_attachment2:
+    annual_search_status: pass
+    paired_branch_reporting_status: pass
+    joint_date_location_cluster_status: pass
+    parameter_stability_status: fail
+    external_location_truth_status: needs_review
+    rounded_rotation_centers:
+      - {date_display: "07-21", latitude_deg: 39.8, longitude_deg: 81.3}
+      - {date_display: "05-24", latitude_deg: 39.8, longitude_deg: 78.8}
+    adjacent_day_cluster_jump_km_range: [15.9, 16.8]
+    maximum_reported_1mm_contamination_shift_km: 229.66389015293223
+  q3_attachment3:
+    annual_search_status: pass
+    paired_branch_reporting_status: pass
+    joint_date_location_cluster_status: pass
+    parameter_stability_status: fail
+    external_location_truth_status: needs_review
+    rounded_rotation_centers:
+      - {date_display: "11-19", latitude_deg: 30.5, longitude_deg: 106.6}
+      - {date_display: "01-24", latitude_deg: 30.4, longitude_deg: 113.1}
+    adjacent_day_cluster_jump_km: 39.328528612243026
+    prefix_8_to_21_location_drift_km: 49.53155863654749
+  q4:
+    pixel_to_ground_equation_status: pass
+    ground_to_pixel_equation_status: pass
+    homogeneous_normalization_status: pass
+    synthetic_test_count: 3
+    synthetic_test_pass_count: 3
+    video_input_status: fail
+    ground_control_status: fail
+    complete_method_status: needs_review
+    numerical_location_status: needs_review
+uncertainty_and_robustness:
+  rounding_only_conditional_execution_status: pass
+  rounding_as_total_error_status: fail
+  residual_diagnostics_status: pass
+  moving_block_bootstrap_execution_status: pass
+  joint_cluster_reporting_status: pass
+  prefix_drift_execution_status: pass
+  millimetre_contamination_execution_status: pass
+  ordinary_least_squares_robustness_status: fail
+  structural_sensitivity_execution_status: pass
+  structural_interpretation_status: needs_review
+  solar_formula_stress_execution_status: pass
+  external_ephemeris_truth_status: needs_review
+  total_uncertainty_interval_status: needs_review
+validation:
+  independent_validation_status: pass
+  independent_validation_counts:
+    pass: 40
+    needs_review: 1
+    fail: 0
+  final_test_separation_status: pass
+  boundary_counterexamples_status: pass
+  q4_synthetic_status: pass
+  dense_search_crosscheck_status: pass
+  published_candidates_crosschecked: 24
+  published_candidates_crosscheck_pass: 24
+  external_geographic_validation_status: needs_review
+reproducibility:
+  fixed_seed_status: pass
+  input_manifest_status: pass
+  source_input_preservation_status: pass
+  single_entry_script_status: pass
+  deterministic_rerun_status: pass
+  deterministic_files_compared: 30
+  clean_isolated_reproduction_status: pass
+  clean_reproduction_files_compared: 30
+  clean_stage_cleanup_status: pass
+  latex_source_status: pass
+  latex_compilation_status: needs_review
+paper_result_consistency:
+  generated_macro_status: pass
+  markdown_number_status: pass
+  control_character_status: pass
+  status_count_status: pass
+  source_hash_binding_status: pass
+  latex_compilation_status: needs_review
+audit_response_summary:
+  AUD-MATH-001: pass
+  AUD-STAT-002: pass
+  AUD-ID-003: pass
+  AUD-VAL-004: pass
+  AUD-REP-005: pass
+  AUD-PAPER-006: pass
+  AUD-DATA-007: pass
+  AUD-CONSTRAINT-008: pass
+  AUD-PROV-009: needs_review
+  AUD-VERIFY-010: pass
+limitations:
+  - "内部候选搜索和回算 pass 不等于真实地点 pass。"
+  - "总体误差分布未知；所有扰动频数都不是置信概率。"
+  - "普通最小二乘对毫米污染不稳健，候选中心只作条件结果。"
+  - "时钟偏差与经度近似不可分；坐标手性仍需外部方位排除。"
+  - "太阳公式压力测试没有外部高精度星历真值。"
+  - "附件4视频和地面控制点缺失。"
+  - "当前环境无 LaTeX 引擎。"
+deliverables:
+  problem-analysis.md: pass
+  data-audit.md: pass
+  assumptions.yaml: pass
+  variables.yaml: pass
+  model-selection.md: pass
+  solution-report.yaml: pass
+  reproducibility.yaml: pass
+  code: pass
+  results: pass
+  figures: pass
+  paper/main.tex: pass
+  paper/paper.md: pass

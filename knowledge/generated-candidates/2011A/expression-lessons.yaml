@@ -1,0 +1,38 @@
+schema_version: 1
+case_id: 2011A
+knowledge_status: candidate
+lessons:
+  - id: CAND-2011A-E01
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_status: candidate
+    origin: learned_after_reference
+    evaluation_status: needs_review
+    guidance: "每个小问只给主模型、一个主数值、证据状态和关键限制；技术验证后置展开"
+
+  - id: CAND-2011A-E02
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_status: candidate
+    origin: independent_blind_and_audit_remediation
+    evaluation_status: pass
+    guidance: "不要只在结尾统一写局限；在每个精确坐标或因果标签旁直接写 needs_review"
+
+  - id: CAND-2011A-E03
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_status: candidate
+    origin: learned_after_reference
+    evaluation_status: needs_review
+    guidance: "经典指数帮助沟通，稳健指标负责主推断；明确二者回答的问题不同"
+
+  - id: CAND-2011A-E04
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_status: candidate
+    origin: independent_blind
+    evaluation_status: pass
+    guidance: "写 Hg 主导或 Cd-Cu-Pb-Zn 共变；企业/交通身份另列 needs_review"
+
+  - id: CAND-2011A-E05
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_status: candidate
+    origin: learned_after_reference
+    evaluation_status: pass
+    guidance: "若方程没有标定、验证或反例诊断，不以方程数量作为模型优势"

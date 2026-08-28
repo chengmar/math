@@ -1,0 +1,118 @@
+case_id: 2008A
+phase: solve
+overall_status: pass
+scope:
+  blind_solution: pass
+  no_network_search: pass
+  no_reference_solution_access: pass
+  no_freeze: pass
+  no_audit_reflect_evaluate: pass
+questions:
+  - id: Q1
+    requirement: 建立数学模型和算法，确定靶标圆心在相机像平面的像坐标。
+    status: pass
+    method: 五个等半径圆的亚像素边界共享平面单应；主模型进一步约束为已知焦距的6参数相机位姿。
+    evidence:
+      - code/solve.py
+      - results/<SOURCE_FILE_REDACTED>
+      - paper/paper.md
+  - id: Q2
+    requirement: 对题图计算A、B、C、D、E五个圆心像坐标。
+    status: pass
+    result_file: results/<SOURCE_FILE_REDACTED>
+    raw_pixel_centers:
+      A: [321.997, 188.737]
+      B: [422.287, 196.190]
+      C: [639.517, 212.335]
+      D: [582.146, 502.460]
+      E: [283.656, 501.360]
+    coordinate_convention: u向右、v向下；光心平行坐标x=u-512、y=384-v、z=1577 px。
+  - id: Q3
+    requirement: 设计检验方法并讨论精度、稳定性。
+    status: pass
+    methods:
+      - 整圆留一外部预测
+      - 五档分割阈值敏感性
+      - 固定种子100次轮廓扰动
+      - 正深度、旋转正交和标号分离检查
+    evidence:
+      - results/validation.json
+      - results/sensitivity.json
+      - figures/<SOURCE_FILE_REDACTED>
+      - figures/<SOURCE_FILE_REDACTED>
+  - id: Q4
+    requirement: 建立用该靶标给出两部固定相机相对位置的数学模型和方法。
+    status: pass
+    method: 分别分解两相机靶标单应得到R_j和t_j，再用R_21=R_2 R_1^T、t_21=t_2-R_21 t_1消去靶标坐标。
+    numerical_two_camera_example: needs_review
+    reason: 当前附件未提供第二相机同步图像；未伪造数值相对位姿。
+baseline:
+  name: connected_component_centroid_plus_affine_map
+  status: pass
+  leave_one_circle_out_mean_center_error_px: 19.4081466458768
+  role: 简单可解释基线，不作为最终模型。
+main_model:
+  name: calibrated_pose
+  chinese_name: 已知焦距的相机位姿—五圆圆锥曲线联合模型
+  status: pass
+  parameters: 6
+  assumptions:
+    - pinhole_projection
+    - planar_rigid_target
+    - principal_point_at_image_center
+    - square_pixels_zero_skew
+    - negligible_lens_distortion
+  selection_rule: 以整圆留一平均边界RMSE为主；若位姿模型不超过自由单应105%，优先6参数位姿。
+  metrics:
+    in_sample_edge_rmse_px: 0.616089415064398
+    in_sample_edge_p95_abs_px: 1.0616538501227
+    mean_silhouette_iou: 0.972589243921984
+    leave_one_circle_out_mean_edge_rmse_px: 0.817662975256314
+    leave_one_circle_out_max_edge_rmse_px: 1.11924708376674
+    leave_one_circle_out_min_iou: 0.949485714285714
+  comparison:
+    free_homography_in_sample_rmse_px: 0.612772551585496
+    free_homography_leave_one_circle_out_rmse_px: 1.06241005875796
+validation:
+  overall_status: pass
+  component_count: pass
+  full_boundary_label_disambiguation: pass
+  in_sample_edge_fit: pass
+  leave_one_circle_out: pass
+  silhouette_overlap: pass
+  positive_depth: pass
+  rotation_orthonormality: pass
+  threshold_sensitivity: pass
+  monte_carlo_stability: pass
+  threshold_max_center_shift_px: 0.163585241142225
+  monte_carlo_max_radial_p95_px: 0.0791255503095
+  automatic_formal_mathematical_proof: needs_review
+limitations:
+  - 题面未给主点，主点取图像中心；真实主点偏差会影响相机坐标和位姿。
+  - 未给镜头畸变参数；广角或强畸变图像需先反畸变。
+  - JPEG压缩和抗锯齿限制边界精度；单点精度宜按留一圆最差约1.1 px理解。
+  - 遮挡、粘连、靶标翘曲、掠射视角或少于四个有效目标会导致失效。
+  - 双相机数值外参需要第二相机同步图像和内参。
+reproducibility:
+  status: pass
+  input_hash_verified: pass
+  extraction_rerun: pass
+  numerical_pipeline_rerun: pass
+  deterministic_seed: 2008
+  repeated_run_hash_match: pass
+  paper_result_consistency: pass
+  latex_compile: pass
+  manifest: reproducibility.yaml
+paper:
+  markdown: paper/paper.md
+  latex: paper/main.tex
+  pdf: paper/<SOURCE_FILE_REDACTED>
+  figures_generated_by_code: pass
+  xelatex_two_pass_compile: pass
+  page_visual_check: pass
+  competition_format_manual_review: needs_review
+delivery:
+  frozen: false
+  reflected: false
+  audited: false
+  evaluated: false

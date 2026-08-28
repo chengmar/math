@@ -1,0 +1,253 @@
+schema_version: 1
+case_id: "2012A"
+collection_status: candidate
+verified_count: 0
+demo_count: 0
+cards:
+  - id: "C2012A-REF-001"
+    title: <REFERENCE_TITLE_REDACTED>
+    status: candidate
+    category: method_card
+    provenance: independently_conceived
+    proposal: "同一对象在两个条件下重复测量时，先以对象为配对单位定义差值；把独立两样本检验仅作为错误基线或明确不同 estimand 的补充。"
+    applicable_when:
+      - "同一酒样、病人、设备或地点在两个条件/评委组下重复测量"
+      - "配对关系可由稳定 ID 无歧义恢复"
+    not_applicable_when:
+      - "两组对象真正独立"
+      - "配对 ID 缺失或配对机制会造成选择偏差"
+    minimum_baseline:
+      - "独立 Welch t 或等方差检验，明确标注其忽略配对"
+      - "配对均值差及其区间"
+    validation:
+      status: pass
+      checks:
+        - "配对 ID 一一对应且覆盖完整"
+        - "配对 t、秩检验或符号翻转方向一致"
+        - "小样本离散格点可用精确符号翻转"
+    counterexamples:
+      - "R3 报 p=0.121776/0.106083，丢失天然酒样配对"
+      - "R4 一元 ANOVA 给红 p≈0.116，却在配对分析下为 p≈0.0195"
+    source_case: "2012A"
+    source_evidence:
+      - "blind-final/results/q1_summary.json"
+      - "R3 PDF pp.8-9"
+      - "R4 PDF pp.5-7"
+    evidence_strength: pass
+    evidence_limit: "本题只证明设计选择能改变推断；跨题通用性仍保持 candidate。"
+
+  - id: "C2012A-REF-002"
+    title: <REFERENCE_TITLE_REDACTED>
+    status: candidate
+    category: validation_pattern
+    provenance: learned_after_references
+    proposal: "任何等级/聚类成员表发布前，自动检查全集覆盖、互斥、范围、成员数、排序和表文一致。"
+    applicable_when:
+      - "输出离散等级、聚类、分层抽样名单或候选集合"
+      - "每个对象原则上应且仅应属于一个主等级"
+    not_applicable_when:
+      - "任务明确允许多标签；此时应改查允许的标签基数和约束"
+    minimum_baseline:
+      - "人工表格总数核对"
+      - "程序化 expected IDs 与 observed IDs 集合差"
+    validation:
+      status: pass
+      checks:
+        - "missing 数为 0"
+        - "duplicate 数为 0"
+        - "out_of_range 数为 0"
+        - "成员总数等于对象总数"
+    counterexamples:
+      - "R2 红重复 9/14，白重复 12"
+      - "R3 白漏 28"
+      - "R4 红重复 23、漏 8；白重复 11、漏 19/28"
+    source_case: "2012A"
+    source_evidence:
+      - "R2 PDF pp.19-20"
+      - "R3 PDF p.12"
+      - "R4 PDF pp.9,11"
+      - "blind-final/results/verification.json q2_complete_membership"
+    evidence_strength: pass
+    evidence_limit: "集合合法只是一条最低门槛，不证明分级有效或稳定。"
+
+  - id: "C2012A-REF-003"
+    title: <REFERENCE_TITLE_REDACTED>
+    status: candidate
+    category: method_card
+    provenance: independently_conceived
+    proposal: "把单指标对的局部关联检验和整个响应块的外样本预测作为两个不同问题；允许局部 pass 与整体 fail 同时成立。"
+    applicable_when:
+      - "高维跨块数据中既关心具体联系，也关心完整映射"
+      - "样本量不足以支持复杂整体模型"
+    not_applicable_when:
+      - "只有单一预注册自变量和单一响应"
+    minimum_baseline:
+      - "局部：效应量、零模型和多重比较控制"
+      - "整体：训练折均值或其他简单预测基线"
+    validation:
+      status: pass
+      checks:
+        - "局部检验族在看结果前定义"
+        - "整体预处理和模型选择全部折内"
+        - "局部显著不被写成整体可预测"
+    counterexamples:
+      - "R1/R4 由若干相关或拟合图直接叙述整体影响"
+      - "R3 用平均相关度 0.71/0.86 代替跨样本整体预测"
+    source_case: "2012A"
+    source_evidence:
+      - "红同名花色苷 Pearson 0.92247、Spearman 0.93712"
+      - "blind-final Q3 红/白整体 Q²=-0.030/-0.253"
+    evidence_strength: pass
+    evidence_limit: "局部关系仍未在独立年份复核。"
+
+  - id: "C2012A-REF-004"
+    title: <REFERENCE_TITLE_REDACTED>
+    status: candidate
+    category: validation_pattern
+    provenance: audit_corrected
+    proposal: "当 scope、模型族、超参数或变量都由数据选择时，所有选择步骤进入内层；主结论用外折性能、最低基线和同路径置换。"
+    applicable_when:
+      - "p 接近或大于 n"
+      - "比较多个特征范围、模型族或参数"
+    not_applicable_when:
+      - "模型和参数在独立训练数据之外已完全锁定；仍需独立测试"
+    minimum_baseline:
+      - "每个外折训练均值"
+      - "低维/单块/正则化简单模型"
+    validation:
+      status: pass
+      checks:
+        - "预处理 fitted_on 与验证/测试 ID 无交集"
+        - "选择频率和重复间性能均报告"
+        - "置换重复整个选择路径"
+        - "最终外部验证缺失时仍为 needs_review"
+    counterexamples:
+      - "R1/R2 逐步回归后的样本内 R² 被解释为模型能力"
+      - "R3/R4 只给系数、p 或图形，没有预测基线"
+    source_case: "2012A"
+    source_evidence:
+      - "blind-final/results/q4_summary.json"
+      - "blind-final/results/verification.json fold_isolation"
+    evidence_strength: pass
+    evidence_limit: "重复交叉验证仍不能替代独立年份测试。"
+
+  - id: "C2012A-REF-005"
+    title: <REFERENCE_TITLE_REDACTED>
+    status: candidate
+    category: method_card
+    provenance: learned_after_references
+    proposal: "当总分由多个分项和权重构成时，预注册多个合理目标构造并做敏感性；不因某个数据驱动权重产生更显著结果就称其更客观。"
+    applicable_when:
+      - "感官评分、量表、综合指数或多指标评价"
+      - "分项权重来自制度、专家或数据"
+    not_applicable_when:
+      - "目标由外部物理量直接测量且无合成权重"
+    minimum_baseline:
+      - "题面/制度原权重"
+      - "等权分项均值"
+      - "分项终点并列报告"
+    validation:
+      status: needs_review
+      checks:
+        - "不同目标构造下结论方向、等级 ARI 和预测性能"
+        - "权重只在训练数据拟合"
+        - "不选择最有利的单一权重"
+    counterexamples:
+      - "R2 用同一评分数据的熵权替代题面权重并直接称更准确"
+      - "Q2/Q4 对工作评委组改变较敏感"
+    source_case: "2012A"
+    source_evidence:
+      - "R2 PDF pp.17-20"
+      - "blind-final Q2 alternative_panel_grade_ari"
+    evidence_strength: needs_review
+    evidence_limit: "当前尚未在冻结解中实现完整分项/权重敏感性。"
+
+  - id: "C2012A-REF-006"
+    title: <REFERENCE_TITLE_REDACTED>
+    status: candidate
+    category: validation_pattern
+    provenance: audit_corrected
+    proposal: "对浓度、长度、质量等可换单位变量，构造物理等价缩放；变换后的选择、预测和结论应在容差内不变。"
+    applicable_when:
+      - "输入包含有单位连续量并经过非线性变换"
+      - "模型会因数值尺度改变筛选或正则化"
+    not_applicable_when:
+      - "单位变化真实改变了定义而非表示"
+    minimum_baseline:
+      - "标准化前后结果比较"
+      - "至少 0.001 和 1000 两个量级反例"
+    validation:
+      status: pass
+      checks:
+        - "selection_identical=true"
+        - "预测最大绝对差小于预设容差"
+        - "Q² 差小于预设容差"
+    counterexamples:
+      - "审计前 log1p(带单位浓度) 会使 Q² 随单位换算改变"
+    source_case: "2012A"
+    source_evidence:
+      - "blind-final/results/unit_invariance.json"
+    evidence_strength: pass
+    evidence_limit: "只覆盖统一倍数换算，不覆盖实验测量误差或检测限变化。"
+
+  - id: "C2012A-REF-007"
+    title: <REFERENCE_TITLE_REDACTED>
+    status: candidate
+    category: method_card
+    provenance: learned_after_references
+    proposal: "把酸、糖、酚/色素、芳香、颜色等领域组在分析前定义，先做组级增量和稳定性，再定位组内变量。"
+    applicable_when:
+      - "变量有可信领域分组且 p 远大于 n"
+      - "目标包括解释哪些信息块有增量价值"
+    not_applicable_when:
+      - "分组由本次结果事后拼接"
+      - "组之间高度重叠而没有明确归属策略"
+    minimum_baseline:
+      - "葡萄-only、酒-only、组合三块"
+      - "不分组的 ridge"
+    validation:
+      status: needs_review
+      checks:
+        - "组定义预注册"
+        - "组级消融进入外折"
+        - "组内定位控制多重比较"
+    counterexamples:
+      - "R1/R2 的后退回归与路径系数在 n=27、强共线下产生虚假单变量解释"
+      - "R4 事后挑选同名指标并删异常点"
+    source_case: "2012A"
+    source_evidence:
+      - "R3/R4 的领域分组提示"
+      - "blind-final Q4 block ablation and design nullity"
+    evidence_strength: needs_review
+    evidence_limit: "当前化学组边界未由独立领域审查确认。"
+
+  - id: "C2012A-REF-008"
+    title: <REFERENCE_TITLE_REDACTED>
+    status: candidate
+    category: expression_pattern
+    provenance: mixed
+    proposal: "每个主结论绑定 estimand、主要数字、最低基线、反例、状态和证据文件；表文数字由同一结构化源生成。"
+    applicable_when:
+      - "多问建模、多个模型和多种不确定性并存"
+      - "结论需要审计或复现"
+    not_applicable_when:
+      - "单一计算且没有分支判断；仍应保留最小来源"
+    minimum_baseline:
+      - "结论摘要"
+      - "结果文件索引"
+    validation:
+      status: needs_review
+      checks:
+        - "表、正文、摘要数字一致"
+        - "每个 pass/fail/needs_review 有原因"
+        - "等级表附覆盖/互斥行"
+    counterexamples:
+      - "R2 同页出现总体显著与无显著差异"
+      - "R4 表中红白 p 与正文颜色标签混写"
+      - "R1 系数、t 与 p 不一致"
+    source_case: "2012A"
+    source_evidence:
+      - "comparison-matrix.md"
+      - "blind-final/results/verification.json paper_result_macro_consistency"
+    evidence_strength: needs_review
+    evidence_limit: "表达模式的跨题收益尚未做独立评测。"

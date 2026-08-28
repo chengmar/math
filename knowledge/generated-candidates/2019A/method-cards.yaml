@@ -1,0 +1,67 @@
+schema_version: 1
+artifact: "proposed_method_cards"
+knowledge_state: "candidate"
+entries:
+  - id: "MC-01"
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_state: "candidate"
+    origin_class: "audit_after_blind_revision_before_reference"
+    trigger: "a compressible control volume receives and discharges volume flow at potentially different densities"
+    method:
+      - "write each boundary contribution as density times volume flow"
+      - "derive the pressure equation only after the mass equation is fixed"
+      - "derive any steady baseline directly from the mass balance"
+      - "check the integrated mass residual independently"
+    case_evidence_status: pass
+    transfer_status: needs_review
+    limitation: "requires a justified lumped control volume and a consistent pressure-density relation"
+  - id: "MC-02"
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_state: "candidate"
+    origin_class: "audit_after_blind_revision_before_reference"
+    trigger: "the statement does not determine whether two restrictions act in series or as a single bottleneck"
+    method:
+      - "construct each physically plausible endpoint model"
+      - "solve both endpoints with the same data and objective"
+      - "report the interval and name the missing observation that would identify the topology"
+    case_evidence_status: pass
+    transfer_status: needs_review
+    limitation: "the endpoints bound reality only if the chosen endpoint models are themselves justified"
+  - id: "MC-03"
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_state: "candidate"
+    origin_class: "audit_after_blind_revision_before_reference"
+    trigger: "an ideal valve policy achieves a strong numerical objective but ignores delay, dwell, refill, or switching limits"
+    method:
+      - "retain the ideal policy only as a bound"
+      - "state delay, minimum dwell, switching-rate, and replenishment assumptions explicitly"
+      - "search a small scenario family rather than presenting one unsupported optimum"
+      - "report pressure metrics together with switching and flow costs"
+    case_evidence_status: needs_review
+    transfer_status: needs_review
+    limitation: "scenario feasibility is not hardware feasibility without actuator data"
+  - id: "MC-04"
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_state: "candidate"
+    origin_class: "reference_triggered"
+    trigger: "a fast pulse acts on a spatial conduit modeled as one uniform-pressure state"
+    method:
+      - "estimate wave speed from the effective bulk modulus and density"
+      - "compare one-way or round-trip transit time with the fastest forcing rise time"
+      - "if the times are comparable, compare against a distributed or delayed model before asserting uniform pressure"
+    case_evidence_status: needs_review
+    transfer_status: needs_review
+    limitation: "pipe-wall compliance, boundary impedance, damping, and multiphase effects can materially change wave speed"
+  - id: "MC-05"
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_state: "candidate"
+    origin_class: "reference_triggered"
+    trigger: "multiple papers report similar or conflicting values for the same modeled quantity"
+    method:
+      - "normalize units and definitions"
+      - "independently rederive a baseline when possible"
+      - "check each source for internal dimensional and numerical consistency"
+      - "treat agreement as local cross-evidence, not proof"
+    case_evidence_status: pass
+    transfer_status: needs_review
+    limitation: "a small approved comparison set cannot establish literature consensus"

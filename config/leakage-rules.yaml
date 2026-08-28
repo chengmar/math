@@ -1,0 +1,15 @@
+forbidden_path_tokens:
+  - reference-vault
+  - exam-vault
+  - answer-key
+  - reference-paper
+  - award-paper
+  - winner-paper
+  - 标准答案
+  - 赛题讲评
+candidate_status: candidate
+protected_phases:
+  - solve
+  - audit
+  - blind-revision
+  - evaluation

@@ -1,0 +1,298 @@
+{
+  "schema_version": 1,
+  "case_id": "2012A",
+  "phase": "audit",
+  "generated_at": "2026-08-25T01:26:33.4097271+08:00",
+  "status_vocabulary": [
+    "pass",
+    "fail",
+    "needs_review"
+  ],
+  "overall_status": "needs_review",
+  "overall_reason": <LONG_QUOTE_REDACTED>,
+  "network_used": false,
+  "other_phase_skill_invoked": false,
+  "reference_materials_read": false,
+  "frozen_solution_modified": false,
+  "phase_lock": {
+    "status": "pass",
+    "command": "python <ABSOLUTE_PATH>",
+    "exit_code": 0,
+    "stdout": "[PASS] audit 阶段锁有效",
+    "stderr": "",
+    "allowed_paths_sha256_status": "pass",
+    "allowed_paths_sha256": "67aa4e7620e450049254308269c4149bb92c292076e9cf4f90c74ea027a017e9",
+    "forbidden_paths_sha256_status": "pass",
+    "forbidden_paths_sha256": "f075bf741aa5e0dc4527893642bc07eb4bc70edc84733fa9b1801ed5ccaa0b47"
+  },
+  "frozen_integrity": {
+    "status": "pass",
+    "manifest": "frozen-solution/FROZEN_BLIND_V1.json",
+    "case_id": "2012A",
+    "version": "blind-v1",
+    "manifest_entries": 99,
+    "missing_files": 0,
+    "size_or_sha256_mismatches": 0,
+    "unexpected_files": 0,
+    "missing_authoritative_payloads": 0,
+    "tree_sha256_expected": "c7b8662553627237519783b0a241a365f7603843278b161a1d7a9429e5cd0192",
+    "tree_sha256_actual": "c7b8662553627237519783b0a241a365f7603843278b161a1d7a9429e5cd0192",
+    "tree_hash_serialization": "For each manifest file in listed order: UTF-8 path, NUL, lowercase file SHA-256, LF; SHA-256 over the concatenation.",
+    "post_audit_recheck_status": "pass",
+    "post_audit_recheck_missing_files": 0,
+    "post_audit_recheck_mismatches": 0,
+    "git_commit_claim": "6b82cfe1fa52c3fab4dd94abd4edc0e1975ce8e0",
+    "git_commit_verification_status": "needs_review",
+    "git_commit_verification_reason": "The minimal copied workspace does not contain independent repository evidence with which to verify this metadata claim."
+  },
+  "environment": {
+    "operating_system": "Microsoft Windows NT 10.0.26200.0",
+    "timezone": "Asia/Shanghai",
+    "audit_workspace": "<ABSOLUTE_PATH>",
+    "reproduction_workspace": "<ABSOLUTE_PATH>",
+    "python_executable": "<ABSOLUTE_PATH>",
+    "python": "3.12.13",
+    "powershell_core": "7.6.4",
+    "xelatex": "MiKTeX-XeTeX 4.18 (MiKTeX 26.5 Portable)",
+    "packages": {
+      "numpy": "2.5.2",
+      "pandas": "3.0.5",
+      "scipy": "1.18.0",
+      "scikit_learn": "1.9.0",
+      "matplotlib": "3.11.1",
+      "pyyaml": "6.0.3"
+    },
+    "environment_variables": {
+      "PYTHONNOUSERSITE": "1",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONHASHSEED": "20240824",
+      "MPLBACKEND": "Agg"
+    },
+    "filesystem_cleanliness_status": "pass",
+    "filesystem_cleanliness_evidence": "The isolated copy initially contained code, raw input, and paper/main.tex only; it contained no results, figures, PDF, or prior generated model artifacts.",
+    "dependency_install_cleanliness_status": "needs_review",
+    "dependency_install_cleanliness_reason": "The exact pinned versions were provided by an existing dedicated runtime; a new venv and fresh offline installation were not created."
+  },
+  "declared_entrypoint": {
+    "status": "fail",
+    "command": "powershell -File code\\run_all.ps1 -Workspace .",
+    "executed": false,
+    "exit_code": null,
+    "stdout": "",
+    "stderr": "",
+    "reason": <LONG_QUOTE_REDACTED>,
+    "affected_source": "frozen-solution/code/run_all.ps1:10"
+  },
+  "commands": [
+    {
+      "id": "setup_initial_minimal_copy",
+      "status": "needs_review",
+      "command": "Create a unique audit reproduction directory; copy code and input; create paper; copy paper/main.tex.",
+      "exit_code": 0,
+      "stdout": "The code and input copies were created and enumerated.",
+      "stderr": "PowerShell New-Item did not accept -LiteralPath; paper directory creation and main.tex copy failed in this first setup command.",
+      "note": <LONG_QUOTE_REDACTED>
+    },
+    {
+      "id": "setup_corrective_copy",
+      "status": "pass",
+      "command": "Create reproduction paper directory with System.IO.Directory.CreateDirectory and copy frozen-solution\\paper\\main.tex.",
+      "exit_code": 0,
+      "stdout": "paper/main.tex copied; 16592 bytes.",
+      "stderr": ""
+    },
+    {
+      "id": "extract_xls",
+      "status": "pass",
+      "command": "pwsh -NoProfile -NonInteractive -File <repro>\\code\\extract_xls.ps1 -Workspace <repro>",
+      "exit_code": 0,
+      "stdout": "[PASS] extracted 10 sheets to <repro>\\results\\extracted",
+      "stderr": "",
+      "wall_time_seconds": 5.0
+    },
+    {
+      "id": "prepare_data",
+      "status": "pass",
+      "command": "python <repro>\\code\\prepare_data.py --workspace <repro>",
+      "exit_code": 0,
+      "stdout": "[PASS] prepared 1100 tasting records, 147 conventional features, 256 aroma matrices/features",
+      "stderr": "",
+      "wall_time_seconds": 1.2
+    },
+    {
+      "id": "analyze",
+      "status": "pass",
+      "command": "python <repro>\\code\\analyze.py --workspace <repro>",
+      "exit_code": 0,
+      "stdout": <LONG_QUOTE_REDACTED>,
+      "stderr": "",
+      "wall_time_seconds": 34.6
+    },
+    {
+      "id": "xelatex_pass_1",
+      "status": "pass",
+      "command": "xelatex -interaction=nonstopmode -halt-on-error main.tex",
+      "working_directory": "<repro>\\paper",
+      "exit_code": 0,
+      "stdout": "<SOURCE_FILE_REDACTED> (10 pages).\nTranscript written on main.log.",
+      "stdout_capture": "key output lines; package-loading boilerplate omitted",
+      "stderr": null,
+      "stream_separation_status": "needs_review",
+      "combined_output_additional": "MiKTeX reported that updates had not yet been checked; no TeX fatal error. The shell runner returned a combined stream, so stdout/stderr separation is not claimed.",
+      "wall_time_seconds": 2.8
+    },
+    {
+      "id": "xelatex_pass_2",
+      "status": "pass",
+      "command": "xelatex -interaction=nonstopmode -halt-on-error main.tex",
+      "working_directory": "<repro>\\paper",
+      "exit_code": 0,
+      "stdout": "<SOURCE_FILE_REDACTED> (10 pages).\nTranscript written on main.log.",
+      "stdout_capture": "key output lines; package-loading boilerplate omitted",
+      "stderr": null,
+      "stream_separation_status": "needs_review",
+      "combined_output_additional": "MiKTeX reported that updates had not yet been checked; no TeX fatal error. The shell runner returned a combined stream, so stdout/stderr separation is not claimed.",
+      "wall_time_seconds": 3.2
+    },
+    {
+      "id": "verify_first",
+      "status": "fail",
+      "command": "python <repro>\\code\\verify.py --workspace <repro>",
+      "exit_code": 1,
+      "stdout": <LONG_QUOTE_REDACTED>,
+      "stderr": "",
+      "wall_time_seconds": 2.5,
+      "reason": "The initial minimal source copy omitted narrative source files required by verify.py; generated computations were present."
+    },
+    {
+      "id": "copy_required_narrative_sources",
+      "status": "pass",
+      "command": "Copy seven required root narrative files and paper/paper.md from frozen-solution into the reproduction copy.",
+      "exit_code": 0,
+      "stdout": "problem-analysis.md, data-audit.md, assumptions.yaml, variables.yaml, model-selection.md, solution-report.yaml, reproducibility.yaml, and paper/paper.md copied.",
+      "stderr": ""
+    },
+    {
+      "id": "verify_second",
+      "status": "pass",
+      "command": "python <repro>\\code\\verify.py --workspace <repro>",
+      "exit_code": 0,
+      "stdout": "[pass] 12/12 verification checks without fail",
+      "stderr": "",
+      "wall_time_seconds": 2.2
+    }
+  ],
+  "input_reextraction": {
+    "status": "needs_review",
+    "workbooks": [
+      {
+        "file": "<SOURCE_FILE_REDACTED>",
+        "frozen_actual_sha256": "6ac7331378ab4b4275b65459d6e094663fee5ca41d1518d010bf5051bb4e0c63",
+        "documented_current_sha256": "cf1c174dd4fb781e3f1326fd22cffc7b61758ebcadeb5725c0f60a17dfa0f211"
+      },
+      {
+        "file": "<SOURCE_FILE_REDACTED>",
+        "frozen_actual_sha256": "0b6b845715fbe852ddde8b709e592455eba2c845ef0d3f2be144758f674d2fab",
+        "documented_current_sha256": "c039e07b470b318f8e0dd861d639a563c83a79d74b131f658a43d22ea7e0089a"
+      },
+      {
+        "file": "<SOURCE_FILE_REDACTED>",
+        "frozen_actual_sha256": "fdb95e99c881afaff62375182e4dd5d6ca2858297d2ee6450d747ce3b078d547",
+        "documented_current_sha256": "3325652a048512c6789fb4ebdd4499ed415acb77953576184bffb10358d44c6e"
+      }
+    ],
+    "sheet_count": 10,
+    "sheet_row_count_matches": 10,
+    "sheet_column_count_matches": 10,
+    "tsv_content_sha256_matches": 10,
+    "semantic_cell_content_status": "pass",
+    "byte_provenance_status": "fail"
+  },
+  "artifact_comparison": {
+    "frozen_generated_files_in_scope": 62,
+    "reproduced_generated_files_in_scope": 58,
+    "common_paths": 48,
+    "byte_exact_common_paths": 38,
+    "byte_different_common_paths": 10,
+    "structured_numeric_outputs_status": "pass",
+    "byte_different_paths": [
+      "figures/<SOURCE_FILE_REDACTED>",
+      "figures/<SOURCE_FILE_REDACTED>",
+      "figures/<SOURCE_FILE_REDACTED>",
+      "figures/<SOURCE_FILE_REDACTED>",
+      "figures/<SOURCE_FILE_REDACTED>",
+      "figures/<SOURCE_FILE_REDACTED>",
+      "paper/<SOURCE_FILE_REDACTED>",
+      "results/artifact-manifest.json",
+      "results/clean/data_audit.json",
+      "results/extracted/manifest.json"
+    ],
+    "pdf_text_equality_status": "pass",
+    "pdf_text_equal_files": 7,
+    "paper_page_count": 10,
+    "paper_render_comparison_dpi": 96,
+    "paper_rendered_pages_sha256_equal": 10,
+    "paper_render_status": "pass",
+    "pdf_byte_difference_reason": "Creation timestamps and related PDF container metadata differ; extracted text and rendered pixels are equal.",
+    "only_frozen_nonregenerated": [
+      "results/pdf-preview/<SOURCE_FILE_REDACTED>",
+      "results/pdf-preview/<SOURCE_FILE_REDACTED>",
+      "results/pdf-preview/<SOURCE_FILE_REDACTED>",
+      "results/pdf-preview/<SOURCE_FILE_REDACTED>"
+    ],
+    "only_frozen_extracted_files": 10,
+    "only_reproduced_extracted_files": 10,
+    "extracted_filename_difference_reason": "Filenames embed workbook SHA-256 prefixes, and the frozen workbook bytes differ from the hashes recorded by the earlier extraction manifest."
+  },
+  "supplemental_audit_runs": [
+    {
+      "id": "exact_q1_sign_flip",
+      "status": "pass",
+      "method": "Dynamic-programming enumeration of all sign sums on the exact one-decimal lattice.",
+      "red_exact_p": 0.02027098834514618,
+      "white_exact_p": 0.01334402710199356,
+      "decision_changed": false
+    },
+    {
+      "id": "seed_stability",
+      "status": "fail",
+      "seeds": [
+        20240824,
+        1,
+        42,
+        20240825
+      ],
+      "full_analysis_reruns": 3,
+      "result": "Q4 family, nested Q2, fixed-fold permutation p, and tri-state status changed; Q3 white permutation p crossed 0.05."
+    },
+    {
+      "id": "aroma_unit_conversion",
+      "status": "fail",
+      "factors": [
+        0.001,
+        1000.0
+      ],
+      "result": "Equivalent unit conversions materially changed Q3/Q4 metrics and model families because log1p was applied to dimensional values."
+    },
+    {
+      "id": "spearman_permutation_bh",
+      "status": "fail",
+      "permutations_per_valid_test": 100000,
+      "red_reported_significant": 65,
+      "red_permutation_significant": 59,
+      "white_reported_significant": 26,
+      "white_permutation_significant": 19,
+      "same_aroma_significant": 0
+    },
+    {
+      "id": "fold_local_filter_diagnostic",
+      "status": "fail",
+      "result": "The global aroma feature set differed from leave-one-out training-only sets in 18/27 red-grape folds, 14/27 red-wine folds, and 25/28 white-wine folds."
+    },
+    {
+      "id": "q3_feasibility",
+      "status": "fail",
+      "result": "Unconstrained PLS produced 7 negative predictions across nonnegative red outputs and 5 across nonnegative white outputs."
+    }
+  ]
+}

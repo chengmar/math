@@ -1,0 +1,37 @@
+schema_version: 1
+id: "CAND-2021A-004"
+case_id: "2021A"
+status: "candidate"
+category: "validation_pattern"
+title: <REFERENCE_TITLE_REDACTED>
+
+provenance:
+  classification: "independently_conceived_and_strengthened_by_comparison"
+  prior_blind_final_present: true
+  comparison_sources:
+    - "R1 spherical baseline about 5.27%"
+    - "R2 planar baseline about 0.811%"
+
+pattern:
+  numerical_layer:
+    examples: ["KKT残差", "分辨率", "随机种子", "功率闭合"]
+    allowed_statuses: ["pass", "fail", "needs_review"]
+  interpretation_layer:
+    examples: ["平面片或曲面片", "焦点或焦域", "节点或面板目标"]
+    allowed_statuses: ["pass", "fail", "needs_review"]
+  external_layer:
+    examples: ["实测面板法向", "馈源方向图", "结构力学"]
+    allowed_statuses: ["pass", "fail", "needs_review"]
+
+evidence:
+  note: "两个数值稳定的基准模型可分别得到约0.81%和约5.28%，模型差异远大于抽样误差。"
+  interpretation_status: "needs_review"
+
+failure_prevented:
+  - "把蒙特卡洛波动小误写成物理模型正确"
+  - "把可复现误写成形式化最优"
+
+promotion_gate:
+  direct_verified_upgrade_allowed: false
+  required:
+    - "跨题验证该分层能稳定阻止错误升级"

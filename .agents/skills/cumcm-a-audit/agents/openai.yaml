@@ -1,0 +1,6 @@
+interface:
+  display_name: "CUMCM A 独立审计"
+  short_description: "复现并审计冻结解答，不接触参考论文且不改写原解答"
+  default_prompt: "Use $cumcm-a-audit to independently audit the frozen blind solution."
+policy:
+  allow_implicit_invocation: false

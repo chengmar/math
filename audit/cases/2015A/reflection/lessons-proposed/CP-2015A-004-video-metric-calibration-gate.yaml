@@ -1,0 +1,43 @@
+schema_version: 1
+proposal_id: "CP-2015A-004"
+proposal_state: "candidate"
+title: <REFERENCE_TITLE_REDACTED>
+origin: "audit_driven_revision"
+origin_status: "pass"
+summary: "像素影子轨迹只有在平面几何、单应方向、齐次归一化、米制控制点、帧时间和杆几何同时闭合后，才能进入经纬度/日期数值反演。"
+applicable_when:
+  - "影子落在可近似为平面的地面上。"
+  - "视频中存在足够的非退化地面控制点及米制坐标。"
+  - "杆底、杆顶、影尖和帧时间能够识别。"
+not_applicable_when:
+  - "只需做像素空间的定性运动描述。"
+  - "地面明显非平面、相机移动但姿态未知，或滚动快门不可忽略。"
+  - "只有一个像素比例或相似变换，却要求一般透视下的地面长度。"
+minimum_baseline:
+  - "把竖直杆像素高直接除以水平影长像素。"
+  - "使用二维相似变换替代一般平面单应。"
+validation_requirements:
+  - "至少四个非共线/非退化共面控制点，报告重投影误差和条件数。"
+  - "通过已知地面距离检验米制恢复。"
+  - "明确映射方向，并对齐次坐标归一化。"
+  - "做合成单位测试和真实控制长度测试。"
+  - "视频、时间戳、杆高和控制点缺任一项时自动停止数值反演。"
+counterexamples:
+  - "四个控制点近共线导致单应矩阵数值不稳定。"
+  - "相机在拍摄中移动，使固定单应失效。"
+  - "用竖直杆的像素高度作为地面平面尺度，忽略不同方向的透视缩短。"
+source_case:
+  case_id: "2015A"
+  source_artifact: "blind-final q4 revision"
+  reference_ids: ["R1", "R2", "R3", "R4"]
+evidence_strength:
+  dimensional_consistency_status: "pass"
+  synthetic_test_status: "pass"
+  real_video_application_status: "fail"
+  external_truth_status: "needs_review"
+evidence:
+  - "冻结修订修复单应方向、齐次归一化和像素/米单位。"
+  - "R1/R3 的像素比例不足以在一般透视下建立地面度量。"
+promotion_requirements:
+  - "在公开原视频与已知控制几何上由独立实现复现。"
+  - "覆盖相机移动、控制点退化和地面非平面反例。"

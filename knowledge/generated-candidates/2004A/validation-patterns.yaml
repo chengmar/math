@@ -1,0 +1,76 @@
+schema_version: 1
+case_id: 2004A
+phase: reflection
+knowledge_status: candidate
+patterns:
+  - id: CAND-2004A-V01
+    name: 先身份后内容
+    procedure:
+      - 核对阶段锁和路径清单哈希
+      - 核对外部冻结边界
+      - 逐文件验证冻结清单的尺寸与SHA-256
+      - 通过后才读取参考材料
+    case_result: 251_of_251
+    case_status: pass
+
+  - id: CAND-2004A-V02
+    name: 原始边际独立重算
+    procedure:
+      - 不调用主解统计函数
+      - 从三波CSV直接计数
+      - 对公开表的百分比和消费均值做同口径重算
+    case_result: 主要边际与550及750元口径均重现
+    case_status: pass
+
+  - id: CAND-2004A-V03
+    name: 表格守恒与冗余总计
+    procedure:
+      - 百分比合计
+      - 行列交叉求和
+      - 摘要总数与明细表求和
+      - 允许且量化展示舍入误差
+    case_findings:
+      - R1摘要表格冲突
+      - R3全局人流98.77%
+    case_status: fail
+
+  - id: CAND-2004A-V04
+    name: 最终解逐约束回代
+    procedure:
+      - 明确变量值域
+      - 回代每条局部和全局约束
+      - 输出最小松弛和失败位置
+      - 区分字面模型与推测的作者本意
+    case_findings:
+      - R3字面模型与表9不一致
+      - R4公布方案在非负解释下可行
+    case_status: pass
+
+  - id: CAND-2004A-V05
+    name: 小规模精确反例搜索
+    procedure:
+      - 根据印刷参数构造有限可行域
+      - 穷举或使用可验证MILP
+      - 对公布目标找严格更优可行解
+    case_result: R4找到1034.87高于964.87
+    case_status: pass
+
+  - id: CAND-2004A-V06
+    name: 图边事实审计
+    procedure:
+      - 将模型边叠加在原图
+      - 为每条接入边记录来源
+      - 把边长误差和边存在性误差分开
+      - 用不同建图者独立重建
+    case_result: 冻结盲解最近接入产生未画出的步行边
+    case_status: fail
+
+  - id: CAND-2004A-V07
+    name: 四层敏感性
+    layers:
+      - 调查抽样
+      - 距离或坐标
+      - 拓扑边存在性
+      - 商业参数
+    rule: 一层的扰动不能替代另一层的错误
+    case_status: needs_review

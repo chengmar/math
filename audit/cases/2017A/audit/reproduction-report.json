@@ -1,0 +1,220 @@
+{
+  "schema_version": 1,
+  "case_id": "2017A",
+  "phase": "audit",
+  "status": "fail",
+  "core_numeric_reproduction": "pass",
+  "frozen_snapshot_completeness_reproduction": "fail",
+  "mathematical_correctness": "needs_review",
+  "paper_compile": "needs_review",
+  "network_used": false,
+  "other_phase_skill_invoked": false,
+  "phase_gate": {
+    "status": "pass",
+    "command": "python <LAB_ROOT>/.agents/skills/cumcm-a-audit/scripts/check_phase.py --workspace <RUNTIME_ROOT>/2017A/workspaces/audit",
+    "exit_code": 0,
+    "stdout": "[PASS] audit 阶段锁有效",
+    "stderr": ""
+  },
+  "boundary_hashes": {
+    "status": "pass",
+    "allowed_paths_sha256": "e8d67c44dc5a48d6c5e020be949ae567ed94850eaca2ea6200da86c99e5fb91d",
+    "forbidden_paths_sha256": "f075bf741aa5e0dc4527893642bc07eb4bc70edc84733fa9b1801ed5ccaa0b47"
+  },
+  "frozen_manifest": {
+    "status": "pass",
+    "manifest": "frozen-solution/FROZEN_BLIND_V1.json",
+    "manifest_file_count": 164,
+    "verified_hash_count": 164,
+    "missing": [],
+    "size_mismatches": [],
+    "hash_mismatches": [],
+    "unexpected_files": [],
+    "excluded_artifacts_present": [],
+    "declared_tree_sha256": "6937f8f0c56e25a454c86e7cd3971e3c5432c1dd37db317cab48f9273d229053",
+    "computed_tree_sha256": "6937f8f0c56e25a454c86e7cd3971e3c5432c1dd37db317cab48f9273d229053",
+    "tree_hash_algorithm": "SHA256(UTF8(join(manifest-order entries as path + NUL + actual-file-sha256, LF) + final LF))",
+    "post_reproduction_recheck": "pass"
+  },
+  "input_identity": {
+    "problem_docx": {
+      "status": "pass",
+      "outer_sha256": "3dbf898b71dfab3c0d5e50f51acf4a06c307ed33a6d954442cd7cfe4b69eadb6",
+      "frozen_sha256": "3dbf898b71dfab3c0d5e50f51acf4a06c307ed33a6d954442cd7cfe4b69eadb6"
+    },
+    "data_xls_file_identity": {
+      "status": "fail",
+      "outer_sha256": "29b0a262a64bbfb4d6a2386e51675508743add780e22ce6663f739e49c8831a0",
+      "frozen_sha256": "15e91947d0a28fcd789290dcaf79d18ed4050132d68b47aa39dc8df29db2c034",
+      "equal_size_bytes": 4231680,
+      "different_byte_count": 36
+    },
+    "data_xls_numeric_content": {
+      "status": "pass",
+      "sheets": 5,
+      "cells_compared": 342036,
+      "mismatch_count": 0,
+      "maximum_absolute_difference": 0.0,
+      "metadata_sanitization_intent": "needs_review"
+    }
+  },
+  "environment": {
+    "status": "pass",
+    "captured_at": "2026-08-28T01:38:49.5357978+08:00",
+    "operating_system": "Microsoft Windows 11 家庭版 中文版 10.0.26200 build 26200",
+    "architecture": "AMD64",
+    "powershell": "7.6.4",
+    "python": "3.12.13",
+    "dotnet_sdk": "8.0.417",
+    "excel_com": "12.0",
+    "xelatex": null,
+    "xelatex_status": "needs_review"
+  },
+  "clean_workspace": {
+    "status": "pass",
+    "primary": "reproduction-clean-3",
+    "independent_repeat": "reproduction-clean-2",
+    "preexisting_generated_results": 0,
+    "copied_source_hash_check": "pass",
+    "restore_source": "empty local offline-feed only",
+    "frozen_solution_modified": false,
+    "entrypoint_note": <LONG_QUOTE_REDACTED>
+  },
+  "commands": [
+    {
+      "id": "normalize_input",
+      "status": "pass",
+      "command": "& ./code/export_xls.ps1 -Workspace <RUNTIME_ROOT>/2017A/workspaces/audit/reproduction-clean-3",
+      "working_directory": "reproduction-clean-3",
+      "exit_code": 0,
+      "wall_time_seconds": 1.6042,
+      "stdout": "status=pass; Excel 12.0; sheets: 附件1 256x256, 附件2 512x180, 附件3 512x180, 附件4 10x2, 附件5 512x180; destination results/normalized/<SOURCE_FILE_REDACTED>",
+      "stderr": ""
+    },
+    {
+      "id": "offline_restore",
+      "status": "pass",
+      "command": "dotnet restore ./code/CtSolver/CtSolver.csproj --source ./offline-feed --force --no-cache --verbosity minimal",
+      "working_directory": "reproduction-clean-3",
+      "exit_code": 0,
+      "wall_time_seconds": 0.9554,
+      "stdout": "Project restored in 41 ms from the explicitly supplied empty local source; no packages were required.",
+      "stderr": ""
+    },
+    {
+      "id": "release_build",
+      "status": "pass",
+      "command": "dotnet build ./code/CtSolver/CtSolver.csproj --no-restore --configuration Release --verbosity minimal",
+      "working_directory": "reproduction-clean-3",
+      "exit_code": 0,
+      "wall_time_seconds": 1.2653,
+      "stdout": "CtSolver -> code/CtSolver/bin/Release/net8.0/CtSolver.dll; build succeeded; 0 warnings; 0 errors.",
+      "stderr": ""
+    },
+    {
+      "id": "solver",
+      "status": "pass",
+      "command": "dotnet ./code/CtSolver/bin/Release/net8.0/CtSolver.dll --workspace <RUNTIME_ROOT>/2017A/workspaces/audit/reproduction-clean-3",
+      "working_directory": "reproduction-clean-3",
+      "exit_code": 0,
+      "wall_time_seconds": 15.3599,
+      "stdout_stderr_log": "reproduction-clean-3/logs/solver.stdout-stderr.log",
+      "stdout_stderr_log_bytes": 16500,
+      "stdout_stderr_log_sha256": "1980bc26e30348fd8f0c86bff677f6aa5a6d387d0e841248aaecf33efe495252",
+      "stdout_excerpt": "status=pass; calibration fixed-one-degree and estimated-step reported; projection fit NRMSE 0.013715874; problem2/problem3 SIRT20 generated; stability replicates=200 generated.",
+      "stderr_excerpt": ""
+    },
+    {
+      "id": "export_biff8",
+      "status": "pass",
+      "command": "& ./code/export_results_xls.ps1 -Workspace <RUNTIME_ROOT>/2017A/workspaces/audit/reproduction-clean-3",
+      "working_directory": "reproduction-clean-3",
+      "exit_code": 0,
+      "stdout_stderr_log": "reproduction-clean-3/logs/export-results.stdout-stderr.log",
+      "stdout_stderr_log_bytes": 529,
+      "stdout_stderr_log_sha256": "4b8270dc846226c653496e7f19790c6f4d6bcbd985bfbd84f828cf727ac6a0a1",
+      "stdout_excerpt": "status=pass; Excel 12.0; problem2 and problem3 each 256x256.",
+      "stderr_excerpt": ""
+    },
+    {
+      "id": "verify_outputs",
+      "status": "pass",
+      "command": "& ./code/verify_outputs.ps1 -Workspace <RUNTIME_ROOT>/2017A/workspaces/audit/reproduction-clean-3",
+      "working_directory": "reproduction-clean-3",
+      "exit_code": 0,
+      "wall_time_seconds": 2.2874,
+      "stdout_stderr_log": "reproduction-clean-3/logs/verify.stdout-stderr.log",
+      "stdout_stderr_log_bytes": 1569,
+      "stdout_stderr_log_sha256": "cbb1456b4bad76eef6ede88001ec8c0dedf1a7710879cf5ae5abbfd1dc9e9ba1",
+      "stdout_excerpt": <LONG_QUOTE_REDACTED>,
+      "stderr_excerpt": ""
+    },
+    {
+      "id": "audit_counterexample_probe",
+      "status": "pass",
+      "command": "dotnet ./audit-probes/bin/Release/net8.0/AuditProbes.dll <RUNTIME_ROOT>/2017A/workspaces/audit",
+      "working_directory": "audit-probes",
+      "exit_code": 0,
+      "wall_time_seconds": 14.0449,
+      "stdout_file": "audit-probes/probe-results-v2.json",
+      "stdout_file_bytes": 15945,
+      "stdout_file_sha256": "dc88063f8c8c6fa7a044a1edb517886c97c5872a52016fb3d26dbf701ede927b",
+      "stderr": ""
+    }
+  ],
+  "comparisons": {
+    "independent_clean_run_repeatability": {
+      "status": "pass",
+      "compared_generated_files": 32,
+      "byte_identical": 32,
+      "differences": []
+    },
+    "frozen_generated_artifacts": {
+      "status": "fail",
+      "compared": 41,
+      "byte_identical": 32,
+      "byte_different_but_cell_identical": [
+        "results/normalized/<SOURCE_FILE_REDACTED>",
+        "<SOURCE_FILE_REDACTED>",
+        "<SOURCE_FILE_REDACTED>"
+      ],
+      "missing_from_clean_generation": [
+        "results/exploratory/<SOURCE_FILE_REDACTED>",
+        "results/exploratory/<SOURCE_FILE_REDACTED>",
+        "results/exploratory/<SOURCE_FILE_REDACTED>",
+        "figures/exploratory/<SOURCE_FILE_REDACTED>",
+        "figures/exploratory/<SOURCE_FILE_REDACTED>",
+        "figures/exploratory/<SOURCE_FILE_REDACTED>"
+      ]
+    },
+    "excel_semantic_identity": {
+      "status": "pass",
+      "normalized_workbook_cells": 342036,
+      "problem2_cells": 65536,
+      "problem3_cells": 65536,
+      "total_cells_compared": 473108,
+      "mismatch_count": 0,
+      "maximum_absolute_difference": 0.0
+    },
+    "csv_xls_submission_consistency": {
+      "status": "pass",
+      "cells_compared": 131072,
+      "mismatch_count": 0,
+      "maximum_absolute_difference": 0.0
+    }
+  },
+  "limitations": [
+    {
+      "status": "needs_review",
+      "item": "XeLaTeX was not available, so the PDF and visual layout were not reproduced."
+    },
+    {
+      "status": "needs_review",
+      "item": "The declared git commit could not be independently checked from the allowed minimal workspace because no allowed VCS metadata was present."
+    },
+    {
+      "status": "needs_review",
+      "item": "No external instrument truth or reference solution was used; external physical correctness remains unresolved."
+    }
+  ]
+}

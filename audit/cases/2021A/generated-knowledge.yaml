@@ -1,0 +1,20 @@
+case_id: 2021A
+status: candidate_only
+candidate_count: 6
+machine_verified_count: 0
+verified_count: 0
+exported_files:
+- file: CAND-2021A-001-finite-receiver-focal-region.yaml
+  sha256: 931fd2e2c3542c08742cd55074dae0341a526b16cfd3cccfb772388a4deb6073
+- file: CAND-2021A-002-panel-interior-quadrature.yaml
+  sha256: 8f84250636b90e852cdc77f94631712cab8dcab779c7646c7d600e6f2d3c6fc8
+- file: CAND-2021A-003-hard-constraint-is-not-a-soft-suggestion.yaml
+  sha256: c9179c703ad6716ab2ac70ba681459165ee039c07b40a482685cd3b2495b5261
+- file: CAND-2021A-004-separate-numerical-and-model-validation.yaml
+  sha256: f8640dc7a5cc86a04ccc82c517a4e77f5050538904fe81486701571421001b8e
+- file: CAND-2021A-005-algorithm-box-plus-evidence-index.yaml
+  sha256: cadebfb190f35b5c79a16e91eae04f1bfe51b3fc1a715b5f3d88189bfca09438
+- file: CAND-2021A-006-fast-specific-nontransferable.yaml
+  sha256: ccae7ec5b11911a6f4c54b03043895586dc0797d5fce9f8f0a457bfb774a3a0d
+- file: README.md
+  sha256: e2047c37c17dde2cb959d660b1b72264fc0b1548d5d6e4ca2ed00447dcad6411

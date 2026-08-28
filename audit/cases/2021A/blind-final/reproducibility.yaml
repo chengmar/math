@@ -1,0 +1,59 @@
+case_id: 2021A
+phase: blind-revision
+command: python code/solve.py
+verification_command: python code/verify.py
+working_directory: <RUNTIME_ROOT>\2021A\workspaces\blind-revision
+random_seed: 20210828
+determinism:
+  focal_search: 13-point fixed grid followed by deterministic bounded scalar refinement
+  optimizer_initialization: zero or nearest cached feasible projection
+  ray_sequence: scrambled Sobol with fixed integer seeds
+  output_sorting: attachment node order, stable CSV order, sorted JSON keys
+  status: pass
+environment:
+  python: 3.12.13
+  numpy: 2.5.2
+  pandas: 3.0.5
+  scipy: 1.18.1
+  matplotlib: 3.11.1
+  openpyxl: 3.1.5
+  platform: Windows 11
+dependencies_file: code/requirements.txt
+inputs:
+  identity_status: pass
+  actual_hash_record: results/input_audit.json
+outputs_checked:
+  - results/summary.json
+  - results/validation_metrics.json
+  - results/<SOURCE_FILE_REDACTED>
+  - results/<SOURCE_FILE_REDACTED>
+  - results/<SOURCE_FILE_REDACTED>
+  - results/<SOURCE_FILE_REDACTED>
+  - results/<SOURCE_FILE_REDACTED>
+  - results/<SOURCE_FILE_REDACTED>
+  - results/<SOURCE_FILE_REDACTED>
+  - results/<SOURCE_FILE_REDACTED>
+  - results/focal_spot_metrics.json
+  - paper/generated_numbers.tex
+  - figures/
+<SOURCE_FILE_REDACTED>
+rerun:
+  requested_executions: 2
+  elapsed_seconds: [256.99248230000376, 254.66942169998947]
+  process_status: pass
+  deterministic_file_count: 21
+  deterministic_hash_status: pass
+  workbook_cell_status: pass
+  document_integrity_status: pass
+  paper_result_consistency_status: pass
+  evidence: results/reproduction_check.json
+latex:
+  compiler_detection_status: fail
+  compilation_status: needs_review
+  note: 当前环境未检测到 xelatex 或 latexmk；不声称已编译或逐页检查。
+claims_boundary:
+  execution_reproducibility_status: pass
+  formal_mathematical_correctness_status: needs_review
+  panel_geometry_interpretation_status: needs_review
+  physical_external_validity_status: needs_review
+  note: 重跑一致、KKT 残差和数值收敛均不等于形式化全局证明或外部物理验证。

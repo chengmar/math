@@ -1,0 +1,194 @@
+case_id: "2017A"
+phase: audit
+status: fail
+finding_count: 10
+severity_counts:
+  critical: 0
+  major: 5
+  minor: 3
+  suggestion: 2
+findings:
+  - id: AUD-001
+    severity: major
+    category: paper_code_consistency
+    evidence: >-
+      CtProjector.cs:10-12 and the reconstruction use unwrapped angles start+(j-1) degrees, while Program.cs:745-753, paper/paper.md:122-134, paper/main.tex:113-119 and results/<SOURCE_FILE_REDACTED>:153 normalize each angle modulo 180 without reversing detector rows. audit-probes/probe-results-v2.json:5-15 shows that the published rule raises full template NRMSE from 0.0137159 to 0.4667354; on column 152 the observed mean is 218.0795, the internal 180.6741-degree prediction is 218.0899, and the published 0.6741-degree prediction is 292.9101=511-218.0899.
+    affected_files:
+      - frozen-solution/code/CtSolver/CtProjector.cs
+      - frozen-solution/code/CtSolver/Program.cs
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/results/calibration.json
+      - frozen-solution/results/numerical-summary.json
+      - frozen-solution/variables.yaml
+      - frozen-solution/paper/paper.md
+      - frozen-solution/paper/main.tex
+    reason: >-
+      The equation s=d(k-255.5) is not invariant under theta -> theta-pi with k fixed; it additionally requires k -> 511-k. Consequently the last 29 published detector-normal directions cannot reproduce the code or measured detector ordering. Undirected X-ray line angles may remain modulo 180, but they must be distinguished from the signed detector-coordinate normal.
+    recommended_fix: >-
+      Publish signed detector-coordinate normals as 29.6741+(j-1) degrees without per-column modulo, publish undirected ray-line angles separately modulo 180, and explicitly state the unresolved source-to-detector sign. If normals are normalized, add the required detector-row reversal flag and test all 180 columns against the forward model.
+    requires_human_review: false
+
+  - id: AUD-002
+    severity: major
+    category: leakage_overfitting
+    evidence: >-
+      Program.cs:168-178 fits fixedStep and estimatedStep from all 180 projection columns and Program.cs:195-200 builds baselineGeometry from that full-data fit. Only afterward do Program.cs:230-259 define training/validation angles and optimize from baselineGeometry. paper/paper.md:206-208 and model-selection.md:15-24 describe the result as held-out validation. The decisive validation NRMSEs are 0.0200308 versus 0.0204471, a difference of about 0.0004163.
+    affected_files:
+      - frozen-solution/code/CtSolver/Program.cs
+      - frozen-solution/model-selection.md
+      - frozen-solution/results/model-comparison.json
+      - frozen-solution/paper/paper.md
+      - frozen-solution/paper/main.tex
+      - frozen-solution/FROZEN_BLIND_V1.json
+    reason: >-
+      Validation columns influence the initialization of both candidates, so the reported held-out errors do not satisfy fit/evaluate separation. The every-third-column split also uses strongly adjacent angular views and mainly tests interpolation, making the small model-selection margin fragile.
+    recommended_fix: >-
+      Refit moments, center, spacing, start angle, step and gain using training columns only with their original angle indices. Use blocked or repeated angular folds and a final untouched validation block; report fold variability and rerun the fixed/free-step decision without validation-informed initialization.
+    requires_human_review: false
+
+  - id: AUD-003
+    severity: major
+    category: stochastic_model
+    evidence: >-
+      assumptions.yaml:71-76 and paper/paper.md:216-227 claim independent identically distributed Gaussian noise. StabilityAnalysis.cs:147-150 instead sets zero-signal bins deterministically to zero, adds noise only when ideal>0, and clips negatives. audit-probes/probe-results-v2.json:512-523 reports 40727 positive projection bins for the old template and 38765 for the proposed template.
+    affected_files:
+      - frozen-solution/code/CtSolver/StabilityAnalysis.cs
+      - frozen-solution/assumptions.yaml
+      - frozen-solution/results/stability.json
+      - frozen-solution/solution-report.yaml
+      - frozen-solution/paper/paper.md
+      - frozen-solution/paper/main.tex
+    reason: >-
+      The implemented noise is support-gated, censored, heteroscedastic in effect and positively biased near zero, not iid zero-mean Gaussian. Different template supports consume different numbers and positions of random draws, so equal seed and equal total absorption do not create a fair common-noise comparison.
+    recommended_fix: >-
+      Either add the stated Gaussian noise to every detector/angle bin before any physically justified censoring, or explicitly fit and state a signal-dependent/censored noise model. Pre-generate one full noise tensor per replicate and reuse it for both templates, then report sensitivity to alternative noise models.
+    requires_human_review: false
+
+  - id: AUD-004
+    severity: major
+    category: estimator_consistency
+    evidence: >-
+      The reported final calibration is produced by CtProjector.Optimize in Program.cs:202-207, including projection-domain refinement and gain. The Monte Carlo in StabilityAnalysis.cs:128-157 recalibrates each replicate only with Calibration.FitUniform and never repeats Optimize or gain fitting. The paper reports 200-replicate standard deviations and four-decimal percentage reductions without Monte Carlo uncertainty.
+    affected_files:
+      - frozen-solution/code/CtSolver/Program.cs
+      - frozen-solution/code/CtSolver/StabilityAnalysis.cs
+      - frozen-solution/results/stability.json
+      - frozen-solution/solution-report.yaml
+      - frozen-solution/paper/paper.md
+      - frozen-solution/paper/main.tex
+    reason: >-
+      The experiment estimates stability of the moment initializer, not stability of the final estimator whose parameters are reported in questions (1) and (4). With only 200 replicates, sample standard deviations and their ratios also have non-negligible Monte Carlo error that is hidden by four-decimal reductions.
+    recommended_fix: >-
+      Simulate the complete final calibration pipeline for every replicate, including gain, refinement and model selection. Save replicate-level parameters, report bias/covariance/quantiles and uncertainty of the SD reductions, repeat across seeds, and distinguish initializer stability from final-estimator stability.
+    requires_human_review: false
+
+  - id: AUD-005
+    severity: major
+    category: convergence_regularization
+    evidence: >-
+      Program.cs:317-341 evaluates only 5, 10 and 20 SIRT iterations and hard-selects 20; paper/paper.md:147-160 and 210-214 describe this as early stopping. audit-probes/probe-results-v2.json:281-322 shows template pixel RMSE/projection NRMSE improve from 0.0297679/0.0128020 at 20 iterations to 0.0290473/0.0122100 at 80. Lines 325-433 show maximum ten-point changes of 0.00964 for problem2 and 0.06450 for problem3 between 20 and 80 iterations.
+    affected_files:
+      - frozen-solution/code/CtSolver/Program.cs
+      - frozen-solution/model-selection.md
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/<SOURCE_FILE_REDACTED>
+      - frozen-solution/<SOURCE_FILE_REDACTED>
+      - frozen-solution/paper/paper.md
+      - frozen-solution/paper/main.tex
+    reason: >-
+      Twenty iterations are not a demonstrated convergence point, discrepancy-principle stop, or independently validated regularization level. Continuing iterations still improves both template truth error and data fit, while unknown-object values move, so the four-decimal absorption results depend on an unvalidated hyperparameter.
+    recommended_fix: >-
+      Produce iteration curves over a wider range, define a stopping rule from independent validation, residual noise or a discrepancy principle, and report iteration sensitivity for geometry and all ten points. Do not select depth solely on the same template used for calibration.
+    requires_human_review: true
+
+  - id: AUD-006
+    severity: minor
+    category: threshold_sensitivity
+    evidence: >-
+      Program.cs:508-519 fixes problem3 threshold 0.50 and minimum hole size 8 pixels. audit-probes/probe-results-v2.json:164-231 gives material fractions 0.73361, 0.71952, 0.70726 and hole counts 92, 91, 92 at thresholds 0.40, 0.50 and 0.60; at threshold 0.75 the fraction is 0.68857 and holes fall to 85. paper/paper.md:177-183 reports 28.0481 percent closed porosity and 91 holes to four decimals/count precision.
+    affected_files:
+      - frozen-solution/code/CtSolver/Program.cs
+      - frozen-solution/code/CtSolver/ImageAnalysis.cs
+      - frozen-solution/results/problem3-geometry.json
+      - frozen-solution/assumptions.yaml
+      - frozen-solution/solution-report.yaml
+      - frozen-solution/paper/paper.md
+      - frozen-solution/paper/main.tex
+    reason: >-
+      The chosen value is disclosed, but no physical or data-driven threshold rule and no uncertainty interval are supplied. The reported porosity and hole count are operational image statistics rather than threshold-independent material constants.
+    recommended_fix: >-
+      Add a threshold/connectedness sensitivity table, justify the threshold from a histogram or calibrated segmentation rule, report ranges or persistent components, and label the porosity explicitly as reconstruction-threshold porosity.
+    requires_human_review: true
+
+  - id: AUD-007
+    severity: minor
+    category: reproducibility_completeness
+    evidence: >-
+      FROZEN_BLIND_V1.json:17-19 records random_seed:null, run_command:null and knowledge_cards:[], while reproducibility.yaml records seed 2017 and a full command. run_all.ps1:10 invokes the solve-stage checker, which cannot be called in this audit. A clean manual execution reproduced 32 core generated files byte-for-byte but did not create the six manifest entries at FROZEN_BLIND_V1.json:263,288,298,723,748,758. Program.cs:400-471 generates only unknown-object SIRT20 exploratory files and Program.cs:686-695 writes the proposed template only to the main directories.
+    affected_files:
+      - frozen-solution/FROZEN_BLIND_V1.json
+      - frozen-solution/reproducibility.yaml
+      - frozen-solution/run_all.ps1
+      - frozen-solution/code/CtSolver/Program.cs
+      - frozen-solution/results/exploratory/<SOURCE_FILE_REDACTED>
+      - frozen-solution/results/exploratory/<SOURCE_FILE_REDACTED>
+      - frozen-solution/figures/exploratory/<SOURCE_FILE_REDACTED>
+      - frozen-solution/figures/exploratory/<SOURCE_FILE_REDACTED>
+      - frozen-solution/results/exploratory/<SOURCE_FILE_REDACTED>
+      - frozen-solution/figures/exploratory/<SOURCE_FILE_REDACTED>
+    reason: >-
+      The main numerical answer is reproducible, but the frozen authoritative results/figures tree is not fully derivable from an empty output directory using the current documented entrypoint. Metadata also omits seed/command information that exists elsewhere.
+    recommended_fix: >-
+      Provide a phase-neutral, output-root-aware reproduction driver; clear or create all generated outputs in a fresh target; either regenerate or remove stale exploratory files; and populate manifest command, seed and knowledge provenance consistently.
+    requires_human_review: false
+
+  - id: AUD-008
+    severity: minor
+    category: input_provenance
+    evidence: >-
+      The audit workspace XLS has SHA-256 29b0a262a64bbfb4d6a2386e51675508743add780e22ce6663f739e49c8831a0, while the frozen embedded XLS and manifest use 15e91947d0a28fcd789290dcaf79d18ed4050132d68b47aa39dc8df29db2c034. The files have equal size/timestamp and differ in only 36 binary bytes. A read-only Excel comparison found identical names, dimensions and all 342036 cell values with maximum absolute difference 0.
+    affected_files:
+      - input/data/<SOURCE_FILE_REDACTED>
+      - frozen-solution/input/data/<SOURCE_FILE_REDACTED>
+      - frozen-solution/data-audit.md
+      - frozen-solution/reproducibility.yaml
+    reason: >-
+      Numerical input identity passes, but strict file identity fails. The small difference appears metadata-local and may be intentional sanitization, yet that transformation is not recorded in the frozen provenance.
+    recommended_fix: >-
+      Confirm whether metadata sanitization was intended, record both source and sanitized hashes plus the transformation, and add a canonical cell-content hash so privacy metadata changes are distinguished from numeric drift.
+    requires_human_review: true
+
+  - id: AUD-009
+    severity: suggestion
+    category: boundary_assumption
+    evidence: >-
+      assumptions.yaml:50-56 marks the first/last 32 detector cells as background-only and status pass. audit-probes/probe-results-v2.json:267-275 finds reconstructed problem3 signal in that edge region for 56/180 angles, with at most 27/64 active edge cells and at most 1.404 percent of column mass. No angle contaminates at least half of the 64 cells; edge widths 16/32/64 change tested point values only slightly.
+    affected_files:
+      - frozen-solution/code/CtSolver/Reconstruction.cs
+      - frozen-solution/assumptions.yaml
+      - frozen-solution/data-audit.md
+      - frozen-solution/paper/paper.md
+      - frozen-solution/paper/main.tex
+    reason: >-
+      The literal background-only assumption is false, although the combined-edge median remains robust in the tested reconstruction and is not a major numerical failure.
+    recommended_fix: >-
+      Change the assumption status to needs_review, mask model-predicted active rays or fit a robust per-column offset, and retain the edge-width/no-subtraction sensitivity evidence.
+    requires_human_review: true
+
+  - id: AUD-010
+    severity: suggestion
+    category: document_verification
+    evidence: >-
+      The clean verifier returns paper_compile:needs_review because XeLaTeX is unavailable. reproducibility.yaml likewise marks compilation/visual inspection needs_review. Source inspection found no decisive syntax error, but pagination, missing glyphs, figure placement and contest-format compliance were not reproduced.
+    affected_files:
+      - frozen-solution/paper/main.tex
+      - frozen-solution/paper/generated-values.tex
+      - frozen-solution/reproducibility.yaml
+      - frozen-solution/results/verification.json
+    reason: >-
+      TeX source existence and numeric traceability do not establish a valid final PDF or compliant layout.
+    recommended_fix: >-
+      Compile with the declared pinned TeX environment, retain the command/log/PDF hash, and perform a page-by-page human inspection of glyphs, equations, tables, figures and format requirements.
+    requires_human_review: true

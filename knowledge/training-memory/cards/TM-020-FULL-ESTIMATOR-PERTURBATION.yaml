@@ -1,0 +1,19 @@
+id: TM-020-FULL-ESTIMATOR-PERTURBATION
+title: 稳定性试验必须重跑完整数据依赖估计器
+type: validation_pattern
+status: provisional_training
+source_cases: [2017A]
+source_kind: generalized_reflection_candidate
+origin_year: 2017
+tags: [uncertainty, perturbation, full_pipeline, paired_design, reproducibility]
+applicable_conditions: [流程包含预处理、标定、调参、估计与决策等多个数据依赖步骤, 需要声明噪声或扰动下的稳定性]
+inapplicable_conditions: [所有上游量均由外部固定且只需评估单一闭式变换的传播误差]
+minimum_baseline: 固定随机种子和扰动分布，对每个重复样本从原始输入重新执行全部数据依赖步骤，并报告端到端输出分布
+recommended_action: 比较方案时使用成对共同扰动；明确噪声支撑、是否截断和重复数；同时报告参数、中间量与最终决策的区间及失败率
+why_it_may_help: 只扰动最终模型或锁死上游估计会漏掉主要方差来源，并可能把不完整试验误称为完整算法稳定性
+required_validation: [完整估计器重跑断言, 固定种子复现, 扰动分布审计, 成对差异区间, 失败与越界计数]
+failure_modes: [只重跑末级求解器, 高斯噪声被静默裁剪, 不同方案使用不同随机扰动, 忽略无解或越界重复]
+counterexamples: [锁定标定量时区间很窄但重估标定后明显变宽, 单级输出稳定而最终离散决策频繁翻转]
+complexity_cost: 中到高；计算量近似为完整流程成本乘以重复数，但可用成对设计提高比较效率
+evidence_summary: 某多阶段估计案例的独立审计表明，部分扰动不能代表完整估计器；完整重跑与成对共同扰动形成更可审计的稳定性证据，待后续案例检验
+last_updated: '2026-08-28'

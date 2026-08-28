@@ -1,0 +1,2 @@
+PyYAML<7,>=6
+jsonschema<5,>=4

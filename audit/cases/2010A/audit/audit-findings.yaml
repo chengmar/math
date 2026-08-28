@@ -1,0 +1,181 @@
+schema_version: 1
+case_id: "2010A"
+phase: audit
+status: needs_review
+summary:
+  critical: 0
+  major: 5
+  minor: 3
+  suggestion: 1
+findings:
+  - id: AUD-001
+    status: fail
+    severity: major
+    category: validation_leakage
+    evidence: |-
+      `paper/paper.md:147-155` 明确用第二段“留出”RMSE和补油误差选择 M2；
+      `paper/paper.md:178-190`、`:202-210` 又把同一第二段和补油称为独立验证。
+      `model-selection.md` 同样以留出误差和补油误差作为选模理由。因此两者是模型选择集，
+      不是对最终建模流程未触碰的独立测试集。
+    affected_files:
+      - frozen-solution/paper/paper.md
+      - frozen-solution/paper/paper.template.md
+      - frozen-solution/model-selection.md
+      - frozen-solution/solution-report.yaml
+    reason: 复用验证数据选模会使 0.988 L 和 -1.94 L 的“独立”措辞产生乐观偏差，不能据此宣称三层独立检验。
+    recommended_fix: 在第一段内按物理先验或内部交叉验证选模；把第二段留作模型选择、补油留作最终测试，或反之。若不重分数据，应改称“选择验证”并删除“独立”结论。
+    requires_human_review: false
+
+  - id: AUD-002
+    status: needs_review
+    severity: major
+    category: model_misspecification
+    evidence: |-
+      `code/solve.py:73-108` 只用无变位进/出油估计有效横半轴，随后固定该尺度生成倾斜罐容表；
+      `results/summary.json` 给出的倾斜进/出油绝对量 RMSE 分别为 27.72 L、26.89 L，最大误差
+      63.67 L、60.92 L。审计重算发现残差与油高相关系数为 -0.900、-0.921。
+      一个同样满足椭圆截体公式、增加姿态后探针零点偏移的反例模型（b=0.887793 m，
+      delta=-17.4567 mm）把合并绝对量 RMSE 从 27.314 L 降到 8.497 L，并使 1 cm 表最大改变
+      94.285 L。冻结目录中遗留的 `<SOURCE_FILE_REDACTED>` 与论文主表在 120 cm 处也相差 94.247 L。
+    affected_files:
+      - frozen-solution/code/solve.py
+      - frozen-solution/results/summary.json
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/paper/paper.md
+    reason: 当前模型虽然披露了结构残差，却仍把姿态间尺度可迁移性当作硬约束；允许材料不足以排除探针零点或姿态相关误差，故倾斜罐容表的确定性精度没有被数据支持。
+    recommended_fix: 明确建模探针零点/安装关系；用一组倾斜数据估计、另一组倾斜数据留出验证，并给出主模型与可接受替代模型的罐容表包络。未经物理复核不要在两个冲突表之间选定“正确”版本。
+    requires_human_review: true
+
+  - id: AUD-003
+    status: fail
+    severity: major
+    category: artifact_provenance
+    evidence: |-
+      `results/run_manifest.json` 声明 seed=2010，而当前 `solve.py`、`summary.json` 和复现说明使用
+      20260824；该内部清单列出的 36 个代码/结果/图/论文哈希中有 10 个与冻结树不符。
+      它引用旧文件名 `<SOURCE_FILE_REDACTED>`、`<SOURCE_FILE_REDACTED>`，当前论文使用
+      `*_calibration_*`；两版小罐表最大相差 94.247 L，实际罐表最大相差 3.865 L。
+      `code/verify.py` 面向旧模式，干净运行首先因缺少未生成的 `results/run_manifest.json` 退出 1；
+      当前 `run_all.ps1` 只生成 5 张 PNG，而冻结树含 11 张 PNG。`solution-report.yaml` 还写着 `frozen: false`。
+    affected_files:
+      - frozen-solution/results/run_manifest.json
+      - frozen-solution/code/verify.py
+      - frozen-solution/code/run_all.ps1
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/solution-report.yaml
+      - frozen-solution/figures
+    reason: 冻结包混入至少两代求解产物，读者和自动验证器无法仅凭文件名判断权威版本，构成论文—代码—结果一致性失败。
+    recommended_fix: 从空输出目录只运行一次权威管线；删除旧命名结果、旧图和旧验证器；由该次运行最后生成单一 manifest，并在冻结前验证所有内部哈希与 FROZEN 清单一致。
+    requires_human_review: false
+
+  - id: AUD-004
+    status: fail
+    severity: major
+    category: reproducibility
+    evidence: |-
+      按 `reproducibility.yaml` 和论文附录逐字执行 `powershell -File code/run_all.ps1`，Windows
+      PowerShell 5.1 在 `code/extract_inputs.ps1:84` 因不识别 `-Encoding utf8NoBOM` 退出 1。
+      将解释器明确改为 PowerShell 7.6.4 的 `pwsh -File` 后退出 0，五个流水线 PASS 信息齐全。
+      标准新建 venv 即使带 `--system-site-packages` 也找不到 SciPy；本次只能显式复用已核版本的
+      外部 site-packages，故环境隔离不是密闭的。
+    affected_files:
+      - frozen-solution/reproducibility.yaml
+      - frozen-solution/code/extract_inputs.ps1
+      - frozen-solution/code/run_all.ps1
+      - frozen-solution/results/run_metadata.json
+      - frozen-solution/FROZEN_BLIND_V1.json
+    reason: 声称的一键命令在当前 Windows 默认 `powershell` 上不可执行，且 FROZEN 顶层依赖数组为空、run_command 为 null，无法从清单本身构建独立环境。
+    recommended_fix: 把命令改成 `pwsh -NoProfile -File ...` 并声明 PowerShell >=7；或改用兼容 5.1 的无 BOM 写法。提供锁定依赖文件/离线 wheel、解释器路径与可验证的环境构建命令。
+    requires_human_review: false
+
+  - id: AUD-005
+    status: needs_review
+    severity: major
+    category: identifiability_and_sensitivity
+    evidence: |-
+      当前实际罐拟合只估计 alpha、beta，并把流量比例和几何尺寸当作无误差常数。
+      审计在其余条件不变时把流量比例改为 -0.1%/+0.1%，重估得到 beta=5.0396/3.2853 deg，
+      罐容表最大变化 29.258/29.220 L，而 RMSE 仍仅 0.948/0.949 L。
+      联合估计流量比例时 beta 与比例相关系数为 -0.940，beta 的线性标准误由 0.196 deg 增至
+      0.566 deg。圆柱长 +/-10 mm 使表变化约 54.4/54.2 L；半径 +/-5 mm 使表变化约
+      355/340 L。论文只量化了积分加密、损失函数、分段拟合和固定参数下的油高平移。
+    affected_files:
+      - frozen-solution/code/solve.py
+      - frozen-solution/assumptions.yaml
+      - frozen-solution/results/parameters.json
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/paper/paper.md
+    reason: 横偏角主要通过 cos(beta) 产生小尺度效应，容易与流量计比例、几何公差和零点混淆；当前角度置信区间和表值不覆盖这些主要工程不确定性。
+    recommended_fix: 获取流量计精度、几何实测和探针安装公差；用带先验/约束的联合估计或 profile sensitivity 传播到 alpha、beta 与整张罐容表，并报告区间而非单值小数。
+    requires_human_review: true
+
+  - id: AUD-006
+    status: needs_review
+    severity: minor
+    category: statistical_inference
+    evidence: |-
+      `code/solve.py:301-305` 用 sigma^2*(J'J)^(-1) 计算参数协方差，隐含残差独立同方差。
+      审计对两段增量残差重算，一阶相关分别为 -0.433、-0.447，Durbin-Watson 为 2.860、2.886；
+      这符合相邻油高状态误差经差分后形成 MA(1) 的特征。累计量带每段自由截距的目标给出
+      alpha=2.11966 deg、beta=4.23829 deg，整表相对当前结果最大改变 3.740 L。
+    affected_files:
+      - frozen-solution/code/solve.py
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/results/parameters.json
+    reason: 点估计较稳定，但现有 95% 区间没有与数据生成/误差结构匹配的覆盖率解释。
+    recommended_fix: 明确区分油高状态误差与逐次流量误差；使用 GLS、状态空间模型、分段/块 bootstrap 或按段聚类的 sandwich 协方差，并报告与当前点估计的差异。
+    requires_human_review: false
+
+  - id: AUD-007
+    status: fail
+    severity: minor
+    category: verification_independence
+    evidence: |-
+      `code/verify_outputs.py:13` 直接导入生产 `model.py`，所谓 `independent_table_recomputation`
+      只是同一公式实现换细网格；`run_all.ps1` 只调用该脚本。真正使用 SciPy 自适应积分的
+      `code/verify.py` 未被调用且面向旧结果模式，在干净输出上退出 1。
+    affected_files:
+      - frozen-solution/code/verify_outputs.py
+      - frozen-solution/code/verify.py
+      - frozen-solution/code/run_all.ps1
+      - frozen-solution/results/verification.json
+      - frozen-solution/solution-report.yaml
+    reason: 数值加密能检查离散误差，但不能独立发现共享公式、坐标或单位错误；“独立重算”表述强于实际证据。
+    recommended_fix: 修复并接入独立的自适应积分/解析边界验证器，使其只读取权威结果并验证同一文件模式；在报告中区分“同实现网格加密”和“独立实现”。
+    requires_human_review: false
+
+  - id: AUD-008
+    status: fail
+    severity: minor
+    category: dimensional_consistency
+    evidence: |-
+      `paper/paper.md:94-98` 和 `paper/sections/04-data-model.tex:41` 写成
+      Rs=(R^2+1^2)/2=1.625 m；分子量纲为 m^2，分母却写成无量纲 2。
+      代码 `model.py` 使用的通式 (R^2+d^2)/(2d) 数值正确。
+    affected_files:
+      - frozen-solution/paper/paper.md
+      - frozen-solution/paper/paper.template.md
+      - frozen-solution/paper/sections/04-data-model.tex
+    reason: 数值因 d=1 m 恰好不变，但论文公式本身量纲不闭合。
+    recommended_fix: 改写为 `Rs=(R^2+d^2)/(2d)`，代入 `R=1.5 m, d=1 m` 后再给出 1.625 m。
+    requires_human_review: false
+
+  - id: AUD-009
+    status: needs_review
+    severity: suggestion
+    category: false_precision
+    evidence: |-
+      `code/solve.py:381-384` 与 `:102-105` 把罐容表统一保留到 0.01 L；同一论文却报告实际罐
+      油高统一偏移 1 mm 可改变 28.14 L，小罐倾斜实验绝对量 RMSE 约 27 L，且未给出传感器
+      精度或置信带。
+    affected_files:
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/paper/paper.md
+    reason: 百分之一升是数值计算精度，不是模型或工程测量精度，容易误导罐容表使用者。
+    recommended_fix: 保存高精度机器结果供复算，论文主表按不确定性取整（通常至少到 1 L）并另列置信/敏感性区间。
+    requires_human_review: true

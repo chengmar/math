@@ -1,0 +1,39 @@
+schema_version: 1
+id: LP-2013A-004
+title: <REFERENCE_TITLE_REDACTED>
+proposal_kind: expression_pattern
+state: candidate
+case_specific: true
+applicable_when:
+  - 题目同时包含视频观测、机制解释、模型预测与缺失数据。
+not_applicable_when:
+  - 纯理论题且不存在观测或来源不确定性；可简化但仍应保留假设状态。
+minimum_baseline:
+  - 每个关键数字都能定位到输入、公式、代码输出和证据状态。
+recommended_structure:
+  - layer: observation
+    content: 时间窗、车型计数、饱和标志、队长标注误差和原始来源。
+  - layer: mechanism
+    content: 信号、换道、大车、非机动车旁路、小区净流及预期方向。
+  - layer: result
+    content: 基线、主模型、敏感性、随机分布和首次边界。
+  - layer: status
+    content: pass、fail 或 needs_review，并写明不能推出什么。
+validation:
+  - 论文可见数字与结果文件一致性。
+  - 每一机理至少对应一个可观测字段或反例。
+  - 把模型内部 pass 与案例外部 needs_review 分开。
+counterexamples:
+  - R1 用 p=0.20 写“证明模型可行”，混淆检验与模型有效性。
+  - R2 用 p>0.05 写“无显著差异”，没有效应量和等价界限。
+  - R3 报 340 s 均值却未显著披露 129–724 s 的经验 95% 离散度。
+source_cases:
+  - BLIND evidence-layer writing
+  - R1 rich event narrative
+  - R3 mechanism and error-section narrative
+evidence_strength:
+  internal: medium_high
+  external: low
+scope_controls:
+  direct_upgrade_in_reflection: false
+  dummy_input_detected: false

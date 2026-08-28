@@ -1,0 +1,87 @@
+schema_version: 1
+case_id: 2020A
+cards:
+  - id: CAND-OBJECTIVE-CONTRACT-001
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_status: candidate
+    source_class: audit_corrected_before_references
+    evidence_status: pass
+    trigger: 题目用阴影、交点或峰值定义局部面积，且相邻区域容易被误纳入。
+    method:
+      - 明确起点事件、终点事件、被积函数和端点插值。
+      - 同时保存目标分量、互补诊断分量和总量，字段名禁止复用。
+      - 用独立 oracle 检查报告字段确实等于目标分量且不等于总量。
+    observed_benefit: 捕获了 Q3 把两侧总面积冒充升温侧阴影的关键错误。
+    limits: 端点事件和插值误差仍须做网格/RK45 检查。
+    promotion_status: needs_review
+
+  - id: CAND-INDEPENDENT-ORACLE-002
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_status: candidate
+    source_class: audit_corrected_before_references
+    evidence_status: pass
+    trigger: 主求解、验证和论文可能共同调用同一个指标函数。
+    method:
+      - oracle 只读原始曲线与导数，不导入主指标/约束函数。
+      - 加入解析已知曲线、退化曲线和故意错误定义的变异测试。
+      - 分开报告时间积分一致性和题意/指标一致性。
+    observed_benefit: 全面积变异被成功拒绝；解析单侧三角形面积 13.225 ℃·s 通过。
+    limits: 独立代码仍可能共享同一错误题意，需保留题面人工核对。
+    promotion_status: needs_review
+
+  - id: CAND-TRAJECTORY-EVIDENCE-003
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_status: candidate
+    source_class: independent_then_audit_strengthened
+    evidence_status: pass
+    trigger: 一个工况产生大量强自相关时间点。
+    method:
+      - 使用时间有序留出而非随机拆点。
+      - 报 lag-1、Durbin-Watson、符号游程和残差图。
+      - 用时间块而非逐点重采样比较候选；若要区间，必须重拟合参数。
+      - 把样本轨迹内候选排序与跨工况有效性分开。
+    observed_benefit: M2 在当前轨迹内排序稳定，同时避免把 BIC 当成 709 个独立证据。
+    limits: 不能替代第二工况实验。
+    promotion_status: needs_review
+
+  - id: CAND-NOMINAL-ROBUST-SPLIT-004
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_status: candidate
+    source_class: audit_corrected_before_references
+    evidence_status: pass
+    trigger: 名义最优贴住制程边界，且模型/设定/速度存在不确定性。
+    method:
+      - 原题解只使用原约束和数值误差容差。
+      - 工程解另建有证据的不确定性集合或机会约束。
+      - 先用单因素和联合角点反例检查固定小余量是否足够。
+    observed_benefit: 128 角点直接否定固定 0.1 ℃/0.2 s 余量的稳健解释。
+    limits: 无概率模型时不得把角点通过比例当失效概率。
+    promotion_status: needs_review
+
+  - id: CAND-EPSILON-SWEEP-005
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_status: candidate
+    source_class: audit_corrected_before_references
+    evidence_status: pass
+    trigger: 用“主目标最优值的若干百分比”约束次目标优化。
+    method:
+      - 至少报告若干 ε 值及面积上限、实际面积、次目标、约束余量。
+      - 明确 ε 是可替换决策参数，不是定理。
+      - 若上限不活跃，说明次目标解与主目标解近乎重合。
+    observed_benefit: 本题 102.5%--110% 解几乎相同，暴露 105% 没有特殊性。
+    limits: 扫描不能替代决策者效用或严格 Pareto 证明。
+    promotion_status: needs_review
+
+  - id: CAND-SINGLE-SOURCE-006
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_status: candidate
+    source_class: learned_after_references
+    evidence_status: pass
+    trigger: 同一方案在摘要、正文、表格、JSON 和冻结状态中重复出现。
+    method:
+      - 数值、单位、状态和哈希从单一机器可读源生成。
+      - 门禁检查摘要—正文—表格一致性与单位 schema。
+      - 外部冻结完成后再生成最终身份文字。
+    observed_benefit: 可防 R3 的 Q4 方案分叉、R1/R2 单位表头错误和 BF 陈旧状态文字。
+    limits: 自动一致只能保证共同复述，仍需独立语义 oracle。
+    promotion_status: needs_review

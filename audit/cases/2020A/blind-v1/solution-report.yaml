@@ -1,0 +1,121 @@
+case_id: 2020A
+phase: solve
+skill: $cumcm-a-solve
+status: needs_review
+status_reason: 小问覆盖、复现和数值验证均通过；跨工况外部有效性、严格全局最优性及PDF编译仍为needs_review
+freeze_status: not_frozen
+scope_compliance:
+  status: pass
+  network_search_used: false
+  other_phase_skill_used: false
+  forbidden_reference_used: false
+  candidate_knowledge_used: false
+  allowed_inputs_only: true
+training_memory:
+  status: pass
+  classification: provisional_training
+  cards_reviewed: 3
+  cards_used: 3
+  decisions:
+    TM-001-EVIDENCE-LAYERS: adopt
+    TM-002-TIME-ORDERED-VALIDATION: adapt
+    TM-007-FIT-EVALUATE-SEPARATION: adapt
+  usage_record: reports/training-memory-usage.md
+data:
+  status: pass
+  observed_rows: 709
+  missing_cells: 0
+  duplicate_times: 0
+  time_range_s: [19.0, 373.0]
+  time_step_s: 0.5
+model:
+  selection_status: pass
+  selected: M2
+  parameters:
+    lambda_up_cm: 11.220710824746
+    lambda_down_cm: 26.364807197395
+    k_ref_s_inv: 0.020236284389
+    beta: 0.435941155062
+    k_cool_s_inv: 0.011506649221
+  fit:
+    rmse_C: 1.729102936951
+    mae_C: 1.046730735387
+    max_abs_error_C: 5.409160600322
+    rolling_mean_rmse_C: 3.694447225520
+    rolling_worst_rmse_C: 5.618731490097
+questions:
+  q1:
+    status: pass
+    settings_C_and_speed: [173.0, 198.0, 230.0, 257.0, 78.0]
+    marker_temperatures_C:
+      zone_3_mid: 130.872
+      zone_6_mid: 168.283
+      zone_7_mid: 186.717
+      zone_8_end: 225.968
+    result_csv: results/<SOURCE_FILE_REDACTED>
+    result_rows: 671
+  q2:
+    status: pass
+    maximum_speed_cm_min: 92.788855617411
+    production_floor_0_1_cm_min: 92.7
+    active_constraint: peak_lower
+    peak_C: 240.0
+    rise_150_190_s: 69.146587491728
+    above_217_s: 55.731245386455
+  q3:
+    process_status: pass
+    global_optimality_status: needs_review
+    settings:
+      zones_1_5_C: 175.199746473340
+      zone_6_C: 185.0
+      zone_7_C: 225.0
+      zones_8_9_C: 262.218161391093
+      speed_cm_min: 100.0
+    area_above_217_C_s: 629.892876853976
+    peak_C: 240.1
+    above_217_s: 45.579219362195
+    rise_150_190_s: 60.2
+  q4:
+    process_status: pass
+    global_optimality_status: needs_review
+    area_cap_rule: q3_area_times_1.05
+    settings:
+      zones_1_5_C: 175.148083299913
+      zone_6_C: 185.0
+      zone_7_C: 225.0
+      zones_8_9_C: 262.193600466964
+      speed_cm_min: 99.924994177367
+    area_above_217_C_s: 630.292789729374
+    symmetry_area_abs_C_s: 20.593537959287
+    symmetry_ratio: 0.032672970871
+    duration_imbalance_s: 1.340989173345
+validation:
+  identity: pass
+  deterministic_rerun: pass
+  independent_RK45: pass
+  step_convergence: pass
+  boundary_extremes: pass
+  rolling_holdout: pass
+  neighbourhood_stability: pass
+  sensitivity: needs_review
+  sensitivity_reason: 15个单因素扰动场景下Q2/Q3/Q4制程通过率分别为0.60/0.667/0.667，边界最优对参数和设定误差敏感
+  external_validity: needs_review
+  external_validity_reason: 仅有一条实验工况，未提供独立换速度或换温区实验
+  global_optimality: needs_review
+  global_optimality_reason: 差分进化达到固定代数上限；局部收敛和邻域筛查不能构成全局证明
+paper:
+  markdown: paper/paper.md
+  latex: paper/main.tex
+  source_consistency: pass
+  compile_status: needs_review
+  compile_reason: 当前环境无可用TeX引擎
+deliverables:
+  required_files_status: pass
+  code: code/
+  results: results/
+  figures: figures/
+  paper: paper/
+limitations:
+  - 模型有效参数把板材、元件和边界换热合并，换板型需重新校准。
+  - Q2和Q3在峰值或升温时间下界附近，生产应用不宜直接使用数学边界值。
+  - 问题4的105%面积容忍度是显式工程判断，应按工厂偏好重算。

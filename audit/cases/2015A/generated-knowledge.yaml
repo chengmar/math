@@ -1,0 +1,28 @@
+case_id: 2015A
+status: candidate_only
+candidate_count: 7
+machine_verified_count: 0
+verified_count: 0
+exported_files:
+- file: CP-2015A-001-analytic-nuisance-elimination.yaml
+  sha256: 9c99df4561f173ee6a6936fab94b2bc4a33e62d42d6cc5f526c6aa357cb43552
+- file: CP-2015A-002-common-forward-rescoring.yaml
+  sha256: 575842627026af82aaba36b09b431b90d00997904b0e3097b64f659eef9c44f8
+- file: CP-2015A-003-branch-stability-ladder.yaml
+  sha256: 178b4964e0e7f34e863f09c47bd3d21bd7e3a7be819a074d150e202ee497b73b
+- file: CP-2015A-004-video-metric-calibration-gate.yaml
+  sha256: 04feb820655918b3383eaf4594e918a853d12d754c5471abfc363c199b7036f5
+- file: CP-2015A-005-external-transport-validation.yaml
+  sha256: 8778943fe82c963ad0c8b70cd515de444c3fd4befa232192786e6cce17385ca7
+- file: CP-2015A-006-video-sampling-scale-sensitivity.yaml
+  sha256: f3a78978a1d0cbebbcbc29f154c82e57b96c5238fd8beb5994909245b4b7b997
+- file: CP-2015A-007-solar-formula-version-ablation.yaml
+  sha256: bd243a250e80784334e6992f43cd126eb74f7dda7fe9b8555c7f020030ffa788
+- file: expression-lessons.md
+  sha256: 38172474e16896200826d6aca8caa48eb9d705b6d8d409d5f405037e6b75c5b5
+- file: failure-modes.md
+  sha256: 272bf961fd97206f1cef31f0c3b46c6d671a2f3178bca40075e9cda008c83d00
+- file: index.yaml
+  sha256: e2711c78805a1f4949a785cabeeefca4f30660fa41686646488c283224986783
+- file: README.md
+  sha256: 5b55c4dd5574fccddc31507db714c6e8e6eadfc1fc7c0688ede5a57f7cd3f7e0

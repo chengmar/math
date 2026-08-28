@@ -1,0 +1,22 @@
+case_id: 2005A
+status: candidate_only
+candidate_count: 7
+machine_verified_count: 0
+verified_count: 0
+exported_files:
+- file: 00-case-specific-facts.md
+  sha256: 8860e3f296f73119d27df2422d0fe1467216c40dee6c953f7331250e06fa40c8
+- file: 01-regulatory-primary-continuous-secondary.md
+  sha256: d6e1a3979813ffb724392119a1a89b83f90d8b0ecbf86ef77fc76bcc10f0b1a8
+- file: 02-source-attribution-interval.md
+  sha256: b01d74e564834d7b92eaee337b18dd633b0afcb078fee51d38415b439268f0a5
+- file: 03-short-series-validation.md
+  sha256: 30f9c8f9cabcff1dea433da8c48e85c3e2ab9a981e46912e6edcdcfb4c1aa2cd
+- file: 04-treatment-capacity-scenarios.md
+  sha256: edbc663d2fd4310cf5b4fc1ed451ff15a3d8b12f11d1609f981deaf349b83564
+- file: 05-failure-and-nontransfer.md
+  sha256: a51a531351d6fcd046685936cc43ad5716847de0810494227ba9c584ec6a22eb
+- file: 06-evidence-and-expression.md
+  sha256: 58936572e9fd69a6fe2adae6cd002bf0239a569036c015f4c21cd6d71d9f5545
+- file: index.yaml
+  sha256: bf20e81b081aa5fb0bd3465ebac5faaa858ae2aa1f4e1304647deef8b07edb52

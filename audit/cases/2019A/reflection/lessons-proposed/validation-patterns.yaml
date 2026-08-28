@@ -1,0 +1,54 @@
+schema_version: 1
+artifact: "proposed_validation_patterns"
+knowledge_state: "candidate"
+entries:
+  - id: "VP-01"
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_state: "candidate"
+    origin_class: "audit_after_blind_revision_before_reference"
+    pattern: "derive a steady mass-balance root, compare it with simulation, and compare approved references only after both agree"
+    case_evidence_status: pass
+    transfer_status: needs_review
+  - id: "VP-02"
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_state: "candidate"
+    origin_class: "audit_after_blind_revision_before_reference"
+    pattern: "integrate boundary mass flows and compare them with the state-implied mass change over the same event timeline"
+    case_evidence_status: pass
+    transfer_status: needs_review
+  - id: "VP-03"
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_state: "candidate"
+    origin_class: "audit_after_blind_revision_before_reference"
+    pattern: "refine time discretization and compare state metrics, event times, event counts, and active constraints"
+    case_evidence_status: needs_review
+    transfer_status: needs_review
+    open_issue: "the frozen P2 event-count evidence is not fully closed"
+  - id: "VP-04"
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_state: "candidate"
+    origin_class: "audit_after_blind_revision_before_reference"
+    pattern: "run the same checks from documented entry points and compare hashes or structured numerical outputs"
+    case_evidence_status: pass
+    transfer_status: needs_review
+  - id: "VP-05"
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_state: "candidate"
+    origin_class: "reference_triggered"
+    pattern: "normalize dimensions, reconcile abstract and body values, and independently recompute at least one claimed number"
+    case_evidence_status: pass
+    transfer_status: needs_review
+  - id: "VP-06"
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_state: "candidate"
+    origin_class: "reference_triggered"
+    pattern: "compare propagation, actuation, forcing-rise, and sampling times before accepting a lumped or quasi-steady model"
+    case_evidence_status: needs_review
+    transfer_status: needs_review
+  - id: "VP-07"
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_state: "candidate"
+    origin_class: "reference_triggered"
+    pattern: "vary pressure, switching, and flow-cost weights and report policy changes rather than only one optimum"
+    case_evidence_status: needs_review
+    transfer_status: needs_review

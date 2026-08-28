@@ -1,0 +1,226 @@
+{
+  "schema_version": 1,
+  "case_id": "2014A",
+  "artifact_type": "comparison_matrix",
+  "format_note": "JSON-compatible YAML 1.2",
+  "created_in_phase": "reflection",
+  "status_vocabulary": ["pass", "fail", "needs_review"],
+  "freeze_gate": {
+    "status": "pass",
+    "manifest_sha256": "2852b5c424b2611551e7e109cdf781f38c656e39b565f52bad22a59603bd306c",
+    "boundary_sha256": "4ce7befbb81913f43bbb67a1660dd8f4e13bae4f68eddb830f9b22d405f915d8",
+    "file_hashes": {"status": "pass", "checked": 172, "passed": 172, "failed": 0},
+    "authoritative_payloads": {"status": "pass", "checked": 11, "passed": 11},
+    "audit_requirement": {"status": "pass", "meaning": "completed and report provided"},
+    "tree_sha256": {
+      "status": "needs_review",
+      "reason": "aggregate tree serialization is not specified in the manifest"
+    },
+    "self_report_freeze_field_authoritative": false
+  },
+  "references": [
+    {
+      "id": "REF-01",
+      "archive_sha256": "682a92284a45503e160face264c8c3fba53da1c42dc79062210cc211be51d545",
+      "pdf_sha256": "5325f65fdad1fb6dab7a75a4275691a0a908d8c0fff0b1da1537b0559a08fd1d",
+      "text_extraction": {"status": "pass", "pages": 28, "pages_with_text": 28},
+      "code_supplied": false
+    },
+    {
+      "id": "REF-02",
+      "archive_sha256": "89063f149308cac5b808417fb881eeef02b168853649d4617b48f12d95513da1",
+      "pdf_sha256": "59d01bbf09e225d890208bd36166bf2a4d61f0fb56ad4f7edd140cfbacc00d22",
+      "text_extraction": {"status": "pass", "pages": 28, "pages_with_text": 28},
+      "code_supplied": true
+    },
+    {
+      "id": "REF-03",
+      "archive_sha256": "2664219f249874fe6e36cbbfd2ab44aa84c907df32d5419cab547363cce7d00d",
+      "pdf_sha256": "d7315889ffdfaa779d428817ebc3851e321d70795e5db9bbeba6658a7b3c3eda",
+      "text_extraction": {"status": "pass", "pages": 29, "pages_with_text": 29},
+      "code_supplied": true
+    },
+    {
+      "id": "REF-04",
+      "archive_sha256": "12673b46b1d35f71671e6c1956a02fa72d328c6d3872ff243cea0b1ba515f6ea",
+      "pdf_sha256": "f451834248c687e1118160cbdffd18490e80f313f3aeacf3e314f2fbef476ecb",
+      "text_extraction": {"status": "pass", "pages": 36, "pages_with_text": 36},
+      "code_supplied": true,
+      "mat_artifacts_supplied": true
+    }
+  ],
+  "comparability_rules": [
+    "Do not treat a reference paper as ground truth.",
+    "Do not rank coordinates when orbit-plane assumptions differ.",
+    "Do not rank fuel when dynamics, constraints, or stage totals differ.",
+    "Separate paper claims, supplied artifacts, and independent recalculation.",
+    "A smaller objective value without a comparable feasible set is not evidence of superiority."
+  ],
+  "dimensions": [
+    {
+      "dimension": "problem_decomposition",
+      "blind_final": {"status": "pass", "summary": "six-stage descent with orbit, trajectory, terrain, control, and validation layers"},
+      "REF-01": {"status": "needs_review", "summary": "six-stage narrative; full mass chain is not consistently documented"},
+      "REF-02": {"status": "needs_review", "summary": "six stages; main descent and terrain algorithms are separated but code pipeline is incomplete"},
+      "REF-03": {"status": "needs_review", "summary": "claims 3D dynamics and error propagation without complete stage outputs"},
+      "REF-04": {"status": "needs_review", "summary": "six stages and local stage optimization; cross-stage globality is explicitly absent"}
+    },
+    {
+      "dimension": "assumptions_and_coordinate_frame",
+      "blind_final": {"status": "needs_review", "summary": "conditional prograde due-east minimum-inclination solution; DEM registration remains external"},
+      "REF-01": {"status": "needs_review", "summary": "adds inclination 60 deg, RAAN 15 deg, and phase 43.95 deg"},
+      "REF-02": {"status": "needs_review", "summary": "ideal meridional path and changing surface-distance convention"},
+      "REF-03": {"status": "fail", "summary": "reported apses are not antipodal"},
+      "REF-04": {"status": "needs_review", "summary": "reverse-infers the near point and uses inconsistent terrain scale descriptions"}
+    },
+    {
+      "dimension": "data_and_terrain_semantics",
+      "blind_final": {"status": "needs_review", "summary": "separates absolute height, terrain elevation, and clearance; source identity passes, geodetic registration unresolved"},
+      "REF-01": {"status": "needs_review", "summary": "relative neighborhood thresholds and standard deviation with manual selection"},
+      "REF-02": {"status": "needs_review", "summary": "mode-based flatness and cell coverage; implementation dependency is missing"},
+      "REF-03": {"status": "needs_review", "summary": "robust-plane concept, but 50 m relative-height threshold is nearly vacuous for the fine DEM"},
+      "REF-04": {"status": "needs_review", "summary": "K-means labels and safe-square radius; exact DEM arrays pass, random seed and scale consistency fail"}
+    },
+    {
+      "dimension": "orbital_model",
+      "blind_final": {"status": "pass", "summary": "vis-viva with internally consistent constants and explicit conditional plane"},
+      "REF-01": {"status": "needs_review", "summary": "half-period passes; speeds differ by 0.013-0.015 m/s under printed constants"},
+      "REF-02": {"status": "needs_review", "summary": "speed scale is plausible, constants and radius conventions differ"},
+      "REF-03": {"status": "fail", "summary": "far-apse speed and antipode condition fail"},
+      "REF-04": {"status": "needs_review", "summary": "model-section values pass recalculation; abstract/body value consistency fails"}
+    },
+    {
+      "dimension": "main_descent_model",
+      "blind_final": {"status": "pass", "summary": "variable mass, inverse-square gravity, piecewise reference, quintic joins, joint parameter search"},
+      "REF-01": {"status": "needs_review", "summary": "maximum/constant thrust and quadratic angle law without executable evidence"},
+      "REF-02": {"status": "needs_review", "summary": "constant maximum thrust and angle scan; solver does not persist a demonstrated optimum"},
+      "REF-03": {"status": "needs_review", "summary": "3D parameter optimization is claimed but not numerically specified"},
+      "REF-04": {"status": "fail", "summary": "sixth-order angle law; supplied code has inconsistent mass flow and incorrect gravity-radius scaling"}
+    },
+    {
+      "dimension": "optimization_and_parameters",
+      "blind_final": {"status": "needs_review", "summary": "2045 multistart candidates, 99173 evaluations, 17 feasible; search-best feasible only"},
+      "REF-01": {"status": "needs_review", "summary": "parameter provenance and search coverage are not reproducible"},
+      "REF-02": {"status": "fail", "summary": "theoretical scan is about 21.6 million ODE solves and lacks a complete output pipeline"},
+      "REF-03": {"status": "fail", "summary": "supplied programs do not implement the claimed optimizer"},
+      "REF-04": {"status": "fail", "summary": "paper mentions genetic fitting but supplied trajectory code hard-codes coefficients"}
+    },
+    {
+      "dimension": "terrain_selection",
+      "blind_final": {"status": "pass", "summary": "multiscale square footprints using slope, roughness, relief, hazard, and distance"},
+      "REF-01": {"status": "needs_review", "summary": "neighbor-height threshold and local elevation standard deviation"},
+      "REF-02": {"status": "fail", "summary": "coarse paper point does not match independent method reimplementation; fine chain is broken"},
+      "REF-03": {"status": "needs_review", "summary": "robust plane and spiral search are conceptually useful but unsupported by code"},
+      "REF-04": {"status": "needs_review", "summary": "attached score maxima match both paper points; method determinism and slope use fail"}
+    },
+    {
+      "dimension": "trajectory_continuity_and_control",
+      "blind_final": {"status": "needs_review", "summary": "quintic position/velocity/acceleration joins and seven-scenario delayed closed loop; reference thrust-rate target fails"},
+      "REF-01": {"status": "needs_review", "summary": "no closed loop or auditable continuity residual"},
+      "REF-02": {"status": "needs_review", "summary": "transition latency is discussed but no feedback controller is implemented"},
+      "REF-03": {"status": "needs_review", "summary": "state-transition/feedforward concepts lack executable evidence"},
+      "REF-04": {"status": "needs_review", "summary": "smooth polynomial angle but no closed-loop or systematic boundary residual check"}
+    },
+    {
+      "dimension": "validation_and_reproducibility",
+      "blind_final": {"status": "needs_review", "summary": "reintegration, hardened verifier, baselines, multistart, seven scenarios, 23 byte-identical outputs; external validity unresolved"},
+      "REF-01": {"status": "needs_review", "summary": "no code; formula checks and limited sensitivity only"},
+      "REF-02": {"status": "fail", "summary": "missing intermediate MAT files and result mismatch"},
+      "REF-03": {"status": "fail", "summary": "paper algorithms are absent from supplied programs"},
+      "REF-04": {"status": "fail", "summary": "terrain artifact locations pass, but dynamics paper-code-result consistency fails"}
+    },
+    {
+      "dimension": "sensitivity_error_and_robustness",
+      "blind_final": {"status": "needs_review", "summary": "parameter, DEM-conditional, and closed-loop scenario layers; disturbance realism is self-specified"},
+      "REF-01": {"status": "fail", "summary": "sensitivity uses thrust above the 7500 N bound"},
+      "REF-02": {"status": "needs_review", "summary": "plus/minus 5 percent and latency discussion without implemented feedback"},
+      "REF-03": {"status": "needs_review", "summary": "local error propagation is only conceptual"},
+      "REF-04": {"status": "needs_review", "summary": "angle sensitivity is acknowledged; terrain clustering randomness is uncontrolled"}
+    },
+    {
+      "dimension": "computational_complexity",
+      "blind_final": {"status": "pass", "summary": "high but counted and linked to artifacts"},
+      "REF-01": {"status": "needs_review", "summary": "not recoverable from paper"},
+      "REF-02": {"status": "fail", "summary": "very large scan and incomplete result persistence"},
+      "REF-03": {"status": "fail", "summary": "claimed complexity is not represented in code"},
+      "REF-04": {"status": "needs_review", "summary": "moderate K-means and radius scan, but nondeterministic"}
+    },
+    {
+      "dimension": "interpretability",
+      "blind_final": {"status": "pass", "summary": "stage tables, hazard components, and conditional height semantics are explicit"},
+      "REF-01": {"status": "needs_review", "summary": "stage logic is intuitive; manual choices and parameter sources are weak"},
+      "REF-02": {"status": "needs_review", "summary": "coverage and weighted flatness are intuitive; code mapping is weak"},
+      "REF-03": {"status": "needs_review", "summary": "plane fit and error propagation are intuitive; thresholds lack physical support"},
+      "REF-04": {"status": "needs_review", "summary": "safe-square radius is highly interpretable; computed slope is not used"}
+    },
+    {
+      "dimension": "writing_and_expression",
+      "blind_final": {"status": "needs_review", "summary": "careful evidence boundaries and limitations, but derivations and figures are comparatively terse"},
+      "REF-01": {"status": "needs_review", "summary": "conventional structure and many figures; numerical chain has jumps"},
+      "REF-02": {"status": "needs_review", "summary": "rich engineering narrative; code dependencies are not disclosed"},
+      "REF-03": {"status": "fail", "summary": "method labels exceed numerical and code support"},
+      "REF-04": {"status": "needs_review", "summary": "detailed figures and candid local-optimum limitation; parameter and result inconsistencies remain"}
+    }
+  ],
+  "key_results": {
+    "blind_final": {
+      "fuel_kg": 1212.319008398,
+      "powered_time_s": 703.752046547,
+      "mass_at_4m_kg": 1187.680991602,
+      "thrust_range_n": [1600.0137869, 7100.4615403],
+      "coarse_site_one_based": [1150, 1150],
+      "fine_site_one_based": [331, 573],
+      "global_optimality": "needs_review"
+    },
+    "REF-01": {"reported_total_fuel_kg": 1609.579, "reported_main_time_s": 621.0, "comparability": "needs_review"},
+    "REF-02": {"reported_main_fuel_kg": 1242.3, "reported_rapid_fuel_kg": 20.0, "full_total_available": false, "comparability": "needs_review"},
+    "REF-03": {"reported_main_time_s": 450.0, "full_total_available": false, "comparability": "needs_review"},
+    "REF-04": {
+      "reported_total_fuel_kg": 1197.84,
+      "reported_main_time_s": 413.2,
+      "paper_code_result_consistency": "fail",
+      "comparability": "needs_review"
+    }
+  },
+  "temporal_attribution": [
+    {
+      "class": "independent_pre_audit",
+      "items": [
+        "vis-viva and conditional orbital geometry",
+        "six-stage decomposition",
+        "multiscale DEM slope, roughness, relief, and distance risk",
+        "piecewise trajectory optimization",
+        "sensitivity, numerical reintegration, and reproducibility artifacts"
+      ]
+    },
+    {
+      "class": "audit_corrected_pre_reference",
+      "items": [
+        "absolute-height, terrain-elevation, and clearance separation",
+        "quintic acceleration-continuous joins",
+        "joint eight-variable multistart search",
+        "delayed closed-loop control, replanning, rate limits, and seven scenarios",
+        "verifier hardening, square-footprint consistency, validation wording, and reduced optimality claims"
+      ]
+    },
+    {
+      "class": "learned_after_reference",
+      "status": "candidate",
+      "items": [
+        "maximum safe-square radius as an explicit footprint-clearance feature from REF-04",
+        "robust local plane fitting for outlier-resistant slope from REF-03",
+        "state-transition screening followed by nonlinear closed-loop confirmation from REF-03",
+        "paper-code-artifact-independent-recalculation consistency gate from cross-reference validation"
+      ]
+    }
+  ],
+  "overall_assessment": {
+    "model": "blind-final has the most complete coupled model in this four-reference set",
+    "results": "blind-final has the strongest same-model evidence chain, but no global or cross-model fuel ranking is supported",
+    "validation": "blind-final is strongest internally; external physical validity remains needs_review",
+    "complexity": "blind-final is computationally heavy but traceable",
+    "interpretability": "blind-final is strong; REF-04 safe-square clearance is a useful candidate addition",
+    "writing": "blind-final is cautious and evidence-aware but should expand derivations and result-to-claim mapping",
+    "knowledge_promotion": "candidate only"
+  }
+}

@@ -1,0 +1,61 @@
+schema_version: "1.0"
+knowledge_status: candidate
+dummy: false
+promotion_allowed: false
+judgment_vocabulary: [pass, fail, needs_review]
+items:
+  - id: C1
+    title: <REFERENCE_TITLE_REDACTED>
+    status: candidate
+    provenance: reference_learned
+    evidence_status: needs_review
+  - id: C2
+    title: <REFERENCE_TITLE_REDACTED>
+    status: candidate
+    provenance: audit_revision
+    evidence_status: pass
+  - id: C3
+    title: <REFERENCE_TITLE_REDACTED>
+    status: candidate
+    provenance: audit_revision
+    evidence_status: pass
+    external_noise_status: needs_review
+  - id: C4
+    title: <REFERENCE_TITLE_REDACTED>
+    status: candidate
+    provenance: reference_learned
+    evidence_status: needs_review
+  - id: C5
+    title: <REFERENCE_TITLE_REDACTED>
+    status: candidate
+    provenance: reference_learned
+    evidence_status: needs_review
+  - id: C6
+    title: <REFERENCE_TITLE_REDACTED>
+    status: candidate
+    provenance: mixed
+    evidence_status: needs_review
+  - id: C7
+    title: <REFERENCE_TITLE_REDACTED>
+    status: candidate
+    provenance: reference_learned
+    evidence_status: needs_review
+source_boundary:
+  independent:
+    - projection_moment_initialization
+    - projection_domain_joint_refinement
+    - FBP_baseline
+    - nonnegative_SIRT
+    - asymmetric_template_concept
+  audit_revision:
+    - direction_and_detector_row_semantics
+    - leakage_free_block_refit
+    - full_support_common_noise
+    - full_estimator_repetition
+    - SIRT_80_and_threshold_sensitivity
+  reference_learned:
+    - analytic_circle_chord_scale
+    - physical_vs_effective_parameter_distinction
+    - spectrum_aware_filter_transfer
+    - cross_method_structural_uncertainty
+    - complementary_phase_template_design

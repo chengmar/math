@@ -1,0 +1,83 @@
+schema_version: 1
+case_id: 2008A
+package_status: candidate
+cards:
+  - id: FAIL-ELLIPSE-CENTER-SUBSTITUTION
+    status: candidate
+    source: independent_blind
+    trigger: "A perspective image of a planar circle is fitted independently as an ellipse."
+    failure: "The ellipse geometric center is reported as the image of the physical circle center."
+    mechanism: "General projective transformations do not preserve midpoints."
+    detection: "Compare the ellipse center with the center mapped by a shared planar homography."
+    observed_case_magnitude_px: [0.264, 0.649]
+    evidence_status: pass
+
+  - id: FAIL-ALL-EQUAL-INCIDENCE-ROOT
+    status: candidate
+    source: reflection_derived
+    trigger: "Unknown centers are constrained only by det(O_i-A_ij, O_j-A_ij)=0 for every pair."
+    failure: "All unknown centers collapse to one arbitrary point and satisfy every determinant."
+    mechanism: "When O_i=O_j, each determinant vanishes regardless of A_ij; the equations contain a two-parameter degenerate family."
+    detection: "Measure pairwise center separation and prove the collapsed family before solving."
+    mitigation:
+      - "add independent membership/ordering constraints"
+      - "enforce nonzero pair separation"
+      - "use known target homography or tangent-contact information"
+    evidence_status: pass
+
+  - id: FAIL-SINGLE-PLANE-INTRINSIC-OVERCLAIM
+    status: candidate
+    source: reflection_derived
+    trigger: "One planar view is used to claim a full intrinsic calibration without sufficient independent constraints or strong priors."
+    failure: "The optimizer returns numerically specific but non-identifiable intrinsic/extrinsic parameters."
+    detection:
+      - "rank and gauge analysis"
+      - "orthogonality and determinant checks"
+      - "profile likelihood or perturbation of priors"
+    evidence: "R203 prints a matrix with det 0.000827 and Frobenius orthogonality error 1.2323."
+    evidence_status: pass
+
+  - id: FAIL-BOUNDED-ACCURACY-VALIDATION
+    status: candidate
+    source: reflection_derived
+    trigger: "A parameter is constrained to lie within an error band, then recovery inside that band is presented as accuracy evidence."
+    failure: "The validation conclusion is guaranteed by the feasible set."
+    evidence: "R203 restricts focal lengths to plus or minus 2 percent and then reports errors no greater than 2 percent."
+    evidence_status: pass
+
+  - id: FAIL-ROUNDED-TANGENT-INTERSECTION
+    status: candidate
+    source: reflection_derived
+    trigger: "Nearly vertical or parallel tangent-derived lines are intersected after integer rounding."
+    failure: "Small endpoint changes become multi-pixel center shifts."
+    observed_evidence: "R0D appendix integer points reproduce its center table only within 3.52 to 4.16 px."
+    evidence_status: pass
+    mitigation:
+      - "retain subpixel boundary/tangent estimates"
+      - "report line-intersection condition numbers"
+      - "propagate endpoint uncertainty"
+
+  - id: FAIL-TRANSFORM-DIRECTION-SIGN
+    status: candidate
+    source: reflection_derived
+    trigger: "Camera-to-target and target-to-camera transforms are composed without naming direction."
+    failure: "Translation signs or camera-center formulas are reversed."
+    detection: "Substitute a zero camera-center point and verify the mapping in both directions."
+    evidence_status: needs_review
+
+  - id: FAIL-REPRODUCIBLE-BUT-WRONG
+    status: candidate
+    source: audit_revision
+    trigger: "All hashes and deterministic reruns match."
+    failure: "Reproducibility is misreported as mathematical or empirical correctness."
+    mitigation: "Keep freeze identity, execution reproducibility, internal validation, external accuracy, and proof as separate gates."
+    evidence_status: pass
+
+  - id: FAIL-FREEZE-DIRECTORY-CLOSURE-ASSUMPTION
+    status: candidate
+    source: reflection_derived
+    trigger: "A manifest covers every authoritative payload item but unlisted cache files are physically present."
+    failure: "The manifest pass is incorrectly described as exact directory closure."
+    observed_evidence: "Two blind-v1 pyc files are outside the 268-item authoritative payload."
+    evidence_status: pass
+    mitigation: "Report payload integrity as pass and directory closure separately as needs_review."

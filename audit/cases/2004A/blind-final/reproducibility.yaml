@@ -1,0 +1,66 @@
+phase: blind-revision
+status: pass
+frozen: false
+workspace: <RUNTIME_ROOT>\2004A\workspaces\blind-revision
+randomness:
+  seed: 2004
+  bootstrap_replicates: 500
+  resampling: within_each_survey_wave_with_replacement
+  map_jitter_sd_px: 4.0
+commands:
+  phase_check: >-
+    python <LAB_ROOT>\.agents\skills\cumcm-a-solve\scripts\check_phase.py
+    --workspace <RUNTIME_ROOT>\2004A\workspaces\blind-revision
+  full_pipeline: >-
+    powershell -ExecutionPolicy Bypass -File .\code\run_all.ps1
+    -Workspace <RUNTIME_ROOT>\2004A\workspaces\blind-revision
+    -Bootstrap 500 -Seed 2004
+  manifest_verify: >-
+    python .\code\artifact_manifest.py --workspace . --verify
+    --report results\manifest-verification.json
+inputs:
+  problem_doc_sha256: 234c2601de31db896d395458637a6c5b01e3b2019620f74b627da715d60d4ce5
+  attachment_rar_sha256: 4865ac7af439cc3f7191ac35c8f26fdd9c74a6853a55a3249c3b745eb0c60107
+  extracted_mdb_sha256: 9481e6dc1e3a0595917eb38385bb91cf3ee75b36a182a2080ac218a05ec44ee0
+software:
+  python: 3.11.9
+  numpy: 2.4.2
+  pandas: 3.0.0
+  scipy: 1.17.0
+  matplotlib: 3.10.8
+  pyyaml: 6.0.3
+  access_provider: recorded_at_runtime_in_work/staging/extraction-manifest.json
+  archive_tool: Windows_bsdtar
+  latex_engine: XeLaTeX
+platform_dependencies:
+  - Windows PowerShell with System.Data.OleDb
+  - A compatible Microsoft ACE or Jet OLE DB provider
+  - Python packages pinned in code/requirements.txt
+  - XeLaTeX with ctex support
+outputs:
+  code: code/
+  numeric_results: results/
+  figures: figures/
+  paper_pdf: paper/<SOURCE_FILE_REDACTED>
+  paper_source: paper/main.tex
+  markdown_paper: paper/paper.md
+  hash_manifest: results/checksums.sha256
+  manifest_verification: results/manifest-verification.json
+checks:
+  input_extraction_status: pass
+  fixed_seed_status: pass
+  independent_recomputation_status: pass
+  boundary_extreme_status: pass
+  same_environment_consecutive_rerun_status: pass
+  latex_compile_status: pass
+  latex_runtime_support_status: needs_review
+  paper_result_consistency_status: pass
+  current_artifact_manifest_status: pass
+  external_freeze_status: needs_review
+  cross_platform_bitwise_identity_status: needs_review
+notes:
+  - The pipeline computes twice and records actual SHA-256 comparisons in results/consecutive-rerun.json.
+  - PDF is built before the artifact manifest; results/manifest-verification.json verifies every declared current artifact afterward.
+  - The current artifact manifest is not a freeze attestation. The external blind-final freeze procedure must issue truthful frozen metadata and a fresh package manifest.
+  - Cross-platform byte identity is not claimed because fonts, Access providers, BLAS, and rendering stacks may differ.
+  - XeLaTeX returned exit code 0 and the LaTeX log contained no matched warnings/errors, but MiKTeX reported that the host Windows version is unsupported and its update status was not checked; runtime support therefore remains needs_review.

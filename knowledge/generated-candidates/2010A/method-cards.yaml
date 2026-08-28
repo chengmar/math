@@ -1,0 +1,112 @@
+schema_version: 1
+case_id: "2010A"
+phase: reflection
+cards:
+  - id: MC-2010A-01
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: independent
+    problem:
+      type: "斜平面截取圆柱与球冠组合体"
+      trigger: "容器可用轴向半径 r(x) 描述，截面为圆或椭圆"
+    method:
+      - "定义经空/满裁剪的截面弓形面积函数。"
+      - "把液面写成罐体坐标中的有符号截高 u(x,h,theta)。"
+      - "对轴向积分，不为每个空/满组合另写分支公式。"
+      - "用独立积分器、解析容量和边界不变量交叉验证。"
+    evidence:
+      status: pass
+      items:
+        - "实际罐 31 个表节点独立自适应积分最大差 0.000960 L。"
+        - "解析容量 64664.448786 L 与数值结果一致。"
+    limitations:
+      - "数值一致不能证明坐标变换或测量机理正确。"
+      - "非旋转对称或局部变形容器需要更一般的几何表示。"
+
+  - id: MC-2010A-02
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: reference_learned
+    problem:
+      type: "弱可辨识参数驱动的标定表"
+      trigger: "不同模型给出不同参数，但最终业务函数可能接近"
+    method:
+      - "分别报告参数差、目标表节点差、质量守恒误差和工程影响。"
+      - "不要用参数是否落入某个条件区间直接裁判不同模型。"
+      - "优先检查最终使用的罐容表是否对可接受模型稳定。"
+    evidence:
+      status: pass
+      items:
+        - "R4 的 beta 比冻结盲解高 0.346°，但 30 节点表值 RMSE 仅 14.23 L。"
+        - "R1 的 alpha 接近盲解，表值却平均高 138.36 L。"
+    limitations:
+      - "只在当前题和四篇参考上观察到，跨题推广需更多样本。"
+
+  - id: MC-2010A-03
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: audit_corrected
+    corroboration: "R4 独立使用 V0 绝对状态目标，但以网格扫描 nuisance 参数。"
+    method:
+      - "主目标用相邻状态体积差匹配净流量，消去未知初始量。"
+      - "交叉检查用每个连续实验段一个自由体积截距的累计状态轨迹。"
+      - "比较两类目标的参数和最终表差，检查差分误差相关。"
+    evidence:
+      status: pass
+      items:
+        - "累计状态交叉检查相对主表最大差 3.740 L。"
+        - "R4 的印刷 V0 枚举可解析为给定角度下残差均值，说明扫描 V0 是冗余维度。"
+    limitations:
+      - "差分会引入相邻误差相关；累计状态需要正确处理补油和分段截距。"
+
+  - id: MC-2010A-04
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: audit_corrected
+    method:
+      - "预先定义尺度迁移、零点变化、姿态尺度变化等可解释候选。"
+      - "用一个数据块选择，用另一个时间块检查残差水平与结构。"
+      - "报告候选表包络，并明确它不是概率置信区间。"
+    evidence:
+      status: pass
+      items:
+        - "小罐时间检查 RMSE 从 26.89 L 降到 7.83 L。"
+        - "残差—油高相关从 -0.921 降到 -0.034。"
+    limitations:
+      - "候选集合边界由建模者决定；遗漏候选时包络不完整。"
+      - "本题仍缺探针安装机理。"
+
+  - id: MC-2010A-05
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: reference_learned
+    method:
+      - "先核文件哈希与允许路径。"
+      - "再判定文本层或 OCR 的可信范围。"
+      - "有源码时复现其声明结果。"
+      - "把代码—结果一致与模型数学正确性分开。"
+      - "最后才比较工程结论。"
+    evidence:
+      status: pass
+      items:
+        - "R4 印刷 C++ 核心复现点估计 pass，但球冠近似仍 needs_review。"
+        - "R2/R3 的相关页离线渲染与目视核对可定位内容，却不能作为公式权威转写。"
+        - "外层冻结树 pass 与包内旧 run_manifest fail 可以同时成立，必须分层记录。"
+    limitations:
+      - "扫描件公式复核成本高；没有来源预期哈希时身份仍需人工审查。"
+
+  - id: MC-2010A-06
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: audit_corrected
+    method:
+      - "把固定仪表/几何条件下的抽样区间标为 conditional。"
+      - "把无真实公差依据的扰动标为 diagnostic stress。"
+      - "只有给出真实先验或公差并完成传播时才使用工程置信表述。"
+    evidence:
+      status: pass
+      items:
+        - "流量比例 ±0.1% 可改表约 29 L。"
+        - "半径 ±5 mm 可改表约 340–355 L。"
+    limitations:
+      - "本题压力幅度不是制造公差，不能直接推广。"

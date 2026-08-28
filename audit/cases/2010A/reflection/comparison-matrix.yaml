@@ -1,0 +1,170 @@
+schema_version: 1
+case_id: "2010A"
+phase: reflection
+assessment_status: needs_review
+proposed_knowledge_status: candidate
+scope:
+  network_search_avoided: pass
+  approved_reference_count: 4
+  unapproved_reference_access_avoided: pass
+  blind_final_preserved: pass
+freeze_gate:
+  phase_lock: pass
+  control_hashes: pass
+  external_boundary: pass
+  audit_completed: pass
+  listed_file_hashes:
+    status: pass
+    checked: 205
+    mismatched: 0
+  aggregate_tree_recomputation:
+    status: pass
+    algorithm: "Ordinal-sort POSIX paths; hash UTF-8(path + NUL + lowercase sha256 + LF)."
+    declared_sha256: "5fee1bdf0628de70c3d20b144ff8370de071999cf58baf7e28ad80f00f997412"
+    recomputed_sha256: "5fee1bdf0628de70c3d20b144ff8370de071999cf58baf7e28ad80f00f997412"
+  internal_run_manifest_verification:
+    status: fail
+    failed_checks: [file_hashes, authority_tree, generated_core_tree]
+    mismatched_files:
+      - "paper/main.tex"
+      - "paper/paper.md"
+      - "paper/paper.template.md"
+      - "paper/sections/01-problem.tex"
+      - "paper/sections/03-assumptions-symbols.tex"
+      - "paper/sections/05-solution-validation.tex"
+    note: "This is a stale inner provenance manifest. It does not negate the later external authoritative freeze, whose 205 listed hashes pass."
+sources:
+  blind_final:
+    id: B
+    status: needs_review
+    manifest_sha256: "2113aa9b27c016e1fa4f788bd569778afe9f26bfadd54df8a041188aa10f73b1"
+    reflection_boundary_sha256: "366bfea3e9225c9b3d64238520d8e5cd6d6b38f6e0c721711dbb3ae74d40e7ff"
+    mathematical_correctness: needs_review
+    engineering_readiness: needs_review
+  references:
+    - id: R1
+      file: "<SOURCE_FILE_REDACTED>"
+    sha256: <REFERENCE_HASH_REDACTED>
+      pages: 20
+      extraction: pass
+      source_identity: needs_review
+      code_reproduction: needs_review
+    - id: R2
+      file: "<SOURCE_FILE_REDACTED>"
+    sha256: <REFERENCE_HASH_REDACTED>
+      pages: 37
+      extraction: needs_review
+      extraction_note: "No text layer; relevant pages were rendered locally and visually checked. Formula-level transcription is not authoritative."
+      source_identity: needs_review
+      code_reproduction: needs_review
+    - id: R3
+      file: "<SOURCE_FILE_REDACTED>"
+    sha256: <REFERENCE_HASH_REDACTED>
+      pages: 100
+      extraction: needs_review
+      extraction_note: "No text layer; relevant pages were rendered locally and visually checked. Formula-level transcription remains uncertain."
+      source_identity: needs_review
+      code_reproduction: needs_review
+    - id: R4
+      file: "<SOURCE_FILE_REDACTED>"
+    sha256: <REFERENCE_HASH_REDACTED>
+      pages: 21
+      extraction: pass
+      source_identity: needs_review
+      code_reproduction:
+        status: pass
+        scope: "Printed C++ numeric core only"
+        alpha_deg: 2.14
+        beta_abs_deg: 4.6
+        initial_volume_m3: 58.98
+        objective_rows: 286
+        training_rmse_l: 2.651117
+        mathematical_correctness: needs_review
+dimensions:
+  decomposition:
+    blind: "Unified cross-section, plane-cut integration, mass balance, identification, table, and validation chain."
+    reference_set: "Mostly problem-specific piecewise derivations; R3 uses eight actual-tank cases."
+    assessment: "Blind is easier to test and maintain; explicit reference diagrams remain useful."
+  assumptions:
+    blind: "Conditional engineering assumptions are explicit and stress-tested."
+    reference_set: "Mostly idealized assumptions; head approximations and measurement effects are weakly quantified."
+    assessment: "Blind stronger, but real tolerances and the small-probe mechanism remain unresolved."
+  data_roles:
+    blind: "Selection, refit, time checks, refill, and old-display roles are separated."
+    reference_set: "R4 correctly rejects the old display table for fitting; most validations reuse fitted data."
+    assessment: "Blind stronger after audit correction."
+  models:
+    blind: "Clipped ellipse/circle segment functions integrated over an axial radius profile."
+    reference_set: "Nominal small geometry; approximate or piecewise spherical-head treatment."
+    assessment: "Reference geometry is intuitive but often less exact or more branch-heavy."
+  results:
+    blind:
+      alpha_deg: 2.123205
+      beta_abs_deg: 4.253561
+      small_horizontal_semiaxis_m: 0.887229
+      small_level_offset_mm: -17.041059
+    references:
+      R1: {alpha_deg: 2.1, beta_abs_deg: 5.0}
+      R2: {alpha_deg: 2.0, beta_abs_deg: 4.9}
+      R3: {alpha_deg: null, beta_abs_deg: null, status: needs_review}
+      R4: {alpha_deg: 2.14, beta_abs_deg: 4.6}
+  validation:
+    blind: "Time-block roles, independent adaptive quadrature, boundary invariants, HAC, cumulative-state cross-check, multistart, and engineering stress scenarios."
+    reference_set: "Mostly in-sample relative errors, fit coefficients, or tautological upright-display checks."
+    assessment: "Reference claims remain needs_review."
+  complexity:
+    blind: "O(iter * Nobs * Nx) with one clipped integrand and few branches."
+    R1: "Sequential angle scans reduce cost but do not solve the joint objective."
+    R2: "Two-dimensional grid plus numerical integration and empirical correction."
+    R3: "Eight geometric cases create high derivation and implementation complexity."
+    R4: "O(Galpha * Gbeta * GV0 * Nobs); scanning the separable nuisance V0 is redundant."
+  interpretability:
+    blind: "Conditional parameters, beta-sign ambiguity, model envelopes, and non-confidence stress ranges are explicit."
+    reference_set: "Geometric diagrams are strong; empirical corrections and approximation error are less interpretable."
+  expression:
+    blind: "Data roles and precision policy are explicit."
+    reference_set: "R1/R4 are compact; R2/R3 are appendix-heavy, and R3 does not foreground final parameters."
+numeric_comparisons:
+  blind_table_independent_reimplementation:
+    status: pass
+    nodes: 30
+    rmse_l: 0.000418
+    max_abs_l: 0.000873
+    max_height_cm: 160
+  reported_reference_table_vs_exact_geometry_at_own_angles:
+    R1: {status: needs_review, rmse_l: 128.619026, max_abs_l: 162.833122, max_height_cm: 180}
+    R2: {status: needs_review, rmse_l: 46.531032, max_abs_l: 68.844119, max_height_cm: 150}
+    R3: {status: fail, reason: "No complete actual-tank point estimate and 10 cm table were identified."}
+    R4: {status: needs_review, rmse_l: 7.817633, max_abs_l: 11.072249, max_height_cm: 70}
+    cross_reference_max_spread_l: 200.27
+    cross_reference_max_spread_height_cm: 150
+  actual_table_reference_minus_blind_30_nodes:
+    R1:
+      rmse_l: 145.041356
+      mean_signed_l: 138.364506
+      max_abs_l: 182.37763
+      max_height_cm: 150
+    R2:
+      rmse_l: 51.531129
+      mean_signed_l: 50.134173
+      max_abs_l: 57.39197
+      max_height_cm: 80
+    R4:
+      rmse_l: 14.230086
+      mean_signed_l: -13.341827
+      max_abs_l: 18.1966
+      max_height_cm: 130
+  reference_nominal_small_model:
+    horizontal_semiaxis_m: 0.89
+    level_offset_mm: 0.0
+    tilted_in_rmse_l: 77.616974
+    tilted_out_rmse_l_with_fitted_start: 10.723789
+    max_table_difference_from_blind_l: 80.766555
+    nodes_outside_blind_candidate_envelope: 121
+limitations:
+  - "Reference file identity has no independent expected checksum manifest."
+  - "Visual recovery from the scanned R2 and R3 PDFs is not formula-authoritative."
+  - "Table-to-table differences are not errors against ground truth."
+  - "The blind conditional HAC interval cannot adjudicate alternative geometry models."
+  - "No real instrument or manufacturing tolerances are supplied."
+  - "The inner run_manifest is stale for six paper-source files even though the later external freeze manifest passes."

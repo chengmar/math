@@ -1,0 +1,19 @@
+id: TM-007-FIT-EVALUATE-SEPARATION
+title: 模型、模拟器和评价数据必须来源隔离
+type: failure_mode
+status: provisional_training
+source_cases: [2007A, 2009A]
+source_kind: cross_case_failure_synthesis
+origin_year: 2007
+tags: [validation, simulation, overfit, leakage, forecast]
+applicable_conditions: [模型参数、噪声包络或模拟器由观测数据拟合]
+inapplicable_conditions: [任务明确只做样本内描述且不声称泛化]
+minimum_baseline: 明确训练、调参和评价集合，至少保留时间或组级独立部分
+recommended_action: 评价数据不得参与生成器或阈值拟合；若无法留出，只能标记模型内验证
+why_it_may_help: 在同一数据生成世界中反复随机运行仍可能形成封闭自证
+required_validation: [数据来源表, 组级或时间级留出, 外部有效性降级规则]
+failure_modes: [用同一轨迹拟合并评价, 用同一残差生成噪声后称独立]
+counterexamples: [随机重复很多次但所有样本仍来自拟合过的生成器]
+complexity_cost: 中；减少可用于拟合的数据并增加留出流程
+evidence_summary: 两个可信案例均发现同源拟合与评价造成乐观证据
+last_updated: '2026-08-24'

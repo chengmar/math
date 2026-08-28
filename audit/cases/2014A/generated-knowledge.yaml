@@ -1,0 +1,16 @@
+case_id: 2014A
+status: candidate_only
+candidate_count: 0
+machine_verified_count: 0
+verified_count: 0
+exported_files:
+- file: CP-2014A-001-terrain-evidence-ladder.yaml
+  sha256: eb1b71d11fc572f564ee2aa1fc096fc004d833b7f8ffaee987ae15c65e63e4d7
+- file: CP-2014A-002-trajectory-control-coupling.yaml
+  sha256: 0832d374db214d2726eacee3654cd72c94814230f33e6eb5e04d92361ab8496f
+- file: CP-2014A-003-linear-screening-nonlinear-confirmation.yaml
+  sha256: 84ff90a23975ee79fb3480b44a510f58d23210ab4e6a3bc2293cafbc94081fe1
+- file: CP-2014A-004-reference-consistency-gate.yaml
+  sha256: e315cb66d34092139992d7d419e20278a6416757de75cbc26269cfec899711a3
+- file: README.md
+  sha256: 6a9e5428154eee7980a31af56262b2fdf7615e655f8d8b90127bc300002b3bc7

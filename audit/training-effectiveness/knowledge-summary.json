@@ -1,0 +1,15 @@
+{
+  "candidate_total": 323,
+  "machine_verified_total": 0,
+  "verified_total": 0,
+  "deprecated_total": 0,
+  "cards_with_one_source_case": 323,
+  "cards_with_multiple_source_cases": 0,
+  "cards_used_in_later_solve": 0,
+  "cards_with_positive_cross_case_evidence": 0,
+  "cards_with_negative_evidence": 0,
+  "cards_never_used": 323,
+  "cards_missing_applicable_conditions": 244,
+  "cards_missing_inapplicable_conditions": 219,
+  "cards_that_look_case_specific": 28
+}

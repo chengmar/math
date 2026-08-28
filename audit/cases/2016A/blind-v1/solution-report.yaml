@@ -1,0 +1,168 @@
+case_id: 2016A
+phase: solve
+skill: $cumcm-a-solve
+delivery_status: needs_review
+scope:
+  blind_solution: pass
+  network_search_used: false
+  forbidden_reference_read: false
+  other_phase_skill_called: false
+  frozen: false
+question_coverage:
+  q1:
+    status: pass
+    design:
+      chain_type: II
+      chain_length_m: 22.05
+      link_count: 210
+      ball_mass_kg_assuming_steel: 1200
+    wind_12_m_s:
+      pipe_angles_deg: [1.159, 1.167, 1.175, 1.183]
+      drum_angle_deg: 1.201
+      chain_state: seabed_contact
+      seabed_chain_m: 6.251
+      anchor_angle_deg: 0.000
+      draft_m: 0.683
+      wander_radius_m: 14.653
+      wander_area_m2: 674.514
+    wind_24_m_s:
+      pipe_angles_deg: [4.410, 4.438, 4.467, 4.496]
+      drum_angle_deg: 4.563
+      chain_state: fully_suspended
+      anchor_angle_deg: 4.452
+      draft_m: 0.697
+      wander_radius_m: 17.778
+      wander_area_m2: 992.952
+    sources: [results/<SOURCE_FILE_REDACTED>, results/<SOURCE_FILE_REDACTED>]
+  q2:
+    status: pass
+    initial_1200_kg:
+      drum_angle_deg: 9.440
+      anchor_angle_deg: 20.878
+      drum_constraint: fail
+      anchor_constraint: fail
+    continuous_minimum_ball_mass_kg_assuming_steel: 2217.4
+    recommended_ball_mass_kg_assuming_steel: 2250
+    recommended_ball_submerged_weight_kn: 19.18
+    adjusted:
+      drum_angle_deg: 4.422
+      anchor_angle_deg: 15.814
+      draft_m: 0.993
+      wander_radius_m: 18.531
+      drum_constraint: pass
+      anchor_constraint: pass
+    sources: [results/<SOURCE_FILE_REDACTED>, results/<SOURCE_FILE_REDACTED>]
+  q3:
+    status: pass
+    selected_design:
+      chain_type: V
+      link_count: 117
+      chain_length_m: 21.06
+      chain_dry_mass_kg: 592.2072
+      ball_mass_kg_assuming_steel: 4800
+      ball_submerged_effective_mass_kg: 4173.25
+      ball_submerged_weight_kn: 40.93
+    search:
+      feasible_candidates: 60
+      pareto_candidates: 33
+      horizontal_screening_factor: 1.10
+      selection_rule: fixed-scale equal-weight Euclidean compromise on the Pareto front
+    nominal_33_case_envelope:
+      max_drum_angle_deg: 4.560
+      max_anchor_angle_deg: 13.395
+      max_draft_m: 1.813
+      max_wander_radius_m: 18.353
+      drum_constraint: pass
+      anchor_constraint: pass
+    ten_percent_stress_envelope:
+      max_drum_angle_deg: 4.994
+      max_anchor_angle_deg: 15.718
+      max_draft_m: 1.822
+      max_wander_radius_m: 18.514
+      drum_constraint: pass
+      anchor_constraint: pass
+    sources: [results/<SOURCE_FILE_REDACTED>, results/<SOURCE_FILE_REDACTED>, results/<SOURCE_FILE_REDACTED>]
+model_selection:
+  baseline_implemented: pass
+  candidate_count: 3
+  selected_model: segmented rigid members plus weighted catenary with seabed contact
+  rejected_model: segmented rigid members plus massless straight chain
+  comparison_source: results/<SOURCE_FILE_REDACTED>
+validation:
+  internal_equilibrium:
+    status: pass
+    source: results/validation.json
+    max_force_residual_abs_n: 1.1e-11
+    max_moment_residual_abs_nm: 3.4e-13
+    max_chain_geometry_residual_abs_m: 3.8e-10
+  independent_chain_quadrature:
+    status: pass
+    segments: 20000
+    max_endpoint_error_m: 6.5e-9
+  sensitivity:
+    status: pass
+    source: results/<SOURCE_FILE_REDACTED>
+    stable_region: steel-like ball density and horizontal load factor up to 1.10
+    failure_conditions:
+      - ball density 3000 kg/m^3 gives drum angle 5.572 deg
+      - horizontal load factor 1.20 gives drum 5.261 deg and anchor 17.662 deg
+  deterministic_two_run_hash:
+    status: pass
+    source: reports/reproducibility-check.md
+  paper_result_consistency:
+    status: pass
+    source: reports/paper-consistency.json
+  mathematical_correctness_beyond_stated_model:
+    status: needs_review
+    reason: 内部残差和独立积分不能证明未建模物理或真实海况有效。
+evidence_layers:
+  phase_identity:
+    status: pass
+    evidence: scripts/check_phase.py returned PASS for solve
+  execution_reproduction:
+    status: pass
+    evidence: two 27-entry manifests share SHA-256 E2F6FACE724FB359240025DAD855A7C0B3348012EEA1DFFA89122A611DD5DE81
+  model_internal:
+    status: pass
+    evidence: results/validation.json
+  external_validity:
+    status: needs_review
+    evidence: no field data; wave, chain drag, ball geometry and seabed friction are unavailable
+  document_source:
+    status: pass
+    evidence: paper/main.tex and paper/paper.md exist and use generated numbers/tables
+  compiled_pdf_and_visual_format:
+    status: needs_review
+    evidence: XeLaTeX and PDF inspection tools were not available
+training_memory:
+  retrieved_cards: 3
+  used_cards: 1
+  decisions:
+    TM-001-EVIDENCE-LAYERS: adopt
+    TM-002-TIME-ORDERED-VALIDATION: reject
+    TM-007-FIT-EVALUATE-SEPARATION: reject
+  status_preserved_as_provisional_training: pass
+  source: reports/training-memory-usage.md
+required_outputs:
+  problem_analysis: pass
+  data_audit: pass
+  assumptions: pass
+  variables: pass
+  model_selection: pass
+  code: pass
+  structured_results: pass
+  figures: pass
+  paper_tex: pass
+  paper_markdown: pass
+  reproducibility: pass
+limitations:
+  - 准静力二维模型不覆盖波浪、瞬态、疲劳和三维扭转。
+  - 题面未给链环线径和重物球直径，未显式计算链与球流阻。
+  - 重物球干质量依赖钢质假设；通用设计量是水下有效重量。
+  - 只执行题给 16 度判据，未证明锚土真实承载力。
+  - Q3 最小名义干舷约 0.187 m；若有浮力储备规范须重新优化。
+next_phase_actions:
+  freeze: false
+  audit: false
+  reflect: false
+  evaluate: false

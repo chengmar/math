@@ -1,0 +1,81 @@
+case_id: 2011A
+phase: blind-revision
+status: pass
+random_seed: 20260311
+input:
+  workbook: input/data/<SOURCE_FILE_REDACTED>
+  current_container_sha256: dce077e7f6a1170d742c4ccc36c4465b672e34affbfa7ffecdb1fa2afc96542e
+  container_copy_chain_status: needs_review
+  extraction:
+    method: Excel COM read-only Value2 CSV export
+    excel_version: '12.0'
+    script: code/extract_input.ps1
+    semantic_identity_against_frozen_v1_status: pass
+dependencies:
+  operating_system: Windows 11 10.0.26200
+  powershell: 7.6.4
+  python: 3.12.13
+  numpy: 2.5.2
+  pandas: 3.0.5
+  scipy: 1.18.0
+  scikit_learn: 1.9.0
+  matplotlib: 3.11.1
+  excel_com: '12.0'
+  xelatex: MiKTeX 26.5 Portable
+  pdftotext: required for semantic PDF check
+commands:
+  one_numeric_run: "& '.\\code\\run_all.ps1' -Workspace (Get-Location).Path"
+  two_numeric_runs: "& '.\\code\\verify_reproduction.ps1' -Workspace (Get-Location).Path"
+  clean_paper_build: "& '.\\code\\build_paper.ps1' -Workspace (Get-Location).Path"
+  paper_consistency: "python '.\\code\\check_consistency.py'"
+clean_generation:
+  numeric_generated_directories: [results, figures, paper/generated]
+  before_each_numeric_run_status: pass
+  paper_build_directory: paper/build (temporary)
+  paper_build_cleaned_before_compile_status: pass
+  paper_build_removed_after_copy_status: pass
+determinism:
+  fixed_seed_status: pass
+  primary_spatial_fold_rule: 3 km integer grid blocks greedily balanced into five folds after fixed-seed ordering
+  spatial_stress_rules: [contiguous KMeans five-region holdout, 1 km buffer, 2 km buffer]
+  gaussian_tuning_rule: outer-training-only inner spatial folds over [1, 2, 3, 4] km
+  zone_block_bootstrap_replicates: 10000
+  nmf_cv_scale_rule: training-fold-only RMS
+  moran_permutations: 999
+  direction_permutations_per_metal: 2000
+  source_block_bootstrap_replicates: 500
+two_run_reproduction:
+  report: reports/reproduction-check.json
+  status: pass
+  complete_runs: 2
+  compared_files: 69
+  mismatches: 0
+outputs:
+  hash_manifest: results/output_hashes.json
+  numerical_table_figure_files: 69
+  hash_manifest_status: pass
+paper:
+  source_tex: paper/main.tex
+  source_markdown: paper/paper.md
+  generated_pdf: paper/<SOURCE_FILE_REDACTED>
+  build_manifest: reports/paper-build.json
+  consistency_report: reports/paper-consistency.json
+  pdf_sha256: ae1b5802e01f31af2bc8fbefe26e5de1df9bedc59791d5f4d7ce71ff5cbf5ac7
+  page_count: 13
+  page_size: A4
+  consecutive_clean_compile_count: 2
+  compile_status: pass
+  consistency_status: pass
+  normalized_pdf_text_sha256: ba6c50b552c3738ecd51550a2b2e50c6ef639d662a93b9520026efd29286a266
+  representative_visual_check_status: pass
+  representative_pages_checked: [1, 7, 8, 9, 10, 11, 12, 13]
+  nonfatal_layout_warning_status: needs_review
+  nonfatal_layout_warning_count: 1
+evidence_limits:
+  deterministic_execution_status: pass
+  internal_validation_status: pass
+  background_spatial_validity_status: needs_review
+  propagation_direction_status: needs_review
+  physical_source_identity_status: needs_review
+  external_validity_status: needs_review
+  note: 哈希、重跑和构建链只证明制品可复现；不证明变异函数物理正确、传播方向、排放源身份或外部因果。

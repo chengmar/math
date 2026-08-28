@@ -1,0 +1,77 @@
+schema_version: 1
+case_id: 2006A
+knowledge_status: candidate
+methods:
+  - id: MC-GROUP-CONCAVE-001
+    name: 带组下界与组上界的可分凹整数配置
+    origin: independently_derived_with_reference_convergence
+    claim: "当每个对象的离散边际收益单调不增时，可先在每组内用最高边际满足组下界，再全局用最高可行边际补足预算。"
+    mechanical_validation_status: pass
+    economic_validity_status: needs_review
+    formulation:
+      objective: "maximize sum_i V_i(x_i), with decreasing discrete marginals"
+      constraints: "sum_i x_i=B; 0<=x_i<=u_i; L_j<=sum_{i in j}x_i<=C_j; integer x_i"
+    algorithm:
+      - "每组选择其前L_j个最高可行离散边际。"
+      - "把其余边际放入全局优先队列，按收益递减取到预算B。"
+      - "每次选择同时检查对象上界和组上界。"
+    complexity: "使用堆时约为O(B log n)，另加初始化与组下界成本。"
+    required_checks:
+      - "预算可行区间"
+      - "边际单调性"
+      - "并列破同确定性"
+      - "小实例穷举或动态规划对照"
+    failure_conditions:
+      - "跨对象耦合收益"
+      - "边际不单调"
+      - "组约束重叠而非互斥分组"
+  - id: MC-RISK-FORECAST-002
+    name: 时间留出驱动的风险折减边际收益
+    origin: independently_derived
+    claim: "先用早期滚动年份选预测规则，再用未参与选择的后期年份报告误差，并按课程误差尺度折减决策收益。"
+    mechanical_validation_status: pass
+    external_validity_status: needs_review
+    template:
+      center: "qhat_i"
+      risk_adjusted: "qtilde_i=qhat_i*exp(-z*sigma_i)"
+    required_checks:
+      - "调参年份与留出年份完全分离"
+      - "与持久性和趋势基线同口径比较"
+      - "z的敏感性"
+      - "误差样本量与收缩规则"
+    caution: "一个留出年份不足以建立长期外部效度。"
+  - id: MC-TRANSITION-003
+    name: 收益—年度变更双目标配置
+    origin: learned_after_reference_R3
+    claim: "把组织适应与计划连续性表示为显式变更成本或变更预算，而不是默认历史配置最优。"
+    mechanical_validation_status: needs_review
+    economic_validity_status: needs_review
+    candidate_forms:
+      - "maximize value(x)-lambda*sum_i abs(x_i-b_i)"
+      - "maximize value(x) subject to sum_i abs(x_i-b_i)<=K"
+    output: "收益—变更Pareto前沿及受影响课程清单"
+    promotion_requirements:
+      - "管理层确认可接受变更量或单位调整成本。"
+      - "验证加入变更项后所有原约束仍保持。"
+  - id: MC-STRATEGIC-RESERVE-004
+    name: 当前收益与长期竞争力的可解释预留
+    origin: learned_after_references_R1_R2
+    claim: "把长期竞争力从隐含权重改写为最低预留、ε-约束或场景化政策旋钮。"
+    mechanical_validation_status: needs_review
+    economic_validity_status: needs_review
+    preferred_forms:
+      - "长期指标达到门槛后最大化当前收益。"
+      - "给战略课程集合预留可解释的总量，再在集合内优化。"
+    avoid:
+      - "未经校准直接采用60/20/20等固定权重。"
+  - id: MC-SURVEY-SHRINK-005
+    name: 稀疏课程问卷的分母审计与收缩
+    origin: independently_derived
+    claim: "市场份额应使用课程内出版社分母，并按样本量向总体均值收缩；无法安全映射的文本课程保留为未知。"
+    mechanical_validation_status: pass
+    parameter_validity_status: needs_review
+    required_checks:
+      - "课程代码映射覆盖率"
+      - "分母定义"
+      - "伪样本强度敏感性"
+      - "缺失不得自动当作零份额"

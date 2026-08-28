@@ -1,0 +1,19 @@
+id: TM-002-TIME-ORDERED-VALIDATION
+title: 时间有序的基线、选型与留出验证
+type: validation_pattern
+status: provisional_training
+source_cases: [2007A, 2009A]
+source_kind: audited_failure_synthesis
+origin_year: 2007
+tags: [forecast, time_series, validation, leakage, baseline]
+applicable_conditions: [目标涉及未来预测或按时间顺序外推]
+inapplicable_conditions: [目标仅为同一时点描述性拟合]
+minimum_baseline: 持久性、历史均值或简单趋势中的一个
+recommended_action: 所有预处理仅在训练折拟合，使用扩展窗口或滚动起点，并以相同折和指标比较主模型与基线
+why_it_may_help: 样本内拟合和单折优胜常高估未来表现
+required_validation: [训练截止早于验证期, 报告各折和最坏折, 检查排名稳定性]
+failure_modes: [用样本内误差宣称预测准确, 先看留出再调模型]
+counterexamples: [复杂模型样本内误差更小但滚动误差劣于持久性]
+complexity_cost: 中；需要多次重训或重算
+evidence_summary: 早期预测案例出现模型排名随留出起点反转
+last_updated: '2026-08-24'

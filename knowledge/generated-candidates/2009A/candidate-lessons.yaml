@@ -1,0 +1,278 @@
+schema_version: 1
+case_id: "2009A"
+phase: "reflection"
+collection_state: "candidate"
+verified_items_created: 0
+dummy_screening:
+  detected: false
+  status: "pass"
+  evidence: "四篇批准 PDF 的抽取文本中未发现 Dummy/dummy 标记。"
+  rule_if_later_detected: "相关提案降为 demo，不得直接升级。"
+
+cards:
+  - id: "CS-2009A-Q4-CONVENTION"
+    state: "candidate"
+    category: "case_specific_information"
+    title: <REFERENCE_TITLE_REDACTED>
+    learned_when: "audit_after_correction_and_reflection"
+    statement: "对 2009A 附表，5.575995%、5.629932% 与 5.642105% 可分别由不同但可描述的端点/求积口径产生；百分比本身不能代表模型优劣。"
+    applicable_when:
+      - "同时给出离散扭矩与转速序列。"
+      - "道路目标端点与观测端点可能不同。"
+      - "区间内插值假设会改变功率积分。"
+    not_applicable_when:
+      - "能量由校准仪器直接给出且不依赖离散求积。"
+      - "比较双方已经共享完全相同的端点、索引和积分协议。"
+    minimum_baseline:
+      - "标称道路端点与观测道路端点分别计算。"
+      - "至少报告左矩形、右矩形和端点功率梯形。"
+      - "若扭矩与转速分别线性，再报告分段精确乘积积分。"
+    validation:
+      automatic_judgment: "pass"
+      evidence:
+        - "标称端点 + 左矩形得到 5.629931538%，复现 R1。"
+        - "观测端点 + 右矩形得到 5.642104771%，复现 R3。"
+        - "标称端点 + 分段精确乘积积分得到 5.575994900%，复现 BF。"
+    counterexamples:
+      - "直接把 R1、R3、BF 的百分比按大小排序，会把口径差误判为模型差。"
+      - "把观测端点道路能量与标称端点台架结论混用，会产生不可比较结果。"
+    source_case: "2009A"
+    source_materials: ["BF", "R1", "R3"]
+    evidence_strength_status: "pass"
+    promotion_gate: "在另一道含离散功率/能量积分的案例上重复验证。"
+
+  - id: "MC-BOUNDED-CAUSAL-CONTROLLER"
+    state: "candidate"
+    category: "method_card"
+    title: <REFERENCE_TITLE_REDACTED>
+    learned_when: "audit_after_correction"
+    statement: "先用历史观测构造因果前馈，再用不随 1/h 爆增的固定反馈校正状态，最后投影到低扭矩、幅值、等效参数、变化率和停止约束。"
+    applicable_when:
+      - "扭矩和速度可在线观测。"
+      - "采样步长与实际惯量有明确声明域。"
+      - "执行器安全集合可写成逐步可检查约束。"
+    not_applicable_when:
+      - "没有任何执行器或传感器边界信息却要求实机认证。"
+      - "控制延迟大于采样周期但模型未包含延迟。"
+      - "被控对象可能反转且任务允许反转，不能直接套用零速锁存。"
+    minimum_baseline:
+      - "电机关闭。"
+      - "扭矩零阶保持 u_k=aM_k。"
+    validation:
+      automatic_judgment: "needs_review"
+      evidence:
+        - "BF 在名义、低扭矩、速度噪声、交替扭矩、宽惯量和停止模型内通过预声明阈值。"
+        - "没有新台架轨迹和真实电机规格。"
+    counterexamples:
+      - "低扭矩时直接用 u/M 反算等效惯量会病态。"
+      - "反馈增益与 1/h 成正比时，小速度噪声可触发大电流。"
+      - "只匹配能量而无非负速度约束，可把反转轨迹判为完美。"
+    source_case: "2009A"
+    source_materials: ["BF", "audit AUD-004", "audit AUD-005", "audit AUD-006"]
+    evidence_strength_status: "needs_review"
+    promotion_gate: "补充独立轨迹、延迟注入、硬件额定与台架测试。"
+
+  - id: "FM-LOW-TORQUE-RATIO"
+    state: "candidate"
+    category: "failure_mode"
+    title: <REFERENCE_TITLE_REDACTED>
+    learned_when: "audit_after_correction"
+    statement: "当等效命令写成 J_e u / M_hat 时，M_hat 接近零会造成病态放大；用 max(|M_hat|,epsilon) 限幅但仍以原 M_hat 反算并不能保证约束。"
+    applicable_when:
+      - "控制或辨识中出现执行量除以小测量量的等效参数。"
+    not_applicable_when:
+      - "模型完全不含该比值，或已对低量区定义独立安全模式。"
+    minimum_baseline:
+      - "测试 M_hat=0、0.1、1 和阈值两侧。"
+    validation:
+      automatic_judgment: "pass"
+      evidence:
+        - "审计反例 M_hat=0.1 N·m、u_raw=1 N·m 时，旧实现给出 300 kg·m²，超过 ±30 十倍。"
+        - "BF 修订后低扭矩区命令为零并逐项断言。"
+    counterexamples:
+      - "只在名义扭矩不低于 40 N·m 的数据上测试，会漏掉该错误。"
+    source_case: "2009A"
+    source_materials: ["audit CE-01", "BF"]
+    evidence_strength_status: "pass"
+    promotion_gate: "在其他含除小量控制/估计结构的案例上复现。"
+
+  - id: "FM-FIT-AND-EVALUATE-SAME-TRACE"
+    state: "candidate"
+    category: "failure_mode"
+    title: <REFERENCE_TITLE_REDACTED>
+    learned_when: "synthesized_in_reflection"
+    statement: "先用唯一附表拟合扭矩生成器，再用该生成器评价预测控制器，不能证明对独立制动过程的泛化。"
+    applicable_when:
+      - "模型参数、模拟器或噪声包络由评价轨迹拟合。"
+    not_applicable_when:
+      - "有预先留出的独立轨迹或外部物理包络。"
+    minimum_baseline:
+      - "明确训练、调参和评价集合。"
+      - "至少保留一条未参与拟合的轨迹。"
+    validation:
+      automatic_judgment: "pass"
+      evidence:
+        - "R2、R3、R4 均以同一附表拟合或构造控制评价环境。"
+        - "BF 明确把同轨迹结果降为 model-in-the-loop，但仍缺独立物理轨迹。"
+    counterexamples:
+      - "在拟合函数上加入由同一残差估计的噪声，仍不构成外部验证。"
+      - "随机重复次数多不能替代分布独立性。"
+    source_case: "2009A"
+    source_materials: ["BF", "R2", "R3", "R4"]
+    evidence_strength_status: "pass"
+    promotion_gate: "在独立数据案例中检验该失败模式是否仍能解释过度乐观结果。"
+
+  - id: "VP-CAUSAL-TIMELINE"
+    state: "candidate"
+    category: "validation_pattern"
+    title: <REFERENCE_TITLE_REDACTED>
+    learned_when: "reference_after_reading"
+    statement: "显式标出 M_k、omega_k 的可用时刻、u_k 的保持区间、参考状态更新和 M_{k+1} 到达时刻，可迅速发现未来信息、错一拍和延迟误差。"
+    applicable_when:
+      - "离散控制、在线预测或滚动优化使用历史观测。"
+    not_applicable_when:
+      - "纯离线全轨迹优化且题目不要求在线可实现性。"
+    minimum_baseline:
+      - "零阶保持：M_k 控制 [t_k,t_{k+1})。"
+    validation:
+      automatic_judgment: "needs_review"
+      evidence:
+        - "R3 用时移因子清楚解释上一拍延迟。"
+        - "BF 代码因果，但论文缺单独时序图；该表达改进尚未实施。"
+    counterexamples:
+      - "用区间中点真实扭矩生成当前命令会泄漏未来信息。"
+      - "先拟合整条 I(t) 再称为只用历史观测的在线控制。"
+    source_case: "2009A"
+    source_materials: ["R3", "BF"]
+    evidence_strength_status: "needs_review"
+    promotion_gate: "在另一离散控制案例中由时序图实际发现或排除索引错误。"
+
+  - id: "VP-REFERENCE-REPRODUCTION-LADDER"
+    state: "candidate"
+    category: "validation_pattern"
+    title: <REFERENCE_TITLE_REDACTED>
+    learned_when: "synthesized_in_reflection"
+    statement: "参考 PDF 可打开不等于结论可复现；应分开记录当前哈希、格式读取、关键公式重算、代码执行与独立物理验证。"
+    applicable_when:
+      - "比较论文、报告、题解或其他二手材料。"
+    not_applicable_when:
+      - "来源只有口头描述，连固定材料都没有；此时直接 needs_review。"
+    minimum_baseline:
+      - "记录材料 ID、当前 SHA-256、页数和提取状态。"
+      - "至少重算一个决定性结果。"
+    validation:
+      automatic_judgment: "pass"
+      evidence:
+        - "四篇 PDF 均可读，但只有 Q1–Q4 的部分结果可重算；Q5–Q6 因无代码统一保留 needs_review。"
+        - "R2/R4 的 Q4 数字显示版面完整不能替代计算复现。"
+    counterexamples:
+      - "把 PDF 有参考文献、图表和软件名称当成数学正确性。"
+    source_case: "2009A"
+    source_materials: ["R1", "R2", "R3", "R4"]
+    evidence_strength_status: "pass"
+    promotion_gate: "跨案例使用同一阶梯并记录能否减少误判。"
+
+  - id: "VP-LEGACY-INPUT-PROVENANCE"
+    state: "candidate"
+    category: "validation_pattern"
+    title: <REFERENCE_TITLE_REDACTED>
+    learned_when: "audit_after_correction"
+    statement: "旧版 Excel 即使以只读方式打开也可能改变容器字节；应在启动解析器前哈希原件，只解析一次性副本，并同时记录原始字节与规范化语义哈希。"
+    applicable_when:
+      - "解析器可能写入元数据、修复容器或改变文件编码。"
+    not_applicable_when:
+      - "输入来自不可变内容寻址存储且解析器无法写入源对象。"
+    minimum_baseline:
+      - "原件 pre/post SHA-256。"
+      - "副本 pre/post SHA-256。"
+      - "规范化语义输出 SHA-256。"
+    validation:
+      automatic_judgment: "pass"
+      evidence:
+        - "audit CE-08 观察到 Excel 只读打开副本后 SHA-256 改变而 468 行数值相同。"
+        - "BF 修订管线保持原件 d012ec8a... 前后不变。"
+    counterexamples:
+      - "在解析完成后才计算 source hash，会把变异副本冒充原件。"
+    source_case: "2009A"
+    source_materials: ["audit AUD-001", "audit CE-08", "BF"]
+    evidence_strength_status: "pass"
+    promotion_gate: "在另一旧格式或会自修复的容器输入上验证。"
+
+  - id: "EX-LAYERED-EVIDENCE-REPORTING"
+    state: "candidate"
+    category: "expression_experience"
+    title: <REFERENCE_TITLE_REDACTED>
+    learned_when: "synthesized_in_reflection"
+    statement: "同一结果应分别给计算状态、接受性、模型内验证和物理/硬件状态，避免一个 overall pass 覆盖所有证据层。"
+    applicable_when:
+      - "数学模型将用于工程判断或控制。"
+    not_applicable_when:
+      - "任务只有纯代数恒等式且不存在外部接受标准。"
+    minimum_baseline:
+      - "数值计算状态。"
+      - "阈值来源。"
+      - "验证数据独立性。"
+      - "硬件或现场证据。"
+    validation:
+      automatic_judgment: "pass"
+      evidence:
+        - "Q4 数值计算可为 pass，而工程合格因无阈值为 needs_review。"
+        - "Q6 模型内约束可为 pass，而硬件可行为 needs_review。"
+    counterexamples:
+      - "把自动 verifier overall pass 写成形式证明或硬件认证。"
+    source_case: "2009A"
+    source_materials: ["BF", "audit", "R2", "R4"]
+    evidence_strength_status: "pass"
+    promotion_gate: "跨案例检验分层状态是否保持一致和可操作。"
+
+  - id: "NG-ARBITRARY-ACCEPTANCE-THRESHOLD"
+    state: "candidate"
+    category: "do_not_generalize"
+    title: <REFERENCE_TITLE_REDACTED>
+    learned_when: "independent_and_reference_confirmed"
+    statement: "R2 的“约 5% 可接受”和 R4 的 0.1%/1% 等级只适用于其自定语境；不能作为 2009A 或其他试验台的通用验收标准。"
+    applicable_when:
+      - "论文自行设置误差等级但没有法规、题面或设备规格来源。"
+    not_applicable_when:
+      - "阈值来自明确标准、合同或校准后的风险分析。"
+    minimum_baseline:
+      - "报告连续误差值并把接受性标为 needs_review。"
+    validation:
+      automatic_judgment: "pass"
+      evidence:
+        - "题面只说能量误差是重要指标，没有给合格阈值。"
+        - "R4 自己也承认其等级仅在 10 ms 下使用。"
+    counterexamples:
+      - "步长从 10 ms 改为 100 ms 后仍沿用同一等级，会掩盖明显退化。"
+    source_case: "2009A"
+    source_materials: ["BF", "R2", "R4"]
+    evidence_strength_status: "pass"
+    promotion_gate: "在有明确外部标准的案例中验证阈值来源规则。"
+
+  - id: "MC-DELAY-ORDER-RUNTIME"
+    state: "candidate"
+    category: "method_card"
+    title: <REFERENCE_TITLE_REDACTED>
+    learned_when: "reference_after_reading"
+    statement: "用时移展开或多阶差分补偿一拍延迟时，阶数不是越高越好；应同时报告误差、噪声放大、单步运行时和延迟抖动。"
+    applicable_when:
+      - "输入足够平滑，且有多个历史样本可用。"
+      - "实时计算预算明确。"
+    not_applicable_when:
+      - "输入含强跳变、量化噪声或高阶导数不可估。"
+      - "论文只给理论 N→∞ 而没有离散噪声与收敛条件。"
+    minimum_baseline:
+      - "N=0 的零阶保持。"
+      - "N=1 的一阶受限预测。"
+    validation:
+      automatic_judgment: "needs_review"
+      evidence:
+        - "R3 给出 N=0–10 的误差和运行时，并选择 N=2。"
+        - "批准材料无源码，且没有噪声压力测试；结论尚不能复现。"
+    counterexamples:
+      - "40/300 N·m 快速交替会使无界线性外推过冲。"
+      - "高阶后向差分可显著放大量化噪声。"
+    source_case: "2009A"
+    source_materials: ["R3", "BF audit CE-04"]
+    evidence_strength_status: "needs_review"
+    promotion_gate: "重新实现 N 阶方法，固定种子测试噪声、跳变和实时预算。"

@@ -1,0 +1,204 @@
+case_id: 2012A
+phase: solve
+skill: "$cumcm-a-solve"
+blind_solution_status: pass
+network_prohibition_compliance: pass
+external_answer_materials_avoidance: pass
+freeze_action: not_performed
+cross_phase_resume: not_performed
+delivery_status: pass
+delivery_status_reason: "必需产物齐全；最终全量重跑、两次PDF编译与12/12内部一致性核对均无fail。"
+status_vocabulary: [pass, fail, needs_review]
+
+question_coverage:
+  q1_group_difference:
+    status: pass
+    evidence: "results/q1_summary.json"
+  q1_trusted_panel:
+    status: needs_review
+    evidence: "ICC和Kendall W支持第一组，同酒离散支持第二组；多数证据暂选第一组。"
+  q2_grading:
+    status: needs_review
+    evidence: "results/<SOURCE_FILE_REDACTED>; 扰动和替代评委组ARI偏低。"
+  q3_grape_wine_links:
+    status: needs_review
+    evidence: "局部FDR相关存在，但整体PLS外样本Q2为负。"
+  q4_quality_effects:
+    status: needs_review
+    evidence: "岭系数仅是条件关联线索，主模型外推未通过。"
+  q4_physchem_quality_evaluation:
+    status: fail
+    evidence: "红酒不胜基线；白酒改善不足且置换不显著。"
+
+data_summary:
+  red_samples: 27
+  white_samples: 28
+  tasting_records: 1100
+  conventional_features:
+    red_grape: 59
+    white_grape: 59
+    red_wine: 15
+    white_wine: 14
+  aroma_compounds_before_detection_filter:
+    red_grape: 55
+    white_grape: 55
+    red_wine: 73
+    white_wine: 73
+  sample_alignment_status: pass
+  score_bounds_status: pass
+  scoring_repairs:
+    status: needs_review
+    count: 3
+    rule: "同酒同项其他评委中位数"
+  technical_repeat_anomalies:
+    status: needs_review
+    rule: "重复中位数"
+  aroma_blank_semantics:
+    status: needs_review
+    primary: "未检出=0后signed-log1p"
+    sensitivity: "半最小值填补"
+  current_snapshot_hashes_status: pass
+  pre_session_input_identity_status: needs_review
+
+q1:
+  red:
+    panel_1_mean: 73.0852
+    panel_2_mean: 70.5148
+    difference_panel1_minus_panel2: 2.5704
+    paired_t_p: 0.01947
+    sign_flip_p: 0.02094
+    difference_status: pass
+    panel_1_icc_2_k: 0.895
+    panel_2_icc_2_k: 0.801
+    panel_1_kendall_w: 0.519
+    panel_2_kendall_w: 0.455
+    trusted_panel: 1
+    trust_status: needs_review
+  white:
+    panel_1_mean: 73.9714
+    panel_2_mean: 76.5321
+    difference_panel1_minus_panel2: -2.5607
+    paired_t_p: 0.01262
+    sign_flip_p: 0.01254
+    difference_status: pass
+    panel_1_icc_2_k: 0.605
+    panel_2_icc_2_k: 0.556
+    panel_1_kendall_w: 0.319
+    panel_2_kendall_w: 0.230
+    trusted_panel: 1
+    trust_status: needs_review
+
+q2:
+  method: "equal-block PCA-Ward; grape-PC block 0.5, trusted-panel quality block 0.5; k=3"
+  method_status: needs_review
+  red:
+    A: [2, 3, 9, 17, 19, 20, 21, 22, 23, 24]
+    B: [4, 5, 6, 7, 8, 10, 11, 13, 14, 16, 25, 26, 27]
+    C: [1, 12, 15, 18]
+    grade_quality_means: {A: 79.72, B: 72.36, C: 58.85}
+    perturbation_median_ari: 0.482
+    alternative_panel_ari: 0.183
+    stability_status: needs_review
+  white:
+    A: [1, 3, 4, 17, 20, 25, 26, 28]
+    B: [2, 5, 6, 7, 8, 9, 10, 11, 14, 15, 16, 18, 19, 21, 22, 23, 24]
+    C: [12, 13, 27]
+    grade_quality_means: {A: 79.49, B: 73.02, C: 64.67}
+    perturbation_median_ari: 0.200
+    alternative_panel_ari: -0.014
+    stability_status: needs_review
+  cluster_count_choice_status: needs_review
+
+q3:
+  red:
+    grape_block_features: 97
+    wine_block_features: 73
+    bh_significant_links: 65
+    nested_loo_q2: -0.178
+    permutation_p: 0.390
+    status: needs_review
+  white:
+    grape_block_features: 98
+    wine_block_features: 71
+    bh_significant_links: 26
+    nested_loo_q2: -0.063
+    permutation_p: 0.075
+    status: needs_review
+  representative_links:
+    - "red grape anthocyanin -> red wine anthocyanin: rho=0.937, BH q=5.65e-10"
+    - "red grape anthocyanin -> red wine L*: rho=-0.893, BH q=1.79e-7"
+    - "white grape juice yield -> white wine L*: rho=0.731, BH q=0.00470"
+    - "white grape dry matter -> white wine L*: rho=-0.728, BH q=0.00470"
+  overall_mapping_status: fail
+
+q4:
+  decision_rule: "pass iff Q2>0, RMSE improvement>=10%, fixed-pipeline permutation p<0.05, and rho>=0.50"
+  red:
+    selected_model: ridge
+    combined_features: 170
+    baseline_rmse: 7.487
+    nested_loo_rmse: 7.572
+    nested_loo_q2: -0.103
+    spearman_rho: 0.524
+    permutation_p: 0.005
+    evaluability_status: fail
+    winsor_q2: 0.382
+    alternative_panel_target_q2: 0.213
+    sensitivity_status: needs_review
+  white:
+    selected_model: ridge
+    combined_features: 169
+    baseline_rmse: 4.913
+    nested_loo_rmse: 4.612
+    nested_loo_q2: 0.052
+    spearman_rho: 0.301
+    permutation_p: 0.175
+    evaluability_status: needs_review
+    winsor_q2: -0.103
+    alternative_panel_target_q2: 0.189
+    sensitivity_status: needs_review
+  overall_physchem_only_evaluation_status: fail
+  recommended_use: "仅作感官评价的辅助筛查，不作替代评分。"
+
+validation:
+  fixed_random_seed: pass
+  nested_cross_validation: pass
+  sign_flip_permutation: pass
+  model_permutation: pass
+  bootstrap_intervals: pass
+  repaired_score_deletion_sensitivity: pass
+  aroma_imputation_sensitivity: pass
+  conventional_winsor_sensitivity: pass
+  alternative_panel_sensitivity: pass
+  cluster_count_boundary_check: pass
+  external_validation: needs_review
+  mathematical_truth_claim: needs_review
+
+required_outputs:
+  problem-analysis.md: pass
+  data-audit.md: pass
+  assumptions.yaml: pass
+  variables.yaml: pass
+  model-selection.md: pass
+  solution-report.yaml: pass
+  reproducibility.yaml: pass
+  code/: pass
+  results/: pass
+  figures/: pass
+  paper/main.tex: pass
+  paper/paper.md: pass
+  paper/<SOURCE_FILE_REDACTED>: pass
+  results/verification.json: pass
+  results/artifact-manifest.json: pass
+
+limitations:
+  - status: needs_review
+    condition: "无外部质量金标准；可信组只能由内部一致性判断。"
+  - status: needs_review
+    condition: "单一年份、红27白28个样本，高维模型不确定性大。"
+  - status: needs_review
+    condition: "分级对评委组和特征扰动敏感。"
+  - status: needs_review
+    condition: "芳香空白语义与异常值处理会改变部分Q2。"
+  - status: needs_review
+    condition: "当前输入进入会话前的字节身份未被完整哈希证明。"

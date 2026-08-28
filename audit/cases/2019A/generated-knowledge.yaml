@@ -1,0 +1,20 @@
+case_id: 2019A
+status: candidate_only
+candidate_count: 41
+machine_verified_count: 0
+verified_count: 0
+exported_files:
+- file: expression-lessons.yaml
+  sha256: 65a6980f3c4521ef7cd5761b71aa51816414328444d343e498b89d1fd2999158
+- file: failure-modes.yaml
+  sha256: 940ecd375bf297a852b29f1d46a92293e32cbe8cc192a8b754cab26f75d6ce86
+- file: method-cards.yaml
+  sha256: c87be1e000189f1df07319c31a54c00f449de4a242ebe36e9ac31b7a073117b9
+- file: non-generalizable-lessons.yaml
+  sha256: 587d98ccc2eb7b85714cf2f432e3c7d2f342b477a7005005995fee428ec0e49c
+- file: problem-specific-facts.yaml
+  sha256: 0500b34758e27b48d95015ef159c9e1f797ba207f6d3841b115904dcb7e1c7fb
+- file: README.md
+  sha256: 1db96bde3088eb2153cb0d40b9d17c4981063535d2302071841a98a558bb5090
+- file: validation-patterns.yaml
+  sha256: 38e5939011ebfb4fa439f99f7ffd8e7936408a5fad834bfaaad94e4c8a2a3bb7

@@ -1,0 +1,88 @@
+case_id: "2017A"
+phase: blind-revision
+skill: cumcm-a-solve
+workflow_completion: pass
+overall_scientific_status: needs_review
+frozen: false
+blind_v1_preserved: true
+external_freeze_required: true
+scope:
+  blind_solution: true
+  inputs_used: [problem, raw_data, blind_v1, independent_audit]
+  reference_papers_read: false
+  commentary_or_standard_answer_read: false
+  network_search_used: false
+  other_phase_skill_invoked: false
+task_coverage:
+  - question: 1
+    requirement: "旋转中心、探测器间距、180个方向"
+    artifacts: [results/calibration.json, results/<SOURCE_FILE_REDACTED>, results/direction-publication-verification.json]
+    status: pass
+  - question: 2
+    requirement: "附件3位置、形状、吸收率、十点值和256×256矩阵"
+    artifacts: [results/problem2-geometry.json, results/<SOURCE_FILE_REDACTED>,<SOURCE_FILE_REDACTED>]
+    status: pass
+  - question: 3
+    requirement: "附件5相关信息、十点值和256×256矩阵"
+    artifacts: [results/problem3-geometry.json, results/problem3-threshold-sensitivity.json,<SOURCE_FILE_REDACTED>]
+    status: needs_review
+  - question: 4
+    requirement: "标定精度、稳定性、新模板及改进理由"
+    artifacts: [results/angle-step-validation.json, results/stability.json, figures/<SOURCE_FILE_REDACTED>]
+    status: pass
+key_results:
+  coordinate_convention: "左下角原点，x向右，y向上，单位mm"
+  rotation_center_mm: [40.7714, 56.2422]
+  detector_spacing_mm: 0.2756
+  signed_detector_normal_start_degrees: 29.6741
+  undirected_xray_line_start_degrees: 119.6741
+  angle_step_degrees: 1.0000
+  angle_step_selection_status: needs_review
+  projection_gain: 1.7806
+  calibration_projection_nrmse: 0.0137
+  direction_publication_status: pass
+  selected_reconstruction: nonnegative_sirt_80
+  reconstruction_stopping_status: needs_review
+  template_pixel_rmse: 0.0290
+  template_projection_nrmse: 0.0122
+  problem2:
+    envelope_center_mm: [50.6364, 52.3807]
+    bounding_box_mm: [28.5156, 72.6563, 11.7188, 93.3594]
+    holes: 2
+  problem3:
+    envelope_center_mm: [49.8163, 49.7825]
+    material_fraction_at_threshold_0_5: 0.7174
+    reconstruction_threshold_porosity_at_0_5: 0.2826
+    hole_count_at_threshold_0_5: 92
+    porosity_range_threshold_0_4_to_0_6: [0.2694, 0.2947]
+    hole_count_range_threshold_0_4_to_0_6: [92, 94]
+  stability:
+    paired_replicates: 120
+    seeds: [2017, 12017, 22017]
+    full_estimator_each_replicate: true
+    all_bin_common_gaussian_noise: true
+    detector_spacing_sd_reduction_95: [0.3361, 0.5356]
+    start_angle_sd_reduction_95: [0.3724, 0.5713]
+    center_x_sd_reduction_95: [0.3512, 0.5436]
+    center_y_sd_reduction_95: [0.3052, 0.5006]
+validation:
+  direction_semantics: pass
+  fit_evaluate_separation: pass
+  deterministic_code_run: pass
+  sirt_iteration_sensitivity: pass
+  threshold_sensitivity: pass
+  monte_carlo_noise_diagnostics: pass
+  xls_csv_cell_consistency: pass
+  empty_output_reproduction: pass
+  deterministic_core_files: pass
+  deterministic_core_file_count: 65
+  paper_result_consistency: pass
+  frozen_v1_tree_integrity: pass
+  paper_compile: needs_review
+limitations:
+  - {item: "固定1度与自由步长的折间差异区间跨0", status: needs_review}
+  - {item: "80次停止仅由同一标定模板半收敛曲线冻结", status: needs_review}
+  - {item: "附件5孔隙率与孔数依赖阈值和连通规则", status: needs_review}
+  - {item: "共同高斯噪声是内部压力模型，不是实机噪声真值", status: needs_review}
+  - {item: "当前XLS严格文件来源链与审计记录不一致", status: needs_review}
+  - {item: "缺少XeLaTeX和逐页人工目检", status: needs_review}

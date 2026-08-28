@@ -1,0 +1,30 @@
+{
+  "case_id": "2014A",
+  "phase": "solve",
+  "status": "pass",
+  "entrypoint": "code/solve.py",
+  "command": "python code/solve.py",
+  "verification_command": "python code/verify.py",
+  "seed": 2014,
+  "declared_dependencies": {
+    "python": "3.12.13",
+    "numpy": "2.3.5",
+    "pillow": "12.3.0"
+  },
+  "input_sha256": {
+    "input/problem/<SOURCE_FILE_REDACTED>": "4c9d811f802b3584bd528eda46997335bac43281ef8e3b6bc383a183976bc765",
+    "input/attachments/<SOURCE_FILE_REDACTED>": "9d70f90b1b924bcd2df7eab2f9beb58294ee2702a09bfd149acf7d5acacbdce4",
+    "input/attachments/<SOURCE_FILE_REDACTED>": "64ec89a0531b57514b291416298826a0bd6f549a3009b54ff712cdd4a845d50e",
+    "input/attachments/file-cde3e1f9ab7216a1dfd1.tif": "c113d66b4f76b8df2659329570fe36dc3612ea80959fe093b8fc35887964ee3f",
+    "input/attachments/file-b91e320690f088c807c0.tif": "df8427dfae55eea185b8750569167c8017b9aed2868c07c9bfd8c3aeae39c7f8"
+  },
+  "output_manifest": "results/manifest.json",
+  "output_manifest_sha256": "47ca4c422aaf8884017f7145b23256322235101c0c6816a599c469bf2478b7f0",
+  "determinism_scope": "same inputs, dependency versions, and platform; verified separately by repeated execution",
+  "repeatability_evidence": {
+    "path": "results/repeatability.json",
+    "status": "pass",
+    "comparison": "byte_identical"
+  },
+  "external_validity": "needs_review"
+}

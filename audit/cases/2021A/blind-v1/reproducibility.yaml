@@ -1,0 +1,50 @@
+case_id: 2021A
+phase: solve
+command: python code/solve.py
+verification_command: python code/verify.py
+working_directory: <RUNTIME_ROOT>\2021A\workspaces\solve
+random_seed: 20210828
+determinism:
+  optimizer_initialization: 全零可行点
+  ray_sequence: scrambled Sobol with fixed integer seeds
+  output_sorting: 保持附件节点顺序，JSON 键排序
+  status: pass
+environment:
+  python: 3.12.13
+  numpy: 2.5.2
+  pandas: 3.0.5
+  scipy: 1.18.1
+  matplotlib: 3.11.1
+  openpyxl: 3.1.5
+  platform: Windows 11
+dependencies_file: code/requirements.txt
+inputs:
+  identity_status: pass
+  actual_hash_record: results/input_audit.json
+outputs_checked:
+  - results/summary.json
+  - results/validation_metrics.json
+  - results/<SOURCE_FILE_REDACTED>
+  - results/<SOURCE_FILE_REDACTED>
+  - results/<SOURCE_FILE_REDACTED>
+  - results/<SOURCE_FILE_REDACTED>
+  - paper/generated_numbers.tex
+<SOURCE_FILE_REDACTED>
+rerun:
+  executions: 2
+  elapsed_seconds: [39.96737569999823, 39.7747997000115]
+  process_status: pass
+  numeric_files_compared: 12
+  numeric_hash_status: pass
+  workbook_cell_status: pass
+  paper_result_consistency_status: pass
+  evidence: results/reproduction_check.json
+latex:
+  compiler_detection_status: fail
+  compilation_status: needs_review
+  note: 当前环境未检测到 xelatex 或 latexmk，未声称编译成功；需要在具备 XeLaTeX 的环境实际编译并逐页检查。
+claims_boundary:
+  execution_reproducibility_status: pass
+  formal_mathematical_correctness_status: needs_review
+  physical_external_validity_status: needs_review
+  note: 重跑一致不等于数学正确性或外部物理有效性。

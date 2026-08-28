@@ -1,0 +1,20 @@
+case_id: 2020A
+status: candidate_only
+candidate_count: 40
+machine_verified_count: 0
+verified_count: 0
+exported_files:
+- file: case-specific-facts.yaml
+  sha256: 20f4cc84c5d40c63db40dd470efd908e2676b86ff1d93375bb618966fc921490
+- file: failure-modes.yaml
+  sha256: ef238dc1672d41ea0526a5bb103eaabdbb696d799bb46380aafcee841083df09
+- file: method-cards.yaml
+  sha256: 3e4716a8d3f851de7241f753c062fc8fd3cf5c2c33e53f037dbe5f7116dd97c7
+- file: non-generalizable.yaml
+  sha256: 822ddcae2b572202474381832e34caa0a81150dd3c9a667575bad8b65d276a7d
+- file: README.md
+  sha256: 24dc429635f30285c98f3919fad9b55f36fa81e510b3ca0ecdd2ef2b2de0f85a
+- file: validation-patterns.yaml
+  sha256: 385413960e539ad3306df1aeda72c690474d063af730616dddbff31e019b8d73
+- file: writing-lessons.yaml
+  sha256: aab545a7032041eff5ca68ca87e89483927ba0d24e9f15391baca9f77b38dd35

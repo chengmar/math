@@ -1,0 +1,343 @@
+schema_version: 1
+case_id: "2009A"
+phase: "reflection"
+overall_status: "needs_review"
+status_vocabulary:
+  - "pass"
+  - "fail"
+  - "needs_review"
+proposal_policy:
+  allowed_states:
+    - "candidate"
+    - "demo"
+  generated_state: "candidate"
+  verified_promotion_performed: false
+
+sources:
+  - id: "BF"
+    kind: "frozen_blind_final"
+    title: <REFERENCE_TITLE_REDACTED>
+    integrity_status: "pass"
+    uncertainty: "模型内证据充分；形式证明、硬件可行性和物理台架验收为 needs_review。"
+  - id: "R1"
+    kind: "approved_reference"
+    file: "<REFERENCE_ID>"
+    title: <REFERENCE_TITLE_REDACTED>
+    sha256: <REFERENCE_HASH_REDACTED>
+    content_status: "needs_review"
+    uncertainty: "PDF 可读但有结构告警；只有论文，没有代码。"
+  - id: "R2"
+    kind: "approved_reference"
+    file: "<REFERENCE_ID>"
+    title: <REFERENCE_TITLE_REDACTED>
+    sha256: <REFERENCE_HASH_REDACTED>
+    content_status: "needs_review"
+    uncertainty: "PDF 可读但有结构告警；GM、BP、模糊 PID 不具备执行所需参数。"
+  - id: "R3"
+    kind: "approved_reference"
+    file: "<REFERENCE_ID>"
+    title: <REFERENCE_TITLE_REDACTED>
+    sha256: <REFERENCE_HASH_REDACTED>
+    content_status: "needs_review"
+    uncertainty: "PDF 可读但有结构告警；有参数表，无代码，拟合公式文本抽取不完整。"
+  - id: "R4"
+    kind: "approved_reference"
+    file: "<REFERENCE_ID>"
+    title: <REFERENCE_TITLE_REDACTED>
+    sha256: <REFERENCE_HASH_REDACTED>
+    content_status: "needs_review"
+    uncertainty: "PDF 可读但有结构告警；论文提到附件程序，但批准目录只有 PDF。"
+
+dimensions:
+  - id: "problem_decomposition"
+    label: "问题拆解"
+    entries:
+      BF:
+        summary: "能量等效→机械组合→连续机理→数据积分→因果基线→有界闭环。"
+        status: "pass"
+      R1:
+        summary: "六问顺序推进；Q5 速度追赶，Q6 速度与扭矩递推。"
+        status: "needs_review"
+      R2:
+        summary: "前三问物理，后三问拟合、GM/BP 和 PID；方法依赖链不够清楚。"
+        status: "needs_review"
+      R3:
+        summary: "基本模型→时延→反馈→Taylor/Laplace→优化扩展。"
+        status: "pass"
+      R4:
+        summary: "等效模型→评价体系→ZOH→GM 预测→随机仿真。"
+        status: "pass"
+
+  - id: "assumptions"
+    label: "假设"
+    entries:
+      BF:
+        summary: "区分事实、假设和工程判断；声明外生扭矩、步长/惯量域、低扭矩与停止。"
+        status: "pass"
+      R1:
+        summary: "把观测、执行和离散化都理想化，屏蔽噪声和延迟风险。"
+        status: "needs_review"
+      R2:
+        summary: "训练、预测和 PID 设计条件未形成可检验假设。"
+        status: "needs_review"
+      R3:
+        summary: "基础物理假设清楚；高阶预测所需光滑性和噪声条件不足。"
+        status: "needs_review"
+      R4:
+        summary: "假设制动性能跨试验重复，随机扭矩族来自单条轨迹拟合。"
+        status: "needs_review"
+
+  - id: "data_and_provenance"
+    label: "数据与溯源"
+    entries:
+      BF:
+        summary: "468 行结构审计、原件前后哈希、临时副本、规范化语义哈希。"
+        status: "pass"
+      R1:
+        summary: "附表绘图与累加，无输入身份和索引审计。"
+        status: "needs_review"
+      R2:
+        summary: "Excel/SPSS/Origin 多工具处理，无唯一数据管线。"
+        status: "needs_review"
+      R3:
+        summary: "用同一附表拟合扭矩并评价控制器。"
+        status: "needs_review"
+      R4:
+        summary: "拟合 Logistic/正弦/正态模型后生成仿真族，无固定种子与源码。"
+        status: "needs_review"
+
+  - id: "baseline"
+    label: "最低基线"
+    entries:
+      BF:
+        summary: "电机关闭、速度差分、扭矩 ZOH 三层基线。"
+        status: "pass"
+      R1:
+        summary: "没有电机关闭或等复杂度基线。"
+        status: "fail"
+      R2:
+        summary: "GM/BP/PID 没有同口径最低基线。"
+        status: "fail"
+      R3:
+        summary: "ZOH 作为反馈和 N 阶方法的自然基线。"
+        status: "pass"
+      R4:
+        summary: "ZOH 与 GM、10 ms 与 100 ms 对照。"
+        status: "pass"
+
+  - id: "main_model"
+    label: "主模型"
+    entries:
+      BF:
+        summary: "Q5 扭矩 ZOH；Q6 minmod 预测、观测器、固定反馈、命令投影、停止锁存。"
+        status: "pass"
+      R1:
+        summary: "Q5 速度追赶；Q6 速度和扭矩二元递推。"
+        status: "needs_review"
+      R2:
+        summary: "三次拟合、GM(1,1)、BP，后改模糊自整定 PID。"
+        status: "needs_review"
+      R3:
+        summary: "ZOH、反馈系数修正、N 阶 Taylor/Laplace 预测。"
+        status: "needs_review"
+      R4:
+        summary: "ZOH 与滚动 GM(1,1)，另提神经网络。"
+        status: "needs_review"
+
+  - id: "parameters"
+    label: "参数与选择"
+    entries:
+      BF:
+        summary: "K=500、L=0.25、低扭矩/绝对扭矩/变化率设置由声明域和压力测试支持，但不是硬件额定值。"
+        status: "needs_review"
+      R1:
+        summary: "主要物理参数可见，约束域和调参规则缺失。"
+        status: "needs_review"
+      R2:
+        summary: "拟合系数可见，GM/BP/PID 关键参数缺失。"
+        status: "fail"
+      R3:
+        summary: "拟合参数、反馈系数和 N 扫描可见。"
+        status: "pass"
+      R4:
+        summary: "部分拟合与 GM 参数可见，滚动窗口和随机种子缺失。"
+        status: "needs_review"
+
+  - id: "algorithm_and_causality"
+    label: "算法与因果性"
+    entries:
+      BF:
+        summary: "控制命令只使用历史扭矩和当前速度；状态更新与停止事件可由代码复核。"
+        status: "pass"
+      R1:
+        summary: "声称历史观测控制下一段，但部分索引和比例记号不稳定。"
+        status: "needs_review"
+      R2:
+        summary: "先用完整附表拟合 I(t) 与实时历史观测目标混淆。"
+        status: "fail"
+      R3:
+        summary: "明确识别一拍时延；高阶差分的实时噪声代价未核验。"
+        status: "needs_review"
+      R4:
+        summary: "识别上一拍后效性并滚动预测；每步估计细节不全。"
+        status: "needs_review"
+
+  - id: "validation"
+    label: "验证"
+    entries:
+      BF:
+        summary: "独立公式复算、性质断言、约束、噪声、交替扭矩、惯量端点和停止事件。"
+        status: "pass"
+      R1:
+        summary: "Q5/Q6 主要为定性评价，无数值或反例。"
+        status: "fail"
+      R2:
+        summary: "缺训练/测试分离、程序与 PID 参数。"
+        status: "fail"
+      R3:
+        summary: "有初值、反馈系数和阶数表；无源码、噪声和突变反例。"
+        status: "needs_review"
+      R4:
+        summary: "有多场景模拟和步长退化；同源生成器且无种子/代码。"
+        status: "needs_review"
+
+  - id: "complexity"
+    label: "复杂度"
+    entries:
+      BF:
+        summary: "每步 O(1)、固定内存；缺实际实时基准。"
+        status: "needs_review"
+      R1:
+        summary: "公式上 O(1)，未给实时与稳定性开销。"
+        status: "needs_review"
+      R2:
+        summary: "GM 重估、BP 训练与模糊 PID 设计成本不明。"
+        status: "fail"
+      R3:
+        summary: "给 N=0–10 的运行时，能展示阶数成本。"
+        status: "pass"
+      R4:
+        summary: "GM 与神经网络开销未量化。"
+        status: "needs_review"
+
+  - id: "interpretability"
+    label: "解释性"
+    entries:
+      BF:
+        summary: "前馈、预测、状态误差、约束和停止各有物理角色。"
+        status: "pass"
+      R1:
+        summary: "工程直观，但公式一致性较弱。"
+        status: "needs_review"
+      R2:
+        summary: "方法名多，输入输出链和参数不足。"
+        status: "needs_review"
+      R3:
+        summary: "时延、反馈及精度—运行时关系清楚。"
+        status: "pass"
+      R4:
+        summary: "评价指标、步长与随机扭矩族直观。"
+        status: "pass"
+
+  - id: "robustness"
+    label: "稳健性"
+    entries:
+      BF:
+        summary: "固定种子速度噪声、快速交替、惯量域、标定偏差和停止反例；仍非实机。"
+        status: "needs_review"
+      R1:
+        summary: "只有理想观测和缩短步长的定性说法。"
+        status: "fail"
+      R2:
+        summary: "列出 BP/PID 局限但没有可执行压力测试。"
+        status: "fail"
+      R3:
+        summary: "有初值和阶数敏感性，缺噪声、饱和、停止。"
+        status: "needs_review"
+      R4:
+        summary: "有正态/正弦扰动与步长测试，但来自同源仿真族。"
+        status: "needs_review"
+
+  - id: "expression"
+    label: "论文表达"
+    entries:
+      BF:
+        summary: "紧凑、状态和局限清楚；验证内容偏重，缺控制时序图与运行时表。"
+        status: "needs_review"
+      R1:
+        summary: "背景和图较充分，索引/符号和绝对能量展示有疑点。"
+        status: "needs_review"
+      R2:
+        summary: "附录丰富但方案堆叠，关键复现细节不足。"
+        status: "needs_review"
+      R3:
+        summary: "结构、对照表和运行时表达最强；理论结论语气过强。"
+        status: "pass"
+      R4:
+        summary: "评价框架表达突出；自定阈值与同源模拟边界不够醒目。"
+        status: "needs_review"
+
+quantitative_results:
+  q1_equivalent_inertia_kgm2:
+    BF: 51.998885714286
+    R1: 52.0
+    R2: 52.0
+    R3: 52.0
+    R4: 51.9989
+    comparison_status: "pass"
+  q2_compensation_kgm2:
+    BF: [11.990573642933, -18.017738428420]
+    R1: [12.0, -18.0]
+    R2: [12.0, -18.0]
+    R3: [12.0, -18.0]
+    R4: [12.0, -18.0]
+    comparison_status: "pass"
+  q3_positive_current_A:
+    BF: 174.687844448322
+    R1: 174.8
+    R2: 175.0
+    R3: 174.8252
+    R4: 174.825
+    comparison_status: "pass"
+  q4_relative_energy_error_pct:
+    BF: 5.575994900
+    R1: 5.6299
+    R2: 5.6527
+    R3: 5.64
+    R4: 6.05
+    comparison_status: "needs_review"
+    uncertainty: "端点、区间插值和索引口径不同；R2/R4 绝对量未复现。"
+  q5_relative_energy_error_pct:
+    BF: 0.022087
+    R1: null
+    R2: null
+    R3: 0.219
+    R4: 0.045
+    comparison_status: "needs_review"
+    uncertainty: "R3/R4 使用不同的拟合或合成扭矩环境。"
+  q6_relative_energy_error_pct:
+    BF: 0.000074208
+    R1: null
+    R2: null
+    R3: 0.001294
+    R4: 0.024
+    comparison_status: "needs_review"
+    uncertainty: "参考材料无批准范围内代码；全部结果均非新台架试验。"
+
+attribution_summary:
+  independently_present_before_audit:
+    - "Q1–Q4 物理主线与数据积分。"
+    - "电机关闭、速度差分、扭矩 ZOH 基线。"
+    - "预测加速度误差反馈的 Q6 原型。"
+    - "model-in-the-loop 与硬件边界声明。"
+  corrected_after_audit:
+    - "原始 XLS 隔离与唯一生成链。"
+    - "分段精确乘积积分。"
+    - "低扭矩、绝对扭矩、变化率与停止约束。"
+    - "minmod 预测、观测器、固定反馈和声明稳定域。"
+    - "噪声、快速交替、宽惯量与停止压力测试。"
+  learned_after_reading_references:
+    - "用显式时移算子表达一拍滞后。"
+    - "用阶数—误差—运行时表呈现预测补偿的计算预算。"
+    - "用多类扭矩生成场景做系统化仿真，但必须固定种子并与拟合轨迹隔离。"
+    - "把反馈系数扫描作为调参证据，而不是只报一个参数。"

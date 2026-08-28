@@ -1,0 +1,55 @@
+schema_version: 1
+case_id: 2011A
+knowledge_status: candidate
+scope: case_specific_only
+judgment_vocabulary: [pass, fail, needs_review]
+
+data:
+  samples: 319
+  metals: [As, Cd, Cr, Cu, Hg, Ni, Pb, Zn]
+  zone_counts:
+    life: 44
+    industrial: 36
+    mountain: 66
+    traffic: 138
+    park: 35
+  semantic_table_identity_status: pass
+  container_copy_chain_status: needs_review
+  background_spatial_validity_status: needs_review
+
+blind_final:
+  zone_index:
+    industrial: 2.156267927
+    traffic: 1.850466642
+    life: 1.715095507
+    park: 1.476321455
+    mountain: 1.002834604
+    numerical_status: pass
+    exact_ranking_status: needs_review
+  industrial_rank1_block_frequency: 0.8232
+  traffic_exceeds_industrial_frequency: 0.1246
+  nmf_labels:
+    - Hg-dominant
+    - As-Cr-Ni-covariation
+    - Cd-Cu-Pb-Zn-covariation
+  nmf_numerical_status: pass
+  nmf_physical_source_status: needs_review
+  direction_pass_count: 0
+  direction_status: needs_review
+  exact_hotspot_status: needs_review
+
+reference_reimplementation:
+  nemerow_background:
+    values_by_zone_order_life_industrial_mountain_traffic_park:
+      [3.170597, 13.533016, 1.253140, 9.426415, 2.734361]
+    status: pass
+  nemerow_background_plus_2sd:
+    values_by_zone_order_life_industrial_mountain_traffic_park:
+      [2.090446, 9.276859, 0.824236, 6.462517, 1.868890]
+    status: pass
+  common_order:
+    value: [industrial, traffic, life, park, mountain]
+    within_current_comparison_status: pass
+    external_truth_status: needs_review
+
+do_not_promote_as_general_rule: true

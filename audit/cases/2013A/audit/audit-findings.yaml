@@ -1,0 +1,260 @@
+schema_version: 1
+case_id: "2013A"
+phase: audit
+generated_at: "2026-08-25T05:55:12.4167242+08:00"
+overall_status: needs_review
+frozen_integrity_status: pass
+reproduction_status: pass
+constant_state_arithmetic_status: pass
+task_level_validity_status: needs_review
+leakage_provenance_status: needs_review
+finding_counts:
+  critical: 0
+  major: 7
+  minor: 4
+  suggestion: 0
+findings:
+  - id: AUD-001
+    severity: major
+    category: data_completeness
+    evidence: >-
+      results/input_manifest.json reports video_files_found=0 and input_completeness_status=needs_review;
+      results/summary.json says q1.numeric_capacity_available=false,
+      q2.empirical_difference_available=false, and q4.case_specific_status=needs_review, while
+      solution-report.yaml still records small_question_coverage_status=pass.
+    affected_files:
+      - frozen-solution/results/input_manifest.json
+      - frozen-solution/results/summary.json
+      - frozen-solution/solution-report.yaml
+      - frozen-solution/paper/paper.md
+    reason: >-
+      Questions 1 and 2 require the two videos, and Question 4 requires the capacity inferred from
+      Question 1. The frozen answer is transparent about the missing data, but it is not a numerically
+      closed answer to the required task; a pass coverage judgment is therefore too strong.
+    recommended_fix: >-
+      In an authorized solve revision, restore the supplied videos into the allowed input set, record
+      hashes/frame rate/duration/decodability, perform blinded overlap annotation, estimate C1(t) and
+      C2(t), and rerun Questions 1-4. Until then, set task and small-question coverage to needs_review.
+    requires_human_review: true
+
+  - id: AUD-002
+    severity: major
+    category: constraint_omission
+    evidence: >-
+      code/model-parameters.json records a 60 s cycle, 30 s phase, 3 s yellow and 3 s green flash,
+      but none of signal_cycle_s, phase_duration_s, yellow_s or green_flash_s occurs in code/solve.ps1.
+      paper/paper.md states that the code can integrate q(t) or C(t) by segments. Using the paper's own
+      shock formula with the same mean q=1500 pcu/h, C=1000 pcu/h, and a feasible 30 s at 3000 plus
+      30 s at 0 waveform gives 3.260 min when green starts first and 3.760 min when red starts first,
+      rather than the constant-flow 5.306 min.
+    affected_files:
+      - frozen-solution/code/model-parameters.json
+      - frozen-solution/code/solve.ps1
+      - frozen-solution/paper/paper.md
+      - frozen-solution/results/summary.json
+    reason: >-
+      Shock speed is nonlinear in q, so replacing the signal-controlled arrival process by its mean is
+      not invariant. The omitted phase, travel-time shift and initial signal state make the reported
+      hitting time non-unique under the supplied conditions; the counterexample changes it by 29%-39%.
+    recommended_fix: >-
+      Implement reflected piecewise integration for q(t) and C(t), map the actual approach phases and
+      uncontrolled turns to the studied link, include free-flow travel delay and initial phase, and
+      report phase/duty-cycle sensitivity alongside the constant-flow baseline.
+    requires_human_review: true
+
+  - id: AUD-003
+    severity: major
+    category: implementation_gap
+    evidence: >-
+      The paper claims saturated-window screening, three-cycle medians and MAD change-point handling for
+      Question 1. In code/solve.ps1, Get-Median is used only for the 81-point sensitivity median;
+      pcu_weights is never referenced, and the Question 1 output is only a two-row blank annotation
+      template. Adding video files would only change an extension count; it would not run the claimed
+      capacity estimator.
+    affected_files:
+      - frozen-solution/code/solve.ps1
+      - frozen-solution/code/model-parameters.json
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/paper/paper.md
+      - frozen-solution/solution-report.yaml
+    reason: >-
+      A procedural description and empty template do not implement the method advertised as the selected
+      model. The frozen code cannot produce C1(t), saturation flags, robust segments or Question 2 matched
+      comparisons even if the missing videos become available.
+    recommended_fix: >-
+      Implement and test the annotation-to-PCU pipeline, full-cycle construction, demand-saturation gate,
+      robust smoothing/segmentation and uncertainty output. Otherwise describe Question 1 strictly as an
+      unimplemented protocol and keep implementation/coverage status at needs_review.
+    requires_human_review: true
+
+  - id: AUD-004
+    severity: major
+    category: boundary_condition
+    evidence: >-
+      The original upstream-link length is 240 m, yet 10 of 45 rows in results/<SOURCE_FILE_REDACTED> exceed
+      240 m and the maximum is 597.015 m. For Question 4, results/<SOURCE_FILE_REDACTED> reaches 140 m at
+      318.36 s but continues to 145.118692 m at 330 s. The paper itself states that the boundary condition
+      changes after spillback reaches the upstream intersection.
+    affected_files:
+      - frozen-solution/code/solve.ps1
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/figures/<SOURCE_FILE_REDACTED>
+      - frozen-solution/paper/paper.md
+    reason: >-
+      The infinite-link shock solution is valid only before the queue reaches the signalized upstream
+      boundary. Post-hit rows and plotted trajectories violate the model's stated domain and can mislead
+      downstream use of the generated tables.
+    recommended_fix: >-
+      Add the finite link length as an explicit constraint, stop or flag outputs at first spillback, and
+      couple any post-hit calculation to an upstream-intersection/vertical-queue boundary model. Mark all
+      current beyond-boundary rows needs_review.
+    requires_human_review: true
+
+  - id: AUD-005
+    severity: major
+    category: causal_inference
+    evidence: >-
+      paper/paper.md and results/<SOURCE_FILE_REDACTED> infer a strict capacity order through > left > right
+      from the proxy M=1-p. A counterexample satisfying equal single-lane base saturation flow and geometry
+      is that merges finish upstream without changing discharge headway; then all three remaining-lane
+      capacities are equal even though M is 0.56, 0.65 and 0.79.
+    affected_files:
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/results/summary.json
+      - frozen-solution/paper/paper.md
+      - frozen-solution/solution-report.yaml
+    reason: >-
+      Mandatory-merge share alone does not identify capacity loss or its monotone direction. Gap acceptance,
+      downstream lane-use constraints, signal movement, heavy-vehicle mix and available merge distance are
+      omitted confounders; the strict rank does not follow mathematically from the proxy.
+    recommended_fix: >-
+      Keep M only as a descriptive explanatory variable, remove the strict rank unless an explicit merge-
+      discharge model proves it, and estimate normalized capacity differences from matched saturated video
+      cycles with lane mapping and uncertainty.
+    requires_human_review: true
+
+  - id: AUD-006
+    severity: major
+    category: validation
+    evidence: >-
+      The purported analytic-versus-1 s numerical check increments queue length using
+      central.queue_growth_speed_km_h, which is the already computed analytic result. The reported 0.64 s
+      error is exactly the first-crossing quantization ceil(318.36/1)*1-318.36, not an independent model
+      implementation. No step-refinement, time-varying solver or external observation is tested.
+    affected_files:
+      - frozen-solution/code/solve.ps1
+      - frozen-solution/results/verification.json
+      - frozen-solution/solution-report.yaml
+      - frozen-solution/paper/paper.md
+    reason: >-
+      This closed-loop check cannot detect an error in the density states or shock-speed formula. It supports
+      deterministic arithmetic only, so internal_validation_status=pass and robustness_analysis_status=pass
+      overstate the available evidence.
+    recommended_fix: >-
+      Use an independent implementation from raw q, C and fundamental-diagram parameters (or a finite-volume
+      conservation-law solver), perform a time-step convergence study, add property tests and counterexamples,
+      and retain external validity at needs_review until video-based checks exist.
+    requires_human_review: false
+
+  - id: AUD-007
+    severity: minor
+    category: input_integrity
+    evidence: >-
+      code/README.md says solve.ps1 verifies allowed-input identity, but V01_source_identity passes solely when
+      sourceFiles.Count equals 2. Calculated hashes are reported but never compared with expected hashes; any
+      two same-named files would pass. Likewise two files with video extensions would make completeness pass
+      without a decode check. The audit preflight independently verified the actual frozen inputs, which
+      mitigates this run but not the code claim.
+    affected_files:
+      - frozen-solution/code/README.md
+      - frozen-solution/code/solve.ps1
+      - frozen-solution/results/verification.json
+    reason: >-
+      Existence/count is not identity or content validity, so the check can silently accept substituted or
+      corrupt inputs in later runs.
+    recommended_fix: >-
+      Compare each allowed input against an immutable expected path/size/SHA-256 manifest and validate video
+      container decoding, duration and frame count before marking identity or completeness pass.
+    requires_human_review: false
+
+  - id: AUD-008
+    severity: major
+    category: leakage_provenance
+    evidence: >-
+      retrieval-log.json records cards=[], while reports/training-memory-retrieval.json records three cards
+      and solution-report.yaml says all three were used. FROZEN_BLIND_V1.json again records knowledge_cards=[],
+      dependencies=[], random_seed=null and run_command=null, conflicting with the copied cards,
+      reproducibility.yaml, seed=2013 and the successful PowerShell commands. No forbidden reference content
+      was found in the frozen file inventory/readable text, but the contradictory provenance cannot establish
+      a clean blind chain by itself.
+    affected_files:
+      - frozen-solution/retrieval-log.json
+      - frozen-solution/reports/training-memory-retrieval.json
+      - frozen-solution/reports/training-memory-usage.md
+      - frozen-solution/FROZEN_BLIND_V1.json
+      - frozen-solution/reproducibility.yaml
+      - frozen-solution/solution-report.yaml
+    reason: >-
+      Leakage assessment depends on a single complete and immutable source ledger. Contradictory retrieval and
+      runtime metadata make the no-leakage provenance judgment needs_review even though no current-topic answer
+      or forbidden paper appears in the payload.
+    recommended_fix: >-
+      Generate one authoritative retrieval/source ledger at freeze time, embed the exact copied-card hashes,
+      commands, seed and dependencies in the manifest, cross-check all derivative reports against it, and have
+      a human verify the solve-session access log before upgrading leakage provenance to pass.
+    requires_human_review: true
+
+  - id: AUD-009
+    severity: minor
+    category: unit_consistency
+    evidence: >-
+      variables.yaml defines delta_t in hours and paper/paper.md correctly uses sum(a_r*n_jr)/delta_t, but
+      model-selection.md writes C_j=3600*sum(a_r*n_jr)/delta_t. If delta_t is one hour-unit window, this adds
+      an erroneous factor of 3600; the formula is correct only if delta_t is explicitly measured in seconds.
+    affected_files:
+      - frozen-solution/variables.yaml
+      - frozen-solution/model-selection.md
+      - frozen-solution/paper/paper.md
+    reason: >-
+      The same symbol has incompatible unit conventions across frozen artifacts, creating a 3600-fold failure
+      mode when the proposed Question 1 estimator is implemented.
+    recommended_fix: >-
+      Choose one convention globally: remove 3600 when delta_t is in hours, or redefine and rename it as
+      delta_t_seconds and retain 3600. Add a 60 PCU in 60 s unit test expecting 3600 pcu/h.
+    requires_human_review: false
+
+  - id: AUD-010
+    severity: minor
+    category: numerical_stability
+    evidence: >-
+      Get-KinematicResult rounds growth speed to six decimals before Get-QueueLengthM consumes it. At q=1500
+      and C=1499.9999 pcu/h, the raw growth is 3.5398229e-7 km/h and the finite hitting time is
+      23730000.56 min, but the returned speed rounds to 0 and downstream length calculations report no growth.
+    affected_files:
+      - frozen-solution/code/solve.ps1
+    reason: >-
+      Premature rounding creates internally inconsistent state near the documented singular boundary C->q-.
+      The supplied main range 800-1200 is unaffected, but extreme/counterexample behavior is not stable.
+    recommended_fix: >-
+      Retain full-precision internal values, round only serialized/display fields, use scientific notation near
+      zero, and add condition-number or near-threshold warnings and regression tests.
+    requires_human_review: false
+
+  - id: AUD-011
+    severity: minor
+    category: paper_consistency
+    evidence: >-
+      paper/paper.md contains k_a=37.50,qquad and paper/main.tex contains the same missing backslash in the
+      growth equation, so qquad is rendered as variables/text rather than spacing. No xelatex, latexmk or
+      tectonic executable is available; a PDF was not compiled or visually inspected.
+    affected_files:
+      - frozen-solution/paper/paper.md
+      - frozen-solution/paper/main.tex
+      - frozen-solution/reproducibility.yaml
+    reason: >-
+      Marker-based paper checks do not cover displayed mathematical typography or final PDF rendering.
+    recommended_fix: >-
+      Replace qquad with \qquad in both sources, compile main.tex twice in a pinned TeX environment, and inspect
+      equations, Chinese fonts, tables, figures and page breaks before marking PDF status pass.
+    requires_human_review: true

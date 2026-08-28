@@ -1,0 +1,51 @@
+schema_version: 1
+case_id: "2005A"
+phase: audit
+overall_status: fail
+findings:
+  - id: AUD-001
+    severity: critical
+    category: frozen_integrity
+    status: fail
+    evidence:
+      manifest: results/reproduction-manifest.json
+      manifest_file_count: 106
+      mismatches:
+        - path: paper/main.log
+          expected_sha256: 6f4f3b1fd2bbd6deea4ba4d42b621b70a7acaa7b1daeb3924418083403753856
+          actual_sha256: 964b79732d9047d66e6aa8556d6d03e417a91762d114c811705b7a72dd635f2e
+        - path: paper/<SOURCE_FILE_REDACTED>
+          expected_sha256: cf81e844e69f3debe8e49ee9b969589d851cf729ebe028253fff8e59ad8c2763
+          actual_sha256: 8fa23bfe752750cc1190eeef9fcd948a07e05d43974ca4e0f0e7c5a26838ca9d
+    affected_files:
+      - frozen-solution/results/reproduction-manifest.json
+      - frozen-solution/paper/main.log
+      - frozen-solution/paper/<SOURCE_FILE_REDACTED>
+    reason: >-
+      冻结解答的两个文件与所给逐文件 SHA-256 清单不一致，无法确认当前目录就是清单所描述的不可变快照。按 audit 阶段规则，内容复现和数学审查必须停止。
+    recommended_fix: >-
+      由有权限的上游冻结流程查明差异来源，从可信源重新形成不可变快照，并生成与快照逐文件一致的权威 FROZEN 清单；不要在本 audit 工作区修改冻结文件或仅改写清单以消除差异。
+    requires_human_review: true
+
+  - id: AUD-002
+    severity: major
+    category: manifest_coverage
+    status: needs_review
+    evidence:
+      listed_file_count: 106
+      unlisted_file_count: 88
+      examples:
+        - AGENTS.override.md
+        - input/problem/<SOURCE_FILE_REDACTED>
+        - input/attachments/<SOURCE_FILE_REDACTED>
+        - results/final-verification.json
+        - results/reproduction-manifest.json
+        - working/extracted/problem.json
+    affected_files:
+      - frozen-solution/results/reproduction-manifest.json
+      - frozen-solution
+    reason: >-
+      现有清单不能验证整个冻结树；其中未列入的文件无法由该清单证明未发生变化。清单自身也没有在当前最小工作区内由另一权威冻结摘要绑定。
+    recommended_fix: >-
+      新的冻结清单应覆盖全部交付文件；若有意排除运行缓存或非确定性构建物，应在清单中显式记录排除规则、理由和受信任的顶层快照摘要。
+    requires_human_review: true

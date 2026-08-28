@@ -1,0 +1,104 @@
+{
+  "phase": "audit",
+  "overall_status": "fail",
+  "timestamp": "2026-08-22T21:59:52.4887233+08:00",
+  "frozen_solution_modified": false,
+  "claimed_reproduction_success": false,
+  "environment": {
+    "os_caption": "Microsoft Windows 11 家庭版 中文版",
+    "os_version": "10.0.26200",
+    "architecture": "64 位",
+    "powershell": "7.6.4",
+    "python": "3.12.13",
+    "python_executable": "<ABSOLUTE_PATH>",
+    "working_directory": "<ABSOLUTE_PATH>",
+    "network_used": false
+  },
+  "preflight": {
+    "status": "fail",
+    "audit_phase_lock": "pass",
+    "audit_allowed_paths_hash": "pass",
+    "audit_forbidden_paths_hash": "pass",
+    "embedded_solve_path_hashes": "pass",
+    "authoritative_full_frozen_manifest": "fail",
+    "existing_manifest_internal_consistency": "pass",
+    "existing_manifest_entries": 35,
+    "existing_manifest_passed": 35,
+    "frozen_tree_file_count": 144,
+    "covered_file_count": 35,
+    "uncovered_file_count": 109,
+    "outer_input_copy_hashes": "pass"
+  },
+  "commands": [
+    {
+      "purpose": "validate audit phase lock",
+      "command": "python <ABSOLUTE_PATH>",
+      "executed": true,
+      "status": "pass",
+      "exit_code": 0,
+      "stdout": "[PASS] audit 阶段锁有效",
+      "stderr": ""
+    },
+    {
+      "purpose": "validate audit allowed/forbidden list hashes",
+      "command": "Get-FileHash -Algorithm SHA256 -LiteralPath allowed-paths.json,forbidden-paths.json",
+      "executed": true,
+      "status": "pass",
+      "exit_code": 0,
+      "stdout": "allowed=c72d2517e20f684999619825d5d5464634ba053b5801165907b9238c62f77999; forbidden=f075bf741aa5e0dc4527893642bc07eb4bc70edc84733fa9b1801ed5ccaa0b47; both match phase-lock.json",
+      "stderr": ""
+    },
+    {
+      "purpose": "search recursively for an authoritative FROZEN manifest",
+      "command": "Get-ChildItem frozen-solution -Recurse -Force -File | Where-Object Name -match 'FROZEN|frozen-manifest'",
+      "executed": true,
+      "status": "fail",
+      "exit_code": 0,
+      "stdout": "match_count=0",
+      "stderr": ""
+    },
+    {
+      "purpose": "validate all entries present in input_hashes.json and output_hashes.json",
+      "command": "PowerShell: parse both JSON manifests; for every relative path compare file length and Get-FileHash SHA256",
+      "executed": true,
+      "status": "pass",
+      "exit_code": 0,
+      "stdout": "entry_count=35; passed=35; failed=0",
+      "stderr": ""
+    },
+    {
+      "purpose": "measure full-tree coverage of existing manifests",
+      "command": "PowerShell: recursively enumerate frozen-solution files and compare normalized relative paths with both manifests",
+      "executed": true,
+      "status": "fail",
+      "exit_code": 0,
+      "stdout": "frozen_file_count=144; covered=35; uncovered=109",
+      "stderr": ""
+    },
+    {
+      "purpose": "rerun the frozen numerical pipeline in a clean environment",
+      "command": "python code/solve.py --workspace .",
+      "working_directory": "clean copy of frozen-solution",
+      "executed": false,
+      "status": "fail",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "",
+      "reason": "The mandatory authoritative FROZEN manifest check failed; the audit Skill requires stopping before reproduction."
+    }
+  ],
+  "clean_environment": {
+    "created": false,
+    "status": "fail",
+    "reason": "Reproduction was not authorized after the freeze-integrity precondition failed."
+  },
+  "dependencies": {
+    "status": "needs_review",
+    "reason": "Runtime versions were observed, but dependencies were not installed or exercised because reproduction did not begin."
+  },
+  "reproduction_outputs": [],
+  "stdout": "",
+  "stderr": "",
+  "exit_code": null,
+  "decision": "Do not claim reproduction, determinism, numerical correctness, or paper-code consistency. Supply a trusted full-tree freeze manifest and start a new audit session."
+}

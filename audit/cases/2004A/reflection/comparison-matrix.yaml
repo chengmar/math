@@ -1,0 +1,169 @@
+schema_version: 1
+case_id: 2004A
+phase: reflection
+judgment_domain: [pass, fail, needs_review]
+knowledge_status: candidate
+scope:
+  network_search_performed: false
+  approved_reference_count: 4
+  world_novelty_claimed: false
+  boundary_compliance_status: pass
+artifacts:
+  blind_final:
+    id: B
+    freeze_manifest_status: pass
+    manifest_entries: 251
+    manifest_hash_matched_entries: 251
+    mathematical_correctness_status: needs_review
+  references:
+    - id: R1
+      file:<SOURCE_FILE_REDACTED>
+    sha256: <REFERENCE_HASH_REDACTED>
+      type: numerical_paper
+      readability_status: pass
+      reproducibility_status: needs_review
+    - id: R2
+      file:<SOURCE_FILE_REDACTED>
+    sha256: <REFERENCE_HASH_REDACTED>
+      type: problem_setter_commentary
+      readability_status: pass
+      reproducibility_status: needs_review
+    - id: R3
+      file:<SOURCE_FILE_REDACTED>
+    sha256: <REFERENCE_HASH_REDACTED>
+      type: numerical_paper
+      readability_status: pass
+      reproducibility_status: needs_review
+    - id: R4
+      file:<SOURCE_FILE_REDACTED>
+    sha256: <REFERENCE_HASH_REDACTED>
+      type: numerical_paper
+      readability_status: pass
+      reproducibility_status: needs_review
+common_data_checks:
+  row_count:
+    value: 10600
+    status: pass
+  bus_total_proportion:
+    value: 0.339811320754717
+    status: pass
+  metro_total_proportion:
+    value: 0.380188679245283
+    status: pass
+  western_food_proportion:
+    value: 0.525188679245283
+    status: pass
+  spend_group_3_proportion:
+    value: 0.44037735849056603
+    status: pass
+  mean_spend_top550_yuan:
+    value: 201.4811320754717
+    status: pass
+  mean_spend_top750_yuan:
+    value: 203.4245283018868
+    status: pass
+models:
+  B:
+    flow: pixel_weighted_ring_with_euclidean_nearest_zone_anchor
+    demand: row_level_joint_travel_food_exposure_then_spend_weight
+    allocation: per_zone_minimum_relative_cost_under_upper_quantile_capacity
+    pedestrian_access_fidelity_status: fail
+    within_assumption_computation_status: pass
+  R1:
+    flow: fixed_gate_ring_recurrence
+    demand: one_purchase_distributed_over_remaining_route
+    allocation: profit_cost_integer_program
+    exact_reproduction_status: needs_review
+  R2:
+    flow: recommends_network_flow
+    demand: requires_distinguishing_flow_and_shopping
+    allocation: recommends_explicit_supply_balance_profit_definitions
+    exact_reproduction_status: needs_review
+  R3:
+    flow: fixed_gate_point_matrix
+    demand: point_weight_changed_to_conditional_spending_power
+    allocation: mixed_integer_search_with_balance_extent
+    printed_model_solution_consistency_status: fail
+  R4:
+    flow: pedestrian_route_enumeration_with_shortest_and_commercial_zone_priority
+    demand: spend_distributed_across_four_trips_and_route_zones
+    allocation: max_minimum_profit_integer_program_with_count_balance
+    published_solution_feasibility_status: pass
+    published_solution_optimality_status: fail
+key_results:
+  B:
+    highest_flow_zone: A9
+    highest_flow_share: 0.09976903057905011
+    small_outlets: 18
+    large_outlets: 25
+    total_outlets: 43
+    factual_optimality_status: needs_review
+  R1:
+    venue_A_highest_zone: A6
+    abstract_small_outlets: 23
+    abstract_large_outlets: 37
+    table_small_outlets: 23
+    table_large_outlets: 38
+    abstract_table_consistency_status: fail
+  R3:
+    venue_highest_zones: [A6, B6, C4]
+    small_outlets: 151
+    large_outlets: 49
+    total_outlets: 200
+    printed_global_flow_share_sum: 0.9877
+    flow_conservation_status: fail
+  R4:
+    global_highest_zone: A6
+    small_outlets: 174
+    large_outlets: 14
+    total_outlets: 188
+    published_objective: 964.87
+    counterexample_objective: 1034.87
+    counterexample_small_outlets: 100
+    counterexample_large_outlets: 26
+    optimality_status: fail
+validation:
+  B:
+    internal_recomputation_status: pass
+    share_conservation_status: pass
+    optimizer_extreme_status: pass
+    same_environment_rerun_status: pass
+    external_mathematical_audit_status: needs_review
+    topology_model_status: fail
+  R1:
+    displayed_rounding_conservation_status: pass
+    abstract_table_consistency_status: fail
+    route_reproduction_status: needs_review
+    optimizer_certificate_status: needs_review
+  R2:
+    methodological_traceability_status: pass
+    numerical_validation_status: needs_review
+  R3:
+    purchasing_share_rounding_status: pass
+    global_flow_conservation_status: fail
+    printed_constraints_solution_status: fail
+    global_optimality_status: needs_review
+  R4:
+    displayed_flow_rounding_status: pass
+    allocation_feasibility_status: pass
+    allocation_optimality_status: fail
+    route_reproduction_status: needs_review
+comparison_dimensions:
+  model:
+    blind_status: needs_review
+    main_gap: pedestrian_access_topology
+  results:
+    status: needs_review
+    reason: incompatible_units_and_unidentified_commercial_parameters
+  validation:
+    status: needs_review
+    reason: strong_internal_checks_but_no_completed_external_math_audit
+  complexity:
+    status: pass
+    reason: problem_size_supports_transparent_exact_enumeration
+  explainability:
+    status: needs_review
+    reason: traceable_paths_but_invalid_anchor_edges
+  expression:
+    status: needs_review
+    reason: evidence_chain_is_clear_but_competition_format_and_topology_diagram_need_revision

@@ -1,0 +1,19 @@
+id: TM-008-IMMUTABLE-INPUT-PROVENANCE
+title: 可能自修复的旧格式输入先固定原件再解析副本
+type: validation_pattern
+status: provisional_training
+source_cases: [2009A]
+source_kind: audit_observation
+origin_year: 2009
+tags: [data_audit, provenance, legacy_format, hash, reproducibility]
+applicable_conditions: [解析器可能修改元数据、容器或编码]
+inapplicable_conditions: [输入位于不可变内容寻址存储且解析器无写权限]
+minimum_baseline: 原件解析前后哈希、解析副本前后哈希和规范化语义哈希
+recommended_action: 先哈希原件，只对一次性副本解析，并把字节完整性与语义一致性分开记录
+why_it_may_help: 某些只读打开也可能改变容器字节
+required_validation: [原件哈希不变, 行列与类型审计, 规范化数据可重算]
+failure_modes: [解析后才记 source hash, 把变异副本冒充原件]
+counterexamples: [字节变化但规范化数值相同，单一哈希结论产生歧义]
+complexity_cost: 低；增加一次复制和三类哈希
+evidence_summary: 可信案例中观察到旧容器字节变化而语义数据不变
+last_updated: '2026-08-24'

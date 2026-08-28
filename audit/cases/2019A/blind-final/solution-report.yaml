@@ -1,0 +1,118 @@
+case_id: 2019A
+phase: blind-revision
+skill: $cumcm-a-solve
+overall_status: needs_review
+status_reason: 数学质量守恒、长时模型内稳态、压力收敛和物理质量残差已有证据；喷嘴结构、真实阀能力、问题2事件计数与外部有效性仍需复核。
+artifact_completeness:
+  status: pass
+  required_outputs:
+    problem-analysis.md: pass
+    data-audit.md: pass
+    assumptions.yaml: pass
+    variables.yaml: pass
+    model-selection.md: pass
+    solution-report.yaml: pass
+    reproducibility.yaml: pass
+    code/: pass
+    results/: pass
+    figures/: pass
+    paper/main.tex: pass
+    paper/paper.md: pass
+question_coverage:
+  problem_1_holding_100_mpa: pass
+  problem_1_transition_and_holding_150_mpa: pass
+  problem_2_cam_speed_structural_interval: pass
+  problem_3_two_injectors: pass
+  problem_3_conditional_pump_relief_controls: pass
+audit_resolution:
+  AUD-001: pass
+  AUD-002: needs_review
+  AUD-003: needs_review
+  AUD-004: pass
+  AUD-005: pass
+  AUD-006: pass
+  AUD-007: pass
+  AUD-008: needs_review
+key_results:
+  problem_1:
+    hold_100_open_ms: 0.28760116056100204
+    hold_150_open_ms: 0.7517943385335408
+    hold_100_mean_mpa: 99.99256400911499
+    hold_150_mean_mpa: 149.9821934357974
+    transitions:
+      - {target_time_s: 2, max_open_ms: 1.1529915955275643, post_hold_mean_mpa: 149.92382034875698}
+      - {target_time_s: 5, max_open_ms: 0.8399435069137591, post_hold_mean_mpa: 149.97497948116708}
+      - {target_time_s: 10, max_open_ms: 0.7763221700767061, post_hold_mean_mpa: 149.9813130111952}
+    evidence: results/problem1-summary.json
+  problem_2:
+    answer_type: structural_interval
+    omega_interval_rad_per_ms: [0.02322663791909231, 0.027530254289115496]
+    speed_interval_rpm: [221.79805417375172, 262.8945632813751]
+    long_run_phase_mean_mpa: {series: 99.9998114851977, bottleneck: 100.00489038797326}
+    long_run_phase_span_mpa: {series: 0.0036057463612024776, bottleneck: 0.009837715622609267}
+    status: needs_review
+    evidence: results/problem2-summary.json
+  problem_3:
+    injector_offset_ms: 50
+    economy_speed_rpm_bottleneck: 522.9780529767899
+    economy_omega_structure_interval_rad_per_ms: [0.04613046349994656, 0.05476613364068589]
+    economy_peak_to_peak_mpa: 4.969830023881926
+    conditional_profile: dwell_1ms
+    conditional_speed_rpm: 1200.0
+    conditional_cam_phase_rad: 4.2
+    conditional_relief_close_mpa: 99.8
+    conditional_relief_open_mpa: 100.39999999999999
+    conditional_mean_mpa: 99.6463873939827
+    conditional_peak_to_peak_mpa: 2.112008861813507
+    conditional_switches_per_100ms: 10.0
+    conditional_relief_to_injection_ratio: 1.304030054453146
+    status: needs_review
+    evidence: results/problem3-summary.json
+validation:
+  input_schema: {status: pass, evidence: results/data-audit.json}
+  audit_regression_tests: {status: pass, evidence: code/test_model.py}
+  physical_mass_balance:
+    status: pass
+    rail_max_relative_residual: 1.3937696815124083e-06
+    chamber_max_relative_residual: 5.833983957233721e-06
+    evidence: results/validation.json
+  pressure_time_step_convergence: {status: pass, evidence: results/<SOURCE_FILE_REDACTED>}
+  problem_2_event_count_convergence: {status: needs_review, evidence: results/<SOURCE_FILE_REDACTED>}
+  code_full_rerun: {status: pass, evidence: results/verification.json}
+  paper_compile:
+    status: needs_review
+    evidence: 当前环境未安装TeX引擎；只执行静态一致性检查
+  external_experiment: {status: needs_review, evidence: 获准输入不含台架观测}
+training_memory:
+  source_status: provisional_training
+  canonical_ledger: results/provenance.json
+  cards:
+    TM-001-EVIDENCE-LAYERS: adopt
+    TM-002-TIME-ORDERED-VALIDATION: reject
+    TM-007-FIT-EVALUATE-SEPARATION: adapt
+  status: needs_review
+limitations:
+  - 集总压力模型忽略压力波、管壁弹性、温度与沿程损失。
+  - 喷嘴两处局部损失不可由现有数据唯一辨识，角速度只能给结构区间。
+  - 减压阀延迟、驻留和切换能力无设备数据，控制方案只能条件化。
+  - 高转速下柱塞腔充分补油尚无外部验证。
+failure_conditions:
+  - 压力离开附件3的0至200 MPa范围。
+  - 柱塞腔不能在下行阶段恢复至0.5 MPa并充分充满。
+  - 实际减压阀不能满足所选情景的延迟、驻留或切换上限。
+  - 真实喷嘴损失不落在两个结构端点所覆盖的范围内。
+evidence_boundary:
+  file_identity: pass
+  mathematical_regression: pass
+  numerical_pressure_convergence: pass
+  model_internal_mass_balance: pass
+  execution_reproducibility: pass
+  engineering_identifiability: needs_review
+  external_validity: needs_review
+phase_actions:
+  blind_v1_modified: false
+  freeze_performed: false
+  reflection_performed: false
+  audit_performed: false
+  evaluation_performed: false
+  next_phase: none

@@ -1,0 +1,39 @@
+schema_version: 1
+id: LP-2013A-002
+title: <REFERENCE_TITLE_REDACTED>
+proposal_kind: failure_mode
+state: candidate
+case_specific: true
+trigger_signs:
+  - 只给平均上游流量，不给初始信号相位或到达队尾波形。
+  - 论文和代码对 1500 pcu/h 的“总流/直行流/放行期流”口径不同。
+  - 多车道模型用各车道占用格数之和代替沿道路方向的空间队尾距离。
+  - 随机模型只报均值或窄区间，不报逐次分布。
+applicable_when:
+  - 比较多个交通排队模型或复核已有仿真结论。
+not_applicable_when:
+  - 输入流量、信号相位、队长定义和边界已经完全统一且有原始轨迹验证。
+minimum_baseline:
+  - 以题设总流量做逐周期质量守恒表。
+  - 用点队列计算相同输入下的最低复杂度结果。
+  - 明确队长是 max spatial extent、lane-average extent 还是 vehicle inventory。
+validation:
+  - 把代码实际周期平均流量重新积分，与题设值逐项比较。
+  - 用同均值的绿先/红先反例测试相位敏感性。
+  - 同时输出空间队尾与积压 PCU，禁止隐式互换。
+  - 对随机结果报告 2.5%、50%、97.5% 分位数和未命中率。
+counterexamples:
+  - source: R3
+    evidence: 源码名义输入 1500 pcu/h，经相位倍率后直行均值为 2250，再加净 105，实际为 2355 pcu/h；340 s 均值因此不能解释成题设 1500 的结果。
+  - source: R2
+    evidence: 论文报 8.0–8.4 min；源码语义重实现的经验 95% 范围为 5.883–10.983 min。
+  - source: BLIND audit
+    evidence: 同均值方波与常流首次到达时间显著不同。
+source_cases: [BLIND, R2, R3]
+evidence_strength:
+  internal: high
+  external: medium_low
+  rationale: 代码级反例明确，但原视频缺失。
+scope_controls:
+  direct_upgrade_in_reflection: false
+  dummy_input_detected: false

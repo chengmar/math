@@ -1,0 +1,192 @@
+schema_version: 1
+case_id: 2015A
+phase: audit
+overall_status: fail
+severity_counts:
+  critical: 0
+  major: 4
+  minor: 4
+  suggestion: 2
+findings:
+  - id: AUD-MATH-001
+    severity: major
+    category: mathematics_units
+    evidence:
+      - "paper/main.tex:209-214 与 paper/paper.md:241-249 先定义 G 为像素到米制地面的单应矩阵，随后计算 p_i - G[Hq_E,Hq_N,1]^T。"
+      - "variables.yaml:94-96 同样把 G 定义为像素地面平面到度量地面坐标。"
+      - "若 G=diag(0.01 m/pixel,0.01 m/pixel,1)，p=[100,200,1] 与地面点 [1,2,1] 完全对应；正确残差为 0，而论文表达式得到数值范数 223.584，且单位是未定义的 pixel-minus-metre。"
+      - "目标还把 G 作为自由变量，却没有控制点重投影约束或齐次归一化。solution-report.yaml:109 将 method_status 写为 pass。"
+    affected_files:
+      - frozen-solution/paper/main.tex
+      - frozen-solution/paper/paper.md
+      - frozen-solution/variables.yaml
+      - frozen-solution/solution-report.yaml
+      - frozen-solution/results/q4_status.json
+    reason: "问 4 的核心观测方程域和值域相反、量纲不闭合，按现式无法实现；视频缺失只影响数值复现，不会使错误公式成立。"
+    recommended_fix: <LONG_QUOTE_REDACTED>
+    requires_human_review: true
+
+  - id: AUD-STAT-002
+    severity: major
+    category: uncertainty
+    evidence:
+      - "assumptions.yaml:42、problem-analysis.md:86 和 run_all.ps1:507-566 只模拟每轴 ±0.00005 m 舍入扰动。"
+      - "该假设给出的单点二维误差上界为 sqrt(2)*0.00005=0.0707107 mm。附件 1 最佳 RMSE=0.346472 mm、附件 3=0.281245 mm，分别为上界的 4.90 倍和 3.98 倍；最大误差分别为上界的 10.88 倍和 8.61 倍。"
+      - "独立残差计算得到附件 1、3 的 x 残差 lag-1 相关为 0.9267、0.9231，显示系统结构。"
+      - "论文仍用舍入扰动分位数描述稳定性，未传播模型偏差、时间误差、星历近似或异常点。"
+    affected_files:
+      - frozen-solution/assumptions.yaml
+      - frozen-solution/problem-analysis.md
+      - frozen-solution/code/run_all.ps1
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/paper/main.tex
+      - frozen-solution/paper/paper.md
+    reason: "对于附件 1 和 3，舍入误差不可能单独产生现有 RMSE；在带系统残差的数据上仅叠加更小噪声，会系统性低估地点和日期不确定性。"
+    recommended_fix: "先检查残差随时间的结构并引入模型差异项；至少同时做残差块自助法、毫米级污染、时钟误差和太阳模型敏感性。把现有结果明确标为 rounding-only conditional sensitivity，不得用作总体不确定区间。"
+    requires_human_review: true
+
+  - id: AUD-ID-003
+    severity: major
+    category: identifiability
+    evidence:
+      - "现有 100 次扰动中，附件 2 的相邻日分支对应 15.9-16.8 km 地点变化；附件 3 日序 323/324 对应 39.3 km。"
+      - "前 14 点模型到全 21 点最终模型的地点漂移：附件 1 为 14.10 km，附件 2 为 0.49 km，附件 3 为 7.83 km；附件 1 从前 8 点到全量漂移 19.99 km。"
+      - "单点 x 增加 1 mm 后完整 365 日重搜：附件 2 由日序 202 移到 198、地点移动 63.78 km；附件 3 中点污染移到日序 324、地点移动 39.28 km。"
+      - "paper/paper.md:7 概括纬度较稳，并以 0.001 度精度给出关键地点；paper/paper.md:362 只报告日序频数，没有报告对应地点跳变。"
+    affected_files:
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/paper/main.tex
+      - frozen-solution/paper/paper.md
+    reason: "任务输出是日期与地点的联合参数；边际日频数或单个全量最优点掩盖了离散日期切换、时间段选择和异常点造成的十至数十公里变化。"
+    recommended_fix: "把每个日期分支报告为 joint date-location cluster，给出条件地点范围、分支权重仅作敏感性频数、滚动切分参数漂移及污染曲线。按可支持的尺度舍入坐标；在无外部真值时把精确地点保持 needs_review。"
+    requires_human_review: true
+
+  - id: AUD-VAL-004
+    severity: major
+    category: validation_leakage
+    evidence:
+      - "paper/main.tex:27、paper/paper.md:5 和 model-selection.md:66 说用末 7 点选择完整模型；paper/main.tex:71、paper/paper.md:233 及 model-selection.md:5 又说末 7 点只在选型后评价。"
+      - "run_all.ps1:490-503 在形成留出表后，仅按模型名称硬编码 full_vector_solar_inverse 的 selected_for_main_results=pass，没有训练集选型阈值。"
+      - "完整模型留出/训练 RMSE 比：附件 1=10.65、附件 2=1.60、附件 3=10.06；没有预先定义何时 holdout 应判 pass。"
+      - "审计三次坐标多项式的留出 RMSE：附件 1=0.683 mm、附件 3=0.802 mm，优于物理模型的 1.040 mm、0.911 mm；仅线性基线使优势被夸大。"
+    affected_files:
+      - frozen-solution/model-selection.md
+      - frozen-solution/data-audit.md
+      - frozen-solution/paper/main.tex
+      - frozen-solution/paper/paper.md
+      - frozen-solution/code/run_all.ps1
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+    reason: "末 7 点不能既参与模型选择又作为无偏最终验证；短弧坐标预测也没有验证地理参数。当前 pass 缺少预声明准则，并依赖过弱基线。"
+    recommended_fix: "只用训练段和结构性任务匹配完成模型选择，封存测试段；或使用嵌套/滚动起点验证并保留真正最终测试。增加二次/三次曲率基线，分别报告轨迹预测和参数稳定性，不把测试结果写成选型依据。"
+    requires_human_review: true
+
+  - id: AUD-REP-005
+    severity: minor
+    category: reproducibility
+    evidence:
+      - "干净复现的 38 个结果/图/宏中 35 个与冻结 SHA-256 完全一致，run_metadata 为预期动态差异；<SOURCE_FILE_REDACTED><SOURCE_FILE_REDACTED> 出现非预期差异。"
+      - "<SOURCE_FILE_REDACTED> 记录 main.tex=20411 字节，最终冻结 main.tex 实为 20740 字节。"
+      - "<SOURCE_FILE_REDACTED> 记录 257 对花括号且无 thebibliography；最终源重跑为 264 对并新增 thebibliography 检查。"
+      - "reproducibility.yaml:26 的 full_verification 未带 -Rerun；paper/main.tex:414-419 只列 3 个命令，不能从空 results 生成 rerun_consistency、global_search_crosscheck 和 deliverable_checks。"
+    affected_files:
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/paper/main.tex
+      - frozen-solution/reproducibility.yaml
+      - frozen-solution/code/verify_all.ps1
+    reason: "核心求解可复跑，但最终冻结论文与其验证证据不是同一次封存，且公开复现命令不足以重建全部冻结验证产物。"
+    recommended_fix: "从空 results/figures 开始，依次运行 generate、validate、paper check、verify_all -Rerun，再冻结；检查表写入被检查源文件的 SHA-256。文档列出精确完整命令，并将动态元数据单独排除。"
+    requires_human_review: false
+
+  - id: AUD-PAPER-006
+    severity: minor
+    category: paper_code_consistency
+    evidence:
+      - "paper/main.tex:389 与 paper/paper.md:370 称 32 项检查均 pass；<SOURCE_FILE_REDACTED> 实际为 31 pass 加 1 needs_review。"
+      - "paper.md 含 1 个 TAB（反斜线 theta 被破坏）和 1 个裸 CR（反斜线 rho 被破坏）。"
+      - "run_all.ps1:410 对 q3 候选先按 handedness 分组再按 ObjectiveSse；附件 2 全局最小 RMSE 是 CSV rank=3 的镜像候选，因此 rank 不是全局名次。"
+    affected_files:
+      - frozen-solution/paper/main.tex
+      - frozen-solution/paper/paper.md
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/code/check_paper_consistency.ps1
+      - frozen-solution/code/run_all.ps1
+    reason: "现有 token/括号检查能通过，但不能保证状态计数、控制字符、公式和结果字段语义一致。"
+    recommended_fix: "由 CSV 自动生成状态计数和候选表；增加控制字符扫描、关键公式快照及字段语义断言。将 q3 排名拆为 branch_rank 与 global_rmse_rank，或取消含混的 rank。"
+    requires_human_review: false
+
+  - id: AUD-DATA-007
+    severity: minor
+    category: data_validation
+    evidence:
+      - "run_all.ps1:78-84 在构造 Rows 时先把 Excel 单元格强制转换为 double。"
+      - "run_all.ps1:269 随后才用 null 检查 x_m/y_m；PowerShell 中 [double]$null=0，因此空单元格会被记为 0 而不是 missing。"
+      - "当前工作簿经独立只读枚举确实没有空数值单元格，所以当前数据结论为 pass；但自动检查的反例为 fail。"
+    affected_files:
+      - frozen-solution/code/run_all.ps1
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/solution-report.yaml
+    reason: "missing_numeric_cell_status 对当前文件碰巧正确，但实现无法检测它声称检测的异常。"
+    recommended_fix: "在任何数值强制转换前检查 Value2 是否为 null/空串，并验证类型与有限性；同时核对工作表集合恰为附件 1—3，而不只是三个命名表可访问。"
+    requires_human_review: false
+
+  - id: AUD-CONSTRAINT-008
+    severity: minor
+    category: constraints_numerics
+    evidence:
+      - "variables.yaml:84 把手性 s 的 domain 写成 [-1,1]，代码实际只允许 -1 或 +1。"
+      - "用三个白天时刻和全零坐标调用 Evaluate，得到 height=0、tip_rmse=0、objective_sse=0；没有 H>0 下界或退化数据识别。"
+      - "三个重复时刻调用 FitLinear 得到 x/y slope=NaN；分母没有零方差检查。"
+      - "极夜反例中 SolarAt 把任意地平线下太阳高度统一返回 -90 度，丢失实际负高度。"
+    affected_files:
+      - frozen-solution/variables.yaml
+      - frozen-solution/code/SolarShadow.cs
+      - frozen-solution/code/run_all.ps1
+    reason: "当前 63 个观测避开这些边界，但模型接口和变量清单没有完整表达物理可行域与数值先决条件。"
+    recommended_fix: "把 s 的域写为 {-1,+1}；要求 H>=H_min>0、影长/时间方差非退化、输入有限；夜间先计算并返回真实 altitude，再单独标记 shadow_valid=false。"
+    requires_human_review: false
+
+  - id: AUD-PROV-009
+    severity: suggestion
+    category: provenance_leakage
+    evidence:
+      - "FROZEN_BLIND_V1.json:12-15 记录 dependencies=[]、random_seed=null、run_command=null、knowledge_cards=[]。"
+      - "实际 reproducibility.yaml 和代码使用 Excel/System.Drawing、seed 2015 与明确命令；reports/training-memory-retrieval.json/usage.md 记录 3 张训练卡，而根 retrieval-log.json 的 cards 为空。"
+      - "最终 main.tex:406-409 新增 NOAA URL 和教材条目，但来源日志没有登记，且正文无 cite 引用。"
+      - "静态扫描未发现网络调用、Vault 读取或标准答案读取；是否曾依据这些外部来源只能保持 needs_review。"
+    affected_files:
+      - frozen-solution/FROZEN_BLIND_V1.json
+      - frozen-solution/retrieval-log.json
+      - frozen-solution/reports/training-memory-retrieval.json
+      - frozen-solution/reports/training-memory-usage.md
+      - frozen-solution/reproducibility.yaml
+      - frozen-solution/paper/main.tex
+    reason: "来源和执行元数据相互矛盾，无法仅凭冻结包完成严格的依赖、知识卡和引用溯源；但没有证据支持直接判定泄漏。"
+    recommended_fix: "冻结器从 reproducibility 与训练卡使用记录填充 manifest；统一 retrieval log；每条引用记录来源、访问状态与允许性。若引用未实际读取，应明确标为背景书目信息，不把它当作已验证证据。"
+    requires_human_review: true
+
+  - id: AUD-VERIFY-010
+    severity: suggestion
+    category: validation_coverage
+    evidence:
+      - "run_all.ps1:249-257 在运行时生成 input_manifest，validate_outputs.ps1 随后拿该同源清单校验当前输入；从已被替换的输入开始运行仍可自洽 pass。"
+      - "crosscheck_search.ps1 只覆盖 q2 主旋转分支和 q3 的四个旋转日期，不覆盖 5 个保留镜像候选。"
+      - "审计对这 5 个镜像候选补做 3 度稠密搜索，角距离均小于 3.2e-7 度且 RMSE 一致，当前结果为 pass。"
+    affected_files:
+      - frozen-solution/code/run_all.ps1
+      - frozen-solution/code/validate_outputs.ps1
+      - frozen-solution/code/crosscheck_search.ps1
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+    reason: "当前冻结哈希由外层 FROZEN 清单保证，但解答自身的输入校验是自生成自校验；搜索交叉验证也没有覆盖所有公开候选。"
+    recommended_fix: "运行前读取不可变的 expected-input manifest 并在任何 Excel 打开前比对；将所有公开旋转和镜像候选纳入稠密交叉检查，并让汇总明确报告覆盖数。"
+    requires_human_review: false

@@ -1,0 +1,160 @@
+schema_version: "1.0"
+phase: audit
+case_id: "2007A"
+overall_judgment: fail
+summary:
+  critical: 1
+  major: 3
+  minor: 5
+  suggestion: 0
+findings:
+  - id: "AUD-001"
+    severity: critical
+    category: "freeze_integrity"
+    judgment: fail
+    evidence: |-
+      phase-lock 与 allowed/forbidden 控制文件哈希均为 pass，results/run_manifest.json 的 27 条记录也逐条通过路径、存在性、字节数（求解器未声明字节数）和 SHA-256 核验。
+      但冻结目录没有覆盖完整解答树的独立 FROZEN 清单：审计观察到 176 个文件，现有运行清单只覆盖 27 个，149 个未覆盖；未覆盖项包括论文、转换/一致性/复现脚本和解答说明。
+      frozen-solution/reproducibility.yaml:81 记录 paper/<SOURCE_FILE_REDACTED> 的 SHA-256 为 50603caecb09eb7bb23a3a9442114717ca8d0ba409f981135e14edc5ea1a7ca2；对当前 901123 字节文件连续两次重算均为 fe8ef5b1503844399b8619723b4b47801523d51818d23d5e5030033524dc7bbc，record_match=fail。
+      frozen-solution/solution-report.yaml:11 仍写 frozen: false。
+    affected_files:
+      - "frozen-solution/reproducibility.yaml"
+      - "frozen-solution/solution-report.yaml"
+      - "frozen-solution/results/run_manifest.json"
+      - "frozen-solution/paper/<SOURCE_FILE_REDACTED>"
+    reason: "完整冻结版本的身份与不可变性无法成立，且存在一条明确的已记录哈希不一致；数值输出可复现不能替代冻结树完整性。"
+    recommended_fix: "由人工确定权威 PDF 与权威解答树；从原子化、只读的最终树生成覆盖全部提交材料的 FROZEN 清单，更新 frozen 状态和所有记录哈希后重新冻结，再从零重新执行 audit。不得仅把记录哈希改成当前值而不保留生成来源。"
+    requires_human_review: true
+
+  - id: "AUD-002"
+    severity: major
+    category: "mathematics_tfr_definition"
+    judgment: fail
+    evidence: |-
+      frozen-solution/code/solve_population.py:443-449 先对各地区 15--49 岁 ASFR 求和，再按各地区育龄女性总量加权；这不是全国标准时期 TFR。标准汇总应对每个年龄先按该年龄各地区女性暴露量汇总 ASFR，再对年龄求和。
+      当前中情景在代码自定义指标下被缩放到 1.8，但按标准定义重算仅为 1.7667873146513586，相差 -1.8451%；未经缩放的标准 TFR 为 1.3426018831820716，而代码报告 1.3678405825573945。
+      按标准 TFR=1.8 重新缩放并保持其余机制后，中情景 2050 人口为 1,337,333,212（比冻结结果高 1.1205%），2100 为 931,972,568（高 4.2803%）；高情景峰值从 2039 推迟至 2041，2100 人口高 4.5794%。
+    affected_files:
+      - "frozen-solution/code/solve_population.py"
+      - "frozen-solution/variables.yaml"
+      - "frozen-solution/assumptions.yaml"
+      - "frozen-solution/paper/main.tex"
+      - "frozen-solution/results/<SOURCE_FILE_REDACTED>"
+      - "frozen-solution/results/key_results.json"
+      - "frozen-solution/results/<SOURCE_FILE_REDACTED>"
+    reason: "附件 1 的 TFR=1.8 是标准人口统计量，不能用年龄构成相关的地区总量加权替代；错误会系统改变情景缩放和长期预测。"
+    recommended_fix: "实现 national_tfr(state, fertility)=sum_a(sum_r n[r,F,a]f[r,a]/sum_r n[r,F,a])；用该定义校准低/中/高情景，明确 TFR 是仅基期目标还是逐年目标，并重新生成全部数值、图表、论文和哈希。"
+    requires_human_review: true
+
+  - id: "AUD-003"
+    severity: major
+    category: "validation_and_overfitting"
+    judgment: needs_review
+    evidence: |-
+      frozen-solution/code/solve_population.py:732-790 只使用 2005 一个留出年并据此把多状态模型选择状态写成 pass。
+      审计按同一算法做滚动起点检验：2003 留出时 M2/M1 综合分数为 3.3300/3.6570，M2 胜；2004 留出时 M1/M2 为 2.1369/3.3443，较简单的 M1 胜；2005 留出时 M2/M1 为 4.9848/5.9163，M2 胜。排序并不跨年份稳定。
+      在原 2005 单步留出中，M1 与 M2 的全国年龄—性别 TV 都为 2.331242633、年龄段 MAE 都为 1.121302155、性别比误差都为 1.329585195；M2 只改善地区份额。由于迁移在当年出生/死亡后执行且守恒，该检验没有验证迁移通过未来地区生育率差异影响全国总量的长期机制。
+    affected_files:
+      - "frozen-solution/code/solve_population.py"
+      - "frozen-solution/model-selection.md"
+      - "frozen-solution/paper/main.tex"
+      - "frozen-solution/results/<SOURCE_FILE_REDACTED>"
+      - "frozen-solution/results/model_comparison.json"
+      - "frozen-solution/results/validation.json"
+    reason: "单一留出年的偶然地区份额变化不足以支持稳定的模型选择 pass，也不能验证 M2 相对 M1 的长期全国总量增益。"
+    recommended_fix: "使用 2003、2004、2005 的滚动起点验证并汇总均值、离散度与排名稳定性；分别评价全国结构预测和地区结构预测；在多步证据缺失时将 M2 选择标为 needs_review，并把 M1 保留为更简单的全国预测基线。"
+    requires_human_review: true
+
+  - id: "AUD-004"
+    severity: major
+    category: "robustness_and_interactions"
+    judgment: needs_review
+    evidence: |-
+      frozen-solution/code/solve_population.py:811-964 只执行单因素敏感性。
+      审计在原有取值范围内组合 TFR={1.5,1.8,2.1}、死亡改善={0,1%,2%}、2020 城镇化目标={50%,53%,56%}、出生性别比归一={否,是}，共 54 个案例。TFR=2.1、死亡改善2%、城镇化50%、性别比归一的组合峰值为 1,553,761,555（2044），2050 为 1,544,168,856，2100 为 1,437,353,584；8 个组合峰值超过 15 亿。原单因素高情景峰值仅为 1,498,084,790。
+      2003 生育率“乘10”分支又被重新缩放到同一目标 TFR，因此该敏感性主要只比较年龄/地区形状，无法检验异常处理对生育水平本身的影响。
+    affected_files:
+      - "frozen-solution/code/solve_population.py"
+      - "frozen-solution/paper/main.tex"
+      - "frozen-solution/results/<SOURCE_FILE_REDACTED>"
+      - "frozen-solution/figures/<SOURCE_FILE_REDACTED>"
+    reason: "单因素包络低估了已选参数范围内的联合不确定性，可能让峰值、2050 和 2100 的条件范围显得过窄。"
+    recommended_fix: "增加全因子、拉丁超立方或全局敏感性；报告联合包络及参数交互；对异常生育率同时提供不重新归一的水平敏感性和固定 TFR 下的形状敏感性。"
+    requires_human_review: false
+
+  - id: "AUD-005"
+    severity: minor
+    category: "units_and_exposure_denominator"
+    judgment: fail
+    evidence: |-
+      附件 2 明确年龄—性别比例的分母是该地区总人口；例如 2005 年 20 岁城市男性占城市总人口 0.69%。但 frozen-solution/code/solve_population.py:348-350 和 405-408 用性别专属样本容量乘该地区总人口比例，分子分母不一致。
+      2005 城市男性各年龄比例合计 50.11%。20 岁单元按代码得到暴露量 2,357,679*0.69%=16,267.985；按性别样本内归一应为 2,357,679*(0.69/50.11)=32,464.548，低估因子 1.99561。
+      按一致分母修正全部率估计后，平滑死亡概率最大绝对变化 0.006814；中情景 2050/2100 人口分别改变 +0.1420%/+0.2635%。
+    affected_files:
+      - "frozen-solution/code/solve_population.py"
+      - "frozen-solution/data-audit.md"
+      - "frozen-solution/paper/main.tex"
+      - "frozen-solution/results/<SOURCE_FILE_REDACTED>"
+    reason: "暴露量少了约一倍会改变经验贝叶斯收缩的相对强度和跨年/地区权重，虽然本例对总量的数值影响较小。"
+    recommended_fix: "使用 S_area_total*p/100，或使用 S_area,sex*(p/sex_share_total)；在代码和论文中明确 S 与 p 的共同分母，并重做率估计。"
+    requires_human_review: false
+
+  - id: "AUD-006"
+    severity: minor
+    category: "data_leakage"
+    judgment: needs_review
+    evidence: |-
+      frozen-solution/code/solve_population.py:215-224 在解析阶段使用 2001--2005 全部年份计算异常年；随后 :735-736 的 2001--2004 训练/2005 留出直接复用这个全数据 anomaly_years。
+      当前数据即使只用训练期也仍会识别 2003，因此本次数值排名未被改变；但预处理规则形式上看到了留出年。
+    affected_files:
+      - "frozen-solution/code/solve_population.py"
+      - "frozen-solution/data-audit.md"
+      - "frozen-solution/results/model_comparison.json"
+    reason: "留出验证要求所有数据依赖的异常识别与预处理只在训练折内拟合，否则独立性声明不严格。"
+    recommended_fix: "把异常识别封装为 fit_anomaly_rule(training_years)，在每个滚动折内单独拟合；或在验证前预注册不依赖 2005 的固定规则。"
+    requires_human_review: false
+
+  - id: "AUD-007"
+    severity: minor
+    category: "judgment_semantics"
+    judgment: fail
+    evidence: |-
+      frozen-solution/code/solve_population.py:1390-1404 得到 mathematical_judgment=pass、contextual_judgment=fail、overall_validation_judgment=needs_review；但 :1517-1519 的运行清单 judgment 只跟随 mathematical_judgment，因此仍写 pass。
+      干净复现 stdout 同时出现 status=pass 与 validation=needs_review。所谓 mathematical pass 只覆盖守恒、非负、情景次序等六个内部不变量，未覆盖 AUD-002 的 TFR 定义错误。
+    affected_files:
+      - "frozen-solution/code/solve_population.py"
+      - "frozen-solution/results/run_manifest.json"
+      - "frozen-solution/results/validation.json"
+      - "frozen-solution/reproducibility.yaml"
+    reason: "执行成功、内部不变量和科学有效性混用一个 pass，容易把“可运行”误读成“数学正确”。"
+    recommended_fix: "拆分 execution_judgment、internal_invariants_judgment、scientific_validation_judgment；总 judgment 至少继承 overall_validation_judgment，并禁止以哈希一致替代数学正确性。"
+    requires_human_review: false
+
+  - id: "AUD-008"
+    severity: minor
+    category: "paper_artifact_consistency"
+    judgment: fail
+    evidence: |-
+      frozen-solution/paper/paper.md 含 18 个异常 C0 控制字符：1 个退格、13 个制表符、4 个换页符，影响 11 行。paper.md:112、130--131、153、167 等处的 frac、tau、begin、times、text、to 被破坏。
+      frozen-solution/results/consistency_check.json 仍把 markdown_key_numbers 判为 pass，因为检查器只搜索少量数字片段，没有校验公式或控制字符。
+    affected_files:
+      - "frozen-solution/paper/paper.md"
+      - "frozen-solution/code/check_consistency.py"
+      - "frozen-solution/results/consistency_check.json"
+    reason: "Markdown 论文副本中的公式不可可靠阅读，且现有论文一致性检查出现假阴性。"
+    recommended_fix: "从可靠源重新生成 Markdown，避免把反斜杠转义为控制字符；增加 C0 字符扫描、公式标记配对和关键公式文本检查。"
+    requires_human_review: false
+
+  - id: "AUD-009"
+    severity: minor
+    category: "reported_metric_definition"
+    judgment: fail
+    evidence: |-
+      frozen-solution/code/solve_population.py:599-603 用各地区育龄女性总量加权地区出生性别比，写入 trajectory 的 birth_sex_ratio；真实全国出生性别比应按各地区实际男婴/女婴数汇总，权重取决于地区生育率和年龄结构。
+      2005 年代码报告 118.267806，按模型实际出生数汇总为 118.761878，相差 -0.494072；2010 年相差 -0.435844。到 2020 年各地区都被设为 107 后差异消失。状态递推中的分地区性别分配本身正确，错误只在汇总指标。
+    affected_files:
+      - "frozen-solution/code/solve_population.py"
+      - "frozen-solution/results/<SOURCE_FILE_REDACTED>"
+    reason: "结果列名称暗示实际全国出生人口性别比，但计算的是另一种女性人口加权平均。"
+    recommended_fix: "用 sum_r male_births_r / sum_r female_births_r * 100 汇总并输出；若保留旧指标，应改名并说明定义。"
+    requires_human_review: false

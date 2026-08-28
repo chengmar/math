@@ -1,0 +1,75 @@
+case_id: 2015A
+phase: solve
+reproduction_status: pass
+external_validity_status: needs_review
+phase_gate:
+  equivalent_conditions_status: pass
+  original_python_runner_status: needs_review
+  note: "系统没有可用 Python 解释器；未伪称 check_phase.py 执行成功。其三个确定条件由 PowerShell 等价复核为 pass。"
+environment:
+  operating_system: "Microsoft Windows 10.0.26200"
+  powershell: "7.6.4"
+  required_components:
+    - "Microsoft Excel COM，只读提取旧版 xls"
+    - "PowerShell Add-Type，用于编译 code/SolarShadow.cs"
+    - "System.Drawing.Common，用于生成 PNG"
+  latex_engine_status: needs_review
+  latex_note: "未检测到 xelatex、latexmk 或 pdflatex；已生成并检查 TeX 源，但未伪称 PDF 编译成功。"
+randomness:
+  seed: 2015
+  use: "100 次每轴正负 0.00005 m 坐标舍入扰动"
+  deterministic_search: true
+commands:
+  generate_all: "pwsh -NoProfile -File .\\code\\run_all.ps1 -SensitivityReplicates 100"
+  independent_validation: "pwsh -NoProfile -File .\\code\\validate_outputs.ps1"
+  paper_consistency: "pwsh -NoProfile -File .\\code\\check_paper_consistency.ps1"
+  full_verification: "pwsh -NoProfile -File .\\code\\verify_all.ps1"
+expected_runtime:
+  generate_all_seconds_approx: 55
+  validation_seconds_approx: 2
+inputs:
+  manifest: results/<SOURCE_FILE_REDACTED>
+  normalized:
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+outputs:
+  key_results: results/key_results.json
+  q1_curve: results/<SOURCE_FILE_REDACTED>
+  q2_candidates: results/<SOURCE_FILE_REDACTED>
+  q3_profiles:
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+  holdout: results/<SOURCE_FILE_REDACTED>
+  sensitivity:
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+  internal_validation:
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+  figures_directory: figures
+  paper_sources:
+    - paper/main.tex
+    - paper/paper.md
+numeric_conventions:
+  latitude: "north positive degrees"
+  longitude: "east positive degrees normalized to [-180,180)"
+  time: "Beijing civil minutes, UTC+8"
+  objective: "per-point Euclidean shadow-tip RMSE in metres"
+rerun_policy:
+  compare_files:
+    - results/key_results.json
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+  exclude_from_hash_comparison:
+    - results/run_metadata.json
+  reason_for_exclusion: "run_metadata contains timestamps and elapsed time by design"
+limitations:
+  - "复现 pass 只指代码在当前环境重跑和内部数值一致。"
+  - "数学模型正确性与外部地点真值均保持 needs_review。"
+  - "附件 4 视频缺失，第四问没有数值复现对象。"

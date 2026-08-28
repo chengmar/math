@@ -1,0 +1,114 @@
+schema_version: 1
+case_id: 2016A
+phase: audit
+overall_status: fail
+findings:
+  - id: AUD-2016A-001
+    severity: major
+    category: physics_constraint_identifiability
+    evidence: >-
+      解答取球密度 7850 kg/m^3 并据此扣浮力，却不计球流阻。按同一实心钢球解释，
+      4800 kg 对应直径 1.053071 m、投影面积 0.870974 m^2；1.5 m/s 水流力为
+      732.925 N。把该力加入球节点水平平衡后，D=20 m、风=36 m/s、流=1.5 m/s
+      的名义锚角为 17.530113 度，10% 压力锚角为 19.481752 度，均超过 16 度。
+      另有密度扫描表明 Q1 的 24 m/s 桶角从 3.896 度到 6.092 度变化，干质量输入
+      在缺少排水体积时不可唯一辨识。
+    affected_files:
+      - frozen-solution/code/solve.py
+      - frozen-solution/assumptions.yaml
+      - frozen-solution/data-audit.md
+      - frozen-solution/paper/paper.md
+      - frozen-solution/paper/main.tex
+      - frozen-solution/solution-report.yaml
+    reason: >-
+      该遗漏在与论文钢质球假设一致的具体实现下推翻 Q3 名义可行性结论；实际球结构未知，
+      因而既不能把当前结果写成无条件质量建议，也不能把球流阻无条件设为零。
+    recommended_fix: >-
+      把球的排水体积、等效水动力直径/投影面积和阻力作用点列为显式输入；若坚持实心钢球，
+      用质量和密度计算直径并计入水流力。以水下有效重量为设计变量，对合理球几何区间重新
+      做稳健搜索并复核 5 度、16 度和吃水约束。
+    requires_human_review: true
+
+  - id: AUD-2016A-002
+    severity: major
+    category: optimization_search_coverage
+    evidence: >-
+      code/solve.py 对每个链型/链长只保留最小可行配重，并以 0.5 m 目标网格四舍五入链环数。
+      冻结入选 V-117/21.06 m/4800 kg 的分数为 1.5797926804。同链改为 5050 kg 时
+      分数为 1.5777317190 且 10% 约束比 0.9608660648；网格漏掉的合法
+      V-116/20.88 m/5200 kg 分数为 1.5731109324，10% 约束比 0.9988248979，
+      10% 最大吃水 1.929255 m。两者都满足代码硬约束并优于入选分数。
+    affected_files:
+      - frozen-solution/code/solve.py
+      - frozen-solution/model-selection.md
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/results/key_results.json
+      - frozen-solution/paper/paper.md
+      - frozen-solution/paper/main.tex
+      - frozen-solution/solution-report.yaml
+    reason: >-
+      搜索把配重先压缩为每个链方案的单一点，并跳过多数合法整数链环数，因此返回的 Pareto
+      集不是书面设计变量可行域的 Pareto 集；具体入选方案不是其自定义正权欧氏评分的最优解。
+    recommended_fix: >-
+      枚举每个合法整数链环数，并把水下有效配重保留为连续或足够细的独立设计变量；先生成完整
+      三目标 Pareto 集，再应用预先声明的折中规则。扩大链长/配重边界直到前沿和入选设计对边界
+      收敛，并报告网格加密检查。
+    requires_human_review: false
+
+  - id: AUD-2016A-003
+    severity: major
+    category: reproducibility_hermeticity
+    evidence: >-
+      两次空结果目录复跑各产生 26 个清单条目，manifest SHA-256 均为
+      85e87c83585742c854321a07b8fccd7ce5f7c08cb5d55a729647e03358c01caa；
+      26 项真实生成物逐字节等于冻结版本。冻结清单为 27 项和
+      e2f6face724fb359240025dad855a7c0b3348012eea1dffa89122a611dd5de81，
+      唯一多出 results/README.md。预置该 README 的对照运行才精确复现冻结清单。
+    affected_files:
+      - frozen-solution/code/solve.py
+      - frozen-solution/code/README.md
+      - frozen-solution/results/README.md
+      - frozen-solution/results/generated-manifest.json
+      - frozen-solution/reproducibility.yaml
+      - frozen-solution/reports/reproducibility-check.md
+    reason: >-
+      生成清单枚举预先存在的目录内容，且文档把静态 README 误称为 solve.py 生成物；已有的两次
+      哈希一致证据只证明相同预置状态的重复运行，不能证明从明确源代码和输入进行干净重建。
+    recommended_fix: >-
+      让 solve.py 明确生成 README，或从生成清单中排除所有静态输入并另列 input_manifest；
+      在两个全新空目录中复跑，比较生成物集合、逐文件哈希、stdout、stderr 和退出码。
+    requires_human_review: false
+
+  - id: AUD-2016A-004
+    severity: minor
+    category: figure_generation
+    evidence: >-
+      code/solve.py 第 760 行写出 width="100%%" height="100%%"；四个冻结 SVG
+      的第二行均含该值。100%% 不是合法 SVG 百分比长度。
+    affected_files:
+      - frozen-solution/code/solve.py
+      - frozen-solution/figures/q1_chain_profiles.svg
+      - frozen-solution/figures/q2_ball_adjustment.svg
+      - frozen-solution/figures/q3_pareto.svg
+      - frozen-solution/figures/q3_envelope.svg
+    reason: >-
+      XML 可解析但长度 token 无效，渲染器可能忽略背景矩形；Markdown 论文使用 SVG 时存在可移植性问题。
+    recommended_fix: >-
+      将属性改为 width="100%" height="100%"，重新生成并用至少一个严格 SVG 检查器和视觉渲染检查。
+    requires_human_review: false
+
+  - id: AUD-2016A-005
+    severity: suggestion
+    category: frozen_provenance
+    evidence: >-
+      65 个逐文件 SHA-256 全部通过，但 FROZEN_BLIND_V1.json 未声明 tree_sha256 的路径规范化、
+      文件排序、分隔符、编码或聚合算法；audit Skill 也未提供对应校验器。常见文本、JSON、
+      二进制摘要与内容拼接候选均不能复得 e1e04fb77a18a10f29b6cc2ea3a7bb3f477b7cbbec1d41dab8a629ce3a6528ab。
+    affected_files:
+      - frozen-solution/FROZEN_BLIND_V1.json
+    reason: >-
+      聚合值目前不能独立判断为 pass；逐文件哈希仍足以确认本次冻结载荷未被修改。
+    recommended_fix: >-
+      在 schema 中加入 tree_hash_algorithm 和 canonicalization_version，或随 audit Skill 提供只读校验脚本。
+    requires_human_review: false

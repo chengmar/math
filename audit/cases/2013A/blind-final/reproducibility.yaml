@@ -1,0 +1,123 @@
+schema_version: 2
+overall_status: needs_review
+computational_reproduction_status: pass
+paper_consistency_status: pass
+pdf_compile_status: needs_review
+phase_check:
+  python_process_status: fail
+  fallback_exact_logic_status: pass
+  allowed_paths_hash_status: pass
+  forbidden_paths_hash_status: pass
+  note: python与py均不存在；PowerShell按已完整读取的check_phase.py逐句等价执行。
+environment:
+  operating_system: Windows 10.0.26200
+  shell: PowerShell Core
+  powershell_version: 7.6.4
+  dotnet_runtime: 10.0.10
+  required_components:
+    - Microsoft.PowerShell.Management
+    - Microsoft.PowerShell.Utility
+    - System.Drawing.Common 10.0.0.0
+  external_python_required: false
+  network_required: false
+  tex_engine_status: needs_review
+randomness:
+  seed: 2013
+  stochastic_algorithm_used: false
+  status: pass
+inputs:
+  manifest: results/input_manifest.json
+  identity_status: pass
+  identity_fields: [path, bytes, sha256, ole_magic]
+  video_completeness_status: needs_review
+  source_ledger: source-ledger.json
+  v1_preservation_evidence: v1-preservation.json
+commands:
+  solve: pwsh -NoProfile -File .\code\solve.ps1 -Workspace .
+  solve_with_annotations: pwsh -NoProfile -File .\code\solve.ps1 -Workspace . -AnnotationPath .\input\annotations\<SOURCE_FILE_REDACTED>
+  paper_check: pwsh -NoProfile -File .\code\verify-paper.ps1 -Workspace .
+  reproduce: pwsh -NoProfile -File .\code\reproduce.ps1 -Workspace .
+  all: pwsh -NoProfile -File .\code\run-all.ps1 -Workspace .
+reproduction_check:
+  status: pass
+  runs_compared: 2
+  tracked_file_count: 27
+  hash_mismatch_count: 0
+  report: results/reproducibility-check.json
+  claim_limit: 双次哈希一致只证明声明输出在当前环境的确定性。
+clean_reproduction_check:
+  status: pass
+  initial_contents: [code, input, paper]
+  initial_results_present: false
+  initial_figures_present: false
+  compared_file_count: 29
+  hash_mismatch_count: 0
+  report: clean-reproduction-report.json
+  claim_limit: 当前主机上的干净文件系统副本，不是新操作系统或容器。
+validation:
+  report: results/verification.json
+  overall_status: needs_review
+  internal_pass_count: 14
+  needs_review_count: 2
+  hard_failure_count: 0
+  independent_implementation: code/independent-validator.ps1
+  convergence_table: results/<SOURCE_FILE_REDACTED>
+  smallest_step_s: 0.1
+  smallest_step_error_s: 0.04
+  mutation_detection_status: pass
+  near_threshold_status: pass
+paper_result_check:
+  status: pass
+  visible_and_marker_check_count: 46
+  failure_count: 0
+  report: results/paper_consistency.json
+  scope:
+    - result_markers
+    - visible_numbers
+    - capacity_seconds_formula
+    - reflected_event_formula
+    - finite_boundaries
+    - signal_nonuniqueness
+    - q2_no_rank_claim
+    - independent_validation_claim
+    - figure_files_and_references
+    - qquad_typography
+    - tex_static_braces_and_environments
+  claim_limit: 可见内容一致性不证明数学真理或案例外部有效性。
+tex_check:
+  static_structure_status: pass
+  typography_status: pass
+  compilation_status: needs_review
+  visual_inspection_status: needs_review
+  reason: 当前环境未提供xelatex、latexmk或tectonic，未生成PDF。
+outputs:
+  generated_manifest: results/generated-files.json
+  main_summary: results/summary.json
+  verification: results/verification.json
+  q1:
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+    - results/capacity-unit-tests.json
+  q2:
+    - results/<SOURCE_FILE_REDACTED>
+    - results/q2_comparison.json
+  q3:
+    - results/<SOURCE_FILE_REDACTED>
+    - figures/<SOURCE_FILE_REDACTED>
+  q4:
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+    - results/signal-regression.json
+    - figures/<SOURCE_FILE_REDACTED>
+    - figures/<SOURCE_FILE_REDACTED>
+    - figures/<SOURCE_FILE_REDACTED>
+known_limitations:
+  - 视频1和视频2缺失，四问不能案例数值闭合。
+  - 基本图、PCU和信号倍率未由本路段视频标定。
+  - 完整会话访问史仍需人工复核。
+  - 无TeX引擎，PDF编译和逐页目视为needs_review。

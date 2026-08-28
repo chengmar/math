@@ -1,0 +1,171 @@
+{
+  "schema_version": 1,
+  "case_id": "2015A",
+  "phase": "audit",
+  "overall_status": "fail",
+  "status_reason": "FROZEN identity and isolated execution passed, but two deterministic frozen verification tables do not match regeneration from the final TeX source.",
+  "access_policy": {
+    "network_search_status": "pass",
+    "reference_paper_read_status": "pass",
+    "vault_read_status": "pass",
+    "other_phase_skill_status": "pass",
+    "note": "No network search, reference paper, answer, Vault, or other phase skill was used."
+  },
+  "phase_gate": {
+    "literal_check_phase_status": "needs_review",
+    "literal_command": "<LAB_ROOT>/.venv/Scripts/python.exe <LAB_ROOT>/.agents/skills/cumcm-a-audit/scripts/check_phase.py --workspace <RUNTIME_ROOT>/2015A/workspaces/audit",
+    "literal_exit_code": 1,
+    "literal_stdout": "",
+    "literal_stderr": "No Python at '\"<ABSOLUTE_PATH>'",
+    "equivalent_condition_status": "pass",
+    "equivalent_stdout": "[PASS] audit 阶段锁有效",
+    "note": <LONG_QUOTE_REDACTED>
+  },
+  "boundary_integrity": {
+    "allowed_paths_sha256_status": "pass",
+    "allowed_paths_sha256": "b9e4aef2b4cfff7edcb924f151d96172e158d64b254012cca83dca45d6e481db",
+    "forbidden_paths_sha256_status": "pass",
+    "forbidden_paths_sha256": "f075bf741aa5e0dc4527893642bc07eb4bc70edc84733fa9b1801ed5ccaa0b47"
+  },
+  "frozen_snapshot": {
+    "manifest": "frozen-solution/FROZEN_BLIND_V1.json",
+    "case_id": "2015A",
+    "version": "blind-v1",
+    "manifest_entry_count": 78,
+    "actual_file_count_excluding_manifest": 78,
+    "file_set_status": "pass",
+    "size_status": "pass",
+    "sha256_status": "pass",
+    "tree_hash_status": "pass",
+    "tree_sha256_expected": "e2280802035f6194a85fb6f2c7d42a8f16ebab9313748a94599edcc9caa90a2f",
+    "tree_sha256_actual": "e2280802035f6194a85fb6f2c7d42a8f16ebab9313748a94599edcc9caa90a2f",
+    "post_audit_recheck_status": "pass"
+  },
+  "environment": {
+    "operating_system": "Microsoft Windows 10.0.26200",
+    "process_architecture": "X64",
+    "powershell": "7.6.4",
+    "powershell_edition": "Core",
+    "dotnet": ".NET 10.0.10",
+    "excel_com_version": "12.0",
+    "excel_com_build": "28043",
+    "system_drawing": "System.Drawing.Common, Version=10.0.0.0",
+    "python_status": "needs_review",
+    "python_note": "No functioning Python interpreter was available.",
+    "latex_status": "needs_review",
+    "latex_note": "xelatex, latexmk and pdflatex were not present."
+  },
+  "clean_environment": {
+    "path": "<RUNTIME_ROOT>/2015A/workspaces/audit/_audit-repro-2",
+    "source_file_count": 22,
+    "source_copy_sha256_status": "pass",
+    "preexisting_results_status": "pass",
+    "preexisting_figures_status": "pass",
+    "preexisting_generated_values_status": "pass",
+    "preexisting_note": "All three were absent before the first run."
+  },
+  "commands": [
+    {
+      "id": "generate_all_initial",
+      "command": "pwsh -NoProfile -File .\\code\\run_all.ps1 -SensitivityReplicates 100",
+      "working_directory": "_audit-repro-2",
+      "exit_code": 0,
+      "wall_time_seconds": 50.9,
+      "stdout": "[PASS] run_all completed in 50.1 s; results=<ABSOLUTE_PATH>",
+      "stderr": "",
+      "status": "pass"
+    },
+    {
+      "id": "independent_validation",
+      "command": "pwsh -NoProfile -File .\\code\\validate_outputs.ps1",
+      "working_directory": "_audit-repro-2",
+      "exit_code": 0,
+      "wall_time_seconds": 1.1,
+      "stdout": "[PASS] independent validation completed; 32 checks, external truth needs_review",
+      "stderr": "",
+      "status": "pass"
+    },
+    {
+      "id": "paper_consistency",
+      "command": "pwsh -NoProfile -File .\\code\\check_paper_consistency.ps1",
+      "working_directory": "_audit-repro-2",
+      "exit_code": 0,
+      "wall_time_seconds": 1.2,
+      "stdout": "[PASS] paper/result consistency checks completed; LaTeX compilation needs_review",
+      "stderr": "",
+      "status": "pass"
+    },
+    {
+      "id": "full_verification_with_rerun",
+      "command": "pwsh -NoProfile -File .\\code\\verify_all.ps1 -Rerun -SensitivityReplicates 100",
+      "working_directory": "_audit-repro-2",
+      "exit_code": 0,
+      "wall_time_seconds": 53.7,
+      "stdout": "[PASS] run_all completed in 50.2 s; results=<ABSOLUTE_PATH>",
+      "stderr": "",
+      "status": "pass"
+    }
+  ],
+  "generated_outputs": {
+    "png_count": 8,
+    "independent_validation_check_count": 32,
+    "independent_validation_pass_count": 31,
+    "independent_validation_needs_review_count": 1,
+    "deterministic_rerun_compared": 18,
+    "deterministic_rerun_pass": 18,
+    "deterministic_rerun_status": "pass",
+    "external_geographic_truth_status": "needs_review",
+    "latex_compile_status": "needs_review"
+  },
+  "frozen_artifact_comparison": {
+    "scope": "regenerated results, figures, and paper/generated-values.tex",
+    "total": 38,
+    "exact_sha256_pass": 35,
+    "fail": 2,
+    "needs_review": 1,
+    "status": "fail",
+    "differences": [
+      {
+        "path": "results/<SOURCE_FILE_REDACTED>",
+        "status": "fail",
+        "frozen_sha256": "9169fb0e3aba600473b2eb91efff10ee3fe17a18eeb4d07585d9d28486171acf",
+        "reproduced_sha256": "056073a519515fda4435f886c58039871f90cab7e64ba1b8eb06c75f3ea74f44",
+        "reason": "Frozen row reports paper/main.tex as 20411 bytes; final and reproduced source is 20740 bytes."
+      },
+      {
+        "path": "results/<SOURCE_FILE_REDACTED>",
+        "status": "fail",
+        "frozen_sha256": "16a2cbdc4a15ec96325bc72a93adcdfb8da9e97a2d7ee9a1fd4a43272753b53b",
+        "reproduced_sha256": "d4acb30cbc48a50f2edcb0879d3be1b129420c70d658d883bd1dd9169dbc7595",
+        "reason": "Frozen check has 257 brace pairs and no thebibliography row; final source regeneration has 264 pairs and a balanced thebibliography row."
+      },
+      {
+        "path": "results/run_metadata.json",
+        "status": "needs_review",
+        "frozen_sha256": "f06490142748552c39fedd1d3a8fd6aee08e2020e6f9fce5ed267255b87ada39",
+        "reproduced_sha256": "5023e2db04b0d9ed5c47675f5f9a3dd0b3b8d57ef5ee4ca9ede23db9315683cb",
+        "reason": "Timestamps and elapsed time are intentionally dynamic."
+      }
+    ]
+  },
+  "input_read_side_effect": {
+    "status": "fail",
+    "path": "input/data/<SOURCE_FILE_REDACTED>",
+    "cause": "Excel COM updated an internal OLE FILETIME despite Workbooks.Open(..., ReadOnly=true).",
+    "outer_sha256_after": "65477e5a79636a73c4e89df82df80ac56f881e403acf2ded0763e17b66c57c10",
+    "frozen_sha256": "10d1df98c8fda6348ec7bac54f7105b641fd009dcaee89fedc7ef000c3e4b7ce",
+    "different_byte_count": 5,
+    "byte_range": "28780-28784",
+    "ole_filetime_before_local": "2026-08-25T09:31:01.4830000+08:00",
+    "ole_filetime_after_local": "2026-08-25T11:09:17.8980000+08:00",
+    "workbook_data_change_status": "pass",
+    "restoration_status": "needs_review",
+    "note": "Only OLE metadata bytes changed; workbook stream and extracted cells were unchanged. No overwrite restoration was attempted because input is read-only by policy."
+  },
+  "workspace_hygiene": {
+    "active_reproduction_directory": "_audit-repro-2",
+    "inactive_malformed_directory": "_audit-repro",
+    "cleanup_status": "needs_review",
+    "note": "Deletion of the first temporary copy was rejected by execution policy; no bypass was attempted. Neither directory is inside frozen-solution."
+  }
+}

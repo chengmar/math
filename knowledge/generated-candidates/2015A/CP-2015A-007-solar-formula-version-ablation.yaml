@@ -1,0 +1,40 @@
+schema_version: 1
+proposal_id: "CP-2015A-007"
+proposal_state: "candidate"
+title: <REFERENCE_TITLE_REDACTED>
+origin: "learned_after_reference_access_formula_difference"
+origin_status: "pass"
+summary: "太阳影子反演必须登记赤纬、均时差、时区、经度符号、日期序号和折射约定，并把竞赛简式与高精度式的输出差异作为模型误差而非数值噪声。"
+applicable_when:
+  - "任务由民用时刻、经纬度和太阳位置计算影长或方位。"
+  - "分钟级时间或公里级地点差异会影响结论。"
+not_applicable_when:
+  - "太阳向量由校准仪器直接给定，公式版本不进入反演。"
+  - "任务精度要求远低于所有候选公式之间的差异，且该边界已量化。"
+minimum_baseline:
+  - "只写太阳高度角公式而不登记赤纬和均时差版本。"
+  - "把地方太阳时直接等同于钟表时。"
+validation_requirements:
+  - "固定测试日期、经纬度和时区，逐项输出赤纬、均时差、太阳正午和影长。"
+  - "与一个独立高精度太阳历或天文库对照。"
+  - "在最终反演上报告公式切换导致的日期、地点和杆高漂移。"
+  - "明确是否包含大气折射、闰年和时区历史变化。"
+counterexamples:
+  - "本案例中 Blind 与简化赤纬且关闭均时差的消融，最短影长相差约 0.18 m，最短时刻相差约 16 分钟。"
+  - "忽略均时差后用短时二次曲线估计太阳正午，会把模型误差映射到经度。"
+  - "同一公式的度/弧度或东经符号错误可产生看似平滑但错误的轨迹。"
+source_case:
+  case_id: "2015A"
+  source_artifact: "Blind versus simplified-declination/no-equation-of-time ablation prompted by R4"
+  reference_ids: ["R1", "R4"]
+evidence_strength:
+  formula_reimplementation_status: "pass"
+  high_precision_ephemeris_comparison_status: "needs_review"
+  external_truth_status: "needs_review"
+evidence:
+  - "本轮简化赤纬且关闭均时差的消融得到太阳正午 12:14:26、最短影长 3.841053 m，与 R4 自报数值接近。"
+  - "R4 正文同时列出均时差近似式，原代码不可复跑，不能断言其实际实现关闭了均时差。"
+  - "Blind 报告 11:58:33、3.662758 m，内部实现复现为 pass。"
+promotion_requirements:
+  - "用独立高精度历书覆盖全年、多纬度和时区边界。"
+  - "给出精度需求下允许使用简式的明确阈值。"

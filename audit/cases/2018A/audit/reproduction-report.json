@@ -1,0 +1,195 @@
+{
+  "schema_version": 1,
+  "case_id": "2018A",
+  "phase": "audit",
+  "overall_reproduction_status": "pass",
+  "scientific_interpretation_status": "needs_review",
+  "executed_at": "2026-08-28T05:03:01.8542694+08:00",
+  "boundary_checks": {
+    "phase_check": {
+      "status": "pass",
+      "command": "python <ABSOLUTE_PATH>",
+      "exit_code": 0,
+      "stdout": "[PASS] audit 阶段锁有效",
+      "stderr": ""
+    },
+    "allowed_paths_sha256": {
+      "expected": "67e26af07af437536e76fc4ad7870be5714204e43a1040541b8a386614f71570",
+      "actual": "67e26af07af437536e76fc4ad7870be5714204e43a1040541b8a386614f71570",
+      "status": "pass"
+    },
+    "forbidden_paths_sha256": {
+      "expected": "f075bf741aa5e0dc4527893642bc07eb4bc70edc84733fa9b1801ed5ccaa0b47",
+      "actual": "f075bf741aa5e0dc4527893642bc07eb4bc70edc84733fa9b1801ed5ccaa0b47",
+      "status": "pass"
+    }
+  },
+  "frozen_integrity": {
+    "status": "pass",
+    "manifest": "frozen-solution/FROZEN_BLIND_V1.json",
+    "manifest_sha256": "309d45639a0e70cbf22c0d257fe154b6d5c2b4a0cd2f9bcc1631e9d7bc7e92e4",
+    "manifest_file_count": 72,
+    "verified_file_count": 72,
+    "missing_file_count": 0,
+    "unexpected_file_count_excluding_manifest": 0,
+    "size_mismatch_count": 0,
+    "sha256_mismatch_count": 0,
+    "reparse_point_count": 0,
+    "tree_hash_algorithm": "SHA-256 of manifest-order UTF-8 records path + NUL + file_sha256 + LF",
+    "expected_tree_sha256": "3a1e51cee374165411522586c1d5b0d16d6f442e1ca7b14fa6459d38fb481109",
+    "recomputed_tree_sha256": "3a1e51cee374165411522586c1d5b0d16d6f442e1ca7b14fa6459d38fb481109",
+    "post_audit_recheck": {
+      "checked_at": "2026-08-28T05:21:31.0017705+08:00",
+      "status": "pass",
+      "verified_file_count": 72,
+      "issue_count": 0
+    },
+    "git_commit_and_dirty_claim": {
+      "status": "needs_review",
+      "reason": "The allowed minimal workspace contains no Git object database with which to independently verify git_commit or git_dirty. Snapshot hashes were independently verified."
+    }
+  },
+  "input_identity": {
+    "status": "pass",
+    "problem": {
+      "input_sha256": "b51198d1878ffa397183425f02afbc8eb55c9725f9e07bb68b39049cab83b2d3",
+      "frozen_copy_sha256": "b51198d1878ffa397183425f02afbc8eb55c9725f9e07bb68b39049cab83b2d3"
+    },
+    "data": {
+      "input_sha256": "5cc06685f8fe568107a492351a5bc22f9119b0d509d324e303c84c0014e885a2",
+      "frozen_copy_sha256": "5cc06685f8fe568107a492351a5bc22f9119b0d509d324e303c84c0014e885a2"
+    }
+  },
+  "environment": {
+    "status": "pass",
+    "python_executable": "<ABSOLUTE_PATH>",
+    "python": "3.12.13",
+    "python_full": "3.12.13 (main, Aug 7 2026, 02:26:41) [MSC v.1944 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "dependencies": {
+      "numpy": "2.5.2",
+      "scipy": "1.18.1",
+      "pandas": "3.0.5",
+      "matplotlib": "3.11.1",
+      "openpyxl": "3.1.5",
+      "pyyaml": "6.0.3"
+    },
+    "dependency_lock_match": "pass",
+    "network_installation_used": false
+  },
+  "isolation": {
+    "status": "pass",
+    "source": "frozen-solution",
+    "working_directory": "<ABSOLUTE_PATH>",
+    "construction": "Copied code, input, paper, reports, and required root documents only; results and figures did not exist before the first run.",
+    "frozen_solution_executed_in_place": false,
+    "environment_controls": {
+      "PYTHONNOUSERSITE": "1",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONHASHSEED": "0",
+      "MPLCONFIGDIR": "audit-reproduction-clean/.mplconfig",
+      "TEMP": "audit-reproduction-clean/.tmp",
+      "TMP": "audit-reproduction-clean/.tmp"
+    }
+  },
+  "commands": [
+    {
+      "sequence": 1,
+      "command": "<ABSOLUTE_PATH>",
+      "cwd": "<ABSOLUTE_PATH>",
+      "exit_code": 0,
+      "duration_seconds": 13.844524,
+      "started_at": "2026-08-28T05:03:01.8542694+08:00",
+      "finished_at": "2026-08-28T05:03:15.6689076+08:00",
+      "stdout": "{\"status\": \"pass\", \"h_out_w_m2k\": 119.97936200618787, \"h_in_w_m2k\": 8.360055977403729, \"problem_1_end_c\": 48.084888702854535, \"problem_2_practical_d2_mm\": 17.6, \"problem_3_practical_mm\": [19.3, 6.4]}",
+      "stderr": "Matplotlib is building the font cache; this may take a moment.",
+      "status": "pass",
+      "log_files": [
+        "audit-reproduction-clean/.audit-logs/01-run_all.stdout.txt",
+        "audit-reproduction-clean/.audit-logs/01-run_all.stderr.txt"
+      ]
+    },
+    {
+      "sequence": 2,
+      "command": "<ABSOLUTE_PATH>",
+      "cwd": "<ABSOLUTE_PATH>",
+      "exit_code": 0,
+      "duration_seconds": 2.151204,
+      "started_at": "2026-08-28T05:03:29.3465565+08:00",
+      "finished_at": "2026-08-28T05:03:31.4920236+08:00",
+      "stdout": "{\"internal_verification_status\": \"pass\", \"critical_failures\": []}",
+      "stderr": "",
+      "status": "pass",
+      "log_files": [
+        "audit-reproduction-clean/.audit-logs/02-verify_outputs.stdout.txt",
+        "audit-reproduction-clean/.audit-logs/02-verify_outputs.stderr.txt"
+      ]
+    },
+    {
+      "sequence": 3,
+      "command": "<ABSOLUTE_PATH>",
+      "cwd": "<ABSOLUTE_PATH>",
+      "exit_code": 0,
+      "duration_seconds": 11.889298,
+      "started_at": "2026-08-28T05:03:46.3520656+08:00",
+      "finished_at": "2026-08-28T05:03:58.2108172+08:00",
+      "stdout": "{\"status\": \"pass\", \"post_run_verification_status\": \"pass\", \"semantic_sha256\": \"d19f0a53aef1ece69197dab64da2457658b3d855800525a9f06dee17903861e5\"}",
+      "stderr": "",
+      "status": "pass",
+      "log_files": [
+        "audit-reproduction-clean/.audit-logs/03-check_reproducibility.stdout.txt",
+        "audit-reproduction-clean/.audit-logs/03-check_reproducibility.stderr.txt"
+      ]
+    }
+  ],
+  "semantic_reproduction": {
+    "status": "pass",
+    "first_semantic_sha256": "d19f0a53aef1ece69197dab64da2457658b3d855800525a9f06dee17903861e5",
+    "second_semantic_sha256": "d19f0a53aef1ece69197dab64da2457658b3d855800525a9f06dee17903861e5",
+    "frozen_semantic_sha256": "d19f0a53aef1ece69197dab64da2457658b3d855800525a9f06dee17903861e5",
+    "key_results": {
+      "h_out_w_m2k": 119.97936200618787,
+      "h_in_w_m2k": 8.360055977403729,
+      "problem_1_end_c": 48.084888702854535,
+      "problem_2_practical_d2_mm": 17.6,
+      "problem_3_practical_d2_mm": 19.3,
+      "problem_3_practical_d4_mm": 6.4
+    }
+  },
+  "byte_level_comparison": {
+    "status": "needs_review",
+    "frozen_output_manifest_declared_entry_count": 25,
+    "entries_whose_frozen_actual_hash_matches_declared_hash": 24,
+    "clean_outputs_matching_frozen_bytes": 23,
+    "differences": [
+      {
+        "path": "results/output_manifest.json",
+        "status": "fail",
+        "declared_self_sha256": "7478754c1f257578127ee16bdaea7cc6bac749508720f4cf6be78a02383edce2",
+        "frozen_actual_sha256": "7c978489556b2b49102f5060476c138ab0cdff069bb946d3c530ed1b926f0793",
+        "clean_actual_sha256": "34acb1131ae84bcb2c4af10ed57a873977e95393ae04612e676929b2decbc3d7",
+        "clean_manifest_entry_count": 24,
+        "clean_manifest_missing_entry": "results/reproducibility_check.json",
+        "reason": "The manifest hashes its previous self and is written before the later reproducibility report."
+      },
+      {
+        "path": "results/<SOURCE_FILE_REDACTED>",
+        "status": "needs_review",
+        "frozen_sha256": "e6656f6c8256234a86391beba25dab31d783ece686f2769d7dd0c683104d1604",
+        "clean_sha256": "215cb50339ac3ebcf7e073f0d3071aed76f34975efd601201249840ed07dc1ea",
+        "semantic_content_status": "pass",
+        "reason": "Workbook cells and semantic digest match, but ZIP container bytes are not deterministic."
+      }
+    ]
+  },
+  "paper_compilation": {
+    "status": "needs_review",
+    "xelatex_available": false,
+    "latexmk_available": false,
+    "lualatex_available": false,
+    "pdflatex_available": false,
+    "compile_attempted": false,
+    "reason": "No TeX engine is present; compilation was not fabricated."
+  },
+  "interpretation": <LONG_QUOTE_REDACTED>
+}

@@ -1,0 +1,18 @@
+case_id: 2010A
+status: candidate_only
+candidate_count: 32
+machine_verified_count: 0
+verified_count: 0
+exported_files:
+- file: expression-lessons.yaml
+  sha256: 98bd46863e5c08d8276d0a1397bb5621083020158f217439563492ba384e9ccc
+- file: failure-modes.yaml
+  sha256: 1f8366d70da0c032692782e58a2de3e0d7ad2b3841fa35f4b4ce42bc51622ea3
+- file: method-cards.yaml
+  sha256: 8ca23d602bef83131809fcabfb182990abe0621bdd09869d69d4a370a7ab65f6
+- file: problem-specific.md
+  sha256: 8ac163becf796fc872eb4ba9e656be68213cd49f5ccdce7f15ca6324f4f650cc
+- file: README.md
+  sha256: aa25066fe19562a8d02c572a537ec8acc9ace081d7a608296dcae8d62b0d5756
+- file: validation-patterns.yaml
+  sha256: 57871817406f875fcb6c4752b248c4f797ec04e90cf16811310efedb86fa330a

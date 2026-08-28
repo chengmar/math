@@ -1,0 +1,189 @@
+{
+  "schema_version": 1,
+  "case_id": "2019A",
+  "phase": "audit",
+  "generated_at": "2026-08-28",
+  "overall_status": "needs_review",
+  "scope": "Frozen integrity, clean-working-copy execution, deterministic rerun, and full frozen-payload comparison",
+  "phase_gate": {
+    "status": "pass",
+    "command": "python <ABSOLUTE_PATH>",
+    "exit_code": 0,
+    "stdout": "[PASS] audit 阶段锁有效\n",
+    "stderr": ""
+  },
+  "control_file_hashes": {
+    "status": "pass",
+    "files": [
+      {
+        "path": "allowed-paths.json",
+        "expected_sha256": "8c82ec1498777a4249c4a291d8febff2c381bb05a93fc3b325983f65a4614e06",
+        "actual_sha256": "8c82ec1498777a4249c4a291d8febff2c381bb05a93fc3b325983f65a4614e06"
+      },
+      {
+        "path": "forbidden-paths.json",
+        "expected_sha256": "f075bf741aa5e0dc4527893642bc07eb4bc70edc84733fa9b1801ed5ccaa0b47",
+        "actual_sha256": "f075bf741aa5e0dc4527893642bc07eb4bc70edc84733fa9b1801ed5ccaa0b47"
+      }
+    ]
+  },
+  "frozen_manifest": {
+    "status": "pass",
+    "path": "frozen-solution/FROZEN_BLIND_V1.json",
+    "schema_version": 1,
+    "snapshot": "blind-v1",
+    "manifest_entry_count": 74,
+    "verified_file_count": 74,
+    "size_or_sha256_failure_count": 0,
+    "unexpected_unlisted_file_count": 0,
+    "tree_hash_algorithm": "SHA256 over each manifest entry in recorded order as UTF-8 path + NUL + lowercase file SHA-256 + LF",
+    "expected_tree_sha256": "9adbecdb7a06f08ad8f492c9f26e520bd7ea40e5bab82b316ec5cb475b7d7b7e",
+    "actual_tree_sha256": "9adbecdb7a06f08ad8f492c9f26e520bd7ea40e5bab82b316ec5cb475b7d7b7e",
+    "workspace_input_vs_frozen_input": {
+      "status": "pass",
+      "compared_file_count": 5,
+      "mismatch_count": 0
+    }
+  },
+  "clean_environment": {
+    "status": "needs_review",
+    "working_copy": ".audit-repro-clean",
+    "working_copy_initial_manifest_check": {
+      "status": "pass",
+      "verified_file_count": 74,
+      "failure_count": 0
+    },
+    "network_used": false,
+    "package_install_attempted": false,
+    "fresh_venv_attempt": {
+      "status": "fail",
+      "command": "python -m venv --system-site-packages .audit-repro-venv; dependency import probe",
+      "exit_code": 1,
+      "elapsed_seconds": 15.53,
+      "stdout": "",
+      "stderr": "ModuleNotFoundError: No module named 'scipy'; dependency probe failed. A child venv created from the already-active trainer venv did not inherit its packages."
+    },
+    "fallback_interpreter": {
+      "status": "pass",
+      "executable": "<ABSOLUTE_PATH>",
+      "python": "3.12.13",
+      "implementation": "CPython",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "environment_controls": {
+        "PYTHONNOUSERSITE": "1",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PIP_NO_INDEX": "1"
+      },
+      "packages": {
+        "numpy": "2.5.2",
+        "scipy": "1.18.1",
+        "openpyxl": "3.1.5",
+        "matplotlib": "3.11.1",
+        "PyYAML": "6.0.3",
+        "Pillow": "12.3.0"
+      },
+      "version_match_to_frozen_record": "pass"
+    },
+    "limitation": <LONG_QUOTE_REDACTED>
+  },
+  "commands": [
+    {
+      "sequence": 1,
+      "status": "pass",
+      "command": "python code/run_all.py",
+      "working_directory": ".audit-repro-clean",
+      "executable": "<ABSOLUTE_PATH>",
+      "exit_code": 0,
+      "elapsed_seconds": 156.336,
+      "stdout": <LONG_QUOTE_REDACTED>,
+      "stderr": ""
+    },
+    {
+      "sequence": 2,
+      "status": "pass",
+      "command": "python code/verify_outputs.py --record-manifest",
+      "working_directory": ".audit-repro-clean",
+      "executable": "<ABSOLUTE_PATH>",
+      "exit_code": 0,
+      "elapsed_seconds": 0.174,
+      "stdout": "[NEEDS_REVIEW] baseline recorded; perform a full rerun\n",
+      "stderr": ""
+    },
+    {
+      "sequence": 3,
+      "status": "pass",
+      "command": "python code/run_all.py",
+      "working_directory": ".audit-repro-clean",
+      "executable": "<ABSOLUTE_PATH>",
+      "exit_code": 0,
+      "elapsed_seconds": 155.668,
+      "stdout": <LONG_QUOTE_REDACTED>,
+      "stderr": ""
+    },
+    {
+      "sequence": 4,
+      "status": "pass",
+      "command": "python code/verify_outputs.py",
+      "working_directory": ".audit-repro-clean",
+      "executable": "<ABSOLUTE_PATH>",
+      "exit_code": 0,
+      "elapsed_seconds": 0.534,
+      "stdout": "[PASS] artifacts and deterministic core-output rerun match\n",
+      "stderr": ""
+    }
+  ],
+  "built_in_rerun_comparison": {
+    "status": "pass",
+    "scope": "28 same-working-directory core results and figures; mutable evidence files excluded",
+    "compared_file_count": 28,
+    "changed": [],
+    "missing": [],
+    "added": []
+  },
+  "first_run_vs_frozen_manifest": {
+    "status": "fail",
+    "compared_file_count": 74,
+    "changed_file_count": 4,
+    "changed": [
+      "results/all-results.json",
+      "results/data-audit.json",
+      "results/<SOURCE_FILE_REDACTED>",
+      "results/validation.json"
+    ],
+    "explanation": "Three evidence files are intentionally reset to needs_review before the post-run verifier; data-audit.json changes because it embeds the absolute working path."
+  },
+  "final_run_vs_frozen_manifest": {
+    "status": "fail",
+    "compared_file_count": 74,
+    "unchanged_file_count": 71,
+    "changed_file_count": 3,
+    "missing_file_count": 0,
+    "unexpected_file_count": 0,
+    "changed": [
+      {
+        "path": "reproducibility.yaml",
+        "expected_sha256": "f7eef2c2910b36002ccc1fd3ec30f3189faffff5dbb620ecf8cb002baee4827e",
+        "actual_sha256": "e2ffd7c664d0cb16a5ae374bf23c286a22d4b789b4517ed41ecb29b7c6c89dcb",
+        "reason": "line-ending normalization during YAML rewrite"
+      },
+      {
+        "path": "results/data-audit.json",
+        "expected_sha256": "efb5b35ff840dd9f0db50bda9338e164e05e34b820f39af1557863777888eb03",
+        "actual_sha256": "d0b349b32ab28c40f8dabb878a7786c854d82fb32cbbb2ca8440a641cd055691",
+        "reason": "three absolute workbook paths contain the clean working-copy location instead of the solve location"
+      },
+      {
+        "path": "results/rerun-baseline.json",
+        "expected_sha256": "b67bedc0b5b25b31b7c45d8fc635023903e98d273f8300b43d4be44e86821291",
+        "actual_sha256": "1c4c911123a392692c6d6b5c9fc7a7aed16819565b5ab913c81c7d24d52c0d53",
+        "reason": "records the location-dependent data-audit.json hash"
+      }
+    ]
+  },
+  "numerical_reproduction": {
+    "status": "pass",
+    "statement": "All frozen numerical summaries, time series, generated paper values, and figures outside the three metadata/provenance files are byte-identical after the complete rerun chain."
+  },
+  "frozen_solution_modified": false,
+  "temporary_reproduction_directories_retained": false
+}

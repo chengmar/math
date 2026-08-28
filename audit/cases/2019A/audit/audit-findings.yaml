@@ -1,0 +1,244 @@
+schema_version: 1
+case_id: 2019A
+phase: audit
+overall_status: fail
+generated_at: 2026-08-28
+finding_count: 8
+severity_counts:
+  critical: 0
+  major: 3
+  minor: 4
+  suggestion: 1
+findings:
+  - id: AUD-001
+    severity: major
+    category: mathematics_mass_conservation
+    evidence: >-
+      paper/main.tex:86-92 and paper/paper.md:68-77 define Q with the high-side
+      density rho(P_h), but then use V_r*d(rho_r)/dt = rho_r*(Q_A-Q_B-Q_D).
+      code/model.py:413-422 likewise computes the Problem 1 inlet flow with
+      rho(160 MPa) and advances pressure with E(P_r)*(Q_A-Q_B)/V_r, omitting
+      rho(160)/rho(P_r). An audit-only exact cycle-mean mass balance gives
+      tau=0.287601 ms at 100 MPa rather than 0.294981 ms. With the reported
+      tau in the density-corrected midpoint ODE, the 20-30 s mean is
+      102.721051 MPa; the corrected tau gives 99.992564 MPa. At 150 MPa the
+      corresponding values are 0.751794 ms and 150.071922/149.982193 MPa.
+    affected_files:
+      - frozen-solution/code/model.py
+      - frozen-solution/code/run_all.py
+      - frozen-solution/paper/main.tex
+      - frozen-solution/paper/paper.md
+      - frozen-solution/results/problem1-summary.json
+      - frozen-solution/results/validation.json
+    reason: >-
+      Volumetric flow evaluated at different high-side pressures cannot be
+      added in a mass balance without density conversion. The transformed-volume
+      residual validates the implemented ODE against itself and therefore does
+      not detect this physical mass residual. The error materially invalidates
+      the reported 100 MPa holding command and also enters transition control.
+    recommended_fix: >-
+      Use dP_r/dt = E(P_r)/V_r * [(rho_in/rho_r) Q_A - Q_B - Q_D], with
+      rho_in=rho(160) in Problem 1 and rho_in=rho(P_c) for chamber-to-rail
+      delivery. Re-derive the mean balance and transition feed-forward law,
+      replace the invariant with an actual mass residual, then regenerate every
+      affected result, figure, paper value, and verification record under a new
+      frozen version.
+    requires_human_review: false
+
+  - id: AUD-002
+    severity: major
+    category: constraint_feasibility
+    evidence: >-
+      code/model.py:602-605 switches the relief valve instantaneously at the
+      pressure thresholds and contains no delay or minimum dwell constraint.
+      results/problem3-summary.json:91-95 reports 42.6667 state changes per
+      100 ms and a 1.643045 MPa peak-to-peak result. In the full dt=0.005 ms
+      audit trace, 512 of 639 internal dwell intervals are below 1 ms; the
+      median is 0.260 ms and the minimum is 0.195 ms. Adding an audit-only
+      minimum dwell of 0.5/1/2/5 ms changes peak-to-peak pressure to
+      1.981856/2.526453/3.265751/5.886352 MPa and the means to
+      99.866420/99.509364/98.987992/97.918032 MPa.
+    affected_files:
+      - frozen-solution/code/model.py
+      - frozen-solution/code/run_all.py
+      - frozen-solution/assumptions.yaml
+      - frozen-solution/paper/main.tex
+      - frozen-solution/paper/paper.md
+      - frozen-solution/results/problem3-summary.json
+    reason: >-
+      The paper's approximate 0.5 kHz requirement is inferred from average
+      switching count and hides short bursts requiring sub-millisecond reversal.
+      Consequently the advertised high-stability performance is not established
+      for a realizable valve, even though the ideal-actuator limitation is
+      qualitatively disclosed.
+    recommended_fix: >-
+      Add opening/closing delay, separate minimum on/off dwell, and an admissible
+      switching-rate constraint. Re-optimize pump phase and hysteresis under
+      those constraints, report dwell-time quantiles rather than only an average
+      edge count, and condition the final scheme on verified actuator data.
+    requires_human_review: true
+
+  - id: AUD-003
+    severity: major
+    category: model_structure_identifiability
+    evidence: >-
+      code/model.py:222-239 selects min(A_seat,A_hole) as the primary nozzle
+      area but also implements a serial-resistance alternative. The frozen
+      baseline gives 38.598782 mm3 per pulse for the bottleneck model and
+      32.539645 mm3 for the serial model. results/<SOURCE_FILE_REDACTED>:10 gives
+      omega=0.022908700 rad/ms under serial resistance versus
+      0.027368180 rad/ms in the reported primary result, a 16.3% change also
+      acknowledged at paper/main.tex:266.
+    affected_files:
+      - frozen-solution/code/model.py
+      - frozen-solution/model-selection.md
+      - frozen-solution/assumptions.yaml
+      - frozen-solution/paper/main.tex
+      - frozen-solution/paper/paper.md
+      - frozen-solution/results/problem2-summary.json
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+    reason: >-
+      The fuel traverses both restrictions in series. Choosing the smaller area
+      alone is an upper-flow approximation, not a uniquely identified law; the
+      alternative changes the requested control by much more than the reported
+      numerical error. The solution discloses the sensitivity but still states
+      one point estimate as its final answer.
+    recommended_fix: >-
+      Treat the bottleneck and serial formulations as a structural interval,
+      report omega in approximately [0.02291, 0.02737] rad/ms until separate
+      loss coefficients or intermediate pressure are available, or calibrate a
+      physically documented equivalent-area law and rerun all downstream schemes.
+    requires_human_review: true
+
+  - id: AUD-004
+    severity: minor
+    category: validation_initial_condition
+    evidence: >-
+      code/model.py:555 silently defaults cam_phase0 to pi; run_all.py:309-331
+      does not expose that phase during Problem 2 calibration, and the paper
+      reports only omega. At the same reported omega with dt=0.02 ms, audit
+      runs using cam_phase0=0, pi/2, pi, and 3pi/2 give 3-6 s mean pressures
+      98.543462, 99.276911, 100.001008, and 99.262340 MPa, a 1.457545 MPa
+      span. In 20-30 s windows the span narrows to 0.163463 MPa.
+    affected_files:
+      - frozen-solution/code/model.py
+      - frozen-solution/code/run_all.py
+      - frozen-solution/paper/main.tex
+      - frozen-solution/paper/paper.md
+      - frozen-solution/results/problem2-summary.json
+    reason: >-
+      The claimed independent 3-6 s evaluation is conditioned on an omitted
+      initial phase and is not yet phase-robust; the later-window result shows
+      this is primarily a warm-up/validation-horizon problem rather than an
+      unbounded instability.
+    recommended_fix: >-
+      State theta_0 explicitly, calibrate after a phase-independent warm-up or
+      across an ensemble of initial phases, and report worst-case and long-run
+      metrics. Do not label a short continuation of the same deterministic
+      trajectory as independent without this qualification.
+    requires_human_review: true
+
+  - id: AUD-005
+    severity: minor
+    category: reproducibility_portability
+    evidence: >-
+      Two full runs in a clean working copy both exit 0 and the built-in
+      comparison passes all 28 core files. A separate comparison against the
+      74-entry frozen manifest nevertheless fails for three files:
+      results/data-audit.json embeds the absolute workspace path,
+      results/rerun-baseline.json consequently records a different hash, and
+      reproducibility.yaml is rewritten with different line endings. The frozen
+<SOURCE_FILE_REDACTED>:7 claims full generation is byte-reproducible, while
+      verify_outputs.py:43-60 defines a narrower same-path core scope.
+    affected_files:
+      - frozen-solution/code/run_all.py
+      - frozen-solution/code/verify_outputs.py
+      - frozen-solution/results/data-audit.json
+      - frozen-solution/results/rerun-baseline.json
+      - frozen-solution/reproducibility.yaml
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+    reason: >-
+      Numerical reproduction passes, but a clean-location reconstruction cannot
+      reproduce the complete frozen payload byte for byte. The wording exceeds
+      the verifier's actual scope.
+    recommended_fix: >-
+      Store paths relative to the workspace, normalize text line endings,
+      rename the claim to same-workspace core-output determinism, and add a
+      verifier mode that compares every authoritative FROZEN entry while
+      explicitly classifying permitted metadata differences.
+    requires_human_review: false
+
+  - id: AUD-006
+    severity: minor
+    category: leakage_provenance
+    evidence: >-
+      FROZEN_BLIND_V1.json:15 records knowledge_cards as an empty list and
+      retrieval-log.json:15 records cards as empty, but
+      reports/training-memory-retrieval.json:21-65 lists TM-001, TM-002, and
+      TM-007, while solution-report.yaml:91-95 reports two cards adopted/adapted
+      and one rejected. The copied cards themselves are in the frozen manifest.
+      No current-problem reference paper, standard answer, or answer-like source
+      was found in the allowed provenance records.
+    affected_files:
+      - frozen-solution/FROZEN_BLIND_V1.json
+      - frozen-solution/retrieval-log.json
+      - frozen-solution/reports/training-memory-retrieval.json
+      - frozen-solution/reports/training-memory-usage.md
+      - frozen-solution/solution-report.yaml
+    reason: >-
+      The available evidence does not show forbidden-answer leakage, but the
+      canonical freeze metadata contradicts the detailed provenance record, so
+      an automated leakage assertion cannot rely on the empty top-level lists.
+    recommended_fix: >-
+      Generate one canonical provenance ledger before freezing, list every
+      retrieved/used/rejected card with its copied-file SHA-256 and decision,
+      and derive both the manifest field and reports from that ledger.
+    requires_human_review: true
+
+  - id: AUD-007
+    severity: minor
+    category: paper_code_consistency
+    evidence: >-
+      run_all.py:633-640 simulates the economy scheme without relief_thresholds,
+      but run_all.py:719 and paper/paper.md:212 describe a safety override above
+      103 MPa. No closing threshold or executable safety logic is supplied.
+      The nominal simulated maximum is below 103 MPa, so this mismatch does not
+      alter the nominal numbers but leaves the asserted override untested.
+    affected_files:
+      - frozen-solution/code/run_all.py
+      - frozen-solution/paper/paper.md
+      - frozen-solution/results/problem3-summary.json
+    reason: >-
+      A control rule presented as part of the answer should be implemented or
+      explicitly labeled as an untested engineering recommendation.
+    recommended_fix: >-
+      Either add explicit open/close thresholds and overpressure test cases for
+      the economy scheme, or remove the 103 MPa override claim from generated
+      results and retain only the tested normally-closed policy.
+    requires_human_review: false
+
+  - id: AUD-008
+    severity: suggestion
+    category: numerical_stability
+    evidence: >-
+      run_all.py:762-766 performs the published time-step convergence test only
+      for Problem 2 without a relief valve. Audit runs of the precision scheme
+      at dt=0.02/0.01/0.005/0.0025 ms give pressure RMSE
+      0.298635/0.303891/0.303703/0.308944 MPa and peak-to-peak
+      1.653423/1.654559/1.643045/1.642062 MPa, while switch counts are
+      41.2/42.0/42.6667/43.7333 per 100 ms.
+    affected_files:
+      - frozen-solution/code/run_all.py
+      - frozen-solution/results/validation.json
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/paper/main.tex
+    reason: >-
+      Pressure metrics are reasonably grid-stable, but the discontinuous event
+      count is not covered by the published convergence claim and varies with
+      the step. This matters because the event count is used to infer actuator
+      bandwidth.
+    recommended_fix: >-
+      Add event-aware convergence for every selected controller, including
+      switching times, dwell-time distribution, flow volumes, and pressure
+      metrics; limit any pass claim to the quantities and schemes actually tested.
+    requires_human_review: false

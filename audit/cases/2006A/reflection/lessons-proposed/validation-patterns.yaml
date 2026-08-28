@@ -1,0 +1,53 @@
+schema_version: 1
+case_id: 2006A
+knowledge_status: candidate
+patterns:
+  - id: VP-FREEZE-FIRST-001
+    name: 冻结身份先于参考读取
+    origin: audit_revision
+    validation_status: pass
+    steps:
+      - "核验阶段锁与允许/禁止路径摘要。"
+      - "逐项重算权威清单大小和SHA-256。"
+      - "按声明算法重算树摘要。"
+      - "确认审计已完成；未审查域保留needs_review。"
+  - id: VP-SEMANTIC-CONSTRAINT-002
+    name: 自然语言约束四元组
+    origin: independently_derived
+    validation_status: pass
+    fields: [主体, 聚合层级, 单位, 边界例子]
+    example: "分社j所得总书号>=分社j申请合计的一半，而非每课程各自保半。"
+  - id: VP-MECHANICAL-GATE-003
+    name: 目标比较前的不变量门禁
+    origin: mixed
+    validation_status: pass
+    order:
+      - "解析成功与行数"
+      - "整数与总量"
+      - "对象上下界"
+      - "组下界/上界"
+      - "目标独立复算"
+      - "之后才比较经济指标"
+  - id: VP-TEMPORAL-HOLDOUT-004
+    name: 预测选择与报告年份隔离
+    origin: audit_revision
+    validation_status: pass
+    rule: "模型族、系数和阈值只能使用调参年份；留出年份只评估一次。"
+    minimum_reports: [WAPE, RMSLE, rank_correlation, per_group_errors]
+    limitation: "单一留出年仍为needs_review。"
+  - id: VP-COMMON-METRIC-005
+    name: 配置方案使用同一预测世界评价
+    origin: independently_derived
+    validation_status: pass
+    rule: "各配置在同一中心预测与风险折减下重算目标，避免把预测变化误归因为配置变化。"
+  - id: VP-STOCHASTIC-INVARIANTS-006
+    name: 每次随机扰动都重新执行可行性检查
+    origin: learned_after_reference_R3
+    validation_status: pass
+    required_invariants: [预算, 整数, 对象上界, 组下界, 人力上限]
+    report: "给出可行率；任何不满足不变量的抽样结果不得进入稳定区间。"
+  - id: VP-CLAIM-BOUNDARY-007
+    name: 机械正确与经济正确分栏
+    origin: independently_derived
+    validation_status: pass
+    rule: "算术、约束、哈希可判pass；因果、净利润、世界最优和概率保证无证据时必须needs_review。"

@@ -1,0 +1,70 @@
+case_id: "2017A"
+phase: blind-revision
+status: pass
+network_used: false
+randomness:
+  seed: 2017
+  monte_carlo_seeds: [2017, 12017, 22017]
+  replicates_per_seed: 40
+  paired_replicates: 120
+  bootstrap_seed_range: [42017, 42021]
+  bootstrap_replicates: 2000
+environment:
+  operating_system: "Microsoft Windows 11 家庭中文版 10.0.26200"
+  powershell: "7.6.4"
+  python: "3.12.13"
+  dotnet_sdk: "8.0.417"
+  excel_com: "12.0"
+  xelatex: null
+  xelatex_status: needs_review
+dependencies:
+  dotnet_packages: []
+  restore_source: "workspace offline-feed only"
+  excel_required_for: [xls_to_xlsx_normalization, biff8_export, xls_csv_verification]
+commands:
+  full_pipeline: "pwsh -File ./code/run_reproduction.ps1 -InputRoot ./input -OutputRoot ./results/reproduction -StabilityReplicatesPerSeed 40"
+  phase_check: "python <LAB_ROOT>/.agents/skills/cumcm-a-solve/scripts/check_phase.py --workspace <RUNTIME_ROOT>/2017A/workspaces/blind-revision"
+  complete_run: "pwsh -File ./run_all.ps1 -Workspace . -StabilityReplicatesPerSeed 40"
+  phase_neutral_clean_run: "pwsh -File ./run_reproduction.ps1 -InputRoot ./input -OutputRoot <empty-output-root> -StabilityReplicatesPerSeed 40"
+  workbook_numeric_identity: "dotnet ./code/CtSolver/bin/Release/net8.0/CtSolver.dll --compare-workbooks ./results/normalized/<SOURCE_FILE_REDACTED> ./results/input-comparison/<SOURCE_FILE_REDACTED>"
+input_provenance:
+  current_xls_sha256: "c2da031b02229846d3ed887b6b492b13adc8bd1316a75d4c57680db446f0d78f"
+  frozen_v1_xls_sha256: "15e91947d0a28fcd789290dcaf79d18ed4050132d68b47aa39dc8df29db2c034"
+  audit_recorded_outer_xls_sha256: "29b0a262a64bbfb4d6a2386e51675508743add780e22ce6663f739e49c8831a0"
+  canonical_cell_sha256: "b0e3e7225912be5c0b516c49497f0797bebf010db21da1c82ccc2aefb4212fab"
+  numeric_cells_compared: 342036
+  numeric_mismatches: 0
+  strict_file_identity: fail
+  numeric_identity: pass
+determinism:
+  release_build: pass
+  main_run_exit_code: 0
+  generated_artifacts_from_empty_output: pass
+  repeat_core_hashes: pass
+  deterministic_files_compared: 65
+  deterministic_files_identical: 65
+  excel_semantic_identity: pass
+  reproduction_report: "results/reproduction-report.json"
+verification:
+  phase_lock_before_and_after: pass
+  allowed_paths_hash: pass
+  forbidden_paths_hash: pass
+  artifact_presence: pass
+  direction_semantics: pass
+  angle_fit_evaluate_separation: pass
+  sirt_curve_completeness: pass
+  monte_carlo_successful_pairs: 120
+  monte_carlo_noise_diagnostics: pass
+  matrix_shape_and_csv_xls_consistency: pass
+  paper_result_consistency: pass
+  paper_compile: needs_review
+frozen_v1_integrity:
+  status: pass
+  file_count: 164
+  before_tree_sha256: "b3a1ff452cc8bf14222fef8e257a2533b785354ccc825c6098ec815528554067"
+  after_tree_sha256: "b3a1ff452cc8bf14222fef8e257a2533b785354ccc825c6098ec815528554067"
+  algorithm: "SHA256 over UTF-8 relative-path NUL per-file-SHA256 lines sorted by relative path"
+limitations:
+  - {status: needs_review, item: "XeLaTeX不可用，PDF及逐页版式未验证。"}
+  - {status: needs_review, item: "没有独立实机标准或第二标定模板。"}
+  - {status: needs_review, item: "文件身份差异的元数据处理链未获确认。"}

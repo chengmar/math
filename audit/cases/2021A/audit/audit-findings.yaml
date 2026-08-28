@@ -1,0 +1,133 @@
+schema_version: 1
+case_id: "2021A"
+phase: audit
+overall_status: fail
+generated_at: "2026-08-28T18:40:00.6210525+08:00"
+status_vocabulary:
+  - pass
+  - fail
+  - needs_review
+severity_counts:
+  critical: 0
+  major: 2
+  minor: 2
+  suggestion: 0
+findings:
+  - id: AUD-2021A-001
+    severity: major
+    category: optimization_model_selection
+    status: fail
+    evidence: |-
+      冻结代码先在 solve.py:850-867 固定连续极小极大焦距，再用硬编码
+      LINEAR_STRAIN_CAP=0.00060（solve.py:49）求 692 变量投影。两个独立可行反例
+      均严格改善论文采用的最小二乘/面形 RMS 指标：
+      1. 焦距不变、线性帽改为 0.00063 时，精确与六位舍入状态均为 pass；
+         面形 RMS 由 0.084556733 m 降至 0.078279664 m，目标值由
+         2.474054999 降至 2.120359931；舍入后最大边长变化为
+         0.000698775441，小于 0.0007。
+      2. 线性帽仍为 0.00060、令 f=F+0.400000 m 时，问题 1 连续最大径向
+         位移为 0.408183700 m，小于 0.6 m；精确与六位舍入状态均为 pass；
+         面形 RMS 降至 0.067365138 m（改善 20.33%），舍入后最大边长变化
+         0.000671668855、最大行程 0.248143 m、闭合残差 9.99e-7 m。
+      冻结的 0.00060 线性 QP 自身 KKT 站立性无穷范数为 8.33e-17，说明
+      缺陷来自焦距/安全帽选择，而不是 SLSQP 未收敛。
+    affected_files:
+      - frozen-solution/code/solve.py
+      - frozen-solution/model-selection.md
+      - frozen-solution/paper/main.tex
+      - frozen-solution/paper/paper.md
+      - frozen-solution/results/validation_metrics.json
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/<SOURCE_FILE_REDACTED>
+    reason: |-
+      题目要求反射面尽量贴近理想抛物面，论文又明确采用平方误差/RMS 作为
+      评价；现有方案被同复杂度、满足全部精确与舍入约束的方案严格支配。
+      “先独立最小最大确定 f，再固定 f 做离散投影”也不等价于最终可实现
+      面形最优，因此 question_2=pass 和“选择 C2”的充分性不成立。
+    recommended_fix: |-
+      把焦距 f 与节点位移 d 联合纳入优化，直接使用题面 0.0007 精确边长、
+      实际促动器行程和下拉索闭合作最终约束；若仍使用线性安全帽，应把帽值
+      作为有明确鲁棒目标的设计变量并给出 Pareto 取舍。对最终六位输出再次
+      独立复核，不得仅以任意“中间值”作为选择理由。
+    requires_human_review: false
+
+  - id: AUD-2021A-002
+    severity: major
+    category: panel_geometry_and_physical_validity
+    status: needs_review
+    evidence: |-
+      题面 PDF 第 3 页附录第 3 条说明每块反射面板均为基准球面的一部分；
+      冻结代码 solve.py:524-555 则把每个三角形设为单一平面，并在
+      solve.py:526-531 对整块面板使用一个常法向。论文 main.tex:23、50
+      以该假设给出调整面 1.039%、基准面 0.811%、相对提高 28.2%。
+      反例将基准球面按逐点球面法向进行同样的均匀投影面积几何光学积分，
+      半径 0.5 m 接收比在 2^16、2^18、2^20、2^22 个样本时依次为
+      0.05284119、0.05282211、0.05282307、0.05282450；最细结果是冻结
+      分片平面基准值 0.008106748 的 6.516 倍。
+    affected_files:
+      - frozen-solution/input/problem/<SOURCE_FILE_REDACTED>
+      - frozen-solution/code/solve.py
+      - frozen-solution/assumptions.yaml
+      - frozen-solution/paper/main.tex
+      - frozen-solution/paper/paper.md
+      - frozen-solution/results/summary.json
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+    reason: |-
+      第 3 问结论对面板曲率/法向模型高度敏感。论文虽把绝对物理有效性标为
+      needs_review，却进一步声称相对比较较稳健；现有反例表明仅改变题面可
+      支持的面板几何解释就会使基准值发生数量级显著变化，28.2% 相对结论
+      不能据现有证据视为稳健。
+    recommended_fix: |-
+      由题面和附件明确面板是平面、球面片还是保持曲率的刚性面板；至少实现
+      平面片与逐点球面法向两种包络模型，并对调整后面板建立一致的曲率/姿态
+      规则。重新计算调整面与基准面，报告模型区间；在几何解释未确认前，把
+      第 3 问相对提高结论保持为 needs_review。
+    requires_human_review: true
+
+  - id: AUD-2021A-003
+    severity: minor
+    category: document_integrity
+    status: fail
+    evidence: |-
+      字节扫描在 paper/paper.md 中发现 26 个异常控制字符，在
+      problem-analysis.md 中发现 3 个，共 29 个。典型位置包括
+      paper.md:5、16 的 beta 被写成 BACKSPACE+"eta"，paper.md:43-45、
+      85、94、125、131、155、163、173、179、187 的 boldsymbol 被破坏，
+      paper.md:49 的 varepsilon 被写成 VERTICAL TAB，paper.md:106 及
+      problem-analysis.md:37-38 含裸 CR。verify.py:154-185 只搜索若干
+      数字字符串，因此仍把 paper_result_consistency 判为 pass。
+    affected_files:
+      - frozen-solution/paper/paper.md
+      - frozen-solution/problem-analysis.md
+      - frozen-solution/code/verify.py
+    reason: |-
+      Markdown 中的反斜杠转义被当作 Python 控制序列写入，导致符号和公式
+      不可可靠渲染；当前验证只能证明数字片段出现，不能证明论文文本完整。
+    recommended_fix: |-
+      用原始字符串或双反斜杠重新生成 Markdown；增加 UTF-8 控制字符扫描、
+      数学符号快照和实际渲染检查。数值一致性与文档可渲染性应分别判定。
+    requires_human_review: false
+
+  - id: AUD-2021A-004
+    severity: minor
+    category: figure_code_consistency
+    status: fail
+    evidence: |-
+      solve.py:<SOURCE_FILE_REDACTED> 前仅保留焦面半径不超过 6 m
+      的命中，save_figures 在 solve.py:792-813 将该条件样本画成光斑，但
+      main.tex:271 的图注未披露截断。按相同 2^9 样本独立统计，6 m 内仅
+      包含调整面 80.61% 和基准面 62.39% 的投影功率；实际最大命中半径约
+      62.37 m 和 40.86 m。图中 hexbin 还按样本数而非面板投影功率加权。
+    affected_files:
+      - frozen-solution/code/solve.py
+      - frozen-solution/figures/<SOURCE_FILE_REDACTED>
+      - frozen-solution/paper/main.tex
+      - frozen-solution/paper/paper.md
+    reason: |-
+      图像把条件截断后的样本呈现为完整焦面光斑，且两模型被截去的比例不同，
+      会夸大视觉可比性。该问题不改变 summary.json 的数值接收比，但影响论文
+      图表与代码含义的一致性。
+    recommended_fix: |-
+      绘制覆盖全部命中的加权二维分布，或同时给出全尺度图和 6 m 局部放大图；
+      在图注标明截断半径、保留功率比例、样本权重与接收圆半径。
+    requires_human_review: false

@@ -1,0 +1,256 @@
+schema_version: 1
+case_id: 2011A
+phase: reflection
+skill: "$cumcm-a-reflect"
+knowledge_status: candidate
+generated_on: "2026-08-25"
+judgment_vocabulary: [pass, fail, needs_review]
+
+freeze_verification:
+  status: pass
+  manifest_sha256: "860b57ad1acaee75edd939d67a4adb573b3331bd120e61bd8cf974d6f27ec2e1"
+  boundary_sha256: "f6425a0589f8631707a3d8502be633f5f8de4611b7dbc3c379878390b582fc96"
+  declared_file_count: 222
+  checked_file_count: 222
+  mismatch_count: 0
+  tree_sha256_declared: "14582dbe3b35185bc6347bee7c515920027ed486e4cb4d69b931ba7f0a9d2e7d"
+  tree_sha256_recomputed: "14582dbe3b35185bc6347bee7c515920027ed486e4cb4d69b931ba7f0a9d2e7d"
+  audit_requirement: completed
+  audit_state: audited
+  audit_prerequisite_status: pass
+
+references:
+  - id: REF-A
+    file: "<REFERENCE_ID>"
+    sha256: <REFERENCE_HASH_REDACTED>
+    pages: 25
+    text_extraction_status: pass
+    dummy_marker_hits: 0
+    full_pipeline_reproduction_status: fail
+    physical_source_status: needs_review
+  - id: REF-B
+    file: "<REFERENCE_ID>"
+    sha256: <REFERENCE_HASH_REDACTED>
+    pages: 19
+    text_extraction_status: pass
+    dummy_marker_hits: 0
+    full_pipeline_reproduction_status: fail
+    physical_source_status: needs_review
+  - id: REF-C
+    file: "<REFERENCE_ID>"
+    sha256: <REFERENCE_HASH_REDACTED>
+    pages: 21
+    text_extraction_status: pass
+    dummy_marker_hits: 0
+    full_pipeline_reproduction_status: fail
+    physical_source_status: needs_review
+  - id: REF-D
+    file: "<REFERENCE_ID>"
+    sha256: <REFERENCE_HASH_REDACTED>
+    pages: 21
+    text_extraction_status: pass
+    dummy_marker_hits: 0
+    full_pipeline_reproduction_status: fail
+    physical_source_status: needs_review
+
+origin_labels:
+  I: "independently present in blind-v1"
+  A: "added or corrected after independent audit"
+  R: "learned only after approved-reference comparison"
+
+dimensions:
+  problem_decomposition:
+    blind_final:
+      approach: "data audit -> normalized spatial surface -> robust zone index -> association/decomposition -> spatial structure/hotspots -> conditional future model"
+      origin: I
+      status: pass
+    REF-A:
+      approach: "zone averages/weights -> three-medium propagation -> weighted evolution model"
+      status: needs_review
+    REF-B:
+      approach: "interpolation/Nemerow -> zone PCA -> gas/soil diffusion"
+      status: needs_review
+    REF-C:
+      approach: "correlation/Nemerow -> point and line source models -> Gaussian time model"
+      status: needs_review
+    REF-D:
+      approach: "Nemerow/PCA -> Geiger/Inglada source localization -> time trend"
+      status: needs_review
+
+  spatial_model:
+    blind_final:
+      model: "nested-block-selected Gaussian kernel with constant and IDW baselines"
+      origin: I
+      validation_status: pass
+      physical_bandwidth_status: needs_review
+    references:
+      model: "griddata/Surfer interpolation without spatial holdout"
+      validation_status: needs_review
+
+  zone_model:
+    blind_final:
+      model: "geometric mean of elementwise zone median enrichments"
+      origin: I
+      cluster_uncertainty_origin: A
+      numeric_status: pass
+      exact_ranking_status: needs_review
+    REF-A:
+      model: "sum of mean enrichment plus fuzzy/toxicity weighting"
+      table_status: fail
+    REF-B:
+      model: "Nemerow with background mean"
+      numeric_status: pass
+    REF-C:
+      model: "Nemerow with background mean plus two standard deviations"
+      numeric_status: pass
+    REF-D:
+      model: "Nemerow with background mean and regional reweighting"
+      base_numeric_status: pass
+      reweighting_status: fail
+
+  source_cause_model:
+    blind_final:
+      model: "zone effect sizes plus fold-local-scaled NMF"
+      origin_initial: I
+      fold_local_preprocessing_origin: A
+      numerical_status: pass
+      physical_identity_status: needs_review
+    REF-B:
+      model: "PCA on five aggregated zones"
+      data_chain_status: fail
+      physical_identity_status: needs_review
+    REF-C:
+      model: "full-sample correlations plus domain narratives"
+      correlation_numeric_status: pass
+      physical_identity_status: needs_review
+    REF-D:
+      model: "PCA on five aggregated zones"
+      printed_matrix_status: pass
+      component_rule_status: fail
+      physical_identity_status: needs_review
+
+  propagation_and_location:
+    blind_final:
+      model: "Moran + detrended constrained variogram + fixed-design direction null + supported kernel hotspot"
+      initial_hotspot_origin: I
+      direction_null_and_full_influence_origin: A
+      aggregation_status: pass
+      exact_location_status: needs_review
+      physical_source_status: needs_review
+    REF-A:
+      model: "water/soil/air equations and visual overlap"
+      location_reproduction_status: needs_review
+    REF-B:
+      model: "gas/soil diffusion equations"
+      location_delivery_status: fail
+    REF-C:
+      model: "weighted distance medoid, assumed-coefficient diffusion, exponential line source"
+      location_reproduction_status: needs_review
+    REF-D:
+      model: "Inglada initialization plus Geiger correction"
+      location_reproduction_status: needs_review
+
+  validation:
+    blind_final:
+      spatial_family_selection: pass
+      buffered_holdout: pass
+      zone_cluster_bootstrap: pass
+      nmf_training_evaluation_separation: pass
+      direction_null_test: pass
+      all_sample_influence_diagnostics: pass
+      numerical_two_run_reproduction: pass
+      external_field_validation: needs_review
+    references:
+      deterministic_formula_rechecks: pass
+      complete_code_reproduction: fail
+      source_location_uncertainty: needs_review
+      external_field_validation: needs_review
+
+  complexity:
+    blind_final:
+      computational: high
+      implemented_status: pass
+      note: "nested spatial CV, 10000 block bootstraps, 2000 direction permutations per metal, all-sample LOO, 500 hotspot block bootstraps"
+    references:
+      descriptive_indices: low
+      mechanistic_equations: high
+      calibrated_implementation_status: fail
+
+  interpretability:
+    blind_final:
+      status: pass
+      strength: "explicit evidence layers and hotspot/source separation"
+      limitation: "NMF and validation stack require more explanation"
+    references:
+      status: needs_review
+      strength: "familiar Nemerow classes and direct narrative"
+      limitation: "source labels and mechanistic parameters exceed available evidence"
+
+  expression:
+    blind_final:
+      status: pass
+      strength: "numbers, limitations, statuses, and reproduction chain are close to claims"
+      limitation: "high technical density"
+    references:
+      status: needs_review
+      strength: "abstracts often expose question-method-result mapping quickly"
+      limitation: "symbol, sample-count, formula-level, and code inconsistencies"
+
+reimplemented_results:
+  zone_counts:
+    life: 44
+    industrial: 36
+    mountain: 66
+    traffic: 138
+    park: 35
+  nemerow_background:
+    life: 3.170597
+    industrial: 13.533016
+    mountain: 1.253140
+    traffic: 9.426415
+    park: 2.734361
+    status: pass
+  nemerow_background_plus_2sd:
+    life: 2.090446
+    industrial: 9.276859
+    mountain: 0.824236
+    traffic: 6.462517
+    park: 1.868890
+    status: pass
+  common_zone_order:
+    order: [industrial, traffic, life, park, mountain]
+    within_comparison_set_status: pass
+    external_truth_status: needs_review
+  full_sample_correlation_REF_C:
+    max_abs_error: 0.000440
+    status: pass
+  five_zone_pearson_eigenvalues:
+    values: [6.392647, 0.937771, 0.431011, 0.238572, 0.0, 0.0, 0.0, 0.0]
+    source_interpretation_status: needs_review
+
+origin_classification:
+  independent_I:
+    - "background normalization and log enrichment"
+    - "constant/IDW/Gaussian comparison with nested spatial blocks"
+    - "elementwise zone median geometric index"
+    - "zone effect sizes and NMF"
+    - "Moran aggregation and hotspot/source distinction"
+    - "single-snapshot identifiability caution and future data list"
+  audit_corrected_A:
+    - "spatial-block rather than iid zone bootstrap"
+    - "common-background invariance recognized as algebraic"
+    - "fold-local NMF scaling"
+    - "fixed-design direction permutation null"
+    - "detrended constrained variograms"
+    - "all-sample LOO, support diagnostics, and hotspot block bootstrap"
+    - "well-posed, dimensionally closed, nonnegative conditional PDE"
+  reference_learned_R:
+    - "numerical contrast between background and background-plus-2SD Nemerow baselines"
+    - "communication value and applicability risk of standard-dependent pollution classes"
+    - "line-source, multi-medium, and Geiger models as future hypotheses only"
+    - "same-data cross-paper agreement is not independent external validation"
+
+promotion:
+  direct_core_knowledge_upgrade_status: fail
+  allowed_output_state: candidate
+  dummy_material_policy: "If a material is later identified as Dummy, its derivatives must be relabeled demo. No Dummy marker was detected in the current extracted text."

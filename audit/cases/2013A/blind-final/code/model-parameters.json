@@ -1,0 +1,78 @@
+{
+  "schema_version": 2,
+  "seed": 2013,
+  "expected_inputs": [
+    {
+      "path": "input/problem/<SOURCE_FILE_REDACTED>",
+      "bytes": 249344,
+      "sha256": "71d7585a8580cd2c616ef5879c85561499f22e3b740a5af99326f53500e3dcdf",
+      "magic_hex": "d0cf11e0a1b11ae1"
+    },
+    {
+      "path": "input/attachments/<SOURCE_FILE_REDACTED>",
+      "bytes": 24064,
+      "sha256": "2e7fa8a775109a177adb8cef103bb1e1fe0b5d30ea7b08d5f68a98a051cd2dd8",
+      "magic_hex": "d0cf11e0a1b11ae1"
+    }
+  ],
+  "expected_videos": [],
+  "given": {
+    "lanes": 3,
+    "lane_width_m": 3.25,
+    "q3_link_length_m": 240.0,
+    "q4_distance_m": 140.0,
+    "q4_inflow_pcu_h": 1500.0,
+    "initial_queue_m": 0.0,
+    "signal_cycle_s": 60.0,
+    "phase_duration_s": 30.0,
+    "yellow_s": 3.0,
+    "green_flash_s": 3.0,
+    "right_turn_uncontrolled": true,
+    "source_to_incident_distance_m": 140.0
+  },
+  "engineering_scenario": {
+    "free_flow_speed_km_h": 40.0,
+    "backward_wave_speed_km_h": 15.0,
+    "jam_density_pcu_km_lane": 140.0,
+    "incident_capacity_pcu_h": 1000.0,
+    "main_capacity_low_pcu_h": 800.0,
+    "main_capacity_high_pcu_h": 1200.0
+  },
+  "pcu_weights": {
+    "passenger_car": 1.0,
+    "bus_or_truck": 1.5,
+    "electric_bicycle": 0.25
+  },
+  "turn_shares": [
+    {"movement": "right", "share": 0.21},
+    {"movement": "through", "share": 0.44},
+    {"movement": "left", "share": 0.35}
+  ],
+  "capacity_grid_pcu_h": [600, 800, 1000, 1200, 1300, 1400, 1450, 1490, 1500, 1600],
+  "sensitivity_grid": {
+    "capacity_pcu_h": [800, 1000, 1200],
+    "free_flow_speed_km_h": [30, 40, 50],
+    "backward_wave_speed_km_h": [10, 15, 20],
+    "jam_density_pcu_km_lane": [120, 140, 160]
+  },
+  "signal_sensitivity": {
+    "audit_square_wave": {
+      "high_pcu_h": 3000.0,
+      "low_pcu_h": 0.0,
+      "high_duration_s": 30.0,
+      "low_duration_s": 30.0
+    },
+    "detailed_phase": {
+      "steady_green_multiplier": 1.0,
+      "green_flash_multiplier": 0.6,
+      "yellow_multiplier": 0.2,
+      "red_multiplier": 0.0,
+      "source_phase_scan_step_s": 1.0
+    }
+  },
+  "validation": {
+    "convergence_steps_s": [10.0, 5.0, 2.0, 1.0, 0.5, 0.1],
+    "max_simulation_s": 7200.0,
+    "near_threshold_gap_pcu_h": 0.001
+  }
+}

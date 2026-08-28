@@ -1,0 +1,248 @@
+{
+  "schema_version": 1,
+  "case_id": "2010A",
+  "phase": "audit",
+  "status": "needs_review",
+  "scope": {
+    "network_search": "pass",
+    "reference_papers_read": "pass",
+    "forbidden_paths_read": "pass",
+    "frozen_solution_modified": "pass",
+    "note": "No network search or reference material was used; frozen-solution was read-only."
+  },
+  "phase_and_integrity": {
+    "phase_check": {
+      "status": "pass",
+      "command": "python <ABSOLUTE_PATH>",
+      "exit_code": 0,
+      "stdout": "[PASS] audit 阶段锁有效\n",
+      "stderr": ""
+    },
+    "control_files": {
+      "status": "pass",
+      "allowed_paths_expected_sha256": "b912880108c96a59bca9c3c55abda49aecf5ed9b6675712af77004eb133b8728",
+      "allowed_paths_actual_sha256": "b912880108c96a59bca9c3c55abda49aecf5ed9b6675712af77004eb133b8728",
+      "forbidden_paths_expected_sha256": "f075bf741aa5e0dc4527893642bc07eb4bc70edc84733fa9b1801ed5ccaa0b47",
+      "forbidden_paths_actual_sha256": "f075bf741aa5e0dc4527893642bc07eb4bc70edc84733fa9b1801ed5ccaa0b47"
+    },
+    "frozen_manifest": {
+      "status": "pass",
+      "path": "frozen-solution/FROZEN_BLIND_V1.json",
+      "schema_version": 1,
+      "case_id": "2010A",
+      "version": "blind-v1",
+      "listed_files": 135,
+      "size_and_sha256_pass": 135,
+      "missing": 0,
+      "mismatch": 0,
+      "physical_files": 141,
+      "unlisted_files": [
+        "FROZEN_BLIND_V1.json",
+        "code/__pycache__/geometry.cpython-312.pyc",
+        "code/__pycache__/model.cpython-312.pyc",
+        "code/__pycache__/render_paper.cpython-312.pyc",
+        "code/__pycache__/solve.cpython-312.pyc",
+        "code/__pycache__/verify_outputs.cpython-312.pyc"
+      ],
+      "directory_closure_status": "needs_review",
+      "declared_tree_sha256": "91c489ae2ee337c864648d8772b3a4f6c91818b61f685aeecdcd043e343a558d",
+      "tree_recomputation_status": "needs_review",
+      "tree_recomputation_note": "The manifest does not define a canonical aggregate-tree algorithm. Per-file hashes were verified; the aggregate value was not claimed as independently reproduced.",
+      "git_commit": "cf9abd5d6d86350588062453fd4c90d18ab2c044",
+      "git_dirty": true
+    },
+    "external_input_matches_frozen_copy": {
+      "status": "pass",
+      "files": [
+        {
+          "path": "input/data/<SOURCE_FILE_REDACTED>",
+          "sha256": "fc3cf8098742f11feb5832fea8a47e5db0f862faab89e61dc0b669f0010c5777"
+        },
+        {
+          "path": "input/data/<SOURCE_FILE_REDACTED>",
+          "sha256": "f7eb407354ca0e71effde153535cc1ec617e45a3849afac814c5c9361880558f"
+        },
+        {
+          "path": "input/problem/<SOURCE_FILE_REDACTED>",
+          "sha256": "a6bb7399061fcf1af4ff7a0d3df3020653f4e90d27a13eef8e35bcec1cacc9c1"
+        }
+      ]
+    }
+  },
+  "environment": {
+    "status": "needs_review",
+    "os": "Windows-11-10.0.26200-SP0",
+    "timezone": "Asia/Shanghai",
+    "python": "3.12.13",
+    "numpy": "2.5.2",
+    "pandas": "3.0.5",
+    "scipy": "1.18.0",
+    "matplotlib": "3.11.1",
+    "excel_com": "12.0",
+    "powershell_core": "7.6.4",
+    "windows_powershell": "5.1",
+    "xelatex": "MiKTeX 26.5 Portable",
+    "random_seed": 20260824,
+    "isolation": {
+      "clean_source_copy_status": "pass",
+      "copied_source_files": 29,
+      "copied_source_hashes_pass": 29,
+      "generated_outputs_present_before_run": false,
+      "venv_status": "needs_review",
+      "note": <LONG_QUOTE_REDACTED>
+    }
+  },
+  "workspaces": {
+    "documented_command_attempt": ".audit-repro-f363b5c2",
+    "pwsh_clean_reproduction": ".audit-repro-pwsh-f363b5c2"
+  },
+  "commands": [
+    {
+      "id": "REP-001",
+      "status": "fail",
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File code/run_all.ps1 -Workspace <clean-workspace>",
+      "shell": "<ABSOLUTE_PATH>",
+      "cwd": "<ABSOLUTE_PATH>",
+      "duration_ms": 12630,
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": <LONG_QUOTE_REDACTED>
+    },
+    {
+      "id": "REP-002",
+      "status": "pass",
+      "command": "pwsh -NoProfile -File code/run_all.ps1 -Workspace <clean-workspace>",
+      "shell": "PowerShell Core 7.6.4",
+      "cwd": "<ABSOLUTE_PATH>",
+      "duration_ms": 20391,
+      "exit_code": 0,
+      "stdout": <LONG_QUOTE_REDACTED>,
+      "stderr": ""
+    },
+    {
+      "id": "REP-003",
+      "status": "pass",
+      "command": "xelatex --disable-installer -interaction=nonstopmode -halt-on-error main.tex",
+      "cwd": ".audit-repro-pwsh-f363b5c2/paper",
+      "iterations": [
+        {
+          "iteration": 1,
+          "exit_code": 0,
+          "duration_ms": 1759,
+          "stdout_line_count": 173,
+          "stdout_sha256": "45a404f9bdf36cdd5d028fa21fc483de1f70f5f31d241659285fa09d495d4cde",
+          "stdout_head": "This is XeTeX, Version 3.141592653-2.6-0.999998 (MiKTeX 26.5 Portable)",
+          "stdout_tail": "<SOURCE_FILE_REDACTED> (14 pages). Transcript written on main.log.",
+          "stderr": "miktex-dvipdfmx and xelatex warned that MiKTeX updates had not been checked."
+        },
+        {
+          "iteration": 2,
+          "exit_code": 0,
+          "duration_ms": 1748,
+          "stdout_line_count": 173,
+          "stdout_sha256": "45a404f9bdf36cdd5d028fa21fc483de1f70f5f31d241659285fa09d495d4cde",
+          "stdout_head": "This is XeTeX, Version 3.141592653-2.6-0.999998 (MiKTeX 26.5 Portable)",
+          "stdout_tail": "<SOURCE_FILE_REDACTED> (14 pages). Transcript written on main.log.",
+          "stderr": "miktex-dvipdfmx and xelatex warned that MiKTeX updates had not been checked."
+        }
+      ],
+      "full_transcript": ".audit-repro-pwsh-f363b5c2/paper/main.log"
+    },
+    {
+      "id": "REP-004",
+      "status": "pass",
+      "command": "python code/verify_outputs.py",
+      "cwd": ".audit-repro-pwsh-f363b5c2",
+      "exit_code": 0,
+      "stdout": "[PASS] numerical, structural, hash, table, figure, and paper-linkage checks\n",
+      "stderr": ""
+    },
+    {
+      "id": "REP-005",
+      "status": "fail",
+      "command": "python code/verify.py --workspace <clean-workspace>",
+      "cwd": ".audit-repro-pwsh-f363b5c2",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": <LONG_QUOTE_REDACTED>
+    }
+  ],
+  "output_comparison": {
+    "status": "needs_review",
+    "core_run_outputs_before_pdf": {
+      "generated": 27,
+      "bitwise_equal_to_frozen": 26,
+      "different": [
+        "results/verification.json"
+      ],
+      "reason": "The clean pipeline generated 5 PNG figures and initially had no PDF; the frozen verification counted 11 PNG figures and an existing PDF."
+    },
+    "source_plus_generated_after_pdf_excluding_pycache": {
+      "compared": 60,
+      "bitwise_equal": 57,
+      "different": [
+        "paper/main.log",
+        "paper/<SOURCE_FILE_REDACTED>",
+        "results/verification.json"
+      ]
+    },
+    "pdf": {
+      "status": "pass",
+      "frozen_bytes": 560419,
+      "reproduced_bytes": 560419,
+      "frozen_sha256": "cdf0a7c09d2e6730295a0ce9bd76c3086c030de6d943ed1c85eab97d21d6cba5",
+      "reproduced_sha256_last_run": "6bed0c8f62ba0da61765f436e2781d428d27ebe880e5bfbc3507e17a781e6090",
+      "bitwise_status": "needs_review",
+      "extracted_text_equal": true,
+      "frozen_extracted_text_sha256": "71d3cf0cdba89137fa0250029519cd1e8cdc63c8b960c3edfd15f04ec756f8b4",
+      "reproduced_extracted_text_sha256": "71d3cf0cdba89137fa0250029519cd1e8cdc63c8b960c3edfd15f04ec756f8b4",
+      "pages": 14,
+      "note": "PDF byte hashes change with CreationDate metadata; extracted text is exactly equal."
+    },
+    "internal_run_manifest": {
+      "status": "fail",
+      "listed_hashes": 36,
+      "matching": 26,
+      "mismatching": 10,
+      "declared_seed": 2010,
+      "current_seed": 20260824
+    }
+  },
+  "numerical_and_mathematical_checks": {
+    "status": "pass",
+    "independent_adaptive_quadrature": {
+      "status": "pass",
+      "small_tank_max_abs_difference_l": 2.59e-9,
+      "actual_tank_max_abs_difference_l": 0.00023314
+    },
+    "analytic_actual_capacity_l": 64664.44878638991,
+    "empty_full_boundaries": "pass",
+    "monotonicity": "pass",
+    "volume_bounds": "pass",
+    "beta_sign_symmetry_max_difference_l": 0.0,
+    "multi_start": {
+      "status": "pass",
+      "runs": 12,
+      "bounds_alpha_deg": [-30, 30],
+      "bounds_beta_deg": [0, 60],
+      "alpha_solution_spread_deg": 5.75e-6,
+      "beta_solution_spread_deg": 0.0003704,
+      "rmse_spread_l": 1.56e-9
+    },
+    "quadrature_refinement_reported_l": 0.00084327
+  },
+  "limitations": [
+    {
+      "status": "needs_review",
+      "item": "The aggregate FROZEN tree hash could not be independently recomputed because its canonical algorithm is not specified."
+    },
+    {
+      "status": "needs_review",
+      "item": "The dependency environment was version-matched but not hermetically rebuilt from a frozen package lock."
+    },
+    {
+      "status": "needs_review",
+      "item": "PDF byte identity is not deterministic because compilation time metadata changes; textual content identity passed."
+    }
+  ]
+}

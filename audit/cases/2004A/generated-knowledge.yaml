@@ -1,0 +1,20 @@
+case_id: 2004A
+status: candidate_only
+candidate_count: 20
+machine_verified_count: 0
+verified_count: 0
+exported_files:
+- file: case-specific-findings.md
+  sha256: 2049238e4a074849ee5515c67cb818d83e77336989259b75091a636a5154519c
+- file: failure-modes.yaml
+  sha256: d829e95f4e7280178678ac4812ba7952d2503edd31f0179a8504e4a6719c98b6
+- file: method-cards.yaml
+  sha256: 1687c9f902cb08752a59da970fca2d19004c458de02569f71d05ba493208a47f
+- file: non-generalizable.md
+  sha256: f4e00cb153c3e3081141c21c93dd06b8d1763ce180303c70d5378b9b3bd8e403
+- file: README.md
+  sha256: a40ee5d20e9c6b8d13b91ee14a25e3c8fb0a382a0a9527d59ddc7fb9fd772e30
+- file: validation-patterns.yaml
+  sha256: e219dfd6e9aac18874be7e391fc19e989ca7bfae6b24c2200b18a8048289d040
+- file: writing-lessons.md
+  sha256: 259efea9fec755a6acc90bae83af421385b6b97ae145e83f1c197a85eb657fa5

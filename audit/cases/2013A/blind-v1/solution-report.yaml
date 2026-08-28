@@ -1,0 +1,125 @@
+schema_version: 1
+case_id: 2013A
+phase: solve
+overall_status: needs_review
+phase_lock_status: pass
+blind_solve_status: pass
+scope:
+  allowed_skill: $cumcm-a-solve
+  network_search_status: pass
+  forbidden_reference_read_status: pass
+  freeze_performed: false
+  note: 本会话未冻结，也未进入audit、reflect或evaluate。
+input:
+  identity_status: pass
+  completeness_status: needs_review
+  problem_document_sha256: 71d7585a8580cd2c616ef5879c85561499f22e3b740a5af99326f53500e3dcdf
+  attachment_document_sha256: 2e7fa8a775109a177adb8cef103bb1e1fe0b5d30ea7b08d5f68a98a051cd2dd8
+  video_files_found: 0
+  required_video_files: 2
+  limitation: 附件Word只含历史下载提示，视频1和视频2未在白名单工作区出现。
+question_coverage:
+  - question: 1
+    coverage_status: pass
+    numeric_result_status: needs_review
+    method: 完整60秒周期PCU计数、饱和需求筛选、三周期中位数和稳健分段。
+    output: results/<SOURCE_FILE_REDACTED>
+    limitation: 无视频，不能生成事故时刻、撤离时刻和C1(t)数值。
+  - question: 2
+    coverage_status: pass
+    empirical_result_status: needs_review
+    method: 匹配周期的归一化容量比较，加转向比例换道压力代理。
+    output: results/<SOURCE_FILE_REDACTED>
+    conditional_result: 剩余车道容量排序为through、left、right；对应换道压力0.56、0.65、0.79。
+    limitation: 无视频和占用车道映射，不能给出视频1与视频2的实证差值或确定方向。
+  - question: 3
+    coverage_status: pass
+    model_internal_status: pass
+    relation: dL/dt=(q-C)/(m*k_j-C/w-q/v_f)，并在L=0反射。
+    outputs: [results/<SOURCE_FILE_REDACTED>, figures/<SOURCE_FILE_REDACTED>]
+  - question: 4
+    coverage_status: pass
+    calculation_status: pass
+    case_specific_status: needs_review
+    parameterized_answer: T(C)=60D(m*k_j-C/w-q/v_f)/(q-C)，C<q；C>=q时无增长队列。
+    central_engineering_scenario:
+      distance_m: 140
+      inflow_pcu_h: 1500
+      capacity_pcu_h: 1000
+      free_flow_speed_km_h: 40
+      backward_wave_speed_km_h: 15
+      jam_density_pcu_km_lane: 140
+      queue_growth_speed_km_h: 1.583113
+      time_min: 5.306
+      rounded_time_min: 5.31
+      point_queue_baseline_min: 7.056
+    main_capacity_range:
+      capacity_pcu_h: [800, 1200]
+      time_min: [3.95, 8.47]
+    joint_parameter_grid_time_min: [2.76, 10.92]
+model_selection:
+  baseline_status: pass
+  baseline: 完整周期PCU计数加点队列。
+  selected_status: pass
+  selected: 饱和筛选与稳健分段容量加三角基本图运动波。
+  rejected_status: pass
+  rejected: 细胞传输或微观换道仿真。
+  rejection_reason: 视频速度、头时距、换道和独立留出数据均缺失，额外复杂度不可识别。
+validation:
+  source_identity_status: pass
+  analytic_vs_1s_numeric_status: pass
+  analytic_time_s: 318.36
+  numerical_time_s: 319
+  absolute_error_s: 0.64
+  capacity_monotonicity_status: pass
+  zero_distance_boundary_status: pass
+  no_growth_boundary_status: pass
+  density_order_status: pass
+  two_run_reproducibility_status: pass
+  reproducibility_files_compared: 17
+  paper_result_consistency_status: pass
+  paper_checks: 16
+  tex_static_braces_status: pass
+  tex_static_environments_status: pass
+  tex_compile_status: needs_review
+  tex_compile_reason: 本机未提供xelatex、latexmk或tectonic。
+  external_validity_status: needs_review
+sensitivity:
+  one_at_a_time_status: pass
+  joint_grid_status: pass
+  capacity_is_dominant_near_threshold: true
+  interpretation: 联合网格范围是工程情景包络，不是统计置信区间。
+training_memory:
+  source_status: provisional_training
+  cards_reviewed: 3
+  cards_used: 3
+  decisions:
+    TM-001-EVIDENCE-LAYERS: adopt
+    TM-002-TIME-ORDERED-VALIDATION: adapt
+    TM-007-FIT-EVALUATE-SEPARATION: adapt
+  usage_record: reports/training-memory-usage.md
+  claim_limit: 这些卡只影响证据与验证流程，不作为交通参数或外部结论来源。
+completion_matrix:
+  small_question_coverage_status: pass
+  deterministic_code_run_status: pass
+  two_run_hash_status: pass
+  internal_validation_status: pass
+  robustness_analysis_status: pass
+  limitations_disclosed_status: pass
+  paper_result_consistency_status: pass
+  case_specific_numeric_closure_status: needs_review
+  pdf_compile_status: needs_review
+deliverables:
+  - problem-analysis.md
+  - data-audit.md
+  - assumptions.yaml
+  - variables.yaml
+  - model-selection.md
+  - solution-report.yaml
+  - reproducibility.yaml
+  - code/
+  - results/
+  - figures/
+  - paper/main.tex
+  - paper/paper.md
+claim_limit: 计算与内部检查通过不等于缺失视频下的案例外部有效性。

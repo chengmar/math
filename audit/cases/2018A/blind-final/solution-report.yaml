@@ -1,0 +1,43 @@
+schema_version: 1
+case_id: 2018A
+phase: blind-revision
+skill: $cumcm-a-solve
+overall_status: needs_review
+coverage:
+  problem_1: pass
+  problem_2: pass
+  problem_3: pass
+  code_rerun: pass
+  internal_validation: pass
+  validation_and_robustness: needs_review
+  initial_condition_authorization: needs_review
+  gap_structure_identifiability: needs_review
+  objective_definition: needs_review
+  paper_result_consistency: pass
+  independent_verification: pass
+  output_manifest: pass
+key_results_source: results/key_results.yaml
+deliverables:
+  problem_analysis: problem-analysis.md
+  data_audit: data-audit.md
+  assumptions: assumptions.yaml
+  variables: variables.yaml
+  model_selection: model-selection.md
+  reproducibility: reproducibility.yaml
+  code: code/
+  results: results/
+  figures: figures/
+  paper_tex: paper/main.tex
+  paper_markdown: paper/paper.md
+  revision_traceability: revision-traceability.yaml
+limitations:
+- Only one experimental environment/thickness trajectory is available.
+- Radiation, contact resistance, temperature-dependent properties, and air-gap convection are not separately identified.
+- The 65°C and 80°C designs are model extrapolations and need independent experiments.
+- The clothing initial-temperature range and engineering uncertainty set are not authorized by the problem.
+- The Q3 objective d2+d4 is a stated engineering choice; other layer-IV weights change the pair.
+freeze_performed: false
+freeze_state: working_copy_waiting_for_external_blind_final_freeze
+freeze_policy_compliance_status: pass
+next_phase_started: false
+phase_lock_compliance_status: pass

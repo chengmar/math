@@ -1,0 +1,40 @@
+schema_version: 1
+id: CAND-EXPRESSION-ACTIVE-CONSTRAINT-TABLE
+status: candidate
+type: expression_experience
+title: <REFERENCE_TITLE_REDACTED>
+source_case: 2018A
+origin_classification: learned_from_REF-01_and_refined
+sources:
+  approved_references: [REF-01]
+  blind_evidence:
+    - blind-final/results/optimization_q2.yaml
+    - blind-final/results/optimization_q3.yaml
+recommended_columns:
+  - 约束名称与等价点温时刻
+  - 连续临界厚度
+  - 0.1 mm 向上制造厚度
+  - 下一个相邻薄点及 fail 证据
+  - 终温、首次越过时刻、超温时长
+  - 模型适用条件与外部状态
+applicable_when:
+  - 设计变量对约束指标已验证单调。
+  - 多个约束中需要说明哪一个活跃。
+not_applicable_when:
+  - 响应非单调、多峰或路径相关，单个临界厚度不能代表可行域。
+minimum_baseline:
+  - 只报最终厚度与两个约束值。
+  - 改进表必须额外给出连续根、制造取整和相邻 fail 点。
+validation:
+  checks:
+    - 表中数字与结构化结果逐字段绑定。
+    - 故意交换 44℃/47℃语义时检查必须 fail。
+    - 时长必须由交点计算复核，不能只数离散采样点。
+  current_case_status: pass
+counterexamples:
+  - 若厚度存在离散材料规格或组合跳变，应报告可行集合而非连续根。
+  - 若温度曲线不单调，T(tf-300) 不能替代持续时长。
+evidence_strength: needs_review
+evidence_reason: 对当前题显著降低解释成本，但尚未评估跨题阅读效果。
+promotion_requirements:
+  - 在至少两个不同约束优化题中使用并验证语义一致性。

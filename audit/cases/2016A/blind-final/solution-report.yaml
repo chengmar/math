@@ -1,0 +1,263 @@
+case_id: 2016A
+phase: blind-revision
+skill: $cumcm-a-solve
+delivery_status: needs_review
+scope:
+  blind_revision: pass
+  phase_check: pass
+  network_search_used: false
+  forbidden_reference_read: false
+  other_phase_skill_called: false
+  blind_v1_preserved: pass
+  frozen: false
+question_coverage:
+  q1:
+    status: pass
+    identifiability_status: needs_review
+    reason: 题面只给 1200 kg 干质量，未给排水体积；无条件数值不唯一。
+    conditional_baseline:
+      ball_interpretation: solid_steel_sphere
+      ball_dry_mass_kg: 1200
+      ball_displaced_volume_m3: 0.15286624203821655
+      ball_effective_mass_kg: 1043.312101910828
+    wind_12_m_s:
+      pipe_angles_deg: [1.159, 1.167, 1.175, 1.183]
+      drum_angle_deg: 1.201
+      chain_state: seabed_contact
+      seabed_chain_m: 6.251
+      anchor_angle_deg: 0.000
+      draft_m: 0.683
+      wander_radius_m: 14.653
+      wander_area_m2: 674.514
+    wind_24_m_s:
+      pipe_angles_deg: [4.410, 4.438, 4.467, 4.496]
+      drum_angle_deg: 4.563
+      chain_state: fully_suspended
+      anchor_angle_deg: 4.452
+      draft_m: 0.697
+      wander_radius_m: 17.778
+      wander_area_m2: 992.952
+    alternative_24_m_s_drum_angles_deg:
+      density_3000_kg_m3: 6.092
+      solid_steel_7850_kg_m3: 4.563
+      zero_displacement_limit: 3.896
+    sources:
+      - results/<SOURCE_FILE_REDACTED>
+      - results/<SOURCE_FILE_REDACTED>
+      - results/<SOURCE_FILE_REDACTED>
+  q2:
+    status: pass
+    initial_1200_kg_conditional_solid_steel:
+      ball_effective_mass_kg: 1043.312101910828
+      drum_angle_deg: 9.440
+      anchor_angle_deg: 20.878
+      drum_constraint: fail
+      anchor_constraint: fail
+    continuous_minimum_ball_effective_mass_kg: 1927.8889649031553
+    continuous_minimum_submerged_weight_kn: 18.91
+    conditional_solid_steel_recommendation:
+      dry_mass_kg: 2250
+      effective_mass_kg: 1956.2101910828026
+      submerged_weight_kn: 19.18
+      drum_angle_deg: 4.422
+      anchor_angle_deg: 15.814
+      draft_m: 0.993
+      wander_radius_m: 18.531
+      drum_constraint: pass
+      anchor_constraint: pass
+    density_invariance_at_fixed_effective_mass:
+      max_static_output_difference: 1.0658141036401503e-14
+      status: pass
+    sources:
+      - results/<SOURCE_FILE_REDACTED>
+      - results/<SOURCE_FILE_REDACTED>
+      - results/<SOURCE_FILE_REDACTED>
+  q3:
+    status: pass
+    external_validity_status: needs_review
+    selected_design:
+      chain_type: V
+      link_count: 124
+      chain_length_m: 22.32
+      chain_dry_mass_kg: 627.6384
+      ball_effective_mass_kg: 4336.090641
+      ball_submerged_weight_kn: 42.5225
+      ball_dry_mass_kg_if_solid_steel: 4987.298392945055
+      ball_displaced_volume_m3: 0.6353246360439561
+      volume_equivalent_diameter_m: 1.066593725908586
+      robust_hydrodynamic_diameter_m: 1.2799124710903031
+      robust_projected_area_m2: 1.2866203696125627
+      compromise_score: 1.6261287314185364
+    search:
+      integer_link_counts_enumerated: 1202
+      expanded_chain_length_m: [12, 40]
+      effective_mass_cap_kg: 5375
+      grid_steps_kg: [100, 50, 25]
+      continuous_refinement_per_feasible_link: pass
+      feasible_candidates: 11058
+      pareto_candidates: 6537
+      selected_score_global_minimum: pass
+      primary_to_expanded_boundary_stability: pass
+      grid_to_continuous_structure_stability: pass
+      second_structural_design:
+        chain_type: V
+        link_count: 125
+        chain_length_m: 22.50
+        score: 1.6315050912896745
+        score_gap: 0.005376359871138048
+    nominal_33_case_envelope:
+      max_drum_angle_deg: 4.368
+      max_anchor_angle_deg: 13.808
+      max_draft_m: 1.883
+      max_wander_radius_m: 19.948
+      drum_constraint: pass
+      anchor_constraint: pass
+      draft_constraint: pass
+    declared_geometry_pressure_depth_envelope:
+      diameter_factors: [1.0, 1.1, 1.2]
+      pressure_factors: [1.0, 1.1]
+      depth_m: [16, 20]
+      depth_step_m: 0.05
+      case_count: 486
+      max_drum_angle_deg: 4.797622442919955
+      max_anchor_angle_deg: 15.836438916354682
+      max_draft_m: 1.893074591800712
+      max_wander_radius_m: 20.097122124865074
+      status: pass
+    environment_grid:
+      depth_step_m: 0.25
+      wind_step_m_s: 6
+      current_step_m_s: 0.25
+      nonstatic_case_count: 816
+      status: pass
+    sources:
+      - results/<SOURCE_FILE_REDACTED>
+      - results/<SOURCE_FILE_REDACTED>
+      - results/<SOURCE_FILE_REDACTED>
+      - results/<SOURCE_FILE_REDACTED>
+      - results/<SOURCE_FILE_REDACTED>
+      - results/<SOURCE_FILE_REDACTED>
+      - results/<SOURCE_FILE_REDACTED>
+audit_closure:
+  AUD-2016A-001:
+    status: pass
+    evidence:
+      - ball volume, hydrodynamic diameter and area are explicit
+      - ball drag acts at ball node and is not repeated into drum
+      - 4800 kg hand drag is 732.924614 N
+      - V-117/4800 nominal D20 anchor angle is 17.530113 deg and fail
+      - selected design passes declared geometry and pressure envelope
+    sources:
+      - code/test_physics.py
+      - results/<SOURCE_FILE_REDACTED>
+      - results/<SOURCE_FILE_REDACTED>
+      - results/<SOURCE_FILE_REDACTED>
+  AUD-2016A-002:
+    status: pass
+    evidence:
+      - every integer link count in expanded domain enumerated
+      - full feasible 25 kg mass grid retained per link
+      - per-link continuous refinement performed
+      - V-117/5050 and V-116/5200 explicitly checked and hard-constraint excluded
+      - selected score is global minimum and second structural score is reported
+    sources:
+      - results/<SOURCE_FILE_REDACTED>
+      - results/<SOURCE_FILE_REDACTED>
+      - results/<SOURCE_FILE_REDACTED>
+      - results/<SOURCE_FILE_REDACTED>
+  AUD-2016A-003:
+    status: pass
+    evidence:
+      - solve.py generates results/README.md
+      - manifest separates source_inputs and generated_outputs
+      - two empty-directory runs have identical 36-output manifests
+      - no output set, size or SHA-256 mismatch
+    source: reports/reproducibility-check.md
+  AUD-2016A-004:
+    status: pass
+    evidence:
+      - SVG background is width 100 percent and height 100 percent
+      - four SVG files pass XML check
+      - four SVG files rendered by Chrome and visually inspected
+    sources:
+      - results/figure-validation.json
+      - reports/figure-visual-check.md
+  AUD-2016A-005:
+    status: needs_review
+    reason: blind-final freeze schema and aggregate tree hash are produced by the external freeze script, not by this solve-stage revision.
+validation:
+  model_internal:
+    status: pass
+    max_horizontal_force_residual_n: 4.547473508864641e-13
+    max_ball_node_horizontal_force_residual_n: 0.0
+    max_vertical_force_residual_n: 9.094947017729282e-12
+    max_member_moment_residual_nm: 6.927791673660977e-13
+    max_chain_geometry_residual_m: 3.759677014159024e-10
+    max_independent_quadrature_endpoint_error_m: 6.4503868912879625e-9
+  physics_unit_test:
+    status: pass
+    command: python code/test_physics.py
+  paper_result_semantic_consistency:
+    status: pass
+    check_count: 16
+    source: reports/paper-consistency.json
+  figure_xml_and_visual:
+    status: pass
+    source: reports/figure-visual-check.md
+  latex_compilation_and_page_visual:
+    status: needs_review
+    reason: XeLaTeX, latexmk and PDF page renderers are unavailable.
+  mathematical_correctness_beyond_stated_model:
+    status: needs_review
+    reason: 内部残差、手算和网格不能证明未建模物理或真实海况有效。
+reproducibility:
+  clean_run_1: pass
+  clean_run_2: pass
+  output_comparison: pass
+  generated_output_count_each_run: 36
+  manifest_sha256_each_run: e823d8e40b72abe93a71dc206136bdd829cf9758a5c206d66ed1467598a56fa1
+  stdout_sha256_each_run: 2481f582bbfa2ac3e3ddbe15a136d2c06d31b6f8ed4fe699a93999b417fb25f6
+  output_mismatch_count: 0
+  source: reports/reproducibility-check.md
+evidence_layers:
+  phase_identity:
+    status: pass
+    evidence: cumcm-a-solve check_phase returned PASS for blind-revision
+  execution_reproduction:
+    status: pass
+    evidence: two clean-directory manifests and stdout hashes are identical
+  model_internal:
+    status: pass
+    evidence: results/validation.json
+  external_validity:
+    status: needs_review
+    evidence: actual ball geometry, chain drag, waves and field data are unavailable
+  document_source:
+    status: pass
+    evidence: paper/main.tex and paper/paper.md use generated results
+  compiled_pdf_and_page_visual:
+    status: needs_review
+    evidence: LaTeX toolchain unavailable
+required_outputs:
+  problem_analysis: pass
+  data_audit: pass
+  assumptions: pass
+  variables: pass
+  model_selection: pass
+  code: pass
+  structured_results: pass
+  figures: pass
+  paper_tex: pass
+  paper_markdown: pass
+  reproducibility: pass
+limitations:
+  - 球真实排水体积、水动力直径和阻力作用点缺失，范围外结构须重算。
+  - 题面未给链环迎流面积，未显式计算链流阻。
+  - 准静力二维模型不覆盖波浪、冲击、涡激、疲劳与三维扭转。
+  - 只执行题给 16 度判据，不证明锚土真实承载力。
+  - 10% 压力下最小干舷约 0.107 m；若规范要求更大储备须重新优化。
+next_phase_actions:
+  freeze: false
+  audit: false
+  reflect: false
+  evaluate: false

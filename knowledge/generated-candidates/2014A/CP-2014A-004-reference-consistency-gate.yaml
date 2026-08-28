@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "id": "CP-2014A-004",
+  "title": "吸收参考方法前执行论文—代码—附件—独立复算一致性门槛",
+  "status": "candidate",
+  "source_case": "2014A",
+  "provenance": {
+    "class": "learned_after_reference",
+    "references": ["REF-01", "REF-02", "REF-03", "REF-04"],
+    "trigger": "cross-layer contradictions appeared in every supplied reference at different severities"
+  },
+  "lesson": <LONG_QUOTE_REDACTED>,
+  "applicability": [
+    "a reference is used to change a model, parameter, algorithm, or numerical conclusion",
+    "the package contains at least a paper plus code or result artifacts",
+    "core formulas or outputs can be independently recomputed"
+  ],
+  "non_applicability": [
+    "the source is purely conceptual and makes no reproducible numerical claim",
+    "copyright or format constraints prohibit examining the relevant supplied content",
+    "the task only requires bibliographic discovery rather than method adoption"
+  ],
+  "minimum_baseline": [
+    "a claim inventory with units and assumptions",
+    "a dependency and file inventory",
+    "at least one numerical sanity check for every adopted core component"
+  ],
+  "validation_protocol": [
+    "hash and inventory the approved source before extraction",
+    "extract text headlessly and record page coverage/errors",
+    "map each adopted paper claim to exact code and output artifacts",
+    "test missing dependencies, random seeds, stale artifacts, and paper/code parameter drift",
+    "independently recalculate a minimal invariant or translate a core algorithm",
+    "record paper, code, artifact, and recalculation statuses separately",
+    "treat limited printed precision as needs_review when it plausibly explains a small discrepancy"
+  ],
+  "counterexamples": [
+    "an artifact matches a paper point but was produced by an older unprovided program",
+    "code is correct but a paper number is rounded beyond the chosen tolerance",
+    "a missing runtime is mistaken for an algorithm failure",
+    "a script plots inputs but is assumed to implement the paper optimizer",
+    "a lower objective value comes from a different feasible set"
+  ],
+  "evidence_strength": "single_case_four_reference_cross_check",
+  "evidence": [
+    {"source": "REF-01", "status": "needs_review", "claim": "basic orbit and fuel arithmetic mostly align, but no code supports the full chain"},
+    {"source": "REF-02", "status": "fail", "claim": "terrain result and MAT dependency chain do not reproduce"},
+    {"source": "REF-03", "status": "fail", "claim": "orbital invariants and claimed-program coverage fail"},
+    {"source": "REF-04 terrain artifacts", "status": "pass", "claim": "attached terrain maxima match paper locations"},
+    {"source": "REF-04 dynamics", "status": "fail", "claim": "independent translation disagrees with paper fuel, speed, and displacement"}
+  ],
+  "uncertainties": [
+    "the gate has only been exercised on one case",
+    "independent translations may reproduce a misunderstood code path",
+    "formula extraction can lose layout and requires contextual review",
+    "strictness may need calibration for references without executable artifacts"
+  ],
+  "promotion_gate": [
+    "apply the gate to multiple cases and source-package types",
+    "measure contradictions caught, false alarms, and review cost",
+    "define tolerance rules for rounding, missing runtime, and stochastic outputs",
+    "retain claim-level statuses instead of a single paper score"
+  ],
+  "do_not_claim": [
+    "a reference is wholly correct or wholly wrong from one failed check",
+    "artifact agreement proves paper-code consistency",
+    "independent reimplementation proves semantic equivalence without mapping the code path"
+  ]
+}

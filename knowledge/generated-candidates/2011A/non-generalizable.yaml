@@ -1,0 +1,37 @@
+schema_version: 1
+case_id: 2011A
+knowledge_status: candidate
+scope: do_not_generalize
+items:
+  - id: CAND-2011A-NG01
+    statement: "工业 > 交通 > 生活 > 公园绿地 > 山区"
+    reason: "只在本题 319 点与当前指标集内成立；工业—交通仍可在空间块重采样中翻转"
+    evaluation_status: needs_review
+  - id: CAND-2011A-NG02
+    statement: "1/2/3 km 带宽、3 km 空间块、1 km 热点核"
+    reason: "由本题采样密度和候选集合决定，不是普适物理尺度"
+    evaluation_status: needs_review
+  - id: CAND-2011A-NG03
+    statement: "Hg、As-Cr-Ni、Cd-Cu-Pb-Zn 三分量"
+    reason: "是本题变换、尺度和 NMF 下的统计标签，不是通用源谱"
+    evaluation_status: needs_review
+  - id: CAND-2011A-NG04
+    statement: "内梅罗 B 或 B+2SD 起点及相应污染等级"
+    reason: "标准版本、pH、用途和背景定义需独立核查"
+    evaluation_status: needs_review
+  - id: CAND-2011A-NG05
+    statement: "参考材料中的源坐标、扩散系数、衰减系数和毒性权重"
+    reason: "当前均缺完整可复现标定或适用性证据"
+    evaluation_status: needs_review
+  - id: CAND-2011A-NG06
+    statement: "多篇同题材料结论一致等于外部验证"
+    reason: "共享同一附件和相近方法，依赖不独立"
+    evaluation_status: fail
+  - id: CAND-2011A-NG07
+    statement: "哈希与两次运行 pass 等于数学或物理正确"
+    reason: "复现只约束实现一致性"
+    evaluation_status: fail
+
+promotion:
+  direct_upgrade_status: fail
+  permitted_state: candidate

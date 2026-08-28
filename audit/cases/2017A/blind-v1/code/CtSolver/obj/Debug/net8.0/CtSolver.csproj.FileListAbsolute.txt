@@ -1,0 +1,14 @@
+<RUNTIME_ROOT>\2017A\workspaces\solve\code\CtSolver\bin\Debug\net8.0\CtSolver.exe
+<RUNTIME_ROOT>\2017A\workspaces\solve\code\CtSolver\bin\Debug\net8.0\CtSolver.deps.json
+<RUNTIME_ROOT>\2017A\workspaces\solve\code\CtSolver\bin\Debug\net8.0\CtSolver.runtimeconfig.json
+<RUNTIME_ROOT>\2017A\workspaces\solve\code\CtSolver\bin\Debug\net8.0\CtSolver.dll
+<RUNTIME_ROOT>\2017A\workspaces\solve\code\CtSolver\bin\Debug\net8.0\CtSolver.pdb
+<RUNTIME_ROOT>\2017A\workspaces\solve\code\CtSolver\obj\Debug\net8.0\CtSolver.GeneratedMSBuildEditorConfig.editorconfig
+<RUNTIME_ROOT>\2017A\workspaces\solve\code\CtSolver\obj\Debug\net8.0\CtSolver.AssemblyInfoInputs.cache
+<RUNTIME_ROOT>\2017A\workspaces\solve\code\CtSolver\obj\Debug\net8.0\CtSolver.AssemblyInfo.cs
+<RUNTIME_ROOT>\2017A\workspaces\solve\code\CtSolver\obj\Debug\net8.0\CtSolver.csproj.CoreCompileInputs.cache
+<RUNTIME_ROOT>\2017A\workspaces\solve\code\CtSolver\obj\Debug\net8.0\CtSolver.dll
+<RUNTIME_ROOT>\2017A\workspaces\solve\code\CtSolver\obj\Debug\net8.0\refint\CtSolver.dll
+<RUNTIME_ROOT>\2017A\workspaces\solve\code\CtSolver\obj\Debug\net8.0\CtSolver.pdb
+<RUNTIME_ROOT>\2017A\workspaces\solve\code\CtSolver\obj\Debug\net8.0\CtSolver.genruntimeconfig.cache
+<RUNTIME_ROOT>\2017A\workspaces\solve\code\CtSolver\obj\Debug\net8.0\ref\CtSolver.dll

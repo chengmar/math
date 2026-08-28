@@ -1,0 +1,58 @@
+schema_version: 1
+artifact: "proposed_failure_modes"
+knowledge_state: "candidate"
+entries:
+  - id: "FM-01"
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_state: "candidate"
+    origin_class: "audit_after_blind_revision_before_reference"
+    symptom: "the pressure equation uses a common rail density for both inflow and outflow despite different boundary states"
+    consequence: "the steady opening time shifts and the physical mass ledger is wrong"
+    failure_status: fail
+    correction_evidence_status: pass
+    guard: "write the boundary mass-flow terms separately before converting mass change to pressure change"
+  - id: "FM-02"
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_state: "candidate"
+    origin_class: "audit_after_blind_revision_before_reference"
+    symptom: "only the minimum-area restriction is modeled although a serial-loss interpretation is also plausible"
+    consequence: "a model-form choice is hidden as numerical precision"
+    failure_status: fail
+    correction_evidence_status: pass
+    guard: "report structural endpoints and the observation needed to select between them"
+  - id: "FM-03"
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_state: "candidate"
+    origin_class: "audit_after_blind_revision_before_reference"
+    symptom: "the valve switches with no delay, dwell, rate, or refill constraint"
+    consequence: "excellent pressure stability can be bought with physically unsupported actuation"
+    failure_status: needs_review
+    correction_evidence_status: needs_review
+    guard: "label the result as an ideal bound and add explicit actuator constraints"
+  - id: "FM-04"
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_state: "candidate"
+    origin_class: "reference_triggered"
+    symptom: "agreement with a paper is treated as validation even when that paper has unit or internal-value conflicts"
+    consequence: "a shared or copied error can be mistaken for truth"
+    failure_status: fail
+    correction_evidence_status: pass
+    guard: "reimplement an invariant or exact baseline and audit the reference internally"
+  - id: "FM-05"
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_state: "candidate"
+    origin_class: "reference_triggered"
+    symptom: "a pressure-dependent modulus is replaced by one constant proportionality over the full range"
+    consequence: "density and flow predictions become inconsistent with the supplied constitutive data"
+    failure_status: fail
+    correction_evidence_status: pass
+    guard: "integrate the differential constitutive relation over pressure and document interpolation"
+  - id: "FM-06"
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_state: "candidate"
+    origin_class: "independent_before_reference"
+    symptom: "a final-window mean is optimized without an independent mass-balance solution"
+    consequence: "transient bias, event alignment, and time-step error can be hidden in the objective"
+    failure_status: needs_review
+    correction_evidence_status: pass
+    guard: "derive an exact or independently solved steady baseline before running long horizons"

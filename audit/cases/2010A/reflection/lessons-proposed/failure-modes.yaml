@@ -1,0 +1,90 @@
+schema_version: 1
+case_id: "2010A"
+phase: reflection
+failure_modes:
+  - id: FM-2010A-01
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: audit_corrected
+    symptom: "同一时间块或补油事件先决定候选，后又作为独立测试。"
+    consequence: "验证误差产生乐观偏差。"
+    detection: "为每个数据块建立不可冲突的 fit/select/check 角色表。"
+    mitigation: "预注册角色；若已经看过，只称事后或时间分块检查。"
+
+  - id: FM-2010A-02
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: reference_learned
+    evidence_source: R4
+    symptom: "把系统按旧无变位表生成的显示容积与同一无变位几何公式比较。"
+    consequence: "得到近乎必然的一致，却没有验证变位模型。"
+    mitigation: "只把旧显示量用于识别数据来源，不作为真实油量标签。"
+
+  - id: FM-2010A-03
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: reference_learned
+    evidence_source: "R2 reports 0.9996; R4 reports 0.0055%."
+    symptom: "指标来自训练数据，或除以约 59,000 L 的大基数。"
+    consequence: "掩盖逐次流量误差、模型错设和表值偏移。"
+    mitigation: "同时报告绝对 RMSE、残差结构、留出误差和表节点差。"
+
+  - id: FM-2010A-04
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: reference_learned
+    evidence_source: R2
+    symptom: "用同一批数据拟合理论—实测差的高度多项式，并以样本内拟合评价。"
+    consequence: "无法区分探针零点、尺度、几何或数据泄漏。"
+    mitigation: "先比较可解释候选；经验修正只能作为基线并需要留出检查。"
+
+  - id: FM-2010A-05
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: reference_learned
+    evidence_source: R3
+    symptom: "为所有空/满、纵倾、横偏组合手写大量公式分支。"
+    consequence: "边界条件、单位和代码映射难以全面测试，主结果被推导淹没。"
+    mitigation: "优先使用裁剪截面函数与统一积分；保留少量极端边界测试。"
+
+  - id: FM-2010A-06
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: reference_learned
+    evidence_source: R4
+    symptom: "对每个角度组合再网格扫描初始体积 V0。"
+    consequence: "复杂度多一维，精度受网格限制。"
+    mitigation: "给定角度时解析求残差均值对应的 V0，或用差分目标消去。"
+
+  - id: FM-2010A-07
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: reference_learned
+    symptom: "因为多篇给出相近角度，就把交集当作正确答案。"
+    consequence: "共同的近似、数据复用或旧表依赖会形成相关偏差。"
+    mitigation: "比较模型结构、代码、表值和独立验证，不按篇数投票。"
+
+  - id: FM-2010A-08
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: audit_corrected
+    symptom: "只在少数模型间取 min/max，却暗示覆盖所有合理机理。"
+    consequence: "遗漏模型和真实公差被隐藏。"
+    mitigation: "列出候选纳入规则、被排除基线和未覆盖因素。"
+
+  - id: FM-2010A-09
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: audit_corrected
+    symptom: "罐容表保留 0.01 L，但零点、尺寸或仪表可引起几十到几百升变化。"
+    consequence: "使用者误读模型能力。"
+    mitigation: "机器文件保留复算精度，正文按不确定性取整并另列诊断范围。"
+
+  - id: FM-2010A-10
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: audit_corrected
+    symptom: "外部权威清单覆盖当前文件并通过，但包内较早生成的运行清单仍声称另一组文件哈希。"
+    consequence: "冻结身份成立，却无法按包内自报清单闭合复现；若不分层会产生相互矛盾的 pass。"
+    detection: "分别只读校验外层冻结文件树和内层运行清单，并报告各自时间层级与失败文件。"
+    mitigation: "不改写已冻结包；在下一轮生成中先完成最终文稿，再重建内层清单并重新外部冻结。"

@@ -1,0 +1,35 @@
+schema_version: 1
+case_id: 2020A
+knowledge_status: candidate
+promotion_status: needs_review
+facts:
+  - id: FACT-2020A-001
+    statement: 炉体总长为 435.5 cm，实验速度 70 cm/min 对应 373.286 s。
+    evidence_status: pass
+    evidence:
+      - "25 + 11*30.5 + 10*5 + 25 = 435.5"
+      - "冻结数据审计与四篇材料题面重述一致"
+  - id: FACT-2020A-002
+    statement: 唯一实验轨迹有 709 个 0.5 s 间隔点，时间范围 19--373 s；传感器启用前没有观测。
+    evidence_status: pass
+    limitation: 不能把 709 个稠密点当成 709 个独立工况。
+  - id: FACT-2020A-003
+    statement: Q3 题面阴影只覆盖升温侧 217 ℃上穿至峰值，不含峰后冷却侧。
+    evidence_status: pass
+    evidence:
+      - "Audit 对题面图 2 的核对"
+      - "三篇批准参考的公式均采用升温侧"
+  - id: FACT-2020A-004
+    statement: 最终冻结模型的 Q3 升温侧面积为 309.29547853045676 ℃·s；两侧总面积 626.0559264176293 ℃·s 只作诊断。
+    evidence_status: pass
+    scope: frozen_model_nominal_only
+  - id: FACT-2020A-005
+    statement: 当前四种模型给出的 Q2 最大速度范围为 76--92.764362 cm/min。
+    evidence_status: pass
+    interpretation_status: needs_review
+    limitation: 差异来自模型与验证条件，不能多数投票或按数值大小判真。
+  - id: FACT-2020A-006
+    statement: 最终冻结 Q2/Q3/Q4 在 128 个联合角点中分别有 62/56/56 个满足制程。
+    evidence_status: pass
+    probability_interpretation_status: fail
+    limitation: 角点是确定性压力测试，不是失效概率。

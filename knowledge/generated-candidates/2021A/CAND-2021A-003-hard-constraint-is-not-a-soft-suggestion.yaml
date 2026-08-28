@@ -1,0 +1,34 @@
+schema_version: 1
+id: "CAND-2021A-003"
+case_id: "2021A"
+status: "candidate"
+category: "failure_mode"
+title: <REFERENCE_TITLE_REDACTED>
+
+provenance:
+  classification: "learned_after_references"
+  sources:
+    - "R3: <REFERENCE_ID>"
+  observed_evidence:
+    reported_max_edge_change: 0.0011
+    independently_reimplemented_max_edge_change: 0.0010604139373968646
+    required_limit: 0.0007
+    constraint_status: "fail"
+
+failure_pattern:
+  text: "先求一个违约方案，再以‘与上限相差较小’或‘工程上可调整’代替可行性证明。"
+  risk: "把不可提交方案包装为最优或合理结果。"
+
+recommended_response:
+  - "自动约束门槛直接判fail"
+  - "若允许软约束，必须由题意或用户明确授权，并报告罚值与违例量"
+  - "另给满足硬约束的可行基线"
+  - "精确值和输出舍入值分别验收"
+
+non_generalization:
+  - "0.07%是本题特定上限，不应写入通用知识卡"
+
+promotion_gate:
+  direct_verified_upgrade_allowed: false
+  required:
+    - "在多个硬约束优化案例中复核该门槛策略"

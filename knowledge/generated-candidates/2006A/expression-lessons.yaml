@@ -1,0 +1,32 @@
+schema_version: 1
+case_id: 2006A
+knowledge_status: candidate
+lessons:
+  - id: EL-PROXY-001
+    origin: independently_derived
+    evidence_status: pass
+    rule: "把价格×预测销量称为销售额/毛利排序代理，不写成已实现净利润。"
+  - id: EL-CLAIM-EVIDENCE-002
+    origin: mixed
+    evidence_status: pass
+    rule: "重要结论紧邻给出claim、evidence、status；模型相近不等于验证通过。"
+  - id: EL-TWO-LEVEL-003
+    origin: independently_derived
+    evidence_status: pass
+    rule: "明确区分总社正式九社方案、分社课程建议和战略例外。"
+  - id: EL-VECTOR-SUM-004
+    origin: learned_after_references
+    evidence_status: pass
+    rule: "每个配置向量同时打印合计、约束状态和口径，避免读者自行发现499/504等错误。"
+  - id: EL-PARAMETER-PROVENANCE-005
+    origin: learned_after_references
+    evidence_status: pass
+    rule: "每个权重注明数据估计、专家判断或工程设定；只对相应证据强度作结论。"
+  - id: EL-OPTIMALITY-006
+    origin: mixed
+    evidence_status: pass
+    rule: "使用‘最优’前说明相对于哪个目标、可行域和算法证书；不可行表格不得保留最优措辞。"
+  - id: EL-LIMITATIONS-007
+    origin: independently_derived
+    evidence_status: pass
+    rule: "摘要可给主数字，但必须同步给时间留出误差、代理边界和管理例外。"

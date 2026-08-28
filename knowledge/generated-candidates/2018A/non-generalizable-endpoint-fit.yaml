@@ -1,0 +1,42 @@
+schema_version: 1
+id: CAND-ANTI-ENDPOINT-FIT-STRUCTURE
+status: candidate
+type: non_generalizable_experience
+title: <REFERENCE_TITLE_REDACTED>
+source_case: 2018A
+origin_classification: learned_from_reference_counterexamples
+sources:
+  approved_references: [REF-01, REF-02]
+  blind_evidence: [blind-final/results/gap_structure_scenarios.yaml]
+anti_pattern:
+  - 用 5400 s 终值选择换热系数，再称整条轨迹拟合良好。
+  - 加入辐射后重新拟合等效边界参数，只因参数变化小就称辐射可忽略。
+observed_evidence:
+  REF-02:
+    end_temperature_match_status: pass
+    recomputed_max_abs_error_c: 1.9882069887506688
+    trajectory_validation_status: fail
+  REF-01:
+    radiation_refit_status: pass
+    structural_negligibility_status: needs_review
+  blind_gap_scenarios:
+    calibration_fit_status: pass
+    q3_transfer_uniqueness_status: fail
+applicable_when:
+  - 参数由单轨迹、少量时刻或单一厚度标定后向新工况迁移。
+not_applicable_when:
+  - 理论上单个终值即可唯一识别全部所需参数，且独立轨迹已验证；即便如此也应说明证明条件。
+minimum_baseline:
+  - 至少报告全轨迹 RMSE/最大绝对误差和一个时间留出。
+  - 结构比较应在同一评价集上重拟合并比较，还需跨工况数据识别迁移。
+validation:
+  current_case_status: pass
+  external_status: needs_review
+counterexamples:
+  - 两个结构可在基准轨迹内都达到 0.01℃误差，却给出不同 Q3 配比。
+  - 等效换热系数可吸收未建模辐射，使参数稳定假象不能证明结构正确。
+evidence_strength: needs_review
+evidence_reason: 当前案例有数值反例，但缺少真实跨工况实验判断哪个结构更接近物理过程。
+promotion_requirements:
+  - 获得跨温度、跨空气隙厚度的独立测温。
+  - 把结构选择与参数估计不确定性分开报告。

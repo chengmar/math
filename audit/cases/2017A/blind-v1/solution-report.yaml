@@ -1,0 +1,136 @@
+case_id: 2017A
+phase: solve
+skill: cumcm-a-solve
+workflow_completion: pass
+overall_scientific_status: needs_review
+frozen: false
+reflection_performed: false
+audit_phase_invoked: false
+evaluate_phase_invoked: false
+scope:
+  blind_solution: true
+  reference_papers_read: false
+  commentary_or_standard_answer_read: false
+  network_search_used: false
+  allowed_paths_only_for_inputs: true
+task_coverage:
+  - question: 1
+    requirement: 旋转中心、探测器间距、180个方向
+    artifacts: [results/calibration.json, results/<SOURCE_FILE_REDACTED>]
+    status: pass
+  - question: 2
+    requirement: 附件3介质的位置、形状、吸收率、十点值和256×256矩阵
+    artifacts: [results/problem2-geometry.json, results/<SOURCE_FILE_REDACTED>,<SOURCE_FILE_REDACTED>]
+    status: pass
+  - question: 3
+    requirement: 附件5介质相关信息、十点值和256×256矩阵
+    artifacts: [results/problem3-geometry.json, results/<SOURCE_FILE_REDACTED>,<SOURCE_FILE_REDACTED>]
+    status: pass
+  - question: 4
+    requirement: 标定精度、稳定性、新模板及改进理由
+    artifacts: [results/model-comparison.json, results/stability.json, figures/<SOURCE_FILE_REDACTED>]
+    status: pass
+key_results:
+  coordinate_convention: 左下角原点，x向右，y向上，单位mm
+  rotation_center_mm: [40.7714, 56.2422]
+  detector_spacing_mm: 0.2756
+  detector_normal_start_degrees: 29.6741
+  xray_line_start_degrees: 119.6741
+  angle_step_degrees: 1.0000
+  direction_rule: start + (index-1) degrees modulo 180
+  projection_gain: 1.7806
+  calibration_projection_nrmse: 0.0137
+  selected_reconstruction: nonnegative_sirt_20
+  template_pixel_rmse: 0.0298
+  template_projection_nrmse: 0.0128
+  problem2:
+    envelope_center_mm: [50.6364, 52.3946]
+    bounding_box_mm: [28.5156, 72.6563, 11.7188, 93.3594]
+    equivalent_semi_axes_mm: [40.9602, 21.7475]
+    major_axis_degrees: 85.0125
+    major_holes: 2
+    matrix:<SOURCE_FILE_REDACTED>
+  problem3:
+    envelope_center_mm: [49.8278, 49.7832]
+    bounding_box_mm: [1.1719, 96.0938, 5.4688, 91.7969]
+    material_fraction: 0.7195
+    closed_porosity: 0.2805
+    holes_at_least_8_pixels: 91
+    material_absorption_quantiles: [0.9613, 2.1992, 3.8335, 5.7186]
+    matrix:<SOURCE_FILE_REDACTED>
+  sample_values_source: results/<SOURCE_FILE_REDACTED>
+  proposed_template_standard_deviation_reduction:
+    detector_spacing: 0.5619
+    start_angle: 0.5060
+    center_x: 0.2215
+    center_y: 0.3784
+model_selection:
+  major_candidate_count: 3
+  baseline_first: true
+  selected_candidate: fixed_step_projection_refinement_plus_nonnegative_sirt20
+  free_angle_step:
+    decision: reject
+    reason: 留出NRMSE 0.0204 高于固定步长的 0.0200
+  status: pass
+validation:
+  input_identity: pass
+  code_rerun: pass
+  template_pixel_truth: pass
+  heldout_angles: pass
+  boundary_checks: pass
+  nonnegativity: pass
+  csv_xls_cellwise_consistency: pass
+  monte_carlo_reproducibility: pass
+  paper_number_traceability: pass
+  latex_compile: needs_review
+  mathematical_correctness: needs_review
+  external_instrument_validity: needs_review
+evidence_layers:
+  file_identity:
+    status: pass
+    evidence: input SHA-256 recorded in data-audit.md and reproducibility.yaml
+  execution_reproduction:
+    status: pass
+    evidence: run_all.ps1 and results/verification.json
+  internal_invariants:
+    status: pass
+    evidence: projection mass conservation, nonnegative output, 256×256 dimensions
+  heldout_performance:
+    status: pass
+    evidence: fixed/free angle-step validation in results/model-comparison.json
+  external_validity:
+    status: needs_review
+    evidence: no independent real-instrument repeat or unknown-object truth
+limitations:
+  - status: needs_review
+    item: 增益跨样品恒定只由题意支持，缺少独立标准样品。
+  - status: needs_review
+    item: 附件5背景扣除假定边缘无目标投影。
+  - status: needs_review
+    item: 面积、孔数和孔隙率依赖0.20/0.50阈值。
+  - status: needs_review
+    item: 蒙特卡洛未覆盖坏道、散射和相关漂移。
+  - status: needs_review
+    item: 无XeLaTeX，尚未编译并逐页人工检查PDF。
+required_artifacts:
+  problem-analysis.md: pass
+  data-audit.md: pass
+  assumptions.yaml: pass
+  variables.yaml: pass
+  model-selection.md: pass
+  solution-report.yaml: pass
+  reproducibility.yaml: pass
+  code: pass
+  results: pass
+  figures: pass
+  paper/main.tex: pass
+  paper/paper.md: pass
+training_memory:
+  source_status: provisional_training
+  cards_inspected: 3
+  cards_used: 2
+  decisions:
+    TM-001-EVIDENCE-LAYERS: adopt
+    TM-002-TIME-ORDERED-VALIDATION: reject
+    TM-007-FIT-EVALUATE-SEPARATION: adapt
+  record: reports/training-memory-usage.md

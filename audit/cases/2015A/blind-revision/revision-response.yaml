@@ -1,0 +1,5 @@
+status: exported_from_historical_record
+source_artifact: revision-response.md
+audit_finding_count: 10
+resolved_ratio: null
+note: 不同年份的历史修订记录结构不统一，不能可靠自动计算解决比例。

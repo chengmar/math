@@ -1,0 +1,163 @@
+phase: solve
+case_id: 2007A
+skill: "$cumcm-a-solve"
+overall_judgment: needs_review
+scope:
+  phase_lock_judgment: pass
+  blind_solution_judgment: pass
+  network_search_used: false
+  external_reference_used: false
+  other_phase_skill_used: false
+  frozen: false
+  audited: false
+  reflected: false
+  evaluated: false
+coverage:
+  - requirement: "建立中国人口增长数学模型"
+    judgment: pass
+    evidence: "市/镇/乡三状态两性单岁队列模型；code/solve_population.py"
+    paper_location: "第4节"
+  - requirement: "先做简单基线并比较候选"
+    judgment: pass
+    evidence: "持久性基线、无城市化队列、多状态队列；2005留出综合分数7.515、5.916、4.985"
+    paper_location: "第2节与表1"
+  - requirement: "中短期趋势"
+    judgment: pass
+    evidence: "2010、2020、2030关键结果；results/<SOURCE_FILE_REDACTED>"
+    paper_location: "第5节表4"
+  - requirement: "长期趋势"
+    judgment: pass
+    evidence: "2050、2100及2005--2100峰值；三种TFR情景"
+    paper_location: "第5节图3与表3"
+  - requirement: "老龄化、出生性别比、城镇化"
+    judgment: pass
+    evidence: "65+/60+、出生性别比归一、守恒迁移均显式建模"
+    paper_location: "第4--5节"
+  - requirement: "模型优点与不足"
+    judgment: pass
+    evidence: "列出可追溯性、留出验证、样本口径、外生参数和失效条件"
+    paper_location: "第7节"
+  - requirement: "代码生成并验证主要结果"
+    judgment: pass
+    evidence: "run_manifest.json、validation.json、generated_numbers.tex"
+    paper_location: "附录"
+data:
+  source_judgment: pass
+  quality_judgment: needs_review
+  core_missing_count: 0
+  percentage_sum_range_pct: [99.93, 100.05]
+  anomaly_years: [2003]
+  anomaly: "2003年三个地区年龄别生育率共同约缩小十倍；主估计排除，乘10为敏感性分支。"
+  mortality_zero_count: 246
+  mortality_over_300_per_1000_count: 11
+  sample_design_judgment: needs_review
+  base_population_available_in_attachment_2: false
+model:
+  selected: "three_area_two_sex_single_age_cohort_component"
+  selection_judgment: pass
+  state_shape: [3, 2, 91]
+  base_year: 2005
+  horizon_year: 2100
+  open_age_group: "90+"
+  initial_effective_tfr_raw: 1.3678405825573945
+  scenarios_initial_tfr:
+    low: 1.5
+    medium: 1.8
+    high: 2.1
+  mortality_improvement_main_per_year: 0.01
+  mortality_improvement_end_year: 2030
+  birth_sex_ratio_target: 107.0
+  birth_sex_ratio_target_year: 2020
+  annual_rural_reclassification_rate: 0.01176488794747906
+  urban_share_target_2020: 0.53
+  population_scale_anchor:
+    year: 2010
+    population: 1360000000
+    source: "附件1"
+    independent_validation: false
+results:
+  implied_population_2005: 1323946941.7221434
+  medium:
+    peak_year: 2025
+    peak_population: 1436415462.3107066
+    population_2020: 1426229559.9342413
+    population_2030: 1429790837.2358804
+    population_2050: 1322514196.339736
+    population_2100: 893718405.0511559
+    older_65_share_2020: 0.15348942457780726
+    older_65_share_2050: 0.26105359380920207
+    dependency_ratio_2050: 0.68707929874011
+    sex_ratio_2050: 99.8564973800992
+    urban_share_2050: 0.6352161246784526
+  low:
+    peak_year: 2022
+    peak_population: 1386066942.172813
+    population_2050: 1184735939.661076
+    population_2100: 595045028.3713784
+  high:
+    peak_year: 2039
+    peak_population: 1498084790.203077
+    population_2050: 1473379913.781869
+    population_2100: 1293855846.1968231
+validation:
+  mathematical_judgment: pass
+  contextual_judgment: fail
+  overall_judgment: needs_review
+  conservation_judgment: pass
+  max_relative_conservation_residual: 3.60163344297523e-16
+  nonnegative_judgment: pass
+  zero_dynamics_judgment: pass
+  migration_conservation_judgment: pass
+  scenario_ordering_judgment: pass
+  holdout_judgment: pass
+  holdout_best_model: "multistate_cohort"
+  holdout_selected_score: 4.9847879975149345
+  holdout_baseline_score: 7.515035358453738
+  appendix_context:
+    total_population_2020:
+      judgment: pass
+      relative_error: 0.016393406941902555
+    older_60_population_2020:
+      judgment: fail
+      relative_error: 0.28703123659776597
+    older_65_population_2020:
+      judgment: fail
+      relative_error: 0.33482411262296324
+  interpretation: "附件2的2005年龄结构已比附件1既有预测更老；保留附件2结构，不反向校准。"
+robustness:
+  judgment: pass
+  main_driver: "initial_tfr"
+  population_2050_by_tfr:
+    tfr_1_5: 1184735939.661076
+    tfr_1_8: 1322514196.339736
+    tfr_2_1: 1473379913.781869
+  mortality_improvement_range_tested: [0.0, 0.02]
+  urban_target_2020_range_tested: [0.50, 0.56]
+  fixed_birth_sex_ratio_tested: true
+  fertility_2003_x10_tested: true
+limitations:
+  - "附件2没有全国基期总人口，2010尺度锚不是独立验证。"
+  - "抽样设计未知，附件2与附件1老龄结构冲突。"
+  - "迁移无年龄选择，也未表示国际迁移。"
+  - "生育、死亡改善、性别比和城市化均为外生情景。"
+  - "重大政策、疫情、战争和分类口径变化会使长期外推失效。"
+deliverables:
+  problem_analysis: "problem-analysis.md"
+  data_audit: "data-audit.md"
+  assumptions: "assumptions.yaml"
+  variables: "variables.yaml"
+  model_selection: "model-selection.md"
+  reproducibility: "reproducibility.yaml"
+  code_directory: "code/"
+  results_directory: "results/"
+  figures_directory: "figures/"
+  latex_paper: "paper/main.tex"
+  compiled_pdf: "paper/<SOURCE_FILE_REDACTED>"
+  markdown_paper: "paper/paper.md"
+  paper_result_consistency_judgment: pass
+  latex_compile_judgment: pass
+  visual_layout_judgment: pass
+  format_rule_judgment: needs_review
+next_phase:
+  performed: false
+  note: "未冻结、未审计、未复盘、未评测。"

@@ -1,0 +1,94 @@
+phase: blind-revision
+status: needs_review
+workspace: <RUNTIME_ROOT>/2005A/workspaces/blind-revision
+entrypoint: code/run_all.ps1
+commands:
+  - powershell -NoProfile -ExecutionPolicy Bypass -File code/run_all.ps1
+  - powershell -NoProfile -ExecutionPolicy Bypass -File code/run_all.ps1 -RebuildDocx
+  - python code/verify_manifest.py --workspace <RUNTIME_ROOT>/2005A/workspaces/blind-revision
+environment:
+  os: Windows
+  shell: Windows PowerShell
+  python: 3.12.13
+  word_com_required_only_for_optional_docx_rebuild: true
+  unrar: <ABSOLUTE_PATH> Files/WinRAR/UnRAR.exe
+  tex_engine: MiKTeX-XeTeX 4.18 (MiKTeX 26.5 Portable)
+  bibliography_engine: MiKTeX-BibTeX 4.2 (MiKTeX 26.5 Portable)
+python_dependencies:
+  numpy: 2.5.2
+  pandas: 3.0.5
+  scipy: 1.18.0
+  scikit-learn: 1.9.0
+  matplotlib: 3.11.1
+  python-docx: 1.2.0
+  PyYAML: 6.0.3
+randomness:
+  seed: 2005
+  bootstrap_resamples: 5000
+  generator: numpy.random.default_rng
+input_hashes:
+  input/problem/<SOURCE_FILE_REDACTED>: cea35513e302801d4504f3febdf444af783d928c4748bdf91a21724a910e271a
+  input/attachments/<SOURCE_FILE_REDACTED>: ddd7b8e70aa727a2858e2476ddfeda7e3042be09d55b304297f990a203071e4f
+audited_docx_cache_hashes:
+  working/docx/<SOURCE_FILE_REDACTED>: dc43aacd5eaeec044a727575ecd7d822a96040298e9c48d624a628214b76c8ca
+  working/docx/<SOURCE_FILE_REDACTED>: 02086754db45e67bbab256281f86efe005384330b1a1314b54ed718372e588f2
+  working/docx/<SOURCE_FILE_REDACTED>: 1a12e7419fd8413bdbc52deecbf8065f64af15cca513708b52abe29188c7945a
+  working/docx/<SOURCE_FILE_REDACTED>: 085c96e984c3b0308c68468bf6e45b9e4bb4c3649ce4d230349ee20ebf6f6f5f
+  working/docx/<SOURCE_FILE_REDACTED>: 42ba09921283a02667ce91c40b82340c66fcf0484b3bbce0e77c44f23ae7b5fc
+pipeline:
+  - step: phase_lock_check
+    status: pass
+  - step: verify_original_input_and_docx_cache_hashes
+    status: pass
+  - step: extract_docx_tables
+    script: code/extract_docx.py
+    output: working/current-run/extracted
+  - step: build_tidy_data_and_audit
+    script: code/build_data.py
+    output: results/data
+  - step: solve_all_questions_and_generate_figures
+    script: code/solve_case.py
+    output:
+      - results
+      - figures
+      - paper/generated-values.tex
+      - paper/generated
+  - step: exact_rerun_of_canonical_python_chain
+    script: code/check_reproducibility.py
+    status: pass
+    tracked_files: 40
+  - step: independent_numeric_and_boundary_validation
+    script: code/validate.py
+    status: needs_review
+    note: 无fail；外推有效性、处理量因果映射和DOC转换稳定性保留needs_review。
+  - step: compile_paper
+    command: xelatex + bibtex + xelatex + xelatex
+    output: paper/<SOURCE_FILE_REDACTED>
+  - step: record_current_pdf_and_log_hashes
+    script: code/check_paper_build.py
+    status: pass
+  - step: write_final_verification_then_staging_manifest
+    script: code/verify_results.py
+    status: needs_review
+    note: 外部冻结未执行，因此总状态保留needs_review。
+  - step: read_only_manifest_coverage_and_hash_check
+    script: code/verify_manifest.py
+    status: pass
+determinism:
+  canonical_python_outputs_exact_second_run: pass
+  rolling_origin_training_boundaries: pass
+  figures_from_fixed_seed: pass
+  docx_binary_conversion_across_environments: needs_review
+  pdf_binary_hash_across_rebuilds: needs_review
+  note: 当前PDF和日志在编译后立即取哈希；不把TeX元数据造成的跨次字节差异伪装成数值差异。
+manifest:
+  path: results/reproduction-manifest.json
+  staging_tree_coverage: pass
+  excluded_visual_qa_previews: pass
+  self_binding: needs_review
+  authoritative_blind_final_manifest: needs_review
+known_limitations:
+  - 年度水质只有10个样本且监测覆盖变化。
+  - 污水处理量到水质类别的因果响应未由附件标定。
+  - 原始DOC强制重建依赖Word COM；默认入口使用逐文件哈希固定的DOCX缓存。
+  - blind-final及其权威全树清单只能由外部冻结脚本生成。

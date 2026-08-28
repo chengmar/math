@@ -1,0 +1,41 @@
+schema_version: 1
+id: LP-2013A-005
+title: <REFERENCE_TITLE_REDACTED>
+proposal_kind: non_generalizable
+state: candidate
+case_specific: true
+applicable_when:
+  - 审查本题或类似视频交通题的参考实现。
+not_applicable_when:
+  - 不能据此否定所有元胞自动机、神经网络或显著性检验；问题在使用条件和证据，不在方法名称。
+minimum_baseline:
+  - 守恒、单位、有限边界和简单模型必须先通过。
+do_not_generalize:
+  - practice: p_value_above_005_means_equivalence
+    reason: 不拒绝零差异不等于证明等价；需要效应量、区间和等价界限。
+  - practice: fit_and_evaluate_on_same_video_points
+    reason: 训练拟合不能说明新时段或新事故的泛化。
+  - practice: stack_GA_BP_CA_without_baseline_gain
+    reason: 复杂度增加不能替代参数可识别性和留出增益。
+  - practice: sum_lane_cells_as_spatial_queue_length
+    reason: 多车道车辆库存与沿路空间队尾是不同量。
+  - practice: report_only_random_mean_or_hand_widened_interval
+    reason: 会隐藏单次输出离散度、未命中和模型不稳定。
+  - practice: hard_code_observed_arrivals_for_prediction
+    reason: 对原视频拟合良好不等于能预测题 4 新流量情景。
+  - practice: choose_reference_majority_as_truth
+    reason: R1、R2、R3 对题 2 与题 4 本身互相冲突。
+validation:
+  - 对每条禁用经验保留至少一个代码或数值反例。
+  - 若未来材料提供独立证据，只能逐条重新评审，不能整体升级。
+counterexamples:
+  - R2 论文 100 次与源码 50 次。
+  - R3 题设 1500 与代码实际 2355 pcu/h。
+  - R1 终端函数调用实参数量不匹配。
+source_cases: [R1, R2, R3]
+evidence_strength:
+  internal: high
+  external: medium_low
+scope_controls:
+  direct_upgrade_in_reflection: false
+  dummy_input_detected: false

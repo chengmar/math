@@ -1,0 +1,19 @@
+id: TM-021-SCALE-BUDGET-BEFORE-HIGH-FIDELITY
+title: 高保真动态模型前先做尺度与低阶预算
+type: method_card
+status: provisional_training
+source_cases: [2018A]
+source_kind: generalized_reflection_candidate
+origin_year: 2018
+tags: [scale_analysis, low_order_model, dynamics, model_selection, interpretability]
+applicable_conditions: [系统由可分解的串并联过程或局部储存项构成, 高保真动态模型的方向、数量级或主要时间尺度需要独立基线]
+inapplicable_conditions: [强非线性机制改变拓扑且低阶等效量没有稳定定义, 显著多维旁路使串并联预算无法覆盖主导通道]
+minimum_baseline: 统一单位后分别估算各组成部分的阻力型量、容量型量与特征时间，并用最小状态模型检查稳态方向和瞬态数量级
+recommended_action: 先冻结低阶预算及其适用边界，再运行高保真求解；比较稳态极限、扰动方向和至少一个主要时间尺度，并用预算解释设计变量改变的是传输阻力、储存惯性还是边界结构
+why_it_may_help: 低阶预算能在复杂离散化之前暴露单位、符号、拓扑和数量级错误，也能防止把高保真输出误当作缺少机制解释的数字答案
+required_validation: [单位闭合, 稳态极限一致性, 扰动方向一致性, 特征时间数量级, 高保真网格或替代求解复核]
+failure_modes: [低阶模型与高保真模型使用不同输入语义, 看见高保真结果后反向调节预算, 忽略并联旁路或接触结构, 把数量级一致误称为精确验证]
+counterexamples: [稳态总量一致但瞬态主导时间尺度相反, 加入旁路后串联预算预测的设计方向失效]
+complexity_cost: 低到中；通常只需代数预算和少量状态方程，但强非线性问题需额外边界试验
+evidence_summary: 某分层动态设计案例表明，低阶阻力—容量预算可独立核对高保真离散模型并解释设计方向；该经验仍待后续不同动力系统检验
+last_updated: '2026-08-28'

@@ -1,0 +1,70 @@
+phase: solve
+status: pass
+status_reason: "最终run_all.ps1全量重跑通过；XeLaTeX连续两次成功；verification 12/12无fail。"
+network_used: false
+external_references_used: false
+workspace: "<ABSOLUTE_PATH>"
+random_seed: 20240824
+software:
+  powershell: "7.6.4 Core"
+  python: "3.12.13"
+  numpy: "2.5.2"
+  pandas: "3.0.5"
+  scipy: "1.18.0"
+  scikit_learn: "1.9.0"
+  matplotlib: "3.11.1"
+  pyyaml: "6.0.3"
+  xelatex: "MiKTeX-XeTeX 4.18 (MiKTeX 26.5 Portable)"
+  excel_com: "<SOURCE_FILE_REDACTED> files"
+inputs_current_sha256:
+<SOURCE_FILE_REDACTED>: "cf1c174dd4fb781e3f1326fd22cffc7b61758ebcadeb5725c0f60a17dfa0f211"
+<SOURCE_FILE_REDACTED>: "c039e07b470b318f8e0dd861d639a563c83a79d74b131f658a43d22ea7e0089a"
+<SOURCE_FILE_REDACTED>: "3325652a048512c6789fb4ebdd4499ed415acb77953576184bffb10358d44c6e"
+<SOURCE_FILE_REDACTED>: "15438c2878c21b16a3797363d52591467cd2dfcce671f6adc51fae09b4527d7a"
+commands:
+  phase_check: >-
+    python <LAB_ROOT>\.agents\skills\cumcm-a-solve\scripts\check_phase.py
+    --workspace <RUNTIME_ROOT>\2012A\workspaces\solve
+  extract: >-
+    powershell -File code\extract_xls.ps1
+    -Workspace <RUNTIME_ROOT>\2012A\workspaces\solve
+  prepare: >-
+    python code\prepare_data.py
+    --workspace <RUNTIME_ROOT>\2012A\workspaces\solve
+  analyze: >-
+    python code\analyze.py
+    --workspace <RUNTIME_ROOT>\2012A\workspaces\solve
+  compile_paper: "cd paper; xelatex -interaction=nonstopmode -halt-on-error main.tex (run twice)"
+  verify: >-
+    python code\verify.py
+    --workspace <RUNTIME_ROOT>\2012A\workspaces\solve
+  all: >-
+    powershell -File code\run_all.ps1
+    -Workspace <RUNTIME_ROOT>\2012A\workspaces\solve
+determinism:
+  randomized_procedures:
+    - "50,000 sign-flip permutations"
+    - "1,000 ICC/metric bootstrap replicates"
+    - "300 grading perturbations"
+    - "199 model/permutation-null replicates"
+    - "300 coefficient bootstrap replicates"
+  fixed_seed: true
+  extraction_manifest: "results/extracted/manifest.json"
+  final_artifact_manifest: "results/artifact-manifest.json"
+known_reproducibility_limits:
+  - status: needs_review
+    issue: "Legacy XLS extraction requires locally installed Excel COM."
+  - status: needs_review
+    issue: <LONG_QUOTE_REDACTED>
+  - status: needs_review
+    issue: "Only one year and 55 total samples are available; external validity cannot be reproduced without new data."
+final_checks:
+  phase_check: pass
+  extraction_hash_check: pass
+  clean_data_check: pass
+  full_model_rerun: pass
+  xelatex_two_pass: pass
+  pdf_pages: 10
+  internal_verification: pass
+  verification_file: "results/verification.json"
+  artifact_manifest: "results/artifact-manifest.json"

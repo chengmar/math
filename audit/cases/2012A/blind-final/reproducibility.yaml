@@ -1,0 +1,87 @@
+phase: blind-revision
+status: pass
+status_reason: "唯一入口在source/input-only隔离副本中退出0；58个非PDF产物最终字节一致，7份PDF文本和96 dpi渲染页一致；tri-state校验15/15无fail。"
+network_used: false
+external_references_used: false
+other_phase_skill_invoked: false
+workspace_parameter: ". (candidate root; no absolute path required)"
+software:
+  powershell_core: "7.6.4 or compatible 7.x; 7.x required"
+  python: "3.12.13"
+  numpy: "2.5.2"
+  pandas: "3.0.5"
+  scipy: "1.18.0"
+  scikit_learn: "1.9.0"
+  matplotlib: "3.11.1"
+  pyyaml: "6.0.3"
+  xelatex: "MiKTeX-XeTeX 4.18"
+  excel_com: "required only for isolated-copy reading of legacy XLS"
+inputs_current_sha256:
+<SOURCE_FILE_REDACTED>: "6ac7331378ab4b4275b65459d6e094663fee5ca41d1518d010bf5051bb4e0c63"
+<SOURCE_FILE_REDACTED>: "0b6b845715fbe852ddde8b709e592455eba2c845ef0d3f2be144758f674d2fab"
+<SOURCE_FILE_REDACTED>: "fdb95e99c881afaff62375182e4dd5d6ca2858297d2ee6450d747ce3b078d547"
+<SOURCE_FILE_REDACTED>: "15438c2878c21b16a3797363d52591467cd2dfcce671f6adc51fae09b4527d7a"
+commands:
+  all: "pwsh -NoProfile -NonInteractive -File .\\code\\run_all.ps1 -Workspace ."
+  source_check: "python .\\code\\check_workspace.py --workspace ."
+  extract: "pwsh -NoProfile -NonInteractive -File .\\code\\extract_xls.ps1 -Workspace ."
+  prepare: "python .\\code\\prepare_data.py --workspace ."
+  analyze: "python .\\code\\analyze.py --workspace ."
+  compile_paper: "in paper/: xelatex -interaction=nonstopmode -halt-on-error main.tex (twice)"
+  verify: "python .\\code\\verify.py --workspace ."
+  manifest: "python .\\code\\build_manifest.py --workspace ."
+entrypoint_properties:
+  self_contained: pass
+  relative_paths: pass
+  cross_stage_dependency: pass
+  no_network: pass
+  generated_directories_cleared_first: pass
+  source_xls_opened_by_excel: false
+  excel_working_copy_isolation: pass
+determinism:
+  python_hash_seed: 20240824
+  matplotlib_backend: Agg
+  source_date_epoch: 0
+  q1_sign_flip: "exact dynamic programming; no RNG"
+  q2_perturbations: 300
+  spearman_label_permutations: [100000, 200000]
+  model_permutations: 499
+  model_permutation_seed_grid: [1, 42, 20240824, 20240825]
+  repeated_outer_validation: "4 deterministic balanced repeats x 5 folds"
+  inner_validation: "4 deterministic folds refitted per outer training set"
+  extraction_manifest: "results/extracted/manifest.json"
+  artifact_manifest: "results/artifact-manifest.json"
+provenance_events:
+  - status: fail
+    event: "A pre-isolation test showed Excel could alter two working-workspace XLS containers despite read-only open; the guard stopped."
+  - status: pass
+    event: "The affected workspace copies were restored byte-for-byte from the unchanged frozen input copy and verified against the audit-confirmed hashes."
+  - status: pass
+    event: "Final extraction opens only disposable results/ copies; source hashes remain unchanged and 10/10 TSV semantic hashes match."
+validation_artifacts:
+  fold_fit_records: "results/fold_audit.json"
+  unit_invariance: "results/unit_invariance.json"
+  tri_state_verification: "results/verification.json"
+  clean_copy_report: "results/reproduction-test.json"
+final_checks:
+  source_check: pass
+  current_input_hashes: pass
+  source_xls_isolation: pass
+  extracted_sheet_semantics: pass
+  clean_data: pass
+  full_model_rerun: pass
+  fold_isolation: pass
+  unit_invariance: pass
+  xelatex_two_pass: pass
+  internal_verification: needs_review
+  artifact_manifest: pass
+  clean_copy_unique_entrypoint: pass
+known_reproducibility_limits:
+  - status: needs_review
+    issue: "Legacy XLS extraction requires local Excel COM; PowerShell 5 text conversion is not accepted, so the entry requires PowerShell 7.x."
+  - status: needs_review
+    issue: "PDF containers may include toolchain metadata; clean-copy comparison uses extracted text and rendered pages in addition to hashes."
+  - status: needs_review
+    issue: "Only one year and 55 samples are available; external validity requires new data."
+  - status: needs_review
+    issue: "Automated consistency checks do not establish unique mathematical truth."

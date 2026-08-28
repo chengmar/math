@@ -1,0 +1,37 @@
+schema_version: "1.0"
+id: "cumcm-a-2007a-in-sample-fit-is-not-forecast-validation"
+status: "candidate"
+type: "failure_mode"
+title: <REFERENCE_TITLE_REDACTED>
+origin: "learned_from_reference_recalculation"
+claim: >-
+  时间序列模型在建模样本上的残差、关联度或后验差检验，只能说明样本内拟合；没有时间顺序
+  留出时，不得把该误差解释成未来预测误差。
+applicable_when:
+  - "Logistic、GM、指数、回归或机器学习模型用于时间外推。"
+  - "论文报告很小的平均相对误差，但误差来自训练样本。"
+not_applicable_when:
+  - "评价目标明确就是描述性拟合而非预测；仍需避免使用预测措辞。"
+minimum_baseline:
+  name: "滚动一步持久性/趋势基线"
+  requirement: "按时间顺序训练，所有预处理只看训练期。"
+validation:
+  required_checks:
+    - "至少一个真正未来留出点；数据允许时使用多起点滚动验证。"
+    - "主模型与简单基线使用相同误差和同一折。"
+    - "报告均值、离散度、最坏折和排名稳定性。"
+    - "参数必须能回代用于拟合的点；回代失败直接为 fail。"
+  automatic_judgment: "needs_review"
+counterexamples:
+  - "R2 GM(1,1) 的 0.11065% 是 1996—2005 样本内误差；2006—2010 没有观测留出。"
+  - "R2 Logistic 的已报告参数连三个选点都不能回代，最大偏差约 0.20656 亿。"
+  - "BF 单一 2005 留出曾让 M2 看似稳定胜出，滚动到 2004 后排名反转。"
+source_cases:
+  - id: "2007A-R2"
+    evidence: "GM 算术 pass、预测证据 needs_review；Logistic 回代 fail。"
+  - id: "2007A-BF-AUDIT"
+    evidence: "从单折扩展到三折后发现模型排名反转。"
+evidence_strength: "high_within_comparison_set"
+promotion_gate:
+  - "在其他时间序列题复核样本内与滚动误差的差异。"
+  - "形成可复用的时间隔离检查清单。"

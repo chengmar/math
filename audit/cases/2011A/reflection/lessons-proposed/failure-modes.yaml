@@ -1,0 +1,66 @@
+schema_version: 1
+case_id: 2011A
+knowledge_status: candidate
+failure_modes:
+  - id: CAND-2011A-F01
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_status: candidate
+    origin: learned_after_reference
+    detection_status: pass
+    symptom: "多篇材料给出同一区域排序，于是宣称结论被多次独立证实"
+    cause: "共同使用同一附件和相近单调聚合式"
+    mitigation: "把它称为当前比较集内方法一致性；外部真值保持 needs_review"
+
+  - id: CAND-2011A-F02
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_status: candidate
+    origin: learned_after_reference
+    detection_status: pass
+    symptom: "5×8 聚合矩阵产生多个主成分后直接命名交通/工业源"
+    cause: "中心化秩至多 4、样本层级过低、空间和功能区混杂"
+    mitigation: "回到点级数据；把载荷只称共变结构；源名需指纹或排放证据"
+
+  - id: CAND-2011A-F03
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_status: candidate
+    origin: audit_remediation_and_learned_after_reference
+    detection_status: pass
+    symptom: "PDE/Geiger/高斯方程没有标定、边界、损失函数和区间，却给精确源坐标"
+    cause: "方程形式与可辨识证据混淆"
+    mitigation: "先检查域、初边值、量纲、参数来源、结构可辨识和外部留出"
+
+  - id: CAND-2011A-F04
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_status: candidate
+    origin: audit_remediation
+    detection_status: pass
+    symptom: "最大点删除不移动热点，于是标为稳定"
+    cause: "次高值或普通高杠杆点可能更影响核峰竞争"
+    mitigation: "所有样点 LOO、累计删前 k 高值、报告峰换序与位移"
+
+  - id: CAND-2011A-F05
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_status: candidate
+    origin: audit_remediation
+    detection_status: pass
+    symptom: "所有区域共享同一背景扰动，排名 100% 不变"
+    cause: "背景项只产生共同正乘子，是代数恒等"
+    mitigation: "明确恒等性；真正检验区域特异背景场并传播不确定性"
+
+  - id: CAND-2011A-F06
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_status: candidate
+    origin: learned_after_reference
+    detection_status: needs_review
+    symptom: "直接套用阈值，却没有 pH、土地用途、标准版本或背景起点说明"
+    cause: "沟通便利替代了规范核查"
+    mitigation: "标准依赖结果单列；核查适用性；并报起点敏感性"
+
+  - id: CAND-2011A-F07
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_status: candidate
+    origin: independent_blind_and_learned_after_reference
+    detection_status: pass
+    symptom: "PCA/NMF/相关矩阵直接映射到企业、道路或工艺"
+    cause: "缺源端指纹、活动清单、时间顺序和混杂控制"
+    mitigation: "统计标签与物理身份分栏；后者保持 needs_review"

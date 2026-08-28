@@ -1,0 +1,74 @@
+status: pass
+phase: blind-revision
+freeze_status: awaiting_external_freeze
+status_reason: 求解产物、独立验证产物和交付报告的确定性重跑均为pass；外部冻结与论文PDF编译单独保持needs_review
+run_command: python -E -s code/solve.py
+commands:
+  solve: python -E -s code/solve.py
+  verify: python -E -s code/verify_outputs.py
+  deliverables: python -E -s code/check_deliverables.py
+  full_rerun: python -E -s code/repro_check.py
+seeds:
+  base_and_calibration: 2020
+  q3_differential_evolution: [2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029]
+  q4_primary_differential_evolution: [2030, 2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039]
+  q3_sobol: 2520
+  q4_sobol: 2620
+  moving_block_bootstrap: 2097
+environment:
+  python: 3.12.13
+  platform: Windows 11
+  numpy: 2.5.2
+  pandas: 3.0.5
+  scipy: 1.18.1
+  matplotlib: 3.11.1
+  openpyxl: 3.1.5
+numerical_methods:
+  calibration: {dt_s: 0.1, dx_cm: 0.1}
+  global_optimization: {dt_s: 0.2, dx_cm: 0.25}
+  final_constraints_and_objectives: {dt_s: 0.0125, dx_cm: 0.1}
+  q1_curve: {internal_dt_s: 0.005, output_step_s: 0.5}
+  time_update: midpoint_air_exponential_step
+  threshold_crossing: linear_interpolation
+  peak: zero_slope_with_cubic_Hermite_temperature
+  independent_RK45: {output_step_s: 0.005, rtol: 1.0e-9, atol: 1.0e-10, max_step_s: 0.05}
+  convergence_pair: {coarse_dt_s: 0.0125, fine_dt_s: 0.00625, dx_cm: 0.1}
+optimization_evidence:
+  status: pass
+  recorded_runs: 35
+  q3_de_runs: 10
+  q4_primary_de_runs: 10
+  alternative_method: 1024_point_scrambled_Sobol_plus_SLSQP
+  failed_runs_retained: true
+  global_optimality: needs_review
+independent_verification:
+  status: pass
+  metric_oracle_imports_core_or_solve: false
+  analytic_known_triangle: pass
+  full_area_as_q3_mutation_rejected: pass
+  q3_objective_contract: pass
+  RK45: pass
+  original_process_constraints: pass
+  q4_epsilon_candidates: pass
+  step_convergence: pass
+  worst_q3_rising_area_difference_C_s: 0.060298763651417175
+deterministic_rerun:
+  status: pass
+  solve_files_compared: 37
+  verification_files_compared: 2
+  deliverable_files_compared: 1
+  solve_payload_sha256_match: pass
+  verification_sha256_match: pass
+  deliverable_sha256_match: pass
+  command_exit_status: pass
+paper:
+  source_consistency: pass
+  compile_status: needs_review
+  compile_reason: 当前环境尚未检测并运行可用TeX引擎
+hash_policy:
+  status: pass
+  current_document_hashes_embedded: false
+  reason: 避免在外部冻结前写入陈旧哈希；最终清单和树哈希由外部冻结脚本生成
+notes:
+  - blind-v1保持原样；当前工作区等待外部脚本生成blind-final。
+  - 所有自动判断只使用pass、fail或needs_review。

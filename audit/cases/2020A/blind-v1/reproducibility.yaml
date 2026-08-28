@@ -1,0 +1,60 @@
+status: pass
+phase: solve
+freeze_status: not_frozen
+run_command: python code/solve.py
+seed:
+  calibration_and_q3: 2020
+  q4: 2021
+  neighbourhood_validation: 2041
+commands:
+  solve: python code/solve.py
+  verify: python code/verify_outputs.py
+  deliverables: python code/check_deliverables.py
+  full_rerun: python code/repro_check.py
+environment:
+  python: 3.12.13
+  platform: Windows 11
+  numpy: 2.5.2
+  pandas: 3.0.5
+  scipy: 1.18.1
+  matplotlib: 3.11.1
+numerical_grids:
+  calibration: {dt_s: 0.1, dx_cm: 0.1}
+  global_optimization: {dt_s: 0.2, dx_cm: 0.25}
+  final_constraints: {dt_s: 0.05, dx_cm: 0.1}
+  q1_csv: {dt_s: 0.005, output_step_s: 0.5}
+  independent_RK45: {rtol: 1.0e-9, atol: 1.0e-10, max_step_s: 0.05}
+rerun_check:
+  status: pass
+  procedure: 运行code/repro_check.py，对10个关键输出取SHA-256，完整重跑solve.py后再次取哈希并逐项比较，然后重跑独立验证和交付检查
+  files_compared: 10
+  identical_files: 10
+independent_verification:
+  status: pass
+  result_csv_max_difference_C: 0.004917520719
+  step_convergence_status: pass
+  key_metric_status: pass
+paper_compile:
+  status: needs_review
+  reason: 当前环境未检测到XeLaTeX或pdfLaTeX；只完成源码和数字一致性检查
+hashes:
+  code_core_py: 59dcd059ab6618bcefd3b1af7200891177d386b8cea8ba99c30665fa394ad0ea
+  code_solve_py: 6965772ff051e4b467a7a92855a00ba0ffb1e1aaf9ec486f3a1fe6fcfe9c6c4a
+  code_verify_outputs_py: 7835e07bfd22e9083cac7e6f9c5ed367e4d22718282f9213b75b438d701b2251
+  code_check_deliverables_py: 113daf1e9b06be3a737d709e14ea35976c4268bdf349f2ded9ee18d9d177812b
+  code_repro_check_py: 8773e10fd2542c8da189f63f9d6dbc6d92e8099845de86fa2917024545bb75bd
+  candidate_comparison_csv: c13e1d21f11cba8d58a2fc4ceb5f27b5d132dee03888f4abc1e9dede986ff631
+  calibration_json: fa378f1d9c84c862968263ecaf69d89216e904883546de05a4ce66334318e4de
+  result_csv: 5101138b0b568dff116df0cb788fb628405ded68e22de4f3cecbc22b75f755dd
+  q1_summary_json: 2825772818c5d6d78fa74af5f9e5088822c5d23ca9fb053e80df14e11ae40eef
+  q2_summary_json: 8bb5c156d2c32b06465f1e1051812dc72371e41480b64058d078536da25cd4ef
+  q3_summary_json: 2ce5374bcfe6bb5fe30d708a7394c10c8457943bc0065b8018bed98759d64527
+  q4_summary_json: 72c0378397454703115b7868e4ab9449f1fd66018a8a18ddfae468ec8be52666
+  all_results_json: b1a19aec685e8f8c133fef4d64bc3374c9709e05ebb0763c0f6a2905d3e8e199
+  verification_json: 9a28db3cae5b71ae992063bc28131f025aa8749f60cea252d199348bde943312
+  rerun_hashes_json: f59b39f875c730a15828c51193b54162acee75c2385fe60e901d109944be4d2e
+  paper_main_tex: 147363130560cd579f82cc0156d1dc1bb33b248fc44c3cea6a84601a2f6b1140
+  paper_paper_md: 65562dad30437eb215ee5ae88cfb0948eee2be5f8b26dfcfdf08dae91ba2bccb
+notes:
+  - 图像由相同脚本生成，但复现判定以承载关键数字的CSV/JSON和TeX宏为准。
+  - 全局优化器达到固定代数上限；局部SLSQP收敛且5000点邻域未发现更优可行点，但这不是全局最优证明。

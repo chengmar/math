@@ -1,0 +1,43 @@
+schema_version: 1
+proposal_id: "CP-2015A-002"
+proposal_state: "candidate"
+title: <REFERENCE_TITLE_REDACTED>
+origin: "reflection_cross_reference_analysis"
+origin_status: "pass"
+summary: "比较多个反演答案时，把公开候选送入同一个写明版本的前向模型，并只重拟合允许的干扰参数，以区分结果差异与模型/目标函数差异。"
+applicable_when:
+  - "各方案给出足以固定候选的日期、地点或其他核心参数。"
+  - "原始观测可用，坐标、时区和单位能统一。"
+  - "共同前向模型的选择和版本能够明确披露。"
+not_applicable_when:
+  - "各方案处理的是不同观测量且无法建立可逆映射。"
+  - "时间基准、坐标手性或单位无法恢复。"
+  - "共同模型被误当作无争议真值。"
+minimum_baseline:
+  - "仅比较论文报告的经纬度差。"
+  - "仅引用各论文自己的目标函数值。"
+validation_requirements:
+  - "先复现至少一个锚点方案的公开目标值。"
+  - "同时报告长度、方向或端点等不同目标的结果。"
+  - "对太阳公式、时区、手性和尺度约定做版本消融。"
+  - "明确区分模型相容性与外部真值误差。"
+counterexamples:
+  - "长度目标可使某候选残差很小，而方向数据使端点残差显著增大。"
+  - "两个太阳公式都能内部复现，却给出不同的太阳正午和最短影长。"
+  - "参考候选使用人工地理先验，而共同模型没有该先验。"
+source_case:
+  case_id: "2015A"
+  source_artifact: "comparison-matrix"
+  reference_ids: ["R1", "R2", "R3", "R4"]
+evidence_strength:
+  anchor_reproduction_status: "pass"
+  cross_reference_rescoring_status: "pass"
+  model_independence_status: "fail"
+  external_truth_status: "needs_review"
+evidence:
+  - "共同公式复现 Blind 五个候选 RMSE 到 1e-6 mm 内。"
+  - "R2 附件1候选的长度 RMSE 为 0.118617 mm，但端点 RMSE 为 5.792958 mm。"
+promotion_requirements:
+  - "使用第二个独立前向实现复核。"
+  - "至少加入一个已知真值候选。"
+  - "预先注册模型版本与允许重拟合的参数。"

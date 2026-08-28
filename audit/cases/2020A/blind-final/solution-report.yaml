@@ -1,0 +1,144 @@
+case_id: 2020A
+phase: blind-revision
+skill: $cumcm-a-solve
+status: needs_review
+status_reason: 名义四问、独立指标oracle和确定性数值验证可达pass；严格全局最优性、参数联合不确定性、外部有效性及PDF编译仍为needs_review，联合扰动工程稳健性为fail
+freeze_status: awaiting_external_freeze
+scope_compliance:
+  status: pass
+  network_search_used: false
+  other_phase_skill_used: false
+  cross_phase_resume_used: false
+  forbidden_reference_used: false
+  allowed_inputs_only: true
+  blind_v1_modified: false
+  inputs:
+    - input/problem/<SOURCE_FILE_REDACTED>
+    - input/data/<SOURCE_FILE_REDACTED>
+    - input/data/<SOURCE_FILE_REDACTED>
+    - blind-v1/
+    - audit/
+model:
+  selection_status: pass
+  selected: M2
+  selection_scope: observed_trajectory_candidate_ranking
+  parameters:
+    lambda_up_cm: 11.28230690218149
+    lambda_down_cm: 26.556510166505227
+    k_ref_s_inv: 0.02024379861241796
+    beta: 0.4360916355455869
+    k_cool_s_inv: 0.011536157202347953
+  fit:
+    rmse_C: 1.7268718680587056
+    mae_C: 1.0471105963088092
+    max_abs_error_C: 5.403259566359566
+    rolling_mean_rmse_C: 3.6696658990006896
+    rolling_worst_rmse_C: 5.52681513092842
+  residual_independence:
+    status: needs_review
+    lag1_correlation: 0.9994743486123316
+    durbin_watson: 0.0010523894494829092
+    sign_runs: 10
+    standard_bic_interpretation: needs_review
+  identifiability:
+    status: needs_review
+    corr_log_lambda_down_log_k_cool: 0.9851009698747993
+    corr_log_lambda_up_log_k_ref: 0.9070076297708801
+questions:
+  q1:
+    nominal_status: pass
+    settings_C_and_speed: [173.0, 198.0, 230.0, 257.0, 78.0]
+    marker_temperatures_C:
+      zone_3_mid: 130.8355212847726
+      zone_6_mid: 168.27138015273417
+      zone_7_mid: 186.69006354740253
+      zone_8_end: 225.93492817803485
+    result_csv: results/<SOURCE_FILE_REDACTED>
+    result_rows: 671
+  q2:
+    nominal_status: pass
+    uncertainty_status: needs_review
+    maximum_speed_cm_min: 92.76436236092935
+    production_floor_0_1_cm_min: 92.7
+    production_recommendation_status: needs_review
+    active_constraint: peak_lower
+    peak_C: 240.00000000000009
+    rise_150_190_s: 69.17104487752928
+    above_217_s: 55.76492842136773
+  q3:
+    nominal_process_status: pass
+    global_optimality_status: needs_review
+    objective_key: q3_rising_area_C_s
+    objective_definition: integral_from_217_upcrossing_to_interpolated_peak_of_T_minus_217
+    settings:
+      zones_1_5_C: 175.0853087606882
+      zone_6_C: 185.00000000024488
+      zone_7_C: 225.00000000001845
+      zones_8_9_C: 262.1249458221516
+      speed_cm_min: 99.99818166263232
+    q3_rising_area_C_s: 309.29547853045676
+    cooling_area_diagnostic_C_s: 316.7604478871726
+    total_area_diagnostic_C_s: 626.0559264176293
+    peak_C: 239.99999999991624
+    above_217_s: 45.489957076061216
+    rise_150_190_s: 60.0000000004255
+    fixed_engineering_margin_used: false
+  q4:
+    nominal_process_status: pass
+    global_optimality_status: needs_review
+    primary_objective_key: symmetry_area_abs_C_s
+    auxiliary_metric: symmetry_ratio
+    area_cap_metric: q3_rising_area_C_s
+    primary_epsilon: 1.05
+    epsilon_values: [1.0, 1.025, 1.05, 1.10]
+    area_cap_C_s: 324.76025245697963
+    settings:
+      zones_1_5_C: 175.07958495248963
+      zone_6_C: 185.0
+      zone_7_C: 225.0
+      zones_8_9_C: 262.1222032473828
+      speed_cm_min: 99.9898270898445
+    q3_rising_area_C_s: 309.392893684485
+    symmetry_area_abs_C_s: 20.498440969141505
+    symmetry_ratio: 0.0327398780869258
+    duration_imbalance_s: 1.2433158507783446
+validation:
+  independent_metric_oracle: pass
+  q3_full_area_mutation_rejected: pass
+  analytic_geometry_tests: pass
+  independent_RK45: pass
+  step_convergence: pass
+  q4_epsilon_oracle: pass
+  boundary_extremes: pass
+  optimization_run_recording: pass
+  q3_de_seeds: 10
+  q4_primary_de_seeds: 10
+  alternative_global_screen: scrambled_Sobol_plus_SLSQP
+  deterministic_rerun: pass
+  paper_source_consistency: pass
+  paper_compile: needs_review
+robustness:
+  status: fail
+  single_factor_pass_counts_of_15:
+    Q2: 8
+    Q3: 5
+    Q4: 4
+  joint_corner_pass_counts_of_128:
+    Q2: 62
+    Q3: 56
+    Q4: 56
+  probability_interpretation_allowed: false
+external_validity:
+  status: needs_review
+  reason: 仅有一条实验工况，未提供独立速度或温区组合实验
+deliverables:
+  required_files_status: pass
+  code: code/
+  results: results/
+  figures: figures/
+  paper: paper/
+limitations:
+  - 参数把板材、元件、边界换热和风机状态合并，换板型或负载需重新校准。
+  - 残差强自相关且参数局部相关高，不能从稠密采样点数推导窄置信区间。
+  - Q2--Q4名义解贴近制程下界，不是经联合不确定性证明的生产推荐。
+  - Q4的105%面积容忍度是显式工程判断；严格全局最优性仍需复核。

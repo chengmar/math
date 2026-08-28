@@ -1,0 +1,74 @@
+schema_version: 1
+id: CAND-2018A-RC-BUDGET
+status: candidate
+type: case_specific_information
+title: <REFERENCE_TITLE_REDACTED>
+source_case: 2018A
+origin_classification: reference_triggered_after_blind
+sources:
+  blind:
+    - blind-final/blind-v1/model-selection.md
+    - blind-final/paper/paper.md
+  approved_references:
+    - REF-01
+    - REF-03
+claim_scope: 仅适用于一维、常物性、理想接触、IV 层纯导热的名义模型。
+facts:
+  calibration_case:
+    thickness_mm: {I: 0.6, II: 6.0, III: 3.6, IV: 5.0}
+    layer_thermal_resistance_m2K_W:
+      I: 0.007317073170731706
+      II: 0.016216216216216217
+      III: 0.08
+      IV: 0.17857142857142858
+    resistance_fraction:
+      I: 0.025937436366488962
+      II: 0.05748296708248906
+      III: 0.283582637606946
+      IV: 0.6329969589440759
+    layer_areal_heat_capacity_J_m2K:
+      I: 247.86
+      II: 10861.2
+      III: 461.04912
+      IV: 5.9295
+    heat_capacity_fraction:
+      I: 0.02141146968633731
+      II: 0.9382484247448027
+      III: 0.039827883711742486
+      IV: 0.0005122218571174738
+  q3_nominal_case:
+    thickness_mm: {I: 0.6, II: 19.3, III: 3.6, IV: 6.4}
+    II_heat_capacity_fraction: 0.9799037481317946
+    IV_resistance_fraction: 0.6210325126076867
+  boundary_thermal_resistance_m2K_W:
+    outer_1_over_h: 0.008334766773875874
+    inner_1_over_h: 0.11961642394535218
+interpretation:
+  - II 层在名义模型中主导服装面热容，因此增厚主要增加瞬态延迟。
+  - IV 层在服装层导热热阻中占主导，因此增厚对稳态隔热更直接。
+  - 内侧边界热阻与 IV 层热阻同量级，不能把稳态响应归因于 IV 层单一因素。
+applicable_when:
+  - 分层系统可近似为一维导热。
+  - 物性在研究温区内可视为常数。
+  - 需要在高阶 PDE 求解前解释层作用数量级。
+not_applicable_when:
+  - 空气隙自然对流、辐射或厚度相关并联通道显著。
+  - 接触热阻、热湿耦合、横向热桥或人体主动热调节显著。
+minimum_baseline:
+  method: 对每层计算 R_j=d_j/k_j 与 C_j=rho_j*c_j*d_j，并同时列出 1/h_out、1/h_in。
+  status: pass
+validation:
+  - check: 单位与逐层求和
+    status: pass
+  - check: 与冻结 PDE 的层厚扰动方向一致
+    status: pass
+  - check: 跨空气隙结构的稳定性
+    status: needs_review
+counterexamples:
+  - 若 IV 层出现并联热导，R_IV=d4/k_air 的解释会失效。
+  - 若 II 层厚度很大，其自身热阻也不再可忽略，不能只称为热容层。
+evidence_strength: needs_review
+evidence_reason: 数值由冻结名义物性直接复算且量纲明确，但外部实验与其他结构未验证。
+promotion_requirements:
+  - 在至少两种 d2、两种 d4 和两种环境温度下核对 R–C 解释与实测瞬态/稳态响应。
+  - 对辐射、对流和接触热阻候选重复预算并确认结论方向。

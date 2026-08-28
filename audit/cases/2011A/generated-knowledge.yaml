@@ -1,0 +1,20 @@
+case_id: 2011A
+status: candidate_only
+candidate_count: 35
+machine_verified_count: 0
+verified_count: 0
+exported_files:
+- file: case-specific-information.yaml
+  sha256: 1f116bcae72abbd11f16761ca635801e197c2f32557d61190e0047995ec80e89
+- file: expression-lessons.yaml
+  sha256: f6024e0e58a6ef2f558c0f1457c8e154e33e2fe43fdb229d92c3dc616f8ebedd
+- file: failure-modes.yaml
+  sha256: 40541ad38de1ce2b2bf753be624e96ef058be7474089aa30a1d0ad8bb4fe2823
+- file: method-cards.yaml
+  sha256: f49ab017ed4abeb626936e762fbae3b443879953c0053d3b186236380f429a81
+- file: non-generalizable.yaml
+  sha256: c6e8db5a544cbfacf644824c9ba4331218a5e577f3a940c717cd6e8021ea2813
+- file: README.md
+  sha256: 5772ca1544acf08d518b64e6775bdd4b07ee2b61fc30fb7b33899dd30e513f85
+- file: validation-patterns.yaml
+  sha256: c18438665a7543cb574b1ec48acf4646a276f0beb7193fa688ae19fb64030db3

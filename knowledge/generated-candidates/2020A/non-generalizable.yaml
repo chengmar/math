@@ -1,0 +1,21 @@
+schema_version: 1
+case_id: 2020A
+knowledge_status: candidate
+promotion_status: needs_review
+items:
+  - item: 435.5 cm 炉长、11 个温区和本题全部位置边界。
+    reason: 题目专属几何。
+  - item: 最终五个参数及 Q1--Q4 的全部数值结果。
+    reason: 依赖单一板型、单一实验和当前模型。
+  - item: Q4 使用 105% 面积上限。
+    reason: 可替换工程判断，不是普适常数；本题中上限还不活跃。
+  - item: 0.0125/0.00625 s 网格与 0.1 ℃·s 面积容差。
+    reason: 由本题尺度和实现选定，迁移前须重做收敛。
+  - item: 5 个参数 ±5%、设定 ±1 ℃、速度 ±0.5 cm/min 的 128 角点。
+    reason: 压力测试集合不是统计分布，也不代表其他工艺公差。
+  - item: M2 在当前三个候选中排名第一。
+    reason: 只相对当前轨迹与预声明候选；不能推广成 PDE 或其他灰箱模型必然较差。
+  - item: 三篇批准材料的 Q2/Q3 数字范围。
+    reason: 比较集有限且参考数值不可执行复现。
+  - item: 使用 GA、SA、爬山、A* 或 DE 的算法名称本身。
+    reason: 通用工具，不构成可推广的创新经验；关键在目标合同与证据设计。

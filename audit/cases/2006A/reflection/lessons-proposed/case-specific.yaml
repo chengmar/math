@@ -1,0 +1,43 @@
+schema_version: 1
+case_id: 2006A
+knowledge_status: candidate
+dummy_inputs_used: false
+facts:
+  - id: CS-2006A-001
+    claim: "2001-2005逐课程书号总量每年均为500，故盲解取2006预算500。"
+    evidence_status: pass
+    source: frozen_attachment_4
+    generalizable: false
+  - id: CS-2006A-002
+    claim: "2006逐课程申请合计750，九个总计行合计784，差34。"
+    evidence_status: pass
+    source: frozen_attachment_4
+    generalizable: false
+  - id: CS-2006A-003
+    claim: "九社硬人力上限为114,114,120,102,111,72,44,63,72。"
+    evidence_status: pass
+    source: frozen_attachment_5
+    generalizable: false
+  - id: CS-2006A-004
+    claim: "附件文字把半数保障施加到分社申请合计，而非每门课程。"
+    evidence_status: pass
+    source: frozen_attachment_4_text
+    generalizable: false
+  - id: CS-2006A-005
+    claim: "冻结盲解九社方案为55,48,120,69,72,53,22,30,31。"
+    evidence_status: pass
+    source: frozen_results_and_independent_recalculation
+    generalizable: false
+  - id: CS-2006A-006
+    claim: "冻结盲解2005留出WAPE为22.7894%，问卷增强比纯趋势约改善0.6195个百分点。"
+    evidence_status: pass
+    source: frozen_holdout_table_independent_recalculation
+    generalizable: false
+  - id: CS-2006A-007
+    claim: "四篇批准参考均无随附代码，不能声称完整复现。"
+    evidence_status: pass
+    source: approved_references_inventory
+    generalizable: false
+promotion_requirements:
+  - "不得把本文件的任何数值迁移到其他题目。"
+  - "若原始附件版本变化，必须重新计算全部事实。"

@@ -1,0 +1,203 @@
+schema_version: 1
+case_id: "2009A"
+phase: audit
+overall_status: fail
+summary:
+  critical: 0
+  major: 6
+  minor: 1
+  suggestion: 1
+findings:
+  - id: AUD-001
+    status: fail
+    severity: major
+    category: input_provenance
+    evidence: >-
+      当前 audit/<SOURCE_FILE_REDACTED> SHA-256 为
+      d012ec8a7130e8a265240941d27fb660fb84454e6ecc3ec436bab3d969d3cb05，
+      冻结副本及 FROZEN 清单记录为
+      2b217b9c96afd13a6d30934028be766883defdfb891c051826b70f3c2d4629bc。
+      两者提取出的 468 行 time/torque/speed 和四个工况值逐值一致，但在新副本上运行
+      code/extract_data.ps1 后，文件哈希从 d012... 变为 1b6f...，大小仍为 65024；
+      results/input-metadata.json 记录的是打开后的 1b6f...。代码在第 27 行以 Excel COM
+      ReadOnly=true 打开工作簿，却到第 95 行才计算 source_sha256。
+    affected_files:
+      - input/data/<SOURCE_FILE_REDACTED>
+      - frozen-solution/input/data/<SOURCE_FILE_REDACTED>
+      - frozen-solution/code/extract_data.ps1
+      - frozen-solution/results/input-metadata.json
+      - frozen-solution/results/run-manifest.json
+      - frozen-solution/reproducibility.yaml
+    reason: >-
+      原始输入身份在解析前没有被固定；旧版 Excel 的所谓只读打开可改变容器字节，导致
+      run manifest 把读取后的工作簿当作原始输入。数值结果未受影响，但原始附件的哈希溯源与
+      “never modifies it”声明不成立。
+    recommended_fix: >-
+      在启动 Excel 前对原始附件计算并保存 SHA-256；只对单独临时副本做 COM 提取，提取后校验
+      原件哈希未变；记录 pre-open 与 post-open 哈希及数值语义哈希。重新从当前原始 input 建立
+      clean freeze，且不要把 Excel 规范化后的副本冒充原件。
+    requires_human_review: false
+
+  - id: AUD-002
+    status: fail
+    severity: major
+    category: reproduction_pipeline
+    evidence: >-
+      文档化入口 code/run_all.ps1 只调用 extract_data.ps1、solve.py、XeLaTeX 和 verify.py。
+      干净源副本运行后生成 20 个产物，而冻结目录中有 61 个结果/图/PDF 类产物，其中 41 个不能由
+      该入口再生。未再生集合包括 results/summary.json、<SOURCE_FILE_REDACTED>、
+<SOURCE_FILE_REDACTED>、四幅另一管线图和 paper/build 下全部文件。并且
+      results/summary.json 报告 Q5=0.0516199%、Q6=0.000367578%，而权威 metrics.json/论文分别为
+      0.0220870% 和 0.00000163763%。paper 目录还保留一套 main.tex 未引用的控制章节。
+    affected_files:
+      - frozen-solution/code/run_all.ps1
+      - frozen-solution/code/analyze.py
+      - frozen-solution/results/summary.json
+      - frozen-solution/results/metrics.json
+      - frozen-solution/paper/main.tex
+      - frozen-solution/paper/sections/05-digital-control.tex
+      - frozen-solution/paper/sections/05-solution-validation.tex
+      - frozen-solution/figures/<SOURCE_FILE_REDACTED>
+      - frozen-solution/paper/build/<SOURCE_FILE_REDACTED>
+    reason: >-
+      冻结包混合了至少两条模型/论文生成链，且没有逐产物 provenance。相互冲突的结构化结果都标为
+      pass，读者无法仅凭冻结包判断哪一套是最终解答，也无法用唯一命令重建整个冻结产物集合。
+    recommended_fix: >-
+      只保留一个权威入口和一套结构化结果；删除或明确迁移旧管线产物。为每个冻结产物记录 producer、
+      command、inputs 和 SHA-256；完成一次从空输出目录开始的全量构建，并要求冻结产物集合与构建集合相等。
+    requires_human_review: false
+
+  - id: AUD-003
+    status: fail
+    severity: major
+    category: paper_code_consistency
+    evidence: >-
+      frozen-solution/paper/main.tex 第 20--21 行含“参考文献”节及盲解说明；冻结 paper/<SOURCE_FILE_REDACTED>
+      的文本提取不含该标题和说明，冻结 main.aux 也缺少 section 13。干净重编译 PDF 包含该节。
+      冻结 results/verification.json 第 111 行记录 main.tex 哈希 fbfb2b3c...，而 FROZEN 清单和实际文件
+      为 767633b7...；其 overall_status 仍为 pass。delivery-check.json 记录的 PDF 大小 498776 字节
+      对应 paper/build/<SOURCE_FILE_REDACTED>，而最终 paper/<SOURCE_FILE_REDACTED> 为 623351 字节。
+    affected_files:
+      - frozen-solution/paper/main.tex
+      - frozen-solution/paper/<SOURCE_FILE_REDACTED>
+      - frozen-solution/paper/main.aux
+      - frozen-solution/results/verification.json
+      - frozen-solution/results/delivery-check.json
+      - frozen-solution/code/verify.py
+    reason: >-
+      冻结 PDF 不是冻结 TeX 源的当前构建，且验证报告只记录哈希、不把记录值与冻结源交叉校验，因而
+      错误地给出 pass。数学正文差异目前只涉及缺失的参考资料说明，但交付物一致性本身已经失败。
+    recommended_fix: >-
+      清空论文中间产物后由唯一入口重编译；以 PDF 文本/书签和源依赖哈希做 freshness 校验；让 verifier
+      比较而非仅记录 main.tex/PDF 哈希。重建 verification.json 后再重新冻结。
+    requires_human_review: false
+
+  - id: AUD-004
+    status: fail
+    severity: major
+    category: constraint_enforcement
+    evidence: >-
+      solve.py 第 204--206 行用 max(abs(estimate), 1.0) 计算扭矩限幅，第 230--234 行却以实际
+      estimate 反算等效惯量。取预测扭矩 0.1 N·m、raw motor torque=1 N·m 时，代码限为
+      0.625 N·m，但反算等效指令为 48*0.625/0.1=300 kg·m²，超过论文声称的 ±30 kg·m² 十倍。
+    affected_files:
+      - frozen-solution/code/solve.py
+      - frozen-solution/paper/sections/03-assumptions-symbols.tex
+      - frozen-solution/paper/sections/05-solution-validation.tex
+      - frozen-solution/results/metrics.json
+    reason: >-
+      低扭矩保护下执行的不是所声明的等效惯量约束；接近零扭矩时该比值还会病态或未定义。名义数据的
+      扭矩不低于 40 N·m，所以现有回放没有触发此错误，但控制器边界条件不完整。
+    recommended_fix: >-
+      对 abs(M_hat) 大于明确阈值时严格使用 |u|<=30*|M_hat|/J_e；低扭矩区切换到独立的绝对扭矩、
+      电流和变化率限制，并定义零扭矩/低速模式。验证器应直接断言每一时段的等效指令满足约束。
+    requires_human_review: false
+
+  - id: AUD-005
+    status: fail
+    severity: major
+    category: numerical_stability_and_robustness
+    evidence: >-
+      Q6 在 solve.py 第 193--197 行使用 -J_m*e/h 的一步死拍校正。h=0.01 s、M_hat=100 N·m 时，
+      仅 -0.09663 rpm 的速度测量误差即可触发正向 ±30 kg·m² 饱和，+0.24442 rpm 可触发反向饱和。
+      对附表做 100 个固定种子的速度噪声压力测试：sigma=0.1 rpm 时中位数 25 个区间限幅、峰值电流
+      中位数 270.12 A；sigma=0.5 rpm 时中位数 250 个区间限幅。若实际机械惯量 J_a 与设计 J_d 不同，
+      线性误差极点为 1-J_d/J_a；gamma=1 时只有 J_a>17.5 kg·m² 才渐近稳定。J_a=0.5 J_d 的
+      数据回放 466 个区间全限幅，J_a=0.1 J_d 时能量误差 129.69%、最大速度误差 1015 rpm。
+      40/300 N·m 每 10 ms 交替的非负扭矩反例中，Q6 有 49 次限幅、峰值 227.5 A，误差反而高于 Q5。
+    affected_files:
+      - frozen-solution/code/solve.py
+      - frozen-solution/paper/sections/05-solution-validation.tex
+      - frozen-solution/paper/sections/06-evaluation-conclusion.tex
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+    reason: >-
+      “稳健性”结论只覆盖 5--50 ms、机械惯量 ±5% 和扭矩比例偏差，没有测试最敏感的速度噪声、
+      快速扭矩变化或稳定域。反馈增益随 1/h 增大，会把很小的速度误差转化为大电流；题面未给硬件边界，
+      因而物理可行性仍需人工确认。
+    recommended_fix: >-
+      推导并声明 J_a、gamma、h 的稳定域；对速度观测加滤波/观测器并按噪声带宽选择 gamma；加入绝对
+      电流、扭矩、变化率、抗饱和和故障降级。增加速度量化/噪声、扭矩阶跃/跌落、宽惯量区间和多轨迹验证。
+    requires_human_review: true
+
+  - id: AUD-006
+    status: fail
+    severity: major
+    category: stopping_and_state_constraints
+    evidence: >-
+      simulate_controller 只按输入长度递推，没有 omega>=0、结束条件或停机逻辑。简化案例取初速
+      514 rpm、恒定制动扭矩 300 N·m、20 s：Q5 和 Q6 都在 8.62 s 穿过零速，继续积分至
+      -679.662 rpm，却仍报告 absolute_relative_energy_error_pct=0。
+    affected_files:
+      - frozen-solution/code/solve.py
+      - frozen-solution/paper/sections/05-solution-validation.tex
+      - frozen-solution/paper/sections/06-evaluation-conclusion.tex
+    reason: >-
+      能量误差和轨迹一致本身不能排除物理上不允许的反向旋转。题目明确要求达到结束条件完成制动，
+      但实现没有状态约束，故可把不可行轨迹评价为完美控制。
+    recommended_fix: >-
+      明确定义停止/末速事件、omega 下界、过零插值和电流平滑归零；所有指标只在物理有效区间计算，
+      并把“未到达结束条件”和“越过零速”设为 fail。
+    requires_human_review: false
+
+  - id: AUD-007
+    status: fail
+    severity: minor
+    category: reproducibility_metadata
+    evidence: >-
+      FROZEN_BLIND_V1.json 记录 git_dirty=true 且 dependencies=[]，但运行实际需要 NumPy、Matplotlib、
+      PyYAML、Excel COM 和 XeLaTeX；冻结目录还含两个未列入清单的 __pycache__/*.pyc。相同脚本在
+      Windows PowerShell 5.1 下可恢复冻结 CSV 字节，在 PowerShell 7.6.4 下数值相同但 CSV、元数据和
+      run manifest 哈希不同，故“5.1 or compatible”不是字节级可复现规范。
+    affected_files:
+      - frozen-solution/FROZEN_BLIND_V1.json
+      - frozen-solution/reproducibility.yaml
+      - frozen-solution/code/extract_data.ps1
+      - frozen-solution/code/__pycache__/solve.cpython-312.pyc
+      - frozen-solution/code/__pycache__/verify.cpython-312.pyc
+    reason: >-
+      受保护文件哈希和树哈希均通过，但冻结目录不干净，依赖声明不完整，兼容环境的编码行为未固定。
+      这不会改变核心数值，却妨碍完整字节复现与环境追踪。
+    recommended_fix: >-
+      从 clean git 状态冻结；排除缓存；填充依赖与外部工具版本；固定确切 PowerShell 版本，并在 CSV/JSON
+      写入处显式规定 UTF-8 BOM、换行和字段顺序。对 PDF 使用内容比较或可重复构建设置，不承诺时间戳字节一致。
+    requires_human_review: false
+
+  - id: AUD-008
+    status: fail
+    severity: suggestion
+    category: numerical_quadrature
+    evidence: >-
+      论文假设相邻样本间扭矩与转速都线性，但 solve.py 第 108--124 行把端点功率作梯形积分。
+      两个线性函数的乘积为二次函数；精确分段积分为 49242.3075897 J，而提交值为
+      49242.2887358 J，差 0.0188539 J。相对误差应为 5.57599490%，提交为 5.57603105%。
+    affected_files:
+      - frozen-solution/code/solve.py
+      - frozen-solution/paper/sections/03-assumptions-symbols.tex
+      - frozen-solution/paper/sections/04-data-model.tex
+      - frozen-solution/paper/sections/05-solution-validation.tex
+    reason: >-
+      插值假设与主求积公式不完全一致。差异极小，欠耗能结论和工程判断不变。
+    recommended_fix: >-
+      若坚持扭矩和转速分别线性，使用含交叉项的精确区间积分；否则明确假设功率在区间内线性，并按现有
+      梯形公式报告。避免给出超过模型离散精度的尾数。
+    requires_human_review: false

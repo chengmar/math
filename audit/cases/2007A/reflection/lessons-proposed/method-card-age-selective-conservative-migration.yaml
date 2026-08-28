@@ -1,0 +1,51 @@
+schema_version: "1.0"
+id: "cumcm-a-2007a-age-selective-conservative-migration"
+status: "candidate"
+type: "method_card"
+title: <REFERENCE_TITLE_REDACTED>
+origin: "learned_after_references_then_synthesized_with_blind_solution"
+claim: >-
+  当地区迁移会改变年龄结构和育龄女性分布时，可先确定年度迁移总量，再用归一化的
+  年龄—性别模式分配迁移量，并在逐状态层面保证流出等于流入。
+applicable_when:
+  - "题目明确要求地区、城乡或部门之间的人口迁移/重分类。"
+  - "至少能给出迁移总量路径，且有年龄模式数据、可信先验或可审计情景。"
+  - "全国总量不应被内部迁移直接改变。"
+not_applicable_when:
+  - "只有全国总量且没有地区状态。"
+  - "迁移包含无法忽略的国际净流入/流出，却没有单独建模。"
+  - "年龄模式完全不可识别，且结论对该模式高度敏感。"
+minimum_baseline:
+  name: "平坦守恒重分类"
+  description: "对所有年龄和性别使用同一迁移比例；另保留无迁移队列基线。"
+method:
+  - "由城镇化或政策路径确定年度总迁移量 M_t。"
+  - "构造非负年龄—性别权重 w_{s,a,t}，并归一化为总和 1。"
+  - "令流出 M_t*w_{s,a,t} 从来源状态扣除，并以同额加入目的状态。"
+  - "若来源单元不足，必须显式截断并重新分配，不能产生负人口。"
+  - "与无迁移、平坦迁移做嵌套比较，分别报告全国和地区指标。"
+validation:
+  required_checks:
+    - "每年内部迁移全国残差为 0 或在浮点容差内。"
+    - "所有状态非负。"
+    - "年龄—性别权重总和为 1。"
+    - "平坦模式、青年模式和至少一个反向/极端模式的敏感性。"
+    - "若有滚动数据，迁移模式和总量只用训练折拟合。"
+  automatic_judgment: "needs_review"
+counterexamples:
+  - "BF 单步全国指标中 M1 与 M2 完全等价，说明单步地区改善不能证明多年全国机制。"
+  - "R2 固定迁移性别比和年龄分布；若政策或劳动市场变化，长期外推会失效。"
+  - "迁移权重未归一或流入流出不等时，会伪造全国人口增长。"
+source_cases:
+  - id: "2007A-BF"
+    evidence: "守恒平坦迁移和青年加权敏感性；最终科学状态 needs_review。"
+  - id: "2007A-R2"
+    evidence: "以青年年龄分布分配乡村向城镇迁移。"
+  - id: "2007A-R4"
+    evidence: "用年龄迁移模式矩阵表示乡—城镇流动。"
+evidence_strength: "medium"
+promotion_gate:
+  - "至少一个其他题目中，年龄选择层相对平坦基线改善预注册留出指标。"
+  - "守恒、非负和模式归一测试全部为 pass。"
+  - "不能仅因模型更细就升级。"
+forbidden_inference: "不得把本题的青年迁移形状、迁移性别比或城镇化速度推广到其他地区/年份。"

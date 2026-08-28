@@ -1,0 +1,232 @@
+schema_version: 1
+case_id: "2016A"
+phase: reflection
+status_vocabulary:
+  automatic_judgement: [pass, fail, needs_review]
+  lesson_proposal: [candidate, demo]
+
+freeze_validation:
+  phase_lock: pass
+  external_freeze_boundary: pass
+  audit_prerequisite: pass
+  manifest_entry_count: 214
+  manifest_file_hashes: pass
+  manifest_file_hash_pass_count: 214
+  authoritative_payloads: pass
+  tree_sha256_recalculation: needs_review
+  tree_sha256_reason: >-
+    权威清单未声明聚合哈希的路径规范化、排序、分隔符和编码算法；
+    未伪造聚合值复算，逐文件 SHA-256 已全部通过。
+
+objects:
+  - id: B
+    kind: frozen_blind_final
+    title: <REFERENCE_TITLE_REDACTED>
+    identity_status: pass
+    source: blind-final/FROZEN_BLIND_FINAL.json
+  - id: R1
+    kind: approved_reference
+    title: <REFERENCE_TITLE_REDACTED>
+    file: <REFERENCE_ID>
+    sha256: <REFERENCE_HASH_REDACTED>
+    pages: 39
+    identity_status: pass
+    formula_extraction_status: needs_review
+  - id: R2
+    kind: approved_reference
+    title: <REFERENCE_TITLE_REDACTED>
+    file: <REFERENCE_ID>
+    sha256: <REFERENCE_HASH_REDACTED>
+    pages: 37
+    identity_status: pass
+    formula_extraction_status: needs_review
+  - id: R3
+    kind: approved_reference
+    title: <REFERENCE_TITLE_REDACTED>
+    file: <REFERENCE_ID>
+    sha256: <REFERENCE_HASH_REDACTED>
+    pages: 44
+    identity_status: pass
+    formula_extraction_status: needs_review
+  - id: R4
+    kind: approved_reference
+    title: <REFERENCE_TITLE_REDACTED>
+    file: <REFERENCE_ID>
+    sha256: <REFERENCE_HASH_REDACTED>
+    pages: 36
+    identity_status: pass
+    formula_extraction_status: needs_review
+
+dimensions:
+  problem_decomposition:
+    B: "Q1 条件基准/不可辨识性；Q2 有效质量阈值；Q3 完整设计域/Pareto/稳健包络"
+    R1: "吃水闭合；质量控制；加权遗传算法"
+    R2: "逐构件逐链环递推；二分；控制变量遍历"
+    R3: "状态模型；着地修正；三维多目标与变步长搜索"
+    R4: "静力模型；最小质量；AHP 综合优化；离床临界风速"
+  assumptions_and_data:
+    B: "球干质量、排水体积、水动力直径分离；二维准静力；无链流阻"
+    R1: "球/链钢质；Q3 主模型只计浮标水流力"
+    R2: "实心钢球；逐链环刚杆；同向均匀流"
+    R3: "普通铸铁；三维投影；抛物流速剖面；链环等体积圆柱"
+    R4: "材料密度和链水动力直径假设；二维同向流"
+  baseline:
+    B: "B0 等效单杆、C1 无重量直链、C2 有重量悬链线同输入比较"
+    R1: none_reported
+    R2: none_reported
+    R3: "未修正模型与着地修正模型"
+    R4: "微元积分与标准悬链线"
+  main_model:
+    B: "分段刚杆 + 连续有重量悬链线 + 海床接触 + 球节点"
+    R1: "虚功递推 + 连续悬链线 + 海床接触"
+    R2: "分段刚体 + 逐链环刚体递推"
+    R3: "三维平面投影 + 逐链环递推 + 着地修正"
+    R4: "平衡/力矩 + 连续悬链线微元"
+  q3_algorithm:
+    B: "1202 个整数链长；完整 25 kg 可行网格；逐链连续精化；Pareto"
+    R1: "二进制遗传算法，100 个体、200 代"
+    R2: "控制变量选链型后遍历链长与质量"
+    R3: "连续质量离散化；大步长全局、小步长局部"
+    R4: "五链型穷举；赋值降元"
+  validation:
+    B: "残差、独立积分、球手算、单元测试、网格/边界收敛、两次干净复现"
+    R1: "主要为结果展示；随机收敛证据缺失"
+    R2: "换取矩点推导；无残差与容差"
+    R3: "步长缩小和灵敏度；无独立实现"
+    R4: "双锚链表达对照和步长灵敏度；无预设容差"
+  complexity:
+    B: "解析单次模型中等；完整确定性搜索较高；约 88443 次筛选"
+    R1: "种群×代数×模型调用；实际运行量 needs_review"
+    R2: "约 210 链环递推×搜索；实际运行量 needs_review"
+    R3: "三维逐链环×粗细搜索；实际运行量 needs_review"
+    R4: "连续悬链线×枚举；实际运行量 needs_review"
+  interpretability:
+    B: high
+    R1: medium_high
+    R2: medium
+    R3: medium
+    R4: high
+  expression:
+    B: "条件结论、状态词和证据追溯清楚；编译 PDF 页检 needs_review"
+    R1: "主线清楚；摘要/正文数字冲突；GA 通用说明过长"
+    R2: "表格清楚；摘要误放游动半径；验证缺少误差"
+    R3: "标题与页码占位符未清理；复杂度表述错误"
+    R4: "结构图表较好；摘要桶角冲突；灵敏度推理错误"
+
+key_results:
+  q1:
+    wind_12:
+      B: {drum_deg: 1.2009, draft_m: 0.6829, radius_m: 14.6528}
+      R1: {drum_deg: 1.202, draft_m: 0.681, radius_m: 14.65}
+      R2: {drum_deg: 1.2319, draft_m: 0.6715, radius_m: 14.6552}
+      R3: {drum_deg: 1.2089, draft_m: 0.6818, radius_m: 14.7232}
+      R4: {drum_deg: 1.209, draft_m: 0.6816, radius_m: 14.6591}
+    wind_24:
+      B: {drum_deg: 4.5628, draft_m: 0.6970, radius_m: 17.7783}
+      R1: {drum_deg: 4.569, draft_m: 0.695, radius_m: 17.78}
+      R2: {drum_deg: 4.6763, draft_m: 0.6857, radius_m: 17.7614}
+      R3: {drum_deg: 4.5837, draft_m: 0.6959, radius_m: 17.8224}
+      R4: {drum_deg: 4.584, draft_m: 0.6958, radius_m: 17.7716}
+    agreement_interpretation_status: needs_review
+    agreement_interpretation: "量级接近不能排除共同假设偏差或共同实现错误。"
+  q2:
+    B:
+      continuous_effective_mass_kg: 1927.888965
+      conditional_solid_steel_dry_mass_kg: 2250
+    R1:
+      body_dry_mass_kg: 2226.9
+      abstract_dry_mass_kg: 2262.9
+      consistency_status: fail
+    R2: {dry_mass_kg: 2280}
+    R3: {feasible_dry_mass_kg: "2200-4100", entropy_optimum_kg: 2894}
+    R4: {minimum_dry_mass_kg: 2225}
+  q3:
+    B:
+      chain_type: V
+      link_count: 124
+      chain_length_m: 22.32
+      effective_ball_mass_kg: 4336.090641
+      conditional_solid_steel_dry_mass_kg: 4987.298393
+      fixed_deployment_status: pass
+      in_model_robustness_status: pass
+    R1:
+      chain_type: V
+      abstract_chain_length_m: 20.78
+      body_chain_length_m: 20.25
+      dry_mass_kg: 4560
+      integer_link_status: fail
+    R2:
+      chain_type: V
+      link_count: 121
+      chain_length_m: 21.78
+      dry_mass_kg: 3880
+      fixed_deployment_status: pass
+      continuum_depth_coverage_status: needs_review
+    R3:
+      depth_16: {chain_type: V, link_count: 140, chain_length_m: 25.2, dry_mass_kg: 3000}
+      depth_20: {chain_type: V, link_count: 180, chain_length_m: 32.4, dry_mass_kg: 2950}
+      fixed_deployment_status: fail
+    R4:
+      chain_type: V
+      link_count: 114
+      chain_length_m: 20.52
+      dry_mass_kg: 4200
+      continuum_depth_coverage_status: needs_review
+
+judgements:
+  B:
+    model_internal_equations: pass
+    design_variable_legality: pass
+    search_optimality_within_declared_domain: pass
+    clean_reproduction: pass
+    document_internal_consistency: pass
+    external_validity: needs_review
+  R1:
+    model_internal_equations: needs_review
+    design_variable_legality: fail
+    search_optimality_within_declared_domain: needs_review
+    clean_reproduction: needs_review
+    document_internal_consistency: fail
+    external_validity: needs_review
+  R2:
+    model_internal_equations: needs_review
+    design_variable_legality: pass
+    search_optimality_within_declared_domain: needs_review
+    clean_reproduction: needs_review
+    document_internal_consistency: fail
+    external_validity: needs_review
+  R3:
+    model_internal_equations: needs_review
+    design_variable_legality: pass
+    fixed_deployment_design: fail
+    search_optimality_within_declared_domain: needs_review
+    clean_reproduction: needs_review
+    document_internal_consistency: fail
+    external_validity: needs_review
+  R4:
+    model_internal_equations: needs_review
+    design_variable_legality: pass
+    search_optimality_within_declared_domain: needs_review
+    clean_reproduction: needs_review
+    document_internal_consistency: fail
+    external_validity: needs_review
+
+provenance_classification:
+  independently_conceived:
+    - "分段刚杆 + 有重量悬链线 + 海床接触"
+    - "B0/C1/C2 基线比较"
+    - "固定自然尺度的 Pareto 折中框架"
+  corrected_after_audit:
+    - "球的 m、V、d_h 分离和球节点流阻"
+    - "有效质量优先表达"
+    - "完整整数链环与配重域、连续精化、边界收敛"
+    - "干净生成清单与 SVG 修复"
+  learned_after_references:
+    - "三维风流夹角与垂向流速剖面候选"
+    - "链条完全离床临界风速作为相变诊断"
+    - "AHP 一致性检查及原量纲目标的反例价值"
+    - "固定部署不能为不同水深分别更换硬件"
+
+novelty_scope:
+  world_first_claim_status: needs_review
+  statement: "未做文献检索；所有差异化判断只相对于 B、R1、R2、R3、R4 当前比较集。"

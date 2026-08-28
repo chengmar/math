@@ -1,0 +1,68 @@
+schema_version: 1
+id: LP-2013A-001
+title: <REFERENCE_TITLE_REDACTED>
+proposal_kind: method_card
+state: candidate
+case_specific: true
+origin:
+  independent_blind:
+    - complete_cycle_saturated_PCU_capacity
+    - point_queue_baseline
+    - triangular_fundamental_diagram_wave
+  audit_revision:
+    - signal_event_integration
+    - reflection_at_zero
+    - first_hit_finite_boundary
+  reference_after_learning:
+    - explicit_side_road_net_flow_from_R3
+    - heavy_vehicle_event_candidate_from_R1
+applicable_when:
+  - 事故断面是主要瓶颈，且研究目标是首次排队溢出前的空间队长。
+  - 上游到达和断面能力可按信号或事故事件分段近似常值。
+  - 至少能识别完整信号周期、饱和窗口和路段有限长度。
+not_applicable_when:
+  - 队列已经越过上游路口并反馈改变其放行。
+  - 中间出入口、公交停靠或非机动车旁路无法忽略且没有净流观测。
+  - 需要逐车换道安全、车道选择或个体延误分布。
+minimum_baseline:
+  name: reflected_point_queue
+  equation: N(t)=X(t)-min_{s<=t}X(s), X(t)=integral(q-C)dt
+  requirement: 主模型必须在相同输入和相同首次边界定义下与点队列比较。
+method:
+  capacity:
+    - 只用完整周期、质量合格且需求饱和的 PCU 通过率作为容量候选。
+    - 未饱和窗口只给容量下界；短窗只作相位内诊断。
+  queue:
+    equation: dL/dt=(q-C)/(m*k_j-C/w-q/v_f)
+    rules:
+      - 每个事件段重算密度和有符号速度。
+      - L 在 0 处反射。
+      - 首次达到 D 时解析插值并停止。
+  optional_extension:
+    - q_tail(t)=q_main(t)+q_side_in(t)-q_side_out(t)
+    - 大车到达只在留出误差有增益时作为容量事件。
+validation:
+  required:
+    - 单位和质量守恒。
+    - 同均值不同相位反例。
+    - D=0、q<=C、恢复消散和 C 接近 q 的边界。
+    - 独立步进收敛与 mutation 检测。
+    - 视频存在时做时间顺序校准/评价分割。
+  current_internal_status: pass
+  current_external_status: needs_review
+counterexamples:
+  - name: same_mean_signal_aliasing
+    evidence: 3000/0 pcu/h 的 30/30 s 方波与常流均值同为 1500，但首次到达为 3.260/3.760 min，而常流为 5.306 min。
+  - name: post_spillback_invalidity
+    evidence: 到达 140 m 或 240 m 后继续用局部运动波会违反有限边界。
+source_cases:
+  - BLIND final paper and audit findings AUD-002/AUD-004/AUD-006
+  - R3 side-road conservation decomposition
+  - R1 heavy-vehicle event narrative
+evidence_strength:
+  internal: high
+  external: low
+  rationale: 冻结代码与反例可复现，但本题视频缺失。
+scope_controls:
+  direct_upgrade_in_reflection: false
+  dummy_input_detected: false

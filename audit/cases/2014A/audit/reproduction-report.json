@@ -1,0 +1,234 @@
+{
+  "schema_version": 1,
+  "case_id": "2014A",
+  "phase": "audit",
+  "overall_status": "needs_review",
+  "overall_status_reason": <LONG_QUOTE_REDACTED>,
+  "phase_gate": {
+    "status": "pass",
+    "skill": "$cumcm-a-audit",
+    "skill_path": "<LAB_ROOT>/.agents/skills/cumcm-a-audit/SKILL.md",
+    "attempts": [
+      {
+        "command": "python <ABSOLUTE_PATH>",
+        "working_directory": "<RUNTIME_ROOT>/2014A/workspaces/audit",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "python was not recognized as a command; the interpreter did not start",
+        "status": "fail"
+      },
+      {
+        "command": "\"<ABSOLUTE_PATH>" <ABSOLUTE_PATH>",
+        "working_directory": "<RUNTIME_ROOT>/2014A/workspaces/audit",
+        "exit_code": 0,
+        "stdout": "[PASS] audit 阶段锁有效\r\n",
+        "stderr": "",
+        "status": "pass"
+      }
+    ]
+  },
+  "frozen_integrity": {
+    "status": "pass",
+    "manifest": "frozen-solution/FROZEN_BLIND_V1.json",
+    "manifest_schema_version": 1,
+    "snapshot": "blind-v1",
+    "case_id_status": "pass",
+    "allowed_paths_sha256": {
+      "expected": "b78acc8647ef10a7adcfd3007bbf5a94b0cfa849aceb086eb3dad49dac299381",
+      "actual": "b78acc8647ef10a7adcfd3007bbf5a94b0cfa849aceb086eb3dad49dac299381",
+      "status": "pass"
+    },
+    "forbidden_paths_sha256": {
+      "expected": "f075bf741aa5e0dc4527893642bc07eb4bc70edc84733fa9b1801ed5ccaa0b47",
+      "actual": "f075bf741aa5e0dc4527893642bc07eb4bc70edc84733fa9b1801ed5ccaa0b47",
+      "status": "pass"
+    },
+    "listed_file_count": 90,
+    "verified_file_count": 90,
+    "per_file_size_and_sha256_status": "pass",
+    "missing_authoritative_payloads": [],
+    "unexpected_unmanifested_files": [],
+    "excluded_build_artifacts_present": [],
+    "declared_tree_sha256": "66d4bf5889a51f2150825f671b7340699468df5d699f4064d20cc94901a9f556",
+    "tree_sha256_recomputation_status": "needs_review",
+    "tree_sha256_recomputation_reason": "No canonicalization or aggregation algorithm is defined in the manifest or audit skill; the value was not guessed.",
+    "input_copy_identity": {
+      "outer_file_count": 5,
+      "frozen_file_count": 5,
+      "path_size_sha256_exact_match": true,
+      "status": "pass"
+    }
+  },
+  "environment": {
+    "status": "pass",
+    "operating_system": "Windows-11-10.0.26200-SP0",
+    "timezone": "Asia/Shanghai",
+    "python_executable": "<USER_HOME>/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe",
+    "python_version": "3.12.13 (main, Aug 7 2026, 02:26:41) [MSC v.1944 64 bit (AMD64)]",
+    "dependencies": {
+      "numpy": "2.3.5",
+      "pillow": "12.3.0"
+    },
+    "declared_dependencies_status": "pass",
+    "network_used": false,
+    "fresh_virtual_environment_created": false,
+    "workspace_isolation": "Each run used a newly created directory containing only code, original input, and verifier-required static source files; no generated results or figures existed before solve.py.",
+    "isolated_python_check": "A third run used -I -B to disable user-site/PYTHONPATH influence and bytecode writes.",
+    "workspace_isolation_status": "pass"
+  },
+  "executions": [
+    {
+      "id": "clean_run_1_solve",
+      "command": "\"<ABSOLUTE_PATH>" code\\solve.py",
+      "working_directory": "<RUNTIME_ROOT>/2014A/workspaces/audit/audit-clean-run-1",
+      "started_at": "2026-08-25T08:02:35.6395802+08:00",
+      "duration_seconds": 17.6416038,
+      "exit_code": 0,
+      "stdout": "{\r\n  \"status\": \"pass\",\r\n  \"fuel_kg\": 1173.5792695044317,\r\n  \"final_mass_kg\": 1226.4207304955683,\r\n  \"powered_time_s\": 572.7827397245292,\r\n  \"pericenter_lon_deg_east\": -39.78625117588689,\r\n  \"pericenter_lat_deg_north\": 42.291286378087825,\r\n  \"fine_site_offset_m\": 18.43542784965947,\r\n  \"reintegration\": \"pass\"\r\n}\r\n",
+      "stderr": "",
+      "status": "pass"
+    },
+    {
+      "id": "clean_run_1_verify",
+      "command": "\"<ABSOLUTE_PATH>" code\\verify.py",
+      "working_directory": "<RUNTIME_ROOT>/2014A/workspaces/audit/audit-clean-run-1",
+      "started_at": "2026-08-25T08:03:03.2663787+08:00",
+      "duration_seconds": 0.1492797,
+      "exit_code": 0,
+      "stdout": "{\r\n  \"overall_status\": \"pass\",\r\n  \"critical_failures\": []\r\n}\r\n",
+      "stderr": "",
+      "reported_status": "pass",
+      "audit_reliability_status": "fail",
+      "status": "pass"
+    },
+    {
+      "id": "clean_run_2_solve",
+      "command": "\"<ABSOLUTE_PATH>" code\\solve.py",
+      "working_directory": "<RUNTIME_ROOT>/2014A/workspaces/audit/audit-clean-run-2",
+      "started_at": "2026-08-25T08:04:06.1264817+08:00",
+      "duration_seconds": 17.6486571,
+      "exit_code": 0,
+      "stdout": "{\r\n  \"status\": \"pass\",\r\n  \"fuel_kg\": 1173.5792695044317,\r\n  \"final_mass_kg\": 1226.4207304955683,\r\n  \"powered_time_s\": 572.7827397245292,\r\n  \"pericenter_lon_deg_east\": -39.78625117588689,\r\n  \"pericenter_lat_deg_north\": 42.291286378087825,\r\n  \"fine_site_offset_m\": 18.43542784965947,\r\n  \"reintegration\": \"pass\"\r\n}\r\n",
+      "stderr": "",
+      "status": "pass"
+    },
+    {
+      "id": "clean_run_2_verify",
+      "command": "\"<ABSOLUTE_PATH>" code\\verify.py",
+      "working_directory": "<RUNTIME_ROOT>/2014A/workspaces/audit/audit-clean-run-2",
+      "started_at": "2026-08-25T08:04:33.3496301+08:00",
+      "duration_seconds": 0.1332738,
+      "exit_code": 0,
+      "stdout": "{\r\n  \"overall_status\": \"pass\",\r\n  \"critical_failures\": []\r\n}\r\n",
+      "stderr": "",
+      "reported_status": "pass",
+      "audit_reliability_status": "fail",
+      "status": "pass"
+    },
+    {
+      "id": "isolated_run_solve",
+      "command": "\"<ABSOLUTE_PATH>" -I -B code\\solve.py",
+      "working_directory": "<RUNTIME_ROOT>/2014A/workspaces/audit/audit-clean-run-isolated",
+      "started_at": "2026-08-25T08:22:51.6152552+08:00",
+      "duration_seconds": 17.6678641,
+      "exit_code": 0,
+      "stdout": "{\r\n  \"status\": \"pass\",\r\n  \"fuel_kg\": 1173.5792695044317,\r\n  \"final_mass_kg\": 1226.4207304955683,\r\n  \"powered_time_s\": 572.7827397245292,\r\n  \"pericenter_lon_deg_east\": -39.78625117588689,\r\n  \"pericenter_lat_deg_north\": 42.291286378087825,\r\n  \"fine_site_offset_m\": 18.43542784965947,\r\n  \"reintegration\": \"pass\"\r\n}\r\n",
+      "stderr": "",
+      "status": "pass"
+    },
+    {
+      "id": "isolated_run_verify",
+      "command": "\"<ABSOLUTE_PATH>" -I -B code\\verify.py",
+      "working_directory": "<RUNTIME_ROOT>/2014A/workspaces/audit/audit-clean-run-isolated",
+      "started_at": "2026-08-25T08:23:19.2540750+08:00",
+      "duration_seconds": 0.1425795,
+      "exit_code": 0,
+      "stdout": "{\r\n  \"overall_status\": \"pass\",\r\n  \"critical_failures\": []\r\n}\r\n",
+      "stderr": "",
+      "reported_status": "pass",
+      "audit_reliability_status": "fail",
+      "status": "pass"
+    }
+  ],
+  "output_comparison": {
+    "declared_output_manifest_sha256": "47ca4c422aaf8884017f7145b23256322235101c0c6816a599c469bf2478b7f0",
+    "clean_run_1_output_manifest_sha256": "47ca4c422aaf8884017f7145b23256322235101c0c6816a599c469bf2478b7f0",
+    "clean_run_2_output_manifest_sha256": "47ca4c422aaf8884017f7145b23256322235101c0c6816a599c469bf2478b7f0",
+    "isolated_run_output_manifest_sha256": "47ca4c422aaf8884017f7145b23256322235101c0c6816a599c469bf2478b7f0",
+    "declared_output_manifest_status": "pass",
+    "clean_run_1_file_count": 39,
+    "clean_run_2_file_count": 39,
+    "isolated_run_file_count": 39,
+    "run_1_vs_run_2_byte_identical_tree_status": "pass",
+    "run_1_vs_isolated_byte_identical_tree_status": "pass",
+    "frozen_core_compared_count": 21,
+    "frozen_core_byte_identical_count": 20,
+    "authoritative_payload_byte_identity_status": "fail",
+    "mismatches": [
+      {
+        "path": "reproducibility.yaml",
+        "clean_sha256": "6b0aa7c072f25531e7248fa80d9fc1f9d263030bc85ad72b6ccd803881697bf6",
+        "frozen_sha256": "73287deee5c7e03767fb62190a1dc484ae71dd13a359368176bf66ae6939486f",
+        "difference": "The frozen file contains repeatability_evidence, which solve.py does not generate.",
+        "status": "fail"
+      }
+    ]
+  },
+  "verifier_observations": {
+    "bundled_verifier_reported_status": "pass",
+    "bundled_verifier_audit_status": "fail",
+    "clean_run_non_pass_checks": [
+      {
+        "name": "repeatability",
+        "status": "needs_review",
+        "reason": "no repeated-run evidence file"
+      },
+      {
+        "name": "paper_compile",
+        "status": "needs_review",
+        "reason": "XeLaTeX compilation not yet evidenced"
+      },
+      {
+        "name": "external_flight_validity",
+        "status": "needs_review",
+        "reason": "no flight telemetry, engine dynamics, navigation covariance, or stated TIFF orientation is supplied"
+      }
+    ],
+    "counterexample": {
+      "directory": "audit-verifier-counterexample",
+      "fake_pdf_bytes": 28,
+      "reported_reintegration_position_error_m": 1000000.0,
+      "reported_reintegration_velocity_error_mps": 10000.0,
+      "verifier_exit_code": 0,
+      "verifier_overall_status": "pass",
+      "verifier_independent_reintegration_status": "pass",
+      "verifier_paper_compile_status": "pass",
+      "audit_status": "fail"
+    }
+  },
+  "paper_build": {
+    "status": "needs_review",
+    "source": "frozen-solution/paper/main.tex",
+    "frozen_pdf_exists": true,
+    "frozen_pdf_size_bytes": 1021436,
+    "xelatex_available": false,
+    "latexmk_available": false,
+    "pdflatex_available": false,
+    "reason": "No TeX compiler was available, and the bundled verifier only checks that a non-empty PDF exists."
+  },
+  "random_stability": {
+    "status": "pass",
+    "seeds": [1, 17, 2014, 99173, 99991],
+    "fuel_range_kg": 0.000007491223868782981,
+    "all_problem_bounds_status": "pass",
+    "all_design_margin_status": "pass",
+    "evidence_command": "python -B audit_seed_stability.py"
+  },
+  "scope_limits": {
+    "external_flight_validity_status": "needs_review",
+    "leakage_provenance_status": "needs_review",
+    "reference_papers_read": false,
+    "current_problem_web_search_used": false,
+    "frozen_solution_modified": false
+  }
+}

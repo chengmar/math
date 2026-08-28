@@ -1,0 +1,47 @@
+schema_version: 1
+case_id: "2016A"
+expression_lessons:
+  - id: CAND-2016A-W01
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: independently_conceived_and_audit_strengthened
+    evidence_status: pass
+    rule: >-
+      每个干质量、球径和稳健包络数字旁直接写明材料、排水体积、水动力几何、
+      压力裕量和未建模项，不能只在假设章节远处说明。
+
+  - id: CAND-2016A-W02
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: learned_after_references
+    evidence_status: pass
+    rule: >-
+      摘要中的阈值、链长、游动半径必须与正文表和结构化结果一一对应；
+      R1、R2、R4 的冲突说明人工复制极易串值。
+
+  - id: CAND-2016A-W03
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: reflection_synthesis
+    evidence_status: needs_review
+    rule: >-
+      机器结果可保留全精度用于复现；正文精度应受输入和模型不确定性约束，
+      不用九位小数制造工程确定性的错觉。
+
+  - id: CAND-2016A-W04
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: reflection_synthesis
+    evidence_status: pass
+    rule: >-
+      不写“完全吻合”“结果较好”而不给残差；每个验证说明比较对象、容差、
+      是否独立实现，以及它只能支持哪一层结论。
+
+  - id: CAND-2016A-W05
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: learned_after_references
+    evidence_status: pass
+    rule: >-
+      扫描“论文标题”“XXX”“XX 表”等占位符，并人工检查“提高时间复杂度”
+      这类与原意相反的表述；编译后再做逐页视觉检查。

@@ -1,0 +1,198 @@
+phase: blind-revision
+case_id: 2007A
+skill: "$cumcm-a-solve"
+overall_judgment: needs_review
+scope:
+  phase_lock_judgment: pass
+  blind_revision_judgment: pass
+  network_search_used: false
+  external_reference_used: false
+  audit_report_used: true
+  other_phase_skill_used: false
+  blind_v1_preserved: true
+  frozen: false
+  audited: false
+  reflected: false
+  evaluated: false
+coverage:
+  - requirement: "建立中国人口增长数学模型"
+    judgment: pass
+    evidence: "市/镇/乡三状态两性单岁队列；code/solve_population.py"
+    paper_location: "第4节"
+  - requirement: "简单基线和候选比较"
+    judgment: pass
+    evidence: "M0、M1、M2及2003--2005滚动留出；results/<SOURCE_FILE_REDACTED>"
+    paper_location: "第2节"
+  - requirement: "模型选择稳定性"
+    judgment: needs_review
+    evidence: "M2在2003/2005胜，M1在2004胜；M2/M1三折均值3.885/3.902"
+    paper_location: "第2、5节"
+  - requirement: "中短期趋势"
+    judgment: pass
+    evidence: "2010、2020、2030关键结果；results/<SOURCE_FILE_REDACTED>"
+    paper_location: "第5节"
+  - requirement: "长期趋势"
+    judgment: pass
+    evidence: "2050、2100和2005--2100峰值；三种标准TFR条件情景"
+    paper_location: "第5节"
+  - requirement: "老龄化、出生性别比、城镇化"
+    judgment: pass
+    evidence: "65+/60+、实际出生数性别比、守恒迁移均显式建模"
+    paper_location: "第4--5节"
+  - requirement: "联合稳健性"
+    judgment: pass
+    evidence: "54个全因子组合全部非负且守恒；results/<SOURCE_FILE_REDACTED>"
+    paper_location: "第5节"
+  - requirement: "模型优点与不足"
+    judgment: pass
+    evidence: "披露抽样口径、排名反转、外生参数、多步证据和失效条件"
+    paper_location: "第6节"
+audit_findings:
+  - id: AUD-001
+    judgment: needs_review
+    action: "V1保持不变；本阶段不生成FROZEN清单、不设frozen=true，等待外部冻结脚本。"
+  - id: AUD-002
+    judgment: pass
+    action: "按年龄暴露量先汇总全国ASFR，再求和；错位年龄反例区分旧公式。"
+  - id: AUD-003
+    judgment: pass
+    action: "三折滚动验证，排名反转时selection_judgment=needs_review，M1保留为全国基线。"
+  - id: AUD-004
+    judgment: pass
+    action: "完成54组合联合包络并报告交互。"
+  - id: AUD-005
+    judgment: pass
+    action: "暴露量改用地区总样本数，手算回归通过。"
+  - id: AUD-006
+    judgment: pass
+    action: "异常识别在每个训练折内重新拟合。"
+  - id: AUD-007
+    judgment: pass
+    action: "拆分执行、内部不变量、科学验证和综合判断。"
+  - id: AUD-008
+    judgment: pass
+    action: "Markdown已从可靠文本重建；C0字符、公式、数字、图引用和PDF记录的23项一致性检查全部通过。"
+  - id: AUD-009
+    judgment: pass
+    action: "全国出生性别比按各地区实际男婴和女婴汇总。"
+data:
+  source_judgment: pass
+  quality_judgment: needs_review
+  core_missing_count: 0
+  percentage_sum_range_pct: [99.93, 100.05]
+  anomaly_years: [2003]
+  mortality_zero_count: 246
+  mortality_over_300_per_1000_count: 11
+  sample_design_judgment: needs_review
+  exposure_denominator: "area_total_sample_count * area_total_population_share"
+  exposure_regression_2005_city_male_age20: 32484.5307
+model:
+  selected: "three_area_two_sex_single_age_cohort_component"
+  selection_judgment: needs_review
+  state_shape: [3, 2, 91]
+  base_year: 2005
+  horizon_year: 2100
+  open_age_group: "90+"
+  raw_standard_national_tfr_2005: 1.34256545049512
+  raw_legacy_area_weighted_tfr_2005: 1.36780978765775
+  scenarios_standard_tfr:
+    low: 1.5
+    medium: 1.8
+    high: 2.1
+  tfr_target_end_year: 2035
+  post_target_rule: "hold 2035 area-age fertility schedule fixed"
+  mortality_improvement_main_per_year: 0.01
+  mortality_improvement_end_year: 2030
+  birth_sex_ratio_target: 107.0
+  birth_sex_ratio_target_year: 2020
+  annual_rural_reclassification_rate: 0.011722159139749057
+  urban_share_target_2020: 0.53
+  population_scale_anchor:
+    year: 2010
+    population: 1360000000
+    source: "附件1"
+    independent_validation: false
+results:
+  implied_population_2005: 1322420493.487736
+  medium:
+    peak_year: 2025
+    peak_population: 1436622493.7504396
+    population_2020: 1425980301.3075316
+    population_2030: 1431465275.1425915
+    population_2050: 1332523318.14653
+    population_2100: 930761324.2835695
+    older_65_share_2020: 0.15358242881124404
+    older_65_share_2050: 0.26003740056062075
+    dependency_ratio_2050: 0.6915971009259366
+    sex_ratio_2050: 99.91253461729721
+    urban_share_2050: 0.634714869536702
+  low:
+    peak_year: 2022
+    peak_population: 1385808606.0675104
+    population_2050: 1192309012.2215796
+    population_2100: 617413317.4714518
+  high:
+    peak_year: 2041
+    peak_population: 1505720339.1513608
+    population_2050: 1486198674.1372867
+    population_2100: 1351929929.076108
+validation:
+  execution_judgment: pass
+  internal_invariants_judgment: pass
+  scientific_validation_judgment: needs_review
+  contextual_judgment: fail
+  overall_judgment: needs_review
+  max_relative_conservation_residual: 3.61e-16
+  standard_tfr_definition_judgment: pass
+  standard_tfr_target_max_absolute_error: 8.88178419700125e-16
+  exposure_denominator_judgment: pass
+  birth_sex_ratio_aggregation_judgment: pass
+  rolling_selection_judgment: needs_review
+  appendix_context:
+    total_population_2020:
+      judgment: pass
+      relative_error: 0.01656530944308166
+    older_60_population_2020:
+      judgment: fail
+      relative_error: 0.2871012379172979
+    older_65_population_2020:
+      judgment: fail
+      relative_error: 0.3353995006817092
+robustness:
+  execution_judgment: pass
+  scientific_interpretation_judgment: needs_review
+  factorial_case_count: 54
+  maximum_peak_year: 2044
+  maximum_peak_population: 1557826245.84772
+  maximum_case_population_2050: 1547968408.68513
+  maximum_case_population_2100: 1414158603.19917
+  minimum_population_2100: 542311920.663845
+  peak_over_1_5_billion_count: 12
+  additional_sensitivity_judgment: pass
+limitations:
+  - "附件2无全国基期总人口，2010尺度锚不是独立验证。"
+  - "抽样设计未知，附件2与附件1老龄结构冲突。"
+  - "迁移主模型无年龄选择，也未表示国际迁移。"
+  - "滚动验证只有单步；M2相对M1的多年全国总量机制仍缺直接证据。"
+  - "生育、死亡改善、性别比和城市化均为外生条件。"
+  - "重大政策、疫情、战争、国际迁移或分类口径变化会使长期外推失效。"
+deliverables:
+  problem_analysis: "problem-analysis.md"
+  data_audit: "data-audit.md"
+  assumptions: "assumptions.yaml"
+  variables: "variables.yaml"
+  model_selection: "model-selection.md"
+  reproducibility: "reproducibility.yaml"
+  code_directory: "code/"
+  results_directory: "results/"
+  figures_directory: "figures/"
+  latex_paper: "paper/main.tex"
+  compiled_pdf: "paper/<SOURCE_FILE_REDACTED>"
+  markdown_paper: "paper/paper.md"
+  paper_result_consistency_judgment: pass
+  latex_compile_judgment: pass
+  visual_layout_judgment: pass
+  format_rule_judgment: pass
+next_phase:
+  performed: false
+  note: "未冻结、未进入新审计、未复盘、未评测；完成后由外部脚本生成blind-final。"

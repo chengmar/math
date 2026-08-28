@@ -1,0 +1,12 @@
+{
+  "status": "pass",
+  "checked_files": 1083,
+  "findings": [],
+  "secret_keyword_mentions_classified_as_code_or_documentation": 18,
+  "real_problem_files_exported": 0,
+  "reference_papers_exported": 0,
+  "raw_data_exported": 0,
+  "test_2023_content_exported": 0,
+  "auth_files_exported": 0,
+  "limitation": "文件类型、秘密、路径、文件名和可用题面文本长片段扫描；不能证明模型预训练阶段绝对未见过相似内容。"
+}

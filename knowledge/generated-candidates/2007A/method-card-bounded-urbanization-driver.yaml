@@ -1,0 +1,47 @@
+schema_version: "1.0"
+id: "cumcm-a-2007a-bounded-urbanization-driver"
+status: "candidate"
+type: "method_card"
+title: <REFERENCE_TITLE_REDACTED>
+origin: "learned_after_references"
+claim: >-
+  对长期城乡重分类，优先把城镇化率写成有上界的饱和路径或分政策阶段路径；线性趋势
+  只适合作短期基线，不应无界外推。
+applicable_when:
+  - "城镇化率直接决定地区迁移总量或状态份额。"
+  - "预测期明显长于拟合期。"
+  - "存在合理上界、政策阶段或可做上界情景。"
+not_applicable_when:
+  - "只做很短期插值且线性基线已通过留出。"
+  - "地区分类会重定义，固定上界没有可解释含义。"
+  - "城镇化并非模型状态或驱动变量。"
+minimum_baseline:
+  name: "短期线性趋势"
+  validation: "至少做滚动留出，并检查预测值在 [0,1] 内。"
+method:
+  - "短期保留线性或持久性基线。"
+  - "长期候选采用 Logistic、Gompertz 或显式分阶段目标。"
+  - "把上界、转折速度和阶段结束年纳入联合敏感性。"
+  - "城镇化路径只决定内部重分类，不能直接改变全国总量。"
+validation:
+  required_checks:
+    - "0 <= U_t <= 1。"
+    - "短期留出误差不劣于线性基线，或明确以政策情景而非拟合胜出。"
+    - "不同上界下关键人口结果进入联合包络。"
+    - "迁移总量与逐状态守恒为 pass。"
+  automatic_judgment: "needs_review"
+counterexamples:
+  - "R3 明确指出线性城镇化长期会使农村人口趋于负值，因此改用饱和曲线。"
+  - "R2 采用每年约 1 个百分点的线性增量做 50 年外推，存在越界和政策恒定风险。"
+  - "BF 固定年度重分类率虽保持非负和守恒，但 2100 路径仍是条件工程规则。"
+source_cases:
+  - id: "2007A-R3"
+    evidence: "短期线性拟合后改用上界 0.75 的饱和曲线。"
+  - id: "2007A-R2"
+    evidence: "长期线性城镇化提供反例。"
+  - id: "2007A-BF"
+    evidence: "固定重分类率的条件外推与联合敏感性。"
+evidence_strength: "medium"
+promotion_gate:
+  - "跨题证明饱和/分阶段路径相对短期线性基线有可解释收益。"
+  - "上界必须来自题面、数据或显式情景，不能凭空设定。"

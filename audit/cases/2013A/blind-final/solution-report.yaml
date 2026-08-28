@@ -1,0 +1,150 @@
+schema_version: 2
+case_id: 2013A
+phase: blind-revision
+overall_status: needs_review
+phase_gate:
+  allowed_skill: $cumcm-a-solve
+  phase_lock_status: pass
+  required_python_process_status: fail
+  fallback_exact_logic_status: pass
+  allowed_paths_hash_status: pass
+  forbidden_paths_hash_status: pass
+  note: 系统无python/py启动器；完整读取check_phase.py后以PowerShell逐句等价检查phase及三项锁文件，未伪装成Python成功。
+scope:
+  blind_revision_status: pass
+  network_search_status: pass
+  forbidden_reference_read_status: pass
+  other_stage_skill_use_status: pass
+  blind_v1_preservation_status: pass
+  freeze_performed: false
+  cross_phase_resume_performed: false
+  source_ledger: source-ledger.json
+input:
+  identity_status: pass
+  identity_basis: 路径、字节数、SHA-256和OLE文件头逐项匹配不可变配置。
+  completeness_status: needs_review
+  video_files_found: 0
+  required_video_files: 2
+  video_identity_and_decode_status: needs_review
+question_coverage:
+  - question: 1
+    method_coverage_status: pass
+    implementation_status: pass
+    numeric_result_status: needs_review
+    method: 完整60秒周期、秒制PCU换算、饱和与质量门禁、三周期中位数、MAD分段。
+    outputs: [results/<SOURCE_FILE_REDACTED>, results/<SOURCE_FILE_REDACTED>, results/capacity-unit-tests.json]
+    limitation: 视频1和授权标注均缺失。
+  - question: 2
+    method_coverage_status: pass
+    empirical_result_status: needs_review
+    strict_capacity_order_supported_status: fail
+    descriptive_proxy_status: pass
+    outputs: [results/q2_comparison.json, results/<SOURCE_FILE_REDACTED>]
+    limitation: M=1-p不识别容量损失；需要匹配饱和视频周期和不确定性。
+  - question: 3
+    method_coverage_status: pass
+    pre_boundary_model_status: pass
+    case_specific_result_status: needs_review
+    finite_boundary_status: pass
+    finite_link_boundary_m: 240
+    spillback_rows_capped_and_marked: 10
+    relation: dL/dt=(q-C)/(m*k_j-C/w-q/v_f)，在L=0反射且只适用于首次溢出前。
+  - question: 4
+    method_coverage_status: pass
+    calculation_status: pass
+    case_specific_result_status: needs_review
+    constant_engineering_baseline_min: 5.306
+    point_queue_baseline_min: 7.056
+    capacity_800_to_1200_time_min: [3.95, 8.47]
+    same_mean_square_wave_time_min: [3.259802, 3.759802]
+    detailed_signal_phase_grid_time_min: [3.321081, 4.040314]
+    interpretation: 5.306分钟是常流基线；缺少C1(t)和真实相位时没有唯一案例答案。
+model_selection:
+  baseline_status: pass
+  baseline: 完整周期PCU计数加点队列。
+  selected_status: pass
+  selected: 稳健容量门禁加事件驱动三角基本图运动波加有限边界。
+  deferred_candidate_status: pass
+  deferred_candidate: CTM或微观换道仿真。
+  reason: 当前视频、速度、头时距、换道和独立评价片段缺失，额外参数不可识别。
+validation:
+  overall_status: needs_review
+  internal_check_count: 16
+  internal_pass_count: 14
+  needs_review_count: 2
+  hard_failure_count: 0
+  capacity_unit_test_status: pass
+  signal_regression_status: pass
+  independent_convergence_status: pass
+  smallest_step_s: 0.1
+  smallest_step_absolute_error_s: 0.04
+  mutation_detection_status: pass
+  mutation_detection_delta_s: 1.93
+  finite_boundary_status: pass
+  near_capacity_precision_status: pass
+  equal_capacity_counterexample_status: pass
+  external_validity_status: needs_review
+reproducibility:
+  deterministic_code_run_status: pass
+  two_run_hash_status: pass
+  tracked_file_count: 27
+  hash_mismatch_count: 0
+  seed: 2013
+  stochastic_algorithm_used: false
+  command: pwsh -NoProfile -File .\code\run-all.ps1 -Workspace .
+  clean_filesystem_copy_status: pass
+  clean_copy_files_compared: 29
+  clean_copy_hash_mismatch_count: 0
+  clean_copy_report: clean-reproduction-report.json
+paper:
+  visible_result_consistency_status: pass
+  consistency_check_count: 46
+  consistency_failure_count: 0
+  qquad_typography_status: pass
+  tex_static_structure_status: pass
+  pdf_compile_status: needs_review
+  pdf_visual_inspection_status: needs_review
+provenance:
+  visible_allowed_source_status: pass
+  authoritative_revision_ledger_status: pass
+  complete_session_access_history_human_review_status: needs_review
+audit_response:
+  AUD-001: needs_review
+  AUD-002: pass
+  AUD-003: pass
+  AUD-004: pass
+  AUD-005: pass
+  AUD-006: pass
+  AUD-007: pass
+  AUD-008: needs_review
+  AUD-009: pass
+  AUD-010: pass
+  AUD-011: needs_review
+completion_matrix:
+  small_question_case_closure_status: needs_review
+  deterministic_code_status: pass
+  internal_validation_status: pass
+  engineering_sensitivity_status: pass
+  case_specific_robustness_status: needs_review
+  limitations_disclosed_status: pass
+  paper_result_consistency_status: pass
+  external_validity_status: needs_review
+  pdf_status: needs_review
+deliverables:
+  - problem-analysis.md
+  - data-audit.md
+  - assumptions.yaml
+  - variables.yaml
+  - model-selection.md
+  - solution-report.yaml
+  - reproducibility.yaml
+  - source-ledger.json
+  - v1-preservation.json
+  - clean-reproduction-report.json
+  - revision-traceability.md
+  - code/
+  - results/
+  - figures/
+  - paper/main.tex
+  - paper/paper.md
+claim_limit: 内部pass证明修订实现和声明性质，不证明缺失视频下的案例外部有效性。

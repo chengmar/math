@@ -1,0 +1,202 @@
+case_id: 2012A
+phase: blind-revision
+skill: "$cumcm-a-solve"
+status_vocabulary: [pass, fail, needs_review]
+network_prohibition_compliance: pass
+external_answer_materials_avoidance: pass
+frozen_v1_modified: false
+freeze_action: not_performed
+cross_phase_resume: not_performed
+delivery_status: pass
+delivery_status_reason: "必需产物齐全；唯一入口在无既有结果的隔离副本中退出0；15/15内部检查无fail；非PDF字节与7份PDF语义比较最终均pass。"
+
+question_coverage:
+  q1_group_difference:
+    status: pass
+    evidence: "红/白精确符号翻转p=0.02027099/0.01334403。"
+  q1_trusted_panel:
+    status: needs_review
+    evidence: "第一组ICC和W更高，第二组同酒SD更低；无外部质量真值。"
+  q2_grading:
+    status: needs_review
+    evidence: "完整A/B/C已给出，但扰动和替代组ARI低。"
+  q3_local_links:
+    status: needs_review
+    evidence: "红59条在100k/200k稳定；白20→21，边界集合变化。"
+  q3_overall_mapping:
+    status: fail
+    evidence: "红/白Q2_train=-0.030/-0.253。"
+  q4_block_effects:
+    status: needs_review
+    evidence: "固定候选存在块级差异，但联合选择主推断未确认稳定增量。"
+  q4_physchem_quality_evaluation:
+    status: fail
+    evidence: "红不胜基线；白仅改善约5%且置换区间跨0.05。"
+
+data_summary:
+  red_samples: 27
+  white_samples: 28
+  tasting_records: 1100
+  conventional_features:
+    red_grape: 59
+    white_grape: 59
+    red_wine: 15
+    white_wine: 14
+  aroma_compounds:
+    red_grape: 55
+    white_grape: 55
+    red_wine: 73
+    white_wine: 73
+  sample_alignment_status: pass
+  score_bounds_status: pass
+  scoring_repairs:
+    status: needs_review
+    count: 3
+    rule: "同酒同项其余评委中位数"
+  technical_repeat_anomalies:
+    status: needs_review
+    rule: "重复中位数；不猜测小数点"
+  aroma_blank_semantics:
+    status: needs_review
+    primary: "未检出=0"
+    sensitivity: "训练折半最小值"
+  current_input_hash_status: pass
+  excel_source_isolation_status: pass
+  extraction_semantic_snapshot_status: pass
+
+q1:
+  red:
+    panel_1_mean: 73.0852
+    panel_2_mean: 70.5148
+    difference_panel1_minus_panel2: 2.5704
+    exact_sign_flip_p: 0.02027099
+    difference_status: pass
+    panel_1_icc_2_k: 0.895
+    panel_2_icc_2_k: 0.801
+    working_panel: 1
+    trust_status: needs_review
+  white:
+    panel_1_mean: 73.9714
+    panel_2_mean: 76.5321
+    difference_panel1_minus_panel2: -2.5607
+    exact_sign_flip_p: 0.01334403
+    difference_status: pass
+    panel_1_icc_2_k: 0.605
+    panel_2_icc_2_k: 0.556
+    working_panel: 1
+    trust_status: needs_review
+
+q2:
+  method: "equal-block PCA-Ward; grape/quality weights 50/50; k=3"
+  method_status: needs_review
+  red:
+    A: [23, 9, 3, 2, 17, 20, 19, 24, 22, 21]
+    B: [16, 13, 10, 26, 5, 14, 27, 8, 6, 7, 11, 25, 4]
+    C: [1, 18, 15, 12]
+    retained_pca_variance: 0.7469
+    perturbation_median_ari: 0.482
+    alternative_panel_ari: 0.183
+  white:
+    A: [1, 26, 28, 4, 17, 3, 20, 25]
+    B: [7, 21, 23, 10, 2, 16, 24, 18, 9, 15, 11, 19, 14, 5, 22, 8, 6]
+    C: [13, 27, 12]
+    retained_pca_variance: 0.7208
+    perturbation_median_ari: 0.200
+    alternative_panel_ari: -0.014
+
+q3:
+  multiple_testing: "one colour-wise family; 100k/200k tie-preserving permutations; BH once"
+  red:
+    valid_tests: 905
+    significant_100k: 59
+    significant_200k: 59
+    link_set_status: pass
+    q2_vs_training_mean: -0.0301
+    selection_aware_permutation_p: 0.544
+    mapping_status: fail
+    support_violations_before_constraint: 134
+    support_violations_after_constraint: 0
+  white:
+    valid_tests: 845
+    significant_100k: 20
+    significant_200k: 21
+    link_set_status: needs_review
+    q2_vs_training_mean: -0.2528
+    selection_aware_permutation_p: 0.044
+    mapping_status: fail
+    support_violations_before_constraint: 162
+    support_violations_after_constraint: 0
+
+q4:
+  decision_rule: "pass iff Q2_train>0, RMSE gain>=10%, all selection-aware permutation MC upper bounds<0.05, rho>=0.50, and post-constraint violations=0"
+  red:
+    selected_pipeline_rmse: 9.0612
+    training_mean_baseline_rmse: 7.5515
+    q2_vs_training_mean: -0.4398
+    relative_rmse_improvement: -0.1999
+    selection_aware_permutation_p: 0.722
+    evaluation_status: fail
+    centered_design_rank: 26
+    features: 170
+    nullity: 144
+    wine_block_increment_status: needs_review
+  white:
+    selected_pipeline_rmse: 4.7606
+    training_mean_baseline_rmse: 5.0096
+    q2_vs_training_mean: 0.0969
+    relative_rmse_improvement: 0.0497
+    selection_aware_permutation_p: 0.050
+    permutation_mc_ci95: [0.0311, 0.0707]
+    evaluation_status: needs_review
+    centered_design_rank: 27
+    features: 169
+    nullity: 142
+    wine_block_increment_status: needs_review
+  overall_physchem_only_evaluation_status: fail
+  recommended_use: "仅作辅助筛查和后续试验设计，不替代感官评分。"
+
+validation:
+  exact_q1_inference: pass
+  repeated_nested_validation: pass
+  selection_aware_model_permutation: pass
+  tie_preserving_link_permutation: pass
+  fold_isolation: pass
+  aroma_unit_invariance: pass
+  physical_support_after_constraint: pass
+  score_repair_sensitivity: pass
+  aroma_imputation_sensitivity: pass
+  conventional_winsor_sensitivity: pass
+  alternative_panel_sensitivity: pass
+  grading_weight_whitening_k_sensitivity: pass
+  external_validation: needs_review
+  mathematical_truth_claim: needs_review
+  overall_status: needs_review
+
+required_outputs:
+  problem-analysis.md: pass
+  data-audit.md: pass
+  assumptions.yaml: pass
+  variables.yaml: pass
+  model-selection.md: pass
+  solution-report.yaml: pass
+  reproducibility.yaml: pass
+  code/: pass
+  results/: pass
+  figures/: pass
+  paper/main.tex: pass
+  paper/paper.md: pass
+  paper/<SOURCE_FILE_REDACTED>: pass
+  results/verification.json: pass
+  results/artifact-manifest.json: pass
+
+limitations:
+  - status: needs_review
+    condition: "无外部质量金标准，工作评委组只由内部一致性选取。"
+  - status: needs_review
+    condition: "单一年份、红27白28个样本，无法验证跨年份或产区泛化。"
+  - status: needs_review
+    condition: "白色置换阈值和局部联系边界在检查点附近。"
+  - status: needs_review
+    condition: "分级对评委组、权重和扰动敏感。"
+  - status: needs_review
+    condition: "p>n设计下单变量效应不可识别。"

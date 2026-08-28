@@ -1,0 +1,73 @@
+schema_version: 1
+case_id: 2011A
+knowledge_status: candidate
+cards:
+  - id: CAND-2011A-M01
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_status: candidate
+    origin: independent_blind_and_audit_remediation
+    evaluation_status: pass
+    trigger: "不规则空间采样，需要绘制连续表面"
+    method:
+      - "在同一变换尺度上比较常数、局部插值和核平滑"
+      - "按空间块隔离训练与验证，调参仅发生在外层训练集"
+      - "增加连续区域和缓冲留出，区分域内插值与区域外推"
+      - "制图带宽不解释为物理传播尺度"
+    evidence: "本题 Gaussian 在块、连续区及 1/2 km 缓冲留出均排名第一"
+    limitations: "块大小、带宽集合和模型族均为题目相关，不能原样迁移"
+
+  - id: CAND-2011A-M02
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_status: candidate
+    origin: independent_blind_plus_learned_after_reference
+    evaluation_status: needs_review
+    trigger: "元素长尾明显，同时读者需要经典等级沟通"
+    method:
+      - "主指标先取分元素区域中位数，再跨元素取几何平均"
+      - "辅助报告单因子/内梅罗，但明确起点评价值和标准适用条件"
+      - "比较 B 与 B+2SD 等合理起点的绝对等级敏感性"
+      - "区域排名不确定性用空间簇重采样"
+    evidence: "本题两种内梅罗起点绝对值不同但相对顺序相同；工业—交通块重采样仍可翻转"
+    limitations: "毒性权重、法规等级、pH 和土地用途需领域核准"
+
+  - id: CAND-2011A-M03
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_status: candidate
+    origin: independent_blind_and_audit_remediation
+    evaluation_status: pass
+    trigger: "只有单期空间浓度，却被要求讨论传播和源位置"
+    method:
+      - "先检验空间聚集"
+      - "方向必须超过固定采样设计零模型"
+      - "热点报告全样点影响、支持度、尺度和空间块位置包络"
+      - "把复采热点与真实排放源分开标注"
+    evidence: "本题方向 0/8 通过；Pb 删除第二高值后移动 3.691 km"
+    limitations: "不能从该阶梯得到传播速度、因果顺序或企业身份"
+
+  - id: CAND-2011A-M04
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_status: candidate
+    origin: learned_after_reference
+    evaluation_status: needs_review
+    trigger: "参考材料提出道路、水土气或定位机理，但当前数据不可识别"
+    method:
+      - "比较欧氏、道路/河网网络、下风和下游距离"
+      - "采集重复时间、深度、通量和源端指纹"
+      - "用未来时间、独立深度和独立区域留出判别模型"
+      - "不直接继承参考材料的坐标或系数"
+    evidence: "当前参考的源位置均缺完整可复现标定"
+    limitations: "需要新增数据；当前只是一项采样设计候选"
+
+  - id: CAND-2011A-M05
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_status: candidate
+    origin: audit_remediation
+    evaluation_status: pass
+    trigger: "拟使用对流—弥散—反应 PDE 反演源强和位置"
+    method:
+      - "定义空间/深度域、时间、初始条件和互斥覆盖的边界条件"
+      - "检查所有项量纲与核归一化"
+      - "约束弥散张量正定，浓度、源强和损失率非负"
+      - "先做结构可辨识和模拟恢复，再接触现场反演"
+    evidence: "审计指出初始 PDE 缺条件；最终规格已闭合"
+    limitations: "规格完整不代表实际数据足以反演"

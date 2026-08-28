@@ -1,0 +1,158 @@
+{
+  "schema_version": 1,
+  "case_id": "2013A",
+  "phase": "audit",
+  "generated_at": "2026-08-25T05:55:12.4167242+08:00",
+  "overall_status": "pass",
+  "scope_note": "pass means byte-reproducible execution of the frozen deterministic implementation; mathematical and case-specific validity remain needs_review",
+  "phase_gate": {
+    "status": "pass",
+    "required_check_phase_process_status": "fail",
+    "required_check_phase_process_exit_code": 1,
+    "required_check_phase_process_stderr": "python was not recognized as a command",
+    "fallback_status": "pass",
+    "fallback_method": <LONG_QUOTE_REDACTED>,
+    "phase": "audit",
+    "skill": "$cumcm-a-audit",
+    "frozen_solution_exists": true,
+    "allowed_paths_sha256_expected": "27067603a7f579f28c83c2e35197d56019db52ee5a9b40c07e4c355e9a34294e",
+    "allowed_paths_sha256_actual": "27067603a7f579f28c83c2e35197d56019db52ee5a9b40c07e4c355e9a34294e",
+    "allowed_paths_status": "pass",
+    "forbidden_paths_sha256_expected": "f075bf741aa5e0dc4527893642bc07eb4bc70edc84733fa9b1801ed5ccaa0b47",
+    "forbidden_paths_sha256_actual": "f075bf741aa5e0dc4527893642bc07eb4bc70edc84733fa9b1801ed5ccaa0b47",
+    "forbidden_paths_status": "pass"
+  },
+  "frozen_manifest": {
+    "status": "pass",
+    "path": "frozen-solution/FROZEN_BLIND_V1.json",
+    "schema_version": 1,
+    "snapshot": "blind-v1",
+    "case_id": "2013A",
+    "manifest_file_count": 62,
+    "actual_payload_file_count_excluding_manifest": 62,
+    "missing_file_count": 0,
+    "unlisted_file_count": 0,
+    "size_mismatch_count": 0,
+    "sha256_mismatch_count": 0,
+    "tree_hash_algorithm": "SHA-256 over each manifest entry in listed order as UTF-8(path + NUL + file_sha256 + LF)",
+    "tree_sha256_expected": "fed823dd6b3f10cfb554040c4e6955c179861964db5e2f5af3ca4fa8ba26b94e",
+    "tree_sha256_actual": "fed823dd6b3f10cfb554040c4e6955c179861964db5e2f5af3ca4fa8ba26b94e",
+    "post_audit_recheck_status": "pass",
+    "git_commit_recorded": "ca5d7b307d397b649b5996474c1e93ccfc821c75",
+    "git_dirty_recorded": true,
+    "git_commit_verification_status": "needs_review",
+    "git_commit_verification_note": "The minimal audit copy is hash-authoritative and does not provide an allowed repository context for independently resolving the recorded commit."
+  },
+  "input_identity": {
+    "status": "pass",
+    "files": [
+      {
+        "path": "input/problem/<SOURCE_FILE_REDACTED>",
+        "bytes": 249344,
+        "sha256": "71d7585a8580cd2c616ef5879c85561499f22e3b740a5af99326f53500e3dcdf",
+        "ole_compound_magic": "d0cf11e0a1b11ae1",
+        "status": "pass"
+      },
+      {
+        "path": "input/attachments/<SOURCE_FILE_REDACTED>",
+        "bytes": 24064,
+        "sha256": "2e7fa8a775109a177adb8cef103bb1e1fe0b5d30ea7b08d5f68a98a051cd2dd8",
+        "ole_compound_magic": "d0cf11e0a1b11ae1",
+        "status": "pass"
+      }
+    ],
+    "video_completeness_status": "needs_review",
+    "video_files_found": 0,
+    "required_video_files": 2
+  },
+  "environment": {
+    "operating_system": "Microsoft Windows 10.0.26200",
+    "platform": "Win32NT",
+    "process_architecture": "X64",
+    "powershell_edition": "Core",
+    "powershell_version": "7.6.4",
+    "powershell_executable": "<ABSOLUTE_PATH>",
+    "dotnet_runtime": "10.0.10",
+    "system_drawing_assembly": "System.Drawing.Common, Version=10.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51",
+    "current_culture": "zh-CN",
+    "ui_culture": "zh-CN",
+    "network_used": false,
+    "external_python_required_by_solution": false,
+    "tex_engine_status": "needs_review",
+    "tex_engines_found": [],
+    "fresh_os_or_container_status": "needs_review",
+    "fresh_os_or_container_note": "Reproduction used a new filesystem workspace and a -NoProfile child process on the current host, not a newly provisioned OS/container."
+  },
+  "clean_workspace": {
+    "status": "pass",
+    "path": "clean-reproduction-run1",
+    "initial_contents": [
+      "code",
+      "input",
+      "paper"
+    ],
+    "initial_results_directory_present": false,
+    "initial_figures_directory_present": false,
+    "copied_source_file_count": 10,
+    "copied_source_hash_mismatch_count": 0,
+    "copied_source_hash_status": "pass",
+    "profile_loading_disabled": true
+  },
+  "execution": {
+    "status": "pass",
+    "command": "<ABSOLUTE_PATH>",
+    "working_directory": "<ABSOLUTE_PATH>",
+    "started_at": "2026-08-25T05:46:18.8579850+08:00",
+    "ended_at": "2026-08-25T05:46:20.1942149+08:00",
+    "duration_ms": 1333,
+    "exit_code": 0,
+    "stdout": <LONG_QUOTE_REDACTED>,
+    "stderr": "",
+    "stdout_log": "clean-reproduction-run1/run-all.stdout.log",
+    "stderr_log": "clean-reproduction-run1/run-all.stderr.log",
+    "result_file_count": 15,
+    "figure_file_count": 4,
+    "two_run_tracked_file_count": 17,
+    "two_run_hash_mismatch_count": 0,
+    "two_run_status": "pass"
+  },
+  "frozen_output_comparison": {
+    "status": "pass",
+    "compared_file_count": 19,
+    "mismatch_count": 0,
+    "scope": "Every file directly under generated results/ and figures/ in the clean run was compared with the frozen counterpart by SHA-256."
+  },
+  "independent_constant_state_check": {
+    "status": "pass",
+    "dimensional_check": "(pcu/h)/(pcu/km)=km/h and km/(km/h)=h",
+    "central_arrival_density_pcu_km": 37.5,
+    "central_congested_density_pcu_km": 353.3333333333333,
+    "central_growth_speed_km_h": 1.58311345646438,
+    "central_hit_time_min": 5.306,
+    "capacity_rows_checked": 10,
+    "capacity_max_abs_error_min": 3.33333333379926e-7,
+    "q3_rows_checked": 45,
+    "q3_max_abs_error_m": 7.680165288093121e-5,
+    "joint_rows_checked": 81,
+    "joint_max_abs_error_min": 8.881784197001252e-16,
+    "claim_limit": "This validates arithmetic against the stated constant-state formula, not the formula's case-specific assumptions."
+  },
+  "random_stability": {
+    "status": "pass",
+    "declared_seed_in_model_config": 2013,
+    "stochastic_algorithm_used": false,
+    "hash_equal_runs": 2,
+    "note": "No stochastic calculation is used after the seed call."
+  },
+  "paper": {
+    "marker_and_figure_reference_status": "pass",
+    "marker_and_figure_check_count": 16,
+    "pdf_compile_status": "needs_review",
+    "pdf_visual_inspection_status": "needs_review"
+  },
+  "limitations": [
+    "The required Python phase-check process could not start because no Python launcher exists; exact logic plus stronger hash checks were executed in PowerShell and fully disclosed.",
+    "Filesystem/process isolation was clean, but the run used the current host rather than a freshly provisioned operating system or container.",
+    <LONG_QUOTE_REDACTED>
+  ]
+}

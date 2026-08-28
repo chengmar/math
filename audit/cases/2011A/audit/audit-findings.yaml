@@ -1,0 +1,283 @@
+schema_version: 1
+case_id: 2011A
+phase: audit
+overall_status: fail
+summary:
+  critical: 0
+  major: 6
+  minor: 3
+  suggestion: 1
+findings:
+  - id: AUD-001
+    status: fail
+    severity: major
+    category: reproduction
+    evidence:
+      - >-
+        在不复制旧 PDF/aux/log 的隔离论文目录中，由冻结 paper/main.tex 连续两次
+        XeLaTeX 编译均 exit 0 并生成 13 页 PDF；新 PDF SHA-256 为
+        a98598448a6e2103e08f0800eadc189353222c342feccc1013d741218cf32f33，
+        冻结 PDF SHA-256 为 497aee7bc838c65340b4add937642975795ca7e6ae4ca9f711dc0d2bd95efb32。
+      - >-
+        pdftotext 后去除空白进行序列比较，发现 8 个差异操作：冻结源编译稿增加
+        “模型建立与”“模型求解与”“模型验证、敏感性分析与”，并把“参考材料”改为
+        “参考文献”；冻结 PDF 不是当前冻结 TeX 源的产物。
+      - >-
+        code/check_consistency.py:29-42 只检查若干格式化数字是否出现在 Markdown，
+        111-115 只检查当前 main.log 是否为 13 页；它未比较冻结 PDF 与冻结源，故仍返回 pass。
+    affected_files:
+      - frozen-solution/paper/main.tex
+      - frozen-solution/paper/<SOURCE_FILE_REDACTED>
+      - frozen-solution/reproducibility.yaml
+      - frozen-solution/code/check_consistency.py
+    reason: >-
+      权威交付 PDF 与权威源文件不一致，使论文制品无法从冻结源端到端复现；现有
+      consistency_status: pass 是检查覆盖不足，不是该一致性的证据。
+    recommended_fix: >-
+      在新修订中先定稿 TeX，再从空 build 目录连续编译并冻结 PDF；比较抽取文本或
+      规范化 PDF 内容，而非只比易受时间戳影响的原始 PDF 哈希；让一致性脚本核对
+      源、生成表、PDF 文本和页数的同一构建链。
+    requires_human_review: false
+
+  - id: AUD-002
+    status: fail
+    severity: major
+    category: spatial_inference
+    evidence:
+      - >-
+        solve.py:1170-1215 以正富集乘局部 Gaussian 权重计算坐标协方差主轴，但没有
+        采样几何零模型或方向显著性检验；paper/main.tex:226 据此写出高值团通常沿
+        西南—东北向拉伸。
+      - >-
+        固定数据选出的中心、随机置换正富集 2000 次的条件压力测试中，8 个元素的
+        中位各向异性比单侧 p 值为 0.137-0.884，0/8 达到 0.05；6/8 个观测主轴与
+        仅使用采样几何权重的主轴相差不足 6 度。
+    affected_files:
+      - frozen-solution/code/solve.py
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/paper/main.tex
+      - frozen-solution/paper/paper.md
+    reason: >-
+      不规则城市边界与采样密度本身可产生相同方向和各向异性；未扣除该基线时，
+      椭圆不能支持传播方向或高值团方向的实证结论。
+    recommended_fix: >-
+      加入固定设计置换、方向变异函数或带采样设计校正的各向异性模型，报告方向
+      区间及多重比较；在通过前把方向结论降为 needs_review，并明确其为几何描述而非传播。
+    requires_human_review: true
+
+  - id: AUD-003
+    status: fail
+    severity: major
+    category: variogram
+    evidence:
+      - >-
+        solve.py:898-940 直接将 0-1 km 箱平均半方差除以全样本方差，命名为
+        nugget_ratio_0_1_km；又把第一个半方差/方差 >= 0.95 的 1 km 箱中点命名为
+        empirical_95pct_sill_range_km。代码没有估计零距截距、变异函数模型或平稳趋势。
+      - >-
+        对同一 log2 富集仅去除二维线性趋势后，八元素首个 0.95 穿越从论文的
+        8.5-12.5 km 改为 1.5-3.5 km；0.5/1/2 km 分箱的首箱比也明显改变。
+    affected_files:
+      - frozen-solution/code/solve.py
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/paper/main.tex
+    reason: >-
+      首距离箱不是块金参数，非平稳原始场的首次阈值穿越也不是可解释的相关程；
+      这些量不能承担传播尺度证据。
+    recommended_fix: >-
+      先建模/去除大尺度趋势，再拟合带块金、基台和程的有效变异函数或协方差模型，
+      检查方向性、分箱和稳健估计；当前量应改名为“首箱经验比”和“描述性阈值穿越”，
+      不称块金或传播程。
+    requires_human_review: true
+
+  - id: AUD-004
+    status: fail
+    severity: major
+    category: source_robustness
+    evidence:
+      - >-
+        solve.py:1130-1167 只删除每种元素的原始最大浓度点；1218-1243 据此给出
+        internal_location_status。solution-report.yaml:114 与 paper/main.tex:15,253 将 Pb 标为 pass/稳定。
+      - >-
+        使用同一 h=1 km 核面、同一峰提取和匹配规则，删除第二高 Pb 样点 ID 6 后，
+        Pb 主峰从 (1.00,3.50) km 移动 3.691 km；因此“删除最大点不动”未覆盖实际最有
+        影响的非最大点。
+      - >-
+        主峰处 Gaussian 权重有效样本量：As 4.09、Cr 6.24、Ni 5.52；Cu/Hg/Pb
+        主峰 1 km 内采样点数为 0。Pb 峰前三个样点贡献约 78.8% 的核分子。
+    affected_files:
+      - frozen-solution/code/solve.py
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/paper/main.tex
+      - frozen-solution/solution-report.yaml
+    reason: >-
+      单删原始最大点不是通用影响诊断，且归一化核面没有最低有效支持约束；Pb 的
+      pass 状态被一个直接反例推翻，坐标精度也高于采样支持。
+    recommended_fix: >-
+      对所有高杠杆点做 leave-one-out/删除前 k 高值和空间块 bootstrap，报告峰位置
+      区域而非单一网格点；设定最小有效样本量、最近观测距离或核权重阈值；至少将
+      Pb 更新为 needs_review，并对 Cu/Hg/Pb 的空近邻峰复采。
+    requires_human_review: true
+
+  - id: AUD-005
+    status: fail
+    severity: major
+    category: validation
+    evidence:
+      - >-
+        solve.py:541-554 对所有功能区使用同一扰动背景向量。因
+        R_g=[prod_j median_g(C_j)/B_j]^(1/8)，背景项是所有功能区共同乘子，
+        跨区排序对任何正的共同 B_j 都严格不变；solution-report.yaml:122 的 pass
+        因而是恒等结果。
+      - >-
+        500 个共同背景随机场只产生 1 种排序。允许功能区背景在题给均值 ±1 SD
+        范围内不同的反例中，交通区指数为 2.461、工业区为 1.730，前两名翻转；
+        这不是背景真值估计，只证明现有测试没有覆盖 A1 所述空间背景风险。
+      - >-
+        原 i.i.d. 点 bootstrap 给工业区首位 91.75%；按功能区内 3 km 空间块进行
+        10000 次成组重采样后为 81.96%，说明忽略空间相关会高估排序稳定性。
+    affected_files:
+      - frozen-solution/code/solve.py
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/model-selection.md
+      - frozen-solution/paper/main.tex
+      - frozen-solution/solution-report.yaml
+    reason: >-
+      当前背景压力测试无法检验背景空间非平稳，点 bootstrap 又违反空间相关结构；
+      “工业区首位较稳健”的证据强度被高估。
+    recommended_fix: >-
+      删除共同背景下的排序稳健性表述或明确其为代数不变量；用背景点的空间层级模型
+      传播区域特异背景不确定性；区域排名采用空间块 bootstrap/cluster jackknife，并
+      同时报告跨区差值区间和翻转概率。
+    requires_human_review: true
+
+  - id: AUD-006
+    status: fail
+    severity: major
+    category: model_specification
+    evidence:
+      - >-
+        paper/main.tex:296-312 给出对流-扩散-反应-源项方程并称联合反演，但未给空间域、
+        初始条件、边界条件、核 K_epsilon 的归一化/单位、状态噪声 eta_j 的单位与分布，
+        也未约束 D_j 半正定、lambda_j/q_jk/c_j 非负。
+      - >-
+        paper/main.tex:15 将其称为“可辨识”的模型，但 q_jk 与未规范化 K_epsilon 可任意
+        反向缩放；无初边值时前向 PDE 不唯一，未约束加性噪声可产生负浓度。
+    affected_files:
+      - frozen-solution/paper/main.tex
+      - frozen-solution/paper/paper.md
+      - frozen-solution/variables.yaml
+      - frozen-solution/assumptions.yaml
+    reason: >-
+      缺少适定性、量纲和可行域条件时，后续模型不是完整可求解的数学模型，也不能仅凭
+      列出新增数据就宣称参数可辨识。
+    recommended_fix: >-
+      明确 Omega、初值 c_j(s,z,t0)、边界通量/浓度条件；规定 K 归一化及 q 的单位，
+      D 正定/半正定、lambda/q/c 非负；使用守恒通量形式和保证正性的状态/观测模型；
+      通过结构/实际可辨识性分析决定哪些参数固定、分层或合并，并给出先验和校准设计。
+    requires_human_review: true
+
+  - id: AUD-007
+    status: fail
+    severity: minor
+    category: leakage
+    evidence:
+      - >-
+        solve.py:621-623 在任何 fold 划分前对全体 319 点计算每个元素的 RMS 尺度，
+        随后 629-648 才拟合训练折 NMF 并评价验证折；验证样本参与了预处理参数。
+      - >-
+        改为训练折内尺度后，k=2/3/4 平均 RMSE 从
+        0.21395/0.16714/0.13886 变为 0.21465/0.16769/0.13910，3->4 改善率
+        由 16.92% 变为 17.05%，仍按规则选择 k=3。
+    affected_files:
+      - frozen-solution/code/solve.py
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/model-selection.md
+    reason: >-
+      这是可避免的 transductive preprocessing leakage；当前影响很小，但“训练—评价分离”
+      的 pass 声明不应包含该实现。
+    recommended_fix: >-
+      在每个训练折拟合 RMS 尺度并用同一尺度转换验证折；封装为可审计 pipeline；完整数据
+      尺度只用于最终模型，并重新生成 NMF CV 表。
+    requires_human_review: false
+
+  - id: AUD-008
+    status: needs_review
+    severity: minor
+    category: provenance
+    evidence:
+      - >-
+        当前 input/data XLS SHA-256 为 fab6657f5c789f9076dde2397394df4e879f0408dbb4f2fc38502a0a8ee15827，
+        冻结输入及 reproducibility.yaml:8 为 d6afcdea330da9db19dfc7cba1f4effc9cfd359d2301caae3cec71e6bfc80b6a。
+      - >-
+        两文件均为 76288 字节、时间戳相同，只在偏移 75884-75888 的连续 5 字节不同；
+        Excel 12.0 Value2 导出的三表名称、维度和逐行规范化 SHA-256 完全相同。
+    affected_files:
+      - input/data/<SOURCE_FILE_REDACTED>
+      - frozen-solution/input/data/<SOURCE_FILE_REDACTED>
+      - frozen-solution/reproducibility.yaml
+      - frozen-solution/data-audit.md
+      - frozen-solution/solution-report.yaml
+    reason: >-
+      数值语义一致但字节来源链不一致；无法仅凭现有材料判断 5 字节差异的产生环节，
+      因而不能把冻结副本哈希称为当前外层原始文件哈希。
+    recommended_fix: >-
+      保留不可变原始附件并记录复制前后哈希；同时冻结规范化 Value2 CSV 及其哈希，区分
+      container_byte_identity 与 tabular_semantic_identity；人工核查 5 字节变更来源。
+    requires_human_review: true
+
+  - id: AUD-009
+    status: fail
+    severity: minor
+    category: metadata
+    evidence:
+      - >-
+        FROZEN_BLIND_V1.json:12 为 dependencies: []，但 code/requirements.txt 和
+        reproducibility.yaml:14-22 明确列出 5 个 Python 包及 XeLaTeX。
+      - >-
+        FROZEN_BLIND_V1.json:9 为 git_dirty: true；solution-report.yaml:164-165 又记载
+        phase_actions.frozen: false，和现存 blind-v1 冻结清单不一致。
+      - >-
+        FROZEN_BLIND_V1.json:15 为 knowledge_cards: []，而 solution-report.yaml 的
+        training_memory 段称检查 3 张、采用/适配 2 张，且清单包含相应文件。
+    affected_files:
+      - frozen-solution/FROZEN_BLIND_V1.json
+      - frozen-solution/solution-report.yaml
+      - frozen-solution/reproducibility.yaml
+      - frozen-solution/code/requirements.txt
+    reason: >-
+      文件哈希完整性为 pass，但冻结元数据不能一致描述依赖、知识卡和冻结状态，削弱自动审计。
+    recommended_fix: >-
+      在新冻结流程中从已锁定依赖和最终 solution report 单一生成清单；冻结前要求工作树状态、
+      phase action、knowledge card 列表和依赖列表一致，并把不一致作为 freeze 阻断条件。
+    requires_human_review: false
+
+  - id: AUD-010
+    status: needs_review
+    severity: suggestion
+    category: validation_scope
+    evidence:
+      - >-
+        3 km 网格同块同折检查为 pass，4 对 <0.1 km 近邻均未拆分；但随机平衡后的折在空间上
+        交错，319 个验证点中 119 个距离最近训练点 <1 km，最小距离 0.164 km，中位 1.081 km。
+      - >-
+        200 个替代随机块划分中 Gaussian 200/200 次获胜；连续 KMeans 5 区留出中 Gaussian
+        仍获胜，但内层带宽多选 3-4 km，而最终全数据为 2 km。
+    affected_files:
+      - frozen-solution/code/solve.py
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/paper/main.tex
+    reason: >-
+      当前验证适合评价网格内局部插值，但“无泄漏”容易被误读为带空间缓冲的区域外推；
+      模型家族选择稳健，精确带宽和外推误差的适用范围仍需限定。
+    recommended_fix: >-
+      在现有 block CV 外增加 buffer CV 或连续区域留出，报告验证点到训练集的距离分层误差；
+      将结论明确限定为采样域内插值，并避免把 2 km 带宽解释为物理尺度。
+    requires_human_review: true

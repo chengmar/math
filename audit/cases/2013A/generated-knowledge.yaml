@@ -1,0 +1,18 @@
+case_id: 2013A
+status: candidate_only
+candidate_count: 5
+machine_verified_count: 0
+verified_count: 0
+exported_files:
+- file: LP-2013A-001.yaml
+  sha256: 9490cbce4e399cf59b7a5c5a136567cc72fca90583a9ce3ded6be7f9705095d5
+- file: LP-2013A-002.yaml
+  sha256: fd70231cdbfc6a8fd35d228a694cfc4b3c2324348ab7388c5d97ec74be23c440
+- file: LP-2013A-003.yaml
+  sha256: a90b4c4efbb9eb924a782815dcd0d20cca56645dbce0e407cffd27b507151324
+- file: LP-2013A-004.yaml
+  sha256: 60838cfba4530612015409fb73194f722241616a537b0f71088461555f256471
+- file: LP-2013A-005.yaml
+  sha256: 37ed0214abad809f9f83931d84d3da17ed43363e2a9ac89c8c4e3c2546ff6e75
+- file: README.md
+  sha256: 30efd0f329819d1373fe20ca779f2ac3bd058b2acec42fd803418602a3a802eb

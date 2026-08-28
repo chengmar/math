@@ -1,0 +1,223 @@
+schema_version: 1
+artifact: "comparison_matrix"
+knowledge_state: "candidate"
+overall_status: needs_review
+scope:
+  frozen_solution: "blind-final authoritative manifest"
+  approved_reference_count: 3
+  external_search_used: false
+  claim_scope: "only the frozen blind solution and R-A, R-B, R-C"
+entry_checks:
+  phase_lock_status: pass
+  external_freeze_status: pass
+  audit_prerequisite_status: pass
+  manifest_file_count: 141
+  manifest_entry_status: pass
+  manifest_tree_status: pass
+  reference_ocr_status: pass
+references:
+  - id: "R-A"
+    file: "<SOURCE_FILE_REDACTED>"
+    sha256: <REFERENCE_HASH_REDACTED>
+    page_count: 24
+    extraction_status: pass
+    overall_status: needs_review
+  - id: "R-B"
+    file: "<SOURCE_FILE_REDACTED>"
+    sha256: <REFERENCE_HASH_REDACTED>
+    page_count: 42
+    extraction_status: pass
+    overall_status: needs_review
+  - id: "R-C"
+    file: "<SOURCE_FILE_REDACTED>"
+    sha256: <REFERENCE_HASH_REDACTED>
+    page_count: 40
+    extraction_status: pass
+    overall_status: fail
+dimensions:
+  - id: "decomposition"
+    dimension: "problem decomposition"
+    frozen_blind: "exact P1 balance and transitions; two P2 structures; P3 phase and constrained relief"
+    reference_a: "minimum-area P2 and threshold relief"
+    reference_b: "minimum-area P2 and two relief architectures"
+    reference_c: "minimum-area P2 and two relief architectures"
+    judgment: pass
+    rationale: "the frozen solution covers all subtasks and exposes the unspecified P2 topology"
+  - id: "assumptions"
+    dimension: "assumptions"
+    frozen_blind: "lumped uniform pressure with density integrated from the supplied bulk modulus"
+    reference_a: "lumped model with boundary-specific density"
+    reference_b: "lumped model with explicit mass-flow equation"
+    reference_c: "local density distinction plus an inadequately justified global linear relation"
+    judgment: needs_review
+    rationale: "none of the four works closes spatial propagation validity"
+  - id: "data_units"
+    dimension: "data handling and units"
+    frozen_blind: "traceable inputs, conversions, derived values, and reproduction path"
+    reference_a: "scanned appendix and second/millisecond inconsistencies"
+    reference_b: "scanned appendix with mostly consistent units"
+    reference_c: "50 m versus 500 mm and angular-speed inconsistencies"
+    judgment: pass
+    rationale: "the frozen solution has the strongest data lineage in this comparison set"
+  - id: "mass_boundary"
+    dimension: "mass-balance boundary"
+    frozen_blind: "rho_in*Q_A-rho_r*(Q_B+Q_D), with residual check"
+    reference_a: "supply density at inlet and rail density at outlet"
+    reference_b: "dm/dt=rho_I*I-rho(t)*E"
+    reference_c: "locally usable mass integral but inconsistent constitutive simplification"
+    judgment: pass
+    rationale: "independent exact balance and local tests reproduce the frozen formulation"
+  - id: "p1_baseline"
+    dimension: "P1 steady baseline"
+    frozen_blind: "exact mass-balance root"
+    reference_a: "numerical search"
+    reference_b: "long simulation and final-window error"
+    reference_c: "step-reduction search"
+    judgment: pass
+    rationale: "the exact root is interpretable and independently reproducible"
+  - id: "p1_transition"
+    dimension: "P1 transition results"
+    frozen_blind: "three smooth transition bounds"
+    reference_a: "staged adjustment"
+    reference_b: "simulation search"
+    reference_c: "staged adjustment"
+    judgment: needs_review
+    rationale: "internal results reproduce, but experimental and spatial-model checks are absent"
+  - id: "p2_structure"
+    dimension: "P2 topology uncertainty"
+    frozen_blind: "serial-flow and bottleneck endpoints"
+    reference_a: "bottleneck only"
+    reference_b: "bottleneck only"
+    reference_c: "bottleneck only"
+    judgment: pass
+    rationale: "the interval prevents an unsupported single-point claim"
+  - id: "p2_result"
+    dimension: "P2 angular speed"
+    frozen_blind: "0.023226638 to 0.027530254 rad/ms"
+    reference_a: "0.0273 rad/ms"
+    reference_b: "0.0275 rad/ms"
+    reference_c: "0.027195 rad/ms"
+    judgment: needs_review
+    rationale: "reference agreement near one endpoint does not identify the real topology"
+  - id: "p3_phase"
+    dimension: "P3 injection phase"
+    frozen_blind: "50 ms offset and long-window phase ensemble"
+    reference_a: "49.1 ms"
+    reference_b: "50 ms"
+    reference_c: "phase search without a clean same-scope summary"
+    judgment: pass
+    rationale: "independent derivation and two local cross-checks agree within the model scope"
+  - id: "p3_relief"
+    dimension: "P3 relief control"
+    frozen_blind: "unconstrained economy point plus six actuator-constrained scenario families"
+    reference_a: "pressure-threshold relief"
+    reference_b: "pressure-triggered and periodic relief"
+    reference_c: "threshold and periodic relief"
+    judgment: needs_review
+    rationale: "the frozen constraints improve engineering honesty but do not prove hardware feasibility"
+  - id: "algorithm_complexity"
+    dimension: "algorithm and complexity"
+    frozen_blind: "root solves, event ODE, and 324 constrained scenarios"
+    reference_a: "coarse-to-fine traversal"
+    reference_b: "50-second simulation and traversal"
+    reference_c: "step-reduction traversal"
+    judgment: needs_review
+    rationale: "no work provides complete wall-clock or error-cost scaling evidence"
+  - id: "validation"
+    dimension: "validation"
+    frozen_blind: "exact baseline, mass residual, step convergence, cross-path reproduction, four tests"
+    reference_a: "curves and result tables"
+    reference_b: "final-window bias and curves"
+    reference_c: "perturbation idea without repeated statistical evidence"
+    judgment: needs_review
+    rationale: "P2 event-count convergence and external validity remain open"
+  - id: "robustness"
+    dimension: "sensitivity and robustness"
+    frozen_blind: "topology endpoints, phase, actuator constraints, and discretization checks"
+    reference_a: "limited parameter search"
+    reference_b: "long-window model comparison"
+    reference_c: "plus/minus 20 percent inlet-cycle idea without distribution or repetitions"
+    judgment: needs_review
+    rationale: "joint parameter, objective-weight, and model-form uncertainty is missing"
+  - id: "interpretability"
+    dimension: "interpretability"
+    frozen_blind: "mass ledger, exact baseline, structural interval, and control-cost terms"
+    reference_a: "direct formulas"
+    reference_b: "clear state equations"
+    reference_c: "some useful physical discussion with internal conflicts"
+    judgment: pass
+    rationale: "the frozen solution best connects numerical output to an auditable mechanism"
+  - id: "expression"
+    dimension: "expression"
+    frozen_blind: "separate reports for solution, validation, reproduction, provenance, and audit revision"
+    reference_a: "concise narrative with unit errors"
+    reference_b: "detailed model and scanned program appendix"
+    reference_c: "several numerical and dimensional inconsistencies"
+    judgment: needs_review
+    rationale: "the frozen main narrative should still centralize an executable piecewise control rule"
+  - id: "reproducibility"
+    dimension: "reproducibility"
+    frozen_blind: "four local tests and traceable paths"
+    reference_a: "scanned, non-runnable appendix"
+    reference_b: "scanned, non-runnable appendix"
+    reference_c: "scanned, non-runnable appendix"
+    judgment: pass
+    rationale: "this is an internal-workspace judgment and not a claim of physical truth"
+numerical_checks:
+  - id: "p1_100"
+    baseline_value_ms: 0.287601160561
+    reference_a_value_ms: 0.2875
+    reference_a_relative_error: -0.0003517
+    reference_b_value_ms: 0.288
+    reference_b_relative_error: 0.0013868
+    reference_c_value_ms: 0.29
+    reference_c_relative_error: 0.0083409
+    status: pass
+  - id: "p1_150"
+    baseline_value_ms: 0.751794338534
+    reference_a_value_ms: 0.765
+    reference_a_relative_error: 0.0175655
+    reference_b_value_ms: 0.752
+    reference_b_relative_error: 0.0002736
+    reference_c_value_ms: 0.72
+    reference_c_relative_error: -0.0422913
+    status: needs_review
+  - id: "p2_bottleneck"
+    baseline_value_rad_per_ms: 0.027530254
+    reference_a_value_rad_per_ms: 0.0273
+    reference_a_relative_error: -0.0083637
+    reference_b_value_rad_per_ms: 0.0275
+    reference_b_relative_error: -0.0010989
+    reference_c_value_rad_per_ms: 0.027195
+    reference_c_relative_error: -0.0121777
+    status: pass
+  - id: "reference_c_p3_consistency"
+    abstract_value_rad_per_s: 483.332
+    body_value_rad_per_ms: 0.048
+    status: fail
+    rationale: "the two stated values differ by approximately one order of magnitude after unit conversion"
+origin_classes:
+  - class: "independent_before_reference"
+    knowledge_state: "candidate"
+    evidence_status: needs_review
+    items:
+      - "lumped pressure ODE and density integration"
+      - "bottleneck-versus-serial sensitivity"
+      - "50 ms phase offset"
+      - "economy-versus-stability tradeoff"
+  - class: "audit_after_blind_revision_before_reference"
+    knowledge_state: "candidate"
+    evidence_status: pass
+    items:
+      - "corrected inlet-density boundary and exact balance"
+      - "P2 structural interval"
+      - "long-window four-phase evaluation"
+      - "actuator constraints and mass residual"
+      - "cross-path reproduction and provenance"
+  - class: "reference_triggered"
+    knowledge_state: "candidate"
+    evidence_status: needs_review
+    items:
+      - "same-scope pressure-triggered versus periodic-relief baseline"
+      - "acoustic propagation timescale gate"
+      - "centralized executable piecewise control rule"

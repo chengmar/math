@@ -1,0 +1,39 @@
+schema_version: 1
+artifact: "proposed_expression_lessons"
+knowledge_state: "candidate"
+entries:
+  - id: "EL-01"
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_state: "candidate"
+    origin_class: "audit_after_blind_revision_before_reference"
+    recommendation: "show each topology endpoint, its assumption, and the missing evidence needed to choose one"
+    case_evidence_status: pass
+    transfer_status: needs_review
+  - id: "EL-02"
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_state: "candidate"
+    origin_class: "reference_triggered"
+    recommendation: "attach every major conclusion to one of the three origin classes instead of rewriting history"
+    case_evidence_status: pass
+    transfer_status: needs_review
+  - id: "EL-03"
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_state: "candidate"
+    origin_class: "reference_triggered"
+    recommendation: "include one normalized SI-equivalent column when milliseconds, seconds, radians per millisecond, and revolutions per minute coexist"
+    case_evidence_status: pass
+    transfer_status: needs_review
+  - id: "EL-04"
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_state: "candidate"
+    origin_class: "reference_triggered"
+    recommendation: "state phase definitions, thresholds, delay, dwell, saturation, and tie-breaking in one main-text block"
+    case_evidence_status: needs_review
+    transfer_status: needs_review
+  - id: "EL-05"
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_state: "candidate"
+    origin_class: "audit_after_blind_revision_before_reference"
+    recommendation: "report pressure metrics beside switching count and relief-to-injection ratio, then label model-only versus externally validated claims"
+    case_evidence_status: needs_review
+    transfer_status: needs_review

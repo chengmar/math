@@ -1,0 +1,168 @@
+case_id: 2011A
+phase: solve
+skill: $cumcm-a-solve
+solve_completion_status: pass
+overall_scientific_status: needs_review
+blindness:
+  status: pass
+  allowed_inputs:
+    - input
+    - knowledge/training-memory
+    - paper-template
+    - reports/training-memory-retrieval.json
+  network_search_used: false
+  reference_papers_read: false
+  commentary_or_standard_answers_read: false
+  candidate_knowledge_read: false
+  other_phase_skill_used: false
+input_audit:
+  status: pass
+  samples: 319
+  metals: 8
+  missing_values: 0
+  duplicate_ids: 0
+  duplicate_coordinates: 0
+  source_sha256: d6afcdea330da9db19dfc7cba1f4effc9cfd359d2301caae3cec71e6bfc80b6a
+  close_coordinate_status: needs_review
+  background_raw_sample_status: needs_review
+question_coverage:
+  q1:
+    coverage_status: pass
+    outputs:
+      - results/<SOURCE_FILE_REDACTED>
+      - results/<SOURCE_FILE_REDACTED>
+      - figures/<SOURCE_FILE_REDACTED>
+      - figures/<SOURCE_FILE_REDACTED>
+    conclusion: 工业、交通、生活、公园绿地、山区的典型几何富集依次降低；空间富集主要集中在西部和西南至中部并具有元素特异峰。
+  q2:
+    coverage_status: pass
+    causal_identity_status: needs_review
+    outputs:
+      - results/<SOURCE_FILE_REDACTED>
+      - results/<SOURCE_FILE_REDACTED>
+      - results/<SOURCE_FILE_REDACTED>
+      - figures/<SOURCE_FILE_REDACTED>
+    conclusion: 功能区效应量和 Cd-Cu-Pb-Zn/Hg 分量支持工业、交通相关人类活动为主要线索，但具体主体和工艺不可识别。
+  q3:
+    coverage_status: pass
+    physical_source_identity_status: needs_review
+    outputs:
+      - results/<SOURCE_FILE_REDACTED>
+      - results/<SOURCE_FILE_REDACTED>
+      - results/<SOURCE_FILE_REDACTED>
+      - figures/<SOURCE_FILE_REDACTED>
+    conclusion: 八元素均显著正空间聚集；给出有邻域支持的候选源区，Cu 与 Ni 对删极值敏感，所有物理源身份均待复采和外部证据。
+  q4:
+    coverage_status: pass
+    outputs:
+      - paper/main.tex
+      - paper/paper.md
+    conclusion: 明确横截面、背景、输运与源端信息缺口，并提出空间-深度-时间对流扩散反应的分层贝叶斯反演方案。
+model_selection:
+  spatial_candidates:
+    - model: constant_mean
+      role: baseline
+      blocked_cv_rmse_log2: 0.9767449526
+    - model: idw_p2_k12
+      role: candidate
+      blocked_cv_rmse_log2: 0.8603181858
+    - model: gaussian_nested
+      role: selected
+      blocked_cv_rmse_log2: 0.8277276315
+      full_fit_bandwidth_km: 2.0
+  decomposition_candidates:
+    - model: correlation
+      role: baseline
+    - model: pca
+      role: sensitivity
+      first_three_explained_variance_percent: 81.7
+    - model: nmf
+      role: selected
+      components: 3
+      mean_matched_cosine_20_runs: 0.9999999643
+  source_candidates:
+    - model: raw_maximum
+      role: baseline
+    - model: supported_kernel_peak
+      role: selected
+      bandwidth_km: 1.0
+key_results:
+  zone_ranking:
+    - {zone: 工业区, typical_geometric_enrichment: 2.1562679274, rank: 1, rank1_bootstrap_frequency: 0.9175}
+    - {zone: 交通区, typical_geometric_enrichment: 1.8504666420, rank: 2, rank1_bootstrap_frequency: 0.0580}
+    - {zone: 生活区, typical_geometric_enrichment: 1.7150955072, rank: 3, rank1_bootstrap_frequency: 0.0240}
+    - {zone: 公园绿地区, typical_geometric_enrichment: 1.4763214545, rank: 4, rank1_bootstrap_frequency: 0.0005}
+    - {zone: 山区, typical_geometric_enrichment: 1.0028346045, rank: 5, rank1_bootstrap_frequency: 0.0}
+  strongest_zone_associations:
+    - {metal: Cu, eta_squared: 0.2647812840}
+    - {metal: Cd, eta_squared: 0.2237423687}
+    - {metal: Zn, eta_squared: 0.2039832258}
+    - {metal: Pb, eta_squared: 0.1847652332}
+  nmf_components:
+    - Hg-dominant
+    - As-Cr-Ni covariation
+    - Cd-Cu-Pb-Zn covariation
+  moran_i_range: [0.1337167324, 0.4466460367]
+  moran_permutation_p: 0.001
+  primary_source_candidates_m:
+    As: {x: 8500, y: 16500, internal_status: pass, physical_status: needs_review}
+    Cd: {x: 8750, y: 7250, internal_status: pass, physical_status: needs_review}
+    Cr: {x: 3000, y: 6000, internal_status: pass, physical_status: needs_review}
+    Cu: {x: 1250, y: 3750, internal_status: needs_review, physical_status: needs_review}
+    Hg: {x: 1000, y: 3500, internal_status: pass, physical_status: needs_review}
+    Ni: {x: 3000, y: 6500, internal_status: needs_review, physical_status: needs_review}
+    Pb: {x: 1000, y: 3500, internal_status: pass, physical_status: needs_review}
+    Zn: {x: 3250, y: 6000, internal_status: pass, physical_status: needs_review}
+validation:
+  data_identity_status: pass
+  spatial_block_isolation_status: pass
+  nested_bandwidth_status: pass
+  model_metric_finiteness_status: pass
+  zone_bootstrap_status: pass
+  background_stress_status: pass
+  nmf_blocked_reconstruction_status: pass
+  nmf_seed_stability_status: pass
+  moran_permutation_status: pass
+  source_sensitivity_status: needs_review
+  two_run_reproduction_status: pass
+  paper_result_consistency_status: pass
+  xelatex_compile_status: pass
+limitations:
+  - 单期表层土数据没有时间箭头，不能确认传播方向、速度和因果顺序。
+  - 背景原始样本、样本数和空间位置缺失，背景外部有效性待核。
+  - 缺少风雨、径流、排水、排放、交通、土壤性质、深度和源端指纹。
+  - Gaussian 核可能平滑边界与紧邻点源，统一带宽对 Cr、Zn 非逐元素最优。
+  - NMF 分量和核峰不是唯一真实源谱或排放点。
+training_memory:
+  cards_checked: 3
+  cards_used: 2
+  decisions:
+    TM-001-EVIDENCE-LAYERS: adopt
+    TM-002-TIME-ORDERED-VALIDATION: reject
+    TM-007-FIT-EVALUATE-SEPARATION: adapt
+  provisional_training_label_preserved: true
+required_artifacts:
+  problem-analysis.md: pass
+  data-audit.md: pass
+  assumptions.yaml: pass
+  variables.yaml: pass
+  model-selection.md: pass
+  solution-report.yaml: pass
+  reproducibility.yaml: pass
+  code: pass
+  results: pass
+  figures: pass
+  paper/main.tex: pass
+  paper/paper.md: pass
+completion_checks:
+  small_question_coverage: pass
+  code_rerun: pass
+  validation_and_robustness: pass
+  limitations_near_claims: pass
+  paper_result_consistency: pass
+  evidence_layer_separation: pass
+phase_actions:
+  frozen: false
+  audited_in_other_phase: false
+  reflected: false
+  evaluated: false

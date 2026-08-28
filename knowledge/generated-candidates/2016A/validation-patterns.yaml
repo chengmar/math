@@ -1,0 +1,55 @@
+schema_version: 1
+case_id: "2016A"
+patterns:
+  - id: CAND-2016A-V01
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: reflection_boundary
+    evidence_status: pass
+    checks:
+      - "先验证阶段锁、边界证据和 Audit 已完成。"
+      - "逐项重算大小和 SHA-256；检查权威载荷存在。"
+      - "聚合算法未声明时只给 needs_review，不伪造 tree hash。"
+      - "冻结验证通过前不打开批准参考。"
+
+  - id: CAND-2016A-V02
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: corrected_after_audit
+    evidence_status: pass
+    checks:
+      - "修复前反例必须在新模型中仍能复现旧失败。"
+      - "修复后方案必须说明反例被约束排除还是数值改善。"
+      - "禁止只删除或改写失败结论。"
+
+  - id: CAND-2016A-V03
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: learned_after_references
+    evidence_status: needs_review
+    checks:
+      - "求临界载荷/风速，而不只报两个离散工况。"
+      - "从临界点两侧逼近，检查高度、跨距和张力连续性。"
+      - "用连续悬链线和独立离散/积分表达交叉核对。"
+
+  - id: CAND-2016A-V04
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: learned_after_references
+    evidence_status: pass
+    checks:
+      - "冻结链型、链环数、安装配重和几何。"
+      - "只扫描水深、风速、流速、方向与不确定参数。"
+      - "记录每项约束的最坏值、位置和裕量。"
+      - "网格加密后最坏位置和结论应稳定，否则 needs_review。"
+
+  - id: CAND-2016A-V05
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: learned_after_references
+    evidence_status: pass
+    checks:
+      - "摘要数字必须从结构化结果生成或逐项对照。"
+      - "链长与链环数做整数断言。"
+      - "表格中的初始/调整后工况禁止串列。"
+      - "占位符、图表引用和单位在提交前自动扫描。"

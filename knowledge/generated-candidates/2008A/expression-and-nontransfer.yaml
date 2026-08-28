@@ -1,0 +1,76 @@
+schema_version: 1
+case_id: 2008A
+package_status: candidate
+
+expression_cards:
+  - id: EXPRESS-COORDINATE-CONVENTION-FIRST
+    status: candidate
+    source: reflection_derived
+    lesson: "State raw pixel axes, principal point, image-plane axes, sign of z, and physical-unit conversion before the first result table."
+    benefit: "Prevents apparent disagreements caused by row/column swaps, y-axis reversal, or camera/image transform direction."
+    current_case_evidence_status: pass
+
+  - id: EXPRESS-EVIDENCE-SCOPE-IN-CAPTION
+    status: candidate
+    source: audit_revision
+    lesson: "Attach scope to every status: hash identity, arithmetic reproduction, internal validation, external accuracy, or proof."
+    benefit: "A pass at one level cannot silently become a stronger correctness claim."
+    current_case_evidence_status: pass
+
+  - id: EXPRESS-SHOW-FAILED-ROOTS
+    status: candidate
+    source: reference_learned
+    lesson: "Publish bad initializations, rejected inputs, and meaningless roots alongside the selected result."
+    benefit: "Readers can see basin structure and guard behavior rather than only the successful run."
+    current_case_evidence_status: pass
+
+  - id: EXPRESS-TWO-LAYER-EXPLANATION
+    status: candidate
+    source: reflection_derived
+    lesson: "Pair the exact conic equation with an intuitive tangent or ray diagram, while keeping their estimators and provenance separate."
+    benefit: "Improves interpretability without replacing the exact model by a weaker geometric approximation."
+    current_case_evidence_status: needs_review
+
+  - id: EXPRESS-RESULT-DISAGREEMENT-TABLE
+    status: candidate
+    source: reflection_derived
+    lesson: "Report all comparable coordinates in one convention and label pairwise differences descriptive rather than truth errors."
+    benefit: "Makes comparison auditable without appointing a reference paper as answer key."
+    current_case_evidence_status: pass
+
+nontransfer_cards:
+  - id: NONTRANSFER-PIXEL-THRESHOLD
+    status: candidate
+    source: independent_blind
+    do_not_generalize: "The gray threshold 122.5 or the tested 82.5 to 162.5 interval."
+    reason: "They depend on this JPEG's dark and bright modes."
+
+  - id: NONTRANSFER-ERROR-CUTOFF
+    status: candidate
+    source: reflection_derived
+    do_not_generalize: "RMSE below 1 px as a universal pass criterion."
+    reason: "Pixel pitch, resolution, target size, viewing distance, and task tolerance differ."
+
+  - id: NONTRANSFER-POSE-WINS
+    status: candidate
+    source: independent_blind
+    do_not_generalize: "A six-parameter calibrated pose always generalizes better than an eight-parameter homography."
+    reason: "The current ranking depends on the centered-principal-point and negligible-distortion assumptions."
+
+  - id: NONTRANSFER-REFERENCE-CONSENSUS
+    status: candidate
+    source: reflection_derived
+    do_not_generalize: "Agreement with one or more published contest papers establishes correctness."
+    reason: "The papers share the input and modelling assumptions and contain demonstrable internal issues."
+
+  - id: NONTRANSFER-TWO-POINT-RIGID-POSE
+    status: candidate
+    source: reflection_derived
+    do_not_generalize: "Two 3D point correspondences uniquely determine a full rigid transform."
+    reason: "Rotation about the line through the two points remains ambiguous; use at least three non-collinear points and enforce det(R)=+1."
+
+  - id: NONTRANSFER-DETERMINISM-AS-TRUTH
+    status: candidate
+    source: audit_revision
+    do_not_generalize: "Matching hashes or repeated outputs imply mathematical correctness."
+    reason: "They establish identity and determinism only."

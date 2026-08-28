@@ -1,0 +1,51 @@
+schema_version: "1.0"
+id: "cumcm-a-2007a-nontransferable-case-parameters"
+status: "candidate"
+type: "nontransferable_experience"
+title: <REFERENCE_TITLE_REDACTED>
+origin: "case_specific_synthesis"
+claim: >-
+  2007A 中的 2003 生育异常、2010 总量尺度、TFR 目标、城镇化目标和迁移模式都是本题数据或
+  情景条件，不是可直接迁移的通用知识；可推广的是识别、隔离、验证和敏感性流程。
+applicable_when:
+  - "复用本案例训练经验或设计新人口题基线。"
+not_applicable_when:
+  - "只在本题原数据和同一情景下复现实验；仍需注明来源。"
+minimum_baseline:
+  name: "逐题重新审计参数来源"
+  requirement: "每个数值必须标为数据、校准、情景或工程判断。"
+nontransferable_items:
+  - item: "2003 年生育率约低一个数量级"
+    safe_generalization: "用训练折内规则识别量级异常，并保留排除/修正双分支。"
+    unsafe_generalization: "断言其他数据的类似异常也是 SARS 或同一原因。"
+  - item: "2010 年 13.6 亿尺度锚"
+    safe_generalization: "无基期总量时可用外部尺度，但不能再把同一值当独立验证。"
+    unsafe_generalization: "把该尺度用于其他年份、国家或数据口径。"
+  - item: "标准 TFR 1.5/1.8/2.1 与 2035 阶段"
+    safe_generalization: "情景值必须按标准定义实现并说明持续期。"
+    unsafe_generalization: "把 1.8 当作跨题最优政策或事实。"
+  - item: "2020 城镇化 53% 与固定重分类率"
+    safe_generalization: "政策目标可作条件校准，并对长期上界做敏感性。"
+    unsafe_generalization: "把本题速度或上界用于其他地区。"
+  - item: "青年迁移年龄形状和固定性别比"
+    safe_generalization: "迁移模式需归一、守恒并与平坦基线比较。"
+    unsafe_generalization: "照搬 R2/R4 的年龄分布或性别比例。"
+validation:
+  required_checks:
+    - "参数来源分类完整。"
+    - "校准输入未重复充当独立验证。"
+    - "本题特定值进入敏感性或明确失效条件。"
+  automatic_judgment: "needs_review"
+counterexamples:
+  - "R3 将 2003 异常直接归因于 SARS，因果证据不足。"
+  - "R2/R3/R4 使用不同 TFR 和城镇化路径，结果峰值明显不同。"
+  - "BF 与附件 1 的老龄绝对量冲突说明口径不能无条件迁移。"
+source_cases:
+  - id: "2007A-BF"
+    evidence: "尺度锚、标准 TFR、城镇化目标及上下文 fail。"
+  - id: "2007A-R2-R3-R4"
+    evidence: "不同参数口径与异常解释造成不同结果。"
+evidence_strength: "high_for_nontransferability"
+promotion_gate:
+  - "只可推广流程，不可推广具体数值。"
+  - "任何跨题使用必须重新给出数据证据。"

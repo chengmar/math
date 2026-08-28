@@ -1,0 +1,30 @@
+schema_version: 1
+id: DEMO-REFERENCE-RELEVANCE-GATE
+status: demo
+type: validation_demo
+title: <REFERENCE_TITLE_REDACTED>
+source_case: 2018A
+origin_classification: possible_dummy_only
+source_material:
+  id: REF-04
+    sha256: <REFERENCE_HASH_REDACTED>
+  dummy_marker_status: needs_review
+observed_demo:
+  expected_topic: 四层高温作业服传热与厚度设计
+  observed_topic: 8 台 CNC 与 1 辆 RGV 的动态调度
+  relevance_status: fail
+applicable_when:
+  - 批量复制或自动挑选 2—4 篇参考材料。
+not_applicable_when:
+  - 材料有独立、已验证的 case_id 与题目哈希绑定；仍建议抽查标题和摘要。
+minimum_baseline:
+  - 读取标题、摘要/问题重述、关键输入变量。
+  - 与当前 case_id、题目对象和三问输出逐项匹配。
+validation:
+  current_demo_status: pass
+  rule: 任一核心对象或任务不匹配即排除，不进入模型/结果投票。
+counterexamples:
+  - 同领域但不同题目可能共享“优化”“模拟”等词，关键词相似不能代替问题对象匹配。
+evidence_strength: needs_review
+evidence_reason: 文件没有显式 Dummy 标记，因此只保留 demo，不升级 candidate 或 verified。
+promotion_policy: Dummy 或疑似 Dummy 永不直接升级 verified；需非 Dummy 跨案例证据重新提出 candidate。

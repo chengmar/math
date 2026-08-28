@@ -1,0 +1,85 @@
+schema_version: 1
+case_id: 2008A
+package_status: candidate
+cards:
+  - id: VALIDATE-WHOLE-GEOMETRIC-GROUP-HOLDOUT
+    status: candidate
+    source: independent_blind
+    purpose: "Test prediction of an unseen target component rather than resampled pixels from a fitted component."
+    protocol:
+      - "remove every observation from one circle"
+      - "refit using the other circles"
+      - "predict the omitted full boundary"
+      - "report per-group RMSE, robust quantiles, and silhouette IoU"
+    current_case_status: pass
+    external_generalization_status: needs_review
+
+  - id: VALIDATE-PROJECTIVE-HELDOUT-CONTROL
+    status: candidate
+    source: reflection_derived
+    purpose: "Check whether independently reported centers respect known target geometry."
+    protocol:
+      - "fit a homography using the four square corners"
+      - "predict the off-ratio point B"
+      - "report B distance and ABC collinearity without treating either as ground truth accuracy"
+    current_case_status: pass
+    acceptance_threshold_status: needs_review
+
+  - id: VALIDATE-POSE-AND-ASSUMPTION-SWEEP
+    status: candidate
+    source: reference_learned
+    purpose: "Map the model's domain of validity instead of perturbing only image noise."
+    factors:
+      - target_distance
+      - target_tilt_x
+      - target_tilt_y
+      - principal_point_offset
+      - focal_length_error
+      - radial_distortion
+      - occlusion_fraction
+    required_outputs:
+      - "error heatmaps"
+      - "failure/rejection rate"
+      - "coverage of uncertainty intervals"
+    current_case_status: needs_review
+
+  - id: VALIDATE-IDENTIFIABILITY-AND-MULTISTART
+    status: candidate
+    source: reflection_derived
+    purpose: "Separate structural ambiguity from numerical local minima."
+    protocol:
+      - "derive collapsed and gauge solution families"
+      - "add explicit non-degeneracy constraints"
+      - "run deterministic grids and random starts"
+      - "cluster roots and report objective, residual, geometry, and basin frequency"
+    motivating_case_status: pass
+    cross_case_status: needs_review
+
+  - id: VALIDATE-HETEROGENEOUS-ESTIMATOR-DISAGREEMENT
+    status: candidate
+    source: reference_learned
+    purpose: "Use two estimators with different error mechanisms as a model-risk diagnostic."
+    estimators:
+      - shared_conic_full_boundary
+      - subpixel_common_tangent_geometry
+    protocol:
+      - "estimate each center independently"
+      - "propagate each estimator's measurement uncertainty"
+      - "compare discrepancies with the combined uncertainty"
+      - "mark unresolved disagreements needs_review"
+    current_case_status: needs_review
+
+  - id: VALIDATE-EVIDENCE-LADDER
+    status: candidate
+    source: audit_revision
+    purpose: "Prevent a lower evidence level from being promoted into a stronger claim."
+    levels:
+      - "freeze identity and file hashes"
+      - "execution and deterministic reproduction"
+      - "internal geometric and numerical consistency"
+      - "external accuracy against independent truth"
+      - "mathematical proof or independent content audit"
+    current_freeze_identity_status: pass
+    current_reproduction_status: pass
+    current_external_accuracy_status: needs_review
+    current_mathematical_proof_status: needs_review

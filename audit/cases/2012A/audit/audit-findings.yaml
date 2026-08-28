@@ -1,0 +1,331 @@
+schema_version: 1
+case_id: "2012A"
+phase: audit
+overall_status: fail
+severity_counts:
+  critical: 0
+  major: 7
+  minor: 5
+  suggestion: 0
+findings:
+  - id: AUD-001
+    status: fail
+    severity: major
+    category: reproducibility
+    evidence: >-
+      code/run_all.ps1:10 hard-codes
+      <LAB_ROOT>\.agents\skills\cumcm-a-solve\scripts\check_phase.py,
+      and README.md, reproducibility.yaml, and paper/paper.md advertise the former
+      solve workspace. The declared entry point therefore depends on an external
+      phase Skill, is not self-contained, and could not be invoked in this audit
+      without violating the explicit no-cross-stage rule. Stepwise execution of
+      extract_xls.ps1, prepare_data.py, analyze.py, two XeLaTeX passes, and
+      verify.py did succeed in an isolated copy.
+    affected_files:
+      - frozen-solution/code/run_all.ps1
+      - frozen-solution/code/README.md
+      - frozen-solution/reproducibility.yaml
+      - frozen-solution/paper/paper.md
+      - frozen-solution/FROZEN_BLIND_V1.json
+    reason: >-
+      A clean recipient cannot reproduce the advertised pipeline from the frozen
+      payload alone. Successful manual execution of substeps is not equivalent to
+      a successful declared-command reproduction.
+    recommended_fix: >-
+      Replace the absolute solve-stage dependency with a stage-neutral local
+      integrity check, use relative paths, document a portable command, and add a
+      clean-copy integration test that starts without results or figures.
+    requires_human_review: false
+
+  - id: AUD-002
+    status: fail
+    severity: major
+    category: provenance
+    evidence: >-
+      The frozen bytes hash to 6ac7331378ab... (aroma workbook),
+      0b6b845715fb... (conventional workbook), and fdb95e99c881... (scores
+      workbook), matching FROZEN_BLIND_V1.json. In contrast, data-audit.md,
+      reproducibility.yaml, results/clean/data_audit.json, and the frozen
+      extraction manifest call cf1c174dd4fb..., c039e07b470b..., and
+      3325652a0485... the current hashes. Re-extraction from the frozen workbooks
+      produced different filename prefixes but all 10 TSV content hashes, row
+      counts, and column counts were identical to the frozen TSVs.
+    affected_files:
+      - frozen-solution/FROZEN_BLIND_V1.json
+      - frozen-solution/data-audit.md
+      - frozen-solution/reproducibility.yaml
+      - frozen-solution/results/clean/data_audit.json
+      - frozen-solution/results/extracted/manifest.json
+    reason: >-
+      Numerical cell content is reproducible, but the documents make a false
+      current-byte identity claim and the chain of custody is internally
+      inconsistent.
+    recommended_fix: >-
+      Determine and document why the OLE workbook bytes changed, regenerate every
+      current-hash field and extracted filename from the exact frozen inputs, then
+      create a new immutable snapshot. Preserve old hashes only as explicitly
+      historical values.
+    requires_human_review: true
+
+  - id: AUD-003
+    status: fail
+    severity: major
+    category: random_stability
+    evidence: >-
+      Full reruns with main seeds 1, 42, and 20240825 changed Q4 model selection
+      between ridge and PLS. Red nested-LOO Q2 ranged from -0.103 to +0.026 and
+      its evaluation status changed from fail to needs_review. White fixed-fivefold
+      permutation p ranged from 0.010 to 0.175. Q3 white permutation p also crossed
+      0.05 (0.040 to 0.090). Q1 decisions and the base Q2 partition were stable.
+    affected_files:
+      - frozen-solution/code/analyze.py
+      - frozen-solution/results/q3_summary.json
+      - frozen-solution/results/q4_summary.json
+      - frozen-solution/solution-report.yaml
+      - frozen-solution/paper/main.tex
+    reason: >-
+      A single shuffled inner K-fold split and only 199 model permutations make
+      model choice, p-values, and even a headline tri-state conclusion depend on
+      one arbitrary seed.
+    recommended_fix: >-
+      Use deterministic or repeated nested resampling, report the distribution
+      across a predeclared seed grid, and require the conclusion to be stable.
+      Re-run hyperparameter and family selection inside every permutation and use
+      enough permutations for the claimed threshold resolution.
+    requires_human_review: false
+
+  - id: AUD-004
+    status: fail
+    severity: major
+    category: dimensional_analysis
+    evidence: >-
+      analyze.py:615-635 applies signed log1p directly to dimensional aroma
+      concentrations. An otherwise identical audit rerun that merely converted
+      every aroma value by factors 0.001 and 1000 changed red Q4 Q2 from -0.103
+      to +0.047/-0.136 and white Q4 Q2 from +0.052 to -0.073/+0.226; the selected
+      family also changed. Q3 red fixed-pipeline permutation p changed from 0.390
+      to 0.005 under the factor-1000 representation.
+    affected_files:
+      - frozen-solution/code/analyze.py
+      - frozen-solution/data-audit.md
+      - frozen-solution/variables.yaml
+      - frozen-solution/results/q3_summary.json
+      - frozen-solution/results/q4_summary.json
+    reason: >-
+      log(1+x) is not dimensionally defined unless x is divided by a reference
+      quantity. Standardizing after the nonlinear transform does not restore unit
+      invariance, so equivalent measurement units yield materially different
+      scientific conclusions.
+    recommended_fix: >-
+      Convert all aroma data to declared canonical units and transform a
+      dimensionless ratio, such as log1p(x/x_ref), with x_ref converted together
+      with x. Add a unit-invariance test to verification.
+    requires_human_review: false
+
+  - id: AUD-005
+    status: fail
+    severity: major
+    category: leakage
+    evidence: >-
+      analyze.py:619-655 calculates aroma detection/variance filters on the full
+      data before any cross-validation, and lines 649-653 calculate winsor limits
+      on the full data. Under leave-one-out training-only filtering, the selected
+      aroma set changed in 18/27 red-grape folds, 14/27 red-wine folds, and 25/28
+      white-wine folds. For Q3, the full-data filter also inspects the held-out
+      wine-response block.
+    affected_files:
+      - frozen-solution/code/analyze.py
+      - frozen-solution/data-audit.md
+      - frozen-solution/problem-analysis.md
+    reason: >-
+      Held-out samples influence feature existence and sensitivity thresholds.
+      This is transductive preprocessing in Q4 and direct held-out-response
+      preprocessing in Q3, so the reported out-of-fold estimates are not produced
+      by a fully fold-isolated pipeline.
+    recommended_fix: >-
+      Put detection filtering, missing-value handling, unit conversion,
+      transformation, winsorization, scaling, and tuning inside each inner and
+      outer training fold. Apply the fitted transformation to validation/test
+      samples without recomputing it.
+    requires_human_review: false
+
+  - id: AUD-006
+    status: fail
+    severity: major
+    category: multiple_testing
+    evidence: >-
+      analyze.py:743-783 uses scipy.stats.spearmanr asymptotic p-values with only
+      27/28 samples and ties, then applies BH. A unified audit rerun using 100,000
+      two-sided sample-label permutations per valid test and the same BH families
+      reduced significant links from 65 to 59 (red) and from 26 to 19 (white),
+      with no gained links. The strongest representative links remained.
+    affected_files:
+      - frozen-solution/code/analyze.py
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/results/q3_summary.json
+      - frozen-solution/solution-report.yaml
+      - frozen-solution/paper/main.tex
+      - frozen-solution/paper/paper.md
+    reason: >-
+      The reported FDR counts and several boundary discoveries depend on a
+      small-sample approximation that is measurably anti-conservative here.
+    recommended_fix: >-
+      Use exact or high-repetition permutation p-values with tie preservation,
+      apply BH once to the predeclared family, state Monte Carlo uncertainty, and
+      regenerate all counts/tables/text.
+    requires_human_review: true
+
+  - id: AUD-007
+    status: fail
+    severity: major
+    category: model_selection
+    evidence: >-
+<SOURCE_FILE_REDACTED> shows that the simpler grape-only ridge model has
+      lower nested-LOO RMSE than the selected combined model for both colors:
+      7.268 versus 7.572 (red) and 4.514 versus 4.612 (white). Wine-only models
+      are worse (7.836 and 5.727). analyze.py:994 selects only between combined
+      ridge and combined PLS; the paper omits the ablation results.
+    affected_files:
+      - frozen-solution/code/analyze.py
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/results/q4_summary.json
+      - frozen-solution/model-selection.md
+      - frozen-solution/paper/main.tex
+      - frozen-solution/paper/paper.md
+    reason: >-
+      A simpler model is at least as effective, and the omitted ablation is
+      directly relevant to the question of whether wine indicators add quality
+      information. Selecting scope after viewing the same outer predictions would
+      also require selection-aware validation.
+    recommended_fix: >-
+      Predeclare grape-only, wine-only, and combined scopes as candidates; select
+      scope and family inside an outer validation loop; report the ablation table
+      and state whether each block adds incremental out-of-sample value.
+    requires_human_review: true
+
+  - id: AUD-008
+    status: needs_review
+    severity: minor
+    category: metric_definition
+    evidence: >-
+      variables.yaml defines Q2 using a training-mean baseline, while
+      analyze.py:382-388 and 728-733 divide by total variation around the full-data
+      mean. In Q3 this makes the printed baseline normalized RMSE exactly 1.000.
+      A deployable leave-one-out training-mean baseline is 1.038 (red) and 1.037
+      (white); relative to it, white Q3 Q2 is +0.011 rather than the reported
+      -0.063. The inference remains weak.
+    affected_files:
+      - frozen-solution/variables.yaml
+      - frozen-solution/code/analyze.py
+      - frozen-solution/results/q3_summary.json
+      - frozen-solution/paper/main.tex
+    reason: >-
+      Both conventions can be reported, but the implementation, symbol
+      definition, and interpretation currently describe different denominators.
+    recommended_fix: >-
+      Name the full-mean statistic explicitly and separately report performance
+      against an out-of-fold training-mean predictor. Use the same definition in
+      code, variables, tables, and prose.
+    requires_human_review: true
+
+  - id: AUD-009
+    status: fail
+    severity: minor
+    category: constraints
+    evidence: >-
+      The unconstrained Q3 PLS produced 7 negative predictions across 3
+      nonnegative red-wine outputs and 5 across 3 nonnegative white-wine outputs.
+      Examples include predicted red-wine L* = -8.017 although the observed
+      minimum is 2.48, and negative transformed aroma concentrations.
+    affected_files:
+      - frozen-solution/code/analyze.py
+      - frozen-solution/results/q3_summary.json
+      - frozen-solution/paper/main.tex
+    reason: >-
+      The multivariate mapping does not enforce physical support. Negative Q2
+      already rejects the model, but feasibility should still be audited before
+      interpreting a chemical mapping.
+    recommended_fix: >-
+      Evaluate predictions after a support-preserving transform/inverse transform,
+      report infeasible-prediction counts, or use a constrained/nonnegative model.
+    requires_human_review: true
+
+  - id: AUD-010
+    status: needs_review
+    severity: minor
+    category: identifiability
+    evidence: >-
+      After centering, the Q4 design ranks are 26 of 170 features (red) and 27 of
+      169 (white), leaving nullities 144 and 142. Feature bootstrap intervals use
+      the original modal penalty without repeating tuning. The paper correctly
+      cautions against causal interpretation but still names individual variables
+      as effects.
+    affected_files:
+      - frozen-solution/code/analyze.py
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/results/q4_summary.json
+      - frozen-solution/paper/main.tex
+    reason: >-
+      Ridge predictions are defined, but individual coefficients are
+      penalty- and representation-dependent in this p-greater-than-n design; the
+      current bootstrap does not establish feature-level identifiability.
+    recommended_fix: >-
+      Treat coefficients as conditional descriptive loadings, repeat the entire
+      tuning pipeline inside resampling, examine grouped/block effects, and avoid
+      ranking individual variables unless stability survives representation and
+      unit perturbations.
+    requires_human_review: true
+
+  - id: AUD-011
+    status: needs_review
+    severity: minor
+    category: grading_validation
+    evidence: >-
+      Q2 assigns quality 50 percent of the clustering distance and then labels
+      clusters A/B/C by their mean quality, yet quality eta-squared is presented as
+      candidate evidence. The capped eight PCs explain only 74.7 percent (red) and
+      72.1 percent (white), despite the label pca_components_for_80pct and prose
+      saying approximately 80 percent. The reported low ARI already discloses
+      instability.
+    affected_files:
+      - frozen-solution/code/analyze.py
+      - frozen-solution/results/q2_summary.json
+      - frozen-solution/model-selection.md
+      - frozen-solution/paper/main.tex
+    reason: >-
+      Quality separation is partly built into the representation and cannot serve
+      as independent validation; the retained-variance description is inaccurate.
+    recommended_fix: >-
+      Report the actual retained variance, avoid using quality separation as an
+      independent score for a quality-weighted clustering, and validate grade
+      stability on independent repeats or external outcomes.
+    requires_human_review: true
+
+  - id: AUD-012
+    status: fail
+    severity: minor
+    category: verification_semantics
+    evidence: >-
+      verify.py:247-256 records known_limits_disclosed as needs_review but sets
+      overall_status to pass whenever no item is fail. analyze.py:1329-1334 also
+      hard-codes independent_validation status pass although the solution report
+      says external validation needs_review. Four frozen results/pdf-preview PNGs
+      are not generated by run_all.ps1 and are absent from the internal artifact
+      manifest.
+    affected_files:
+      - frozen-solution/code/analyze.py
+      - frozen-solution/code/verify.py
+      - frozen-solution/results/summary.json
+      - frozen-solution/results/verification.json
+      - frozen-solution/results/artifact-manifest.json
+      - frozen-solution/results/pdf-preview/<SOURCE_FILE_REDACTED>
+    reason: >-
+      Tri-state warnings are collapsed into an overall pass, an independent
+      validation claim is assigned without a corresponding test, and some frozen
+      artifacts lack a generating command.
+    recommended_fix: >-
+      Propagate needs_review to the overall status when appropriate, derive status
+      fields from executed checks, distinguish internal consistency from
+      independent validation, and include generation/verification rules for every
+      frozen artifact.
+    requires_human_review: false

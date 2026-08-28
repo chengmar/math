@@ -1,0 +1,41 @@
+schema_version: 1
+id: CAND-FAILURE-PARAMETER-STATE-LIVENESS
+status: candidate
+type: failure_mode
+title: <REFERENCE_TITLE_REDACTED>
+source_case: 2018A
+origin_classification: learned_from_reference_failure
+sources:
+  approved_references: [REF-03]
+observed_failure:
+  - 打印代码声明散热系数数组 K，但 Q2/Q3 后续没有引用。
+  - 报告的皮肤边界节点在 Q2/Q3 时间循环中没有更新。
+  - Q1 直接把观测皮肤温度写入目标边界节点，形成数据闭环。
+impact:
+  - 参数估计不影响输出，却仍被论文解释为物理量。
+  - 约束读取零值或陈旧值，候选厚度会伪装成可行。
+  - 同一观测既作边界输入又作验证目标，误差失去预测含义。
+applicable_when:
+  - 数值模拟包含校准参数、状态数组、边界节点或多阶段代码。
+not_applicable_when:
+  - 参数明确只用于未启用的可选分支，且报告没有声称该分支生效。
+minimum_baseline:
+  checks:
+    - 静态参数引用清单。
+    - 每个报告状态的更新时间/方程约束清单。
+    - 对每个校准参数做小扰动，目标输出必须按预期变化。
+  status: pass
+validation:
+  checks:
+    - 故意把参数引用断开，测试必须 fail。
+    - 故意冻结一个边界节点，约束检查必须 fail。
+    - 把观测列替换为常数，验证流程不得仍 pass。
+  current_case_status: pass
+counterexamples:
+  - 灵敏度极低不等于参数未使用；应比较数值导数与容差。
+  - 代数约束状态可以不显式时间更新，但必须在每步求解方程中出现。
+evidence_strength: needs_review
+evidence_reason: REF-03 提供清晰反例，尚未形成跨语言自动检查实现。
+promotion_requirements:
+  - 在 Python、MATLAB 各至少一个项目中注入断链缺陷并验证可检出。
+  - 定义灵敏度阈值，区分未使用与弱可辨识。

@@ -1,0 +1,216 @@
+schema_version: 1
+case_id: "2021A"
+phase: "reflection"
+skill: "$cumcm-a-reflect"
+generated_knowledge_status: "candidate"
+verified_upgrade_performed: false
+
+status_vocabulary:
+  - "pass"
+  - "fail"
+  - "needs_review"
+
+boundary_validation:
+  phase_lock_status: "pass"
+  external_freeze_status: "pass"
+  audit_state: "audited"
+  audit_requirement: "completed"
+  frozen_manifest_sha256: "90ee0388f60a0ce8d2d3b2cf870c67c060ab7ed02af95aadbc994a418ebce263"
+  frozen_listed_file_count: 115
+  frozen_verified_file_count: 115
+  frozen_file_hash_status: "pass"
+  frozen_tree_sha256_expected: "512b8d2173b12e0656284d965d1b9b4697a0cfec1e07ae84c351e1ae69e85c3e"
+  frozen_tree_sha256_actual: "512b8d2173b12e0656284d965d1b9b4697a0cfec1e07ae84c351e1ae69e85c3e"
+  frozen_tree_hash_status: "pass"
+  frozen_tree_algorithm: "SHA-256 of ordinal-sorted path + NUL + lowercase file SHA-256 + LF"
+
+sources:
+  blind_final:
+    id: "BF"
+    title: <REFERENCE_TITLE_REDACTED>
+    overall_internal_status: "pass"
+    criterion_uniqueness_status: "needs_review"
+    panel_geometry_interpretation_status: "needs_review"
+    physical_external_validity_status: "needs_review"
+  references:
+    - id: "R1"
+      file: "<REFERENCE_ID>"
+      title: <REFERENCE_TITLE_REDACTED>
+      pages: 38
+    sha256: <REFERENCE_HASH_REDACTED>
+      ocr_status: "pass"
+      formula_text_accuracy_status: "needs_review"
+      overall_validation_status: "needs_review"
+    - id: "R2"
+      file: "<REFERENCE_ID>"
+      title: <REFERENCE_TITLE_REDACTED>
+      pages: 59
+    sha256: <REFERENCE_HASH_REDACTED>
+      ocr_status: "pass"
+      formula_text_accuracy_status: "needs_review"
+      overall_validation_status: "needs_review"
+    - id: "R3"
+      file: "<REFERENCE_ID>"
+      title: <REFERENCE_TITLE_REDACTED>
+      pages: 35
+    sha256: <REFERENCE_HASH_REDACTED>
+      ocr_status: "pass"
+      formula_text_accuracy_status: "needs_review"
+      overall_validation_status: "fail"
+
+dimensions:
+  problem_decomposition:
+    BF: "连续理想面、离散可实现面形、促动器闭合、双面板射线与证据边界"
+    R1: "两类理想面、节点与圆弧中点微调、球面片接收比"
+    R2: "面积平方误差、旋转坐标、高维BFGS、平面片蒙特卡洛"
+    R3: "顶点/焦点搜索、几何映射、面积比修正"
+    assessment_status: "pass"
+    assessment: "BF的接口最完整；R1提供了可候选化的面板中点层次。"
+  question_1_objective:
+    BF: "continuous L-infinity radial displacement"
+    R1: "estimated L1 total actuator displacement"
+    R2: "area-weighted L2 squared radial displacement"
+    R3: "maximum adjacent-edge change with movable focal point"
+    uniqueness_status: "needs_review"
+    assessment: "目标和焦点可行域不同，数值差异不能视为纯计算误差。"
+  question_2_model:
+    BF: "joint focal-length and 692-node constrained projection"
+    R1: "fixed focal surface plus local node/mid-edge adjustment"
+    R2: "high-dimensional nonlinear least squares with BFGS"
+    R3: "geometric model I solved; rotation model II not solved"
+    assessment_status: "needs_review"
+  exact_constraints:
+    BF: "exact 3D edge strain, actuator stroke, cable closure, and six-decimal output checks"
+    R1: "full residual evidence absent"
+    R2: "constraints stated; final full residual evidence absent"
+    R3: "reported maximum edge change about 0.11%, above 0.07%"
+    BF_status: "pass"
+    R1_status: "needs_review"
+    R2_status: "needs_review"
+    R3_status: "fail"
+  question_3_geometry:
+    BF: "inherited spherical curvature and planar facets as two conditional envelopes"
+    R1: "panel-wise spherical-patch projection approximation"
+    R2: "planar triangular facets"
+    R3: "full-coverage area ratio with an unspecified correction factor"
+    interpretation_status: "needs_review"
+  validation:
+    BF: "KKT, full focal envelope, exact and rounded constraints, ray identity, resolution, seeds, radius sensitivity, deterministic reruns"
+    R1: "partial analytic checks and qualitative error discussion"
+    R2: "plots and 100 Monte Carlo repeats without raw samples or seeds"
+    R3: "single-factor sensitivity; infeasibility accepted"
+    assessment_status: "pass"
+    assessment: "BF has the strongest evidence layering; execution reproducibility still does not prove physical validity."
+  complexity:
+    BF: "693-parameter joint search plus up to 16384 samples per panel and two geometries; about 255 s per recorded run"
+    R1: "grid search, three local adjustments, and claimed 100000 samples per panel; runtime absent"
+    R2: "scalar bisection, high-dimensional BFGS, 10000 samples per panel and repeated trials; runtime absent"
+    R3: "variable-step grid and area formulas; cheapest but omits required fidelity"
+    assessment_status: "needs_review"
+  interpretability:
+    BF: "objectives and uncertainty boundaries explicit"
+    R1: "intuitive midpoint and spherical-patch diagrams; weak invariant/constraint evidence"
+    R2: "clear algorithm boxes; optimizer evidence opaque"
+    R3: "simple flowcharts; correction factor is not traceable"
+    assessment_status: "pass"
+  expression:
+    BF: "evidence dense and precise, but algorithm narrative is compact"
+    R1: "complete model-build-solve-error-evaluation flow"
+    R2: "best numbered algorithms and problem-wise narrative in the comparison set"
+    R3: "readable flowcharts and explicit limitation statements"
+    assessment_status: "pass"
+
+key_results:
+  question_1:
+    BF:
+      focal_length_m: 140.32234069068346
+      vertex_z_m: -300.73594886751823
+      max_radial_displacement_m: 0.3359356359974299
+      criterion: "continuous minimax"
+    R1:
+      selected_vertex_z_m: -300.884
+      approximate_focal_length_m: 140.4704
+      criterion: "estimated total displacement"
+      value_status: "needs_review"
+    R2:
+      reported_double_focal_parameter_m: 280.854
+      reimplemented_physical_focal_length_m: 140.4278721302368
+      criterion: "projected-aperture area MSE"
+      value_status: "pass"
+    R3:
+      vertex_radius_m: 300.7160
+      focus_radius_m: 160.1223
+      reconstructed_focal_length_m: 140.5937
+      criterion: "edge-change minimization with movable focus"
+      constraint_status: "fail"
+  question_2:
+    BF:
+      vertex_m: [-49.38526923795354, -36.93818044388349, -294.4074263182279]
+      radial_rms_m: 0.06365875873225676
+      orthogonal_rms_m: 0.06364752237344322
+      max_abs_edge_strain: 0.0006950759956321217
+      status: "pass"
+    R1:
+      reported_vertex_m: [-49.3194, -36.8890, -294.0187]
+      reported_vertex_norm_m: 300.4000623952166
+      required_rotation_preserved_norm_m: 300.884
+      rotation_invariant_status: "fail"
+    R2:
+      reported_vertex_m: [-49.392, -36.943, -294.450]
+      optimizer_evidence_status: "needs_review"
+    R3:
+      reported_vertex_m: [-49.3719, -36.9282, -294.3278]
+      reported_max_edge_change: 0.0011
+      reimplemented_max_edge_change: 0.0010604139373968646
+      constraint_status: "fail"
+  question_3:
+    BF_inherited_curvature:
+      adjusted_ratio: 0.28965806553112156
+      baseline_ratio: 0.05282741248511745
+      numerical_status: "pass"
+      interpretation_status: "needs_review"
+    R1_spherical_patch:
+      adjusted_ratio: 0.6746
+      baseline_ratio: 0.0527
+      baseline_status: "pass"
+      adjusted_status: "needs_review"
+    BF_planar:
+      adjusted_ratio: 0.010601886284114001
+      baseline_ratio: 0.008104747800209687
+      numerical_status: "pass"
+      interpretation_status: "needs_review"
+    R2_planar:
+      adjusted_ratio: 0.01103
+      baseline_ratio: 0.00811
+      baseline_status: "pass"
+      adjusted_status: "needs_review"
+    R3_corrected_area:
+      adjusted_ratio: 0.0153
+      baseline_ratio: 0.0053
+      correction_factor_status: "fail"
+
+provenance_classification:
+  independently_conceived_before_references:
+    - "stable radial-intersection paraboloid model"
+    - "continuous minimax criterion with explicit non-uniqueness warning"
+    - "exact actuator/cable reconstruction and rounded-output validation"
+  corrected_after_audit_before_references:
+    - "joint focal-length and nodal projection"
+    - "one-parameter feasible baseline"
+    - "planar versus inherited-curvature envelopes"
+    - "full weighted focal-spot figure and document-integrity checks"
+  learned_after_references:
+    - "treat the finite receiver as a candidate focal region rather than a fixed point"
+    - "add panel-interior or edge-midpoint quadrature to the fitting objective"
+    - "use compact numbered algorithm boxes alongside evidence tables"
+  comparison_strengthened_but_not_first_learned:
+    - "objective choice changes the ideal focal length"
+    - "Monte Carlo stability does not resolve panel-model uncertainty"
+
+overall_assessment:
+  BF_constraint_and_reproduction_status: "pass"
+  BF_formal_global_optimality_status: "needs_review"
+  BF_physical_external_validity_status: "needs_review"
+  reference_default_correctness_assumption: false
+  candidate_only_boundary_status: "pass"
+  note: "Only candidate lessons were generated; no verified knowledge was written."

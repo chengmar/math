@@ -1,0 +1,25 @@
+id: demo-leakage-warning
+title: Demo：参考答案混入盲解目录
+type: failure_mode
+status: demo
+provenance: demo
+version: 1
+tags: [demo, leakage, isolation]
+problem_families: [synthetic]
+applicable_conditions: [盲解或评测阶段]
+inapplicable_conditions: [受控 reflection 工作区]
+minimum_baseline: 阶段路径清单和哈希检查
+recommended_method: 拒绝包含 Vault 哈希或 candidate 状态的文件
+why_it_works: 防止明显的文件级答案泄漏
+required_validation: [运行故意失败的泄漏样本]
+common_failures: [误以为文件检查能证明模型内部从未见过类似内容]
+counterexamples: [公开通用公式不应仅因文字相似被误判]
+source_cases: []
+source_documents: [人工生成演示]
+evidence: []
+confidence: demo_only
+last_tested: null
+regression_status: not_applicable
+created_at: '2026-08-16'
+updated_at: '2026-08-16'
+approved_by: null

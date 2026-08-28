@@ -1,0 +1,36 @@
+schema_version: 1
+id: "CAND-2021A-002"
+case_id: "2021A"
+status: "candidate"
+category: "method_card"
+title: <REFERENCE_TITLE_REDACTED>
+
+provenance:
+  classification: "learned_after_references"
+  sources:
+    - "R1: <REFERENCE_ID>"
+  prior_blind_final_present: false
+  note: "R1使用节点和圆弧中点；候选改为规则、可复现的面板重心求积点。"
+
+candidate_claim:
+  text: "仅优化节点残差可能遗漏面板内部法向和曲率误差；可对每块面板加入固定重心求积点，联合报告节点与面板指标。"
+  mathematical_status: "needs_review"
+  physical_status: "needs_review"
+
+recommended_metrics:
+  - "active-node radial RMS"
+  - "panel-quadrature orthogonal RMS"
+  - "panel-quadrature maximum absolute error"
+  - "focal-plane hit distribution evaluated only after model selection"
+
+implementation_requirements:
+  - "求积规则与面板几何模型预先固定"
+  - "精确边长、促动器行程、拉索闭合和舍入约束不变"
+  - "防止用问题三结果反向挑选未经声明的问题二模型"
+
+promotion_gate:
+  direct_verified_upgrade_allowed: false
+  required:
+    - "相对节点目标的增益和计算代价均被量化"
+    - "至少两种面板解释下做敏感性"
+    - "跨案例复现"

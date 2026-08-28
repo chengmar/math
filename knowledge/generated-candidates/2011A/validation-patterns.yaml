@@ -1,0 +1,63 @@
+schema_version: 1
+case_id: 2011A
+knowledge_status: candidate
+patterns:
+  - id: CAND-2011A-V01
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_status: candidate
+    origin: independent_blind_and_audit_remediation
+    evaluation_status: pass
+    recipe:
+      - "建立无坐标基线"
+      - "空间块切折"
+      - "所有预处理和调参在训练折内完成"
+      - "增加连续区和缓冲留出"
+    report: "平均误差、最坏折、按测试—训练距离分层误差与适用范围"
+
+  - id: CAND-2011A-V02
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_status: candidate
+    origin: audit_remediation
+    evaluation_status: pass
+    recipe:
+      - "固定真实坐标和热点定义"
+      - "只置换观测值"
+      - "重复不同窗口并控制多重比较"
+      - "方向若不超过零模型则撤回物理主张"
+    report: "统计量、p 值、阈值、通过元素数与几何主轴对照"
+
+  - id: CAND-2011A-V03
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_status: candidate
+    origin: audit_remediation
+    evaluation_status: pass
+    recipe:
+      - "全部样点 LOO"
+      - "累计删除前 k 高值"
+      - "带宽和网格敏感性"
+      - "ESS、近邻数、最大单点贡献和边界距离"
+      - "空间块重采样位置包络"
+    report: "最大位移、峰换序、支持失败和复采优先级"
+
+  - id: CAND-2011A-V04
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_status: candidate
+    origin: learned_after_reference
+    evaluation_status: pass
+    recipe:
+      - "从受控附件重算区均值"
+      - "按论文印刷公式重算指数"
+      - "分别判断公式数值、数据链和物理解释"
+      - "比较合理起点评价值的敏感性"
+    report: "精确数值差、舍入容差、输入定义与标准适用性"
+
+  - id: CAND-2011A-V05
+    title: <REFERENCE_TITLE_REDACTED>
+    knowledge_status: candidate
+    origin: independent_blind_and_audit_remediation
+    evaluation_status: pass
+    recipe:
+      - "校验输入/输出哈希和干净两次运行"
+      - "校验源、生成表、PDF 的同一构建链"
+      - "另行记录数学、物理和外部有效性"
+    report: "复现可以 pass，而源身份、方向和外部因果仍为 needs_review"

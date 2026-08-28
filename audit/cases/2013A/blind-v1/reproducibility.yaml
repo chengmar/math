@@ -1,0 +1,78 @@
+schema_version: 1
+overall_status: needs_review
+computational_reproduction_status: pass
+paper_consistency_status: pass
+pdf_compile_status: needs_review
+environment:
+  operating_system: Windows
+  shell: PowerShell Core
+  powershell_version: 7.6.4
+  required_modules:
+    - Microsoft.PowerShell.Management
+    - Microsoft.PowerShell.Utility
+    - System.Drawing
+  external_python_required: false
+  network_required: false
+  xelatex_available: false
+randomness:
+  seed: 2013
+  stochastic_algorithm_used: false
+  note: 脚本固定种子但模型为确定性计算。
+inputs:
+  - path: input/problem/<SOURCE_FILE_REDACTED>
+    bytes: 249344
+    sha256: 71d7585a8580cd2c616ef5879c85561499f22e3b740a5af99326f53500e3dcdf
+    status: pass
+  - path: input/attachments/<SOURCE_FILE_REDACTED>
+    bytes: 24064
+    sha256: 2e7fa8a775109a177adb8cef103bb1e1fe0b5d30ea7b08d5f68a98a051cd2dd8
+    status: pass
+commands:
+  solve: pwsh -NoProfile -File .\code\solve.ps1
+  paper_check: pwsh -NoProfile -File .\code\verify-paper.ps1
+  reproduce: pwsh -NoProfile -File .\code\reproduce.ps1
+  all: pwsh -NoProfile -File .\code\run-all.ps1
+  tex_if_available: 在paper目录运行xelatex main.tex两次。
+reproduction_check:
+  status: pass
+  runs_compared: 2
+  tracked_file_count: 17
+  hash_mismatch_count: 0
+  report: results/reproducibility-check.json
+  claim_limit: 双次哈希一致只证明声明输出的确定性复现。
+paper_result_check:
+  status: pass
+  key_number_markers: 8
+  total_checks: 16
+  failure_count: 0
+  report: results/paper_consistency.json
+  claim_limit: 标记和图引用一致不证明模型数学正确。
+tex_check:
+  brace_balance_status: pass
+  brace_open_count: 165
+  brace_close_count: 165
+  environment_balance_status: pass
+  compilation_status: needs_review
+  reason: 当前环境没有TeX引擎，未生成或逐页检查PDF。
+outputs:
+  manifest: results/generated-files.json
+  main_summary: results/summary.json
+  verification: results/verification.json
+  tables:
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+  figures:
+    - figures/<SOURCE_FILE_REDACTED>
+    - figures/<SOURCE_FILE_REDACTED>
+    - figures/<SOURCE_FILE_REDACTED>
+    - figures/<SOURCE_FILE_REDACTED>
+known_limitations:
+  - 视频1和视频2缺失，问题1和问题2不能数值闭合。
+  - 工程情景参数尚未由本路段视频标定。
+  - 无TeX引擎，paper/main.tex只完成静态结构检查。

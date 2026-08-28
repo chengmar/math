@@ -1,0 +1,159 @@
+schema_version: 1
+case_id: 2015A
+phase: solve
+skill: cumcm-a-solve
+overall_status: needs_review
+overall_reason: "问1至问3的代码、结果、图表、时间留出和内部复核已完成；附件4视频缺失，且盲解阶段没有外部地理真值，因此不能给 overall pass。"
+scope:
+  blind_solve: true
+  network_search_used: false
+  reference_answer_read: false
+  audit_phase_called: false
+  reflect_phase_called: false
+  evaluate_phase_called: false
+  frozen: false
+phase_gate:
+  lock_phase_status: pass
+  equivalent_condition_check_status: pass
+  original_check_phase_python_execution_status: needs_review
+  note: "没有可用 Python 解释器；未伪称原脚本运行成功。原脚本的三个确定条件由 PowerShell 等价复核为 pass。"
+input_audit:
+  allowed_path_compliance_status: pass
+  input_hash_manifest_status: pass
+  workbook_sheet_count_status: pass
+  monotonic_time_status: pass
+  missing_numeric_cell_status: pass
+  attachment4_video_presence_status: fail
+  observations_per_sheet: 21
+  sampling_interval_minutes: 3
+training_memory:
+  source_status: provisional_training
+  cards_inspected: 3
+  cards_used: 3
+  maximum_allowed: 5
+  decisions:
+    TM-001-EVIDENCE-LAYERS: adopt
+    TM-002-TIME-ORDERED-VALIDATION: adapt
+    TM-007-FIT-EVALUATE-SEPARATION: adapt
+  usage_record_status: pass
+model_selection:
+  baseline_status: pass
+  candidate_count: 3
+  maximum_main_candidates: 3
+  selected_model: full_vector_solar_inverse
+  selection_status: pass
+  candidates:
+    - name: coordinate_linear_baseline
+      selected: false
+      selection_status: fail
+      q2_terminal_holdout_rmse_m: 0.03903587310053477
+    - name: length_only_inverse
+      selected: false
+      selection_status: fail
+      q2_terminal_holdout_rmse_m: 0.013632064213427766
+    - name: full_vector_solar_inverse
+      selected: true
+      selection_status: pass
+      q2_terminal_holdout_rmse_m: 0.0010404662723973081
+question_coverage:
+  q1:
+    model_status: pass
+    numerical_result_status: pass
+    figure_status: pass
+    key_results:
+      length_0900_m: 6.552652141464708
+      solar_noon_beijing: "11:58:33"
+      minimum_length_m: 3.662758218641293
+      length_1500_m: 6.684003410645878
+  q2:
+    inverse_model_status: pass
+    internal_fit_status: pass
+    external_location_truth_status: needs_review
+    primary_rotation_candidate:
+      latitude_deg: 18.363829851150513
+      longitude_deg: 109.70628297328949
+      inferred_height_m: 1.9646382616190428
+      tip_rmse_m: 0.00034647160970127314
+    multiple_candidate_reporting_status: pass
+  q3_attachment2:
+    annual_search_status: pass
+    paired_date_detection_status: pass
+    external_location_truth_status: needs_review
+    rotation_candidates:
+      - date_representation: "2015-07-21"
+        latitude_deg: 39.784440100193024
+        longitude_deg: 81.28627330064774
+        inferred_height_m: 1.9954120110297895
+        tip_rmse_m: 0.000047040811785282364
+      - date_representation: "2015-05-24"
+        latitude_deg: 39.80782091617584
+        longitude_deg: 78.84485214948654
+        inferred_height_m: 1.9954604929929587
+        tip_rmse_m: 0.000047946631175834164
+  q3_attachment3:
+    annual_search_status: pass
+    paired_date_detection_status: pass
+    external_location_truth_status: needs_review
+    rotation_candidates:
+      - date_representation: "2015-11-19"
+        latitude_deg: 30.50548404455185
+        longitude_deg: 106.61803662776947
+        inferred_height_m: 2.9308062023795993
+        tip_rmse_m: 0.0002812454318200318
+      - date_representation: "2015-01-24"
+        latitude_deg: 30.368633270263672
+        longitude_deg: 113.11143428087234
+        inferred_height_m: 2.935193864832007
+        tip_rmse_m: 0.00028532382195364814
+  q4:
+    method_status: pass
+    video_input_status: fail
+    numerical_location_status: needs_review
+    unknown_date_identifiability_analysis_status: pass
+    note: "给出视频稳定、影端提取、地面单应标定、鲁棒联合反演和失效条件；没有视频时不生成数值坐标。"
+validation:
+  chronological_holdout_status: pass
+  q1_internal_identity_status: pass
+  independent_forward_recompute_status: pass
+  dense_global_search_crosscheck_status: pass
+  coordinate_rounding_sensitivity_status: pass
+  clock_offset_sensitivity_status: pass
+  boundary_sun_above_horizon_status: pass
+  external_geographic_validation_status: needs_review
+  evidence_matrix_status: pass
+reproducibility:
+  fixed_seed_status: pass
+  single_entry_script_status: pass
+  input_hash_status: pass
+  deterministic_rerun_status: pass
+  deterministic_files_compared: 18
+  independent_validation_script_status: pass
+  latex_source_status: pass
+  latex_compilation_status: needs_review
+  latex_note: "当前环境未检测到 LaTeX 引擎。"
+paper_result_consistency:
+  generated_tex_macros_status: pass
+  markdown_key_number_status: pass
+  figure_reference_status: pass
+  source_structure_status: pass
+deliverables:
+  problem-analysis.md: pass
+  data-audit.md: pass
+  assumptions.yaml: pass
+  variables.yaml: pass
+  model-selection.md: pass
+  solution-report.yaml: pass
+  reproducibility.yaml: pass
+  code: pass
+  results: pass
+  figures: pass
+  paper/main.tex: pass
+  paper/paper.md: pass
+limitations:
+  - "太阳位置采用分数年近似，未包含高精度星历和大气折射。"
+  - "一小时轨迹不能辨识年份，并保留至日前后的日期对称解。"
+  - "坐标轴手性未说明时存在镜像候选。"
+  - "整体时钟偏差与经度近似不可分；1 分钟对应约 0.25 度经度。"
+  - "舍入扰动是模型内敏感性，不是统计置信区间。"
+  - "附件4视频缺失，第四问不能给数值地点。"
+  - "盲解阶段未用外部真值，真实地点正确性保持 needs_review。"

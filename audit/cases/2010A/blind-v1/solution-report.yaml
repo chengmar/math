@@ -1,0 +1,80 @@
+phase: solve
+case_id: 2010A
+status: pass
+frozen: false
+reflection_performed: false
+audit_performed: false
+evaluation_performed: false
+scope:
+  blind_solution: pass
+  network_search: pass
+  forbidden_reference_access: pass
+  only_solve_stage: pass
+coverage:
+  question_1_model: pass
+  question_1_1cm_table: pass
+  question_1_validation: pass
+  question_2_general_relation: pass
+  question_2_parameter_identification: pass
+  question_2_10cm_table: pass
+  question_2_independent_validation: pass
+  sensitivity_and_limits: pass
+key_results:
+  small_tank:
+    alpha_deg: 4.1
+    effective_volume_scale: 0.9662865764
+    effective_horizontal_diameter_m: 1.7199901061
+    effective_capacity_l: 3971.5786
+    max_abs_tilt_effect_l: 248.8178
+    max_effect_height_cm: 65.1
+    table_rows: 121
+  actual_tank:
+    alpha_deg: 2.1232051
+    beta_abs_deg: 4.2535614
+    all_discharge_increment_rmse_l: 0.9466939
+    held_out_increment_rmse_l: 0.9883214
+    refill_observed_l: 51124.0
+    refill_predicted_l: 51122.0572
+    refill_error_l: -1.9428
+    geometric_capacity_l: 64664.4488
+    table_rows: 31
+validation:
+  phase_lock: pass
+  input_extraction: pass
+  fixed_seed: pass
+  candidate_comparison: pass
+  held_out_segment: pass
+  independent_refill: pass
+  quadrature_refinement: pass
+  boundary_checks: pass
+  paper_compilation: pass
+  page_by_page_visual_inspection:
+    status: needs_review
+    note: PDF compiled to 14 pages with no fatal error; local raster preview tooling was unavailable, so only source, figures and compilation log were inspected.
+  official_format_rules:
+    status: needs_review
+    note: The allowed template states that the official-year format configuration needs review.
+  mathematical_correctness:
+    status: needs_review
+    note: Independent numerical recomputation is implemented; no automatic script claims a proof of mathematical correctness.
+limitations:
+  - 小罐图示宽度与无变位数据存在稳定比例差，物理原因未由允许材料确定。
+  - 小罐变位实验高油位残差具有结构性。
+  - 实际罐横偏方向不可由轴对称体积数据识别。
+  - 未建模温度膨胀、动态液面、流量计漂移、探针偏心或罐体非刚性。
+deliverables:
+  problem_analysis: problem-analysis.md
+  data_audit: data-audit.md
+  assumptions: assumptions.yaml
+  variables: variables.yaml
+  model_selection: model-selection.md
+  reproducibility: reproducibility.yaml
+  code: code/
+  results: results/
+  figures: figures/
+  paper_tex: paper/main.tex
+  paper_markdown: paper/paper.md
+  paper_pdf: paper/<SOURCE_FILE_REDACTED>
+next_stage:
+  status: needs_review
+  note: No next stage is started or authorized; the solve workspace remains unfrozen.

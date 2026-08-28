@@ -1,0 +1,74 @@
+schema_version: 2
+phase: blind-revision
+status: needs_review
+random_seed: 20260824
+workspace_assumption: 从当前 blind-revision 工作区运行
+environment:
+  os: Windows
+  powershell:
+    version_requirement: '>=7'
+    verified_version: 7.6.4
+    status: pass
+  python: 3.12.13
+  numpy: 2.5.2
+  pandas: 3.0.5
+  scipy: 1.18.0
+  matplotlib: 3.11.1
+  pyyaml: 6.0.3
+  spreadsheet_reader: Microsoft Excel COM 12.0
+  tex_engine: XeLaTeX (MiKTeX portable)
+  lock_file: requirements-lock.txt
+  hermetic_offline_environment:
+    status: needs_review
+    note: 精确版本已锁定并在本机验证，但未随工作区提供离线 wheel 包。
+commands:
+  full_pipeline: pwsh -NoProfile -File code/run_all.ps1
+  without_pdf: pwsh -NoProfile -File code/run_all.ps1 -SkipPdf
+  manifest_recheck: python code/build_manifest.py --verify
+pipeline_order:
+  - 清空并验证仅限当前工作区的 results/ 与 figures/
+  - 从原始 XLS 的工作副本导出 CSV
+  - 生成模型、结果和仅被论文引用的图
+  - 从结构化结果渲染 Markdown 与 LaTeX 表
+  - 可选地从零编译 PDF，并删除编译临时文件
+  - 运行不导入生产 model.py 的自适应积分验证
+  - 核对结构、状态词汇、论文数字和 blind-v1 树哈希
+  - 最后生成并复核单一 run_manifest.json
+determinism:
+  generated_core_two_clean_runs:
+    status: pass
+    first_sha256: cc110b057708685b76d5437d97014967ada08daa72fe6ade519ec535591bd786
+    second_sha256: cc110b057708685b76d5437d97014967ada08daa72fe6ade519ec535591bd786
+  pdf_byte_reproducibility:
+    status: needs_review
+    note: SOURCE_DATE_EPOCH 已固定；最终是否字节一致以实际双跑结果判定。
+  pdf_content_verification:
+    status: pass
+    method: pdftotext 检查标题和生成参数
+input_sha256:
+  problem_doc: a6bb7399061fcf1af4ff7a0d3df3020653f4e90d27a13eef8e35bcec1cacc9c1
+  attachment_1: f7eb407354ca0e71effde153535cc1ec617e45a3849afac814c5c9361880558f
+  attachment_2: fc3cf8098742f11feb5832fea8a47e5db0f862faab89e61dc0b669f0010c5777
+numerical_controls:
+  production_quadrature:
+    method: composite Gauss-Legendre
+    points_per_cell: 8
+    small_axial_cell_m: 0.01
+    actual_axial_cell_m: 0.025
+    status: pass
+  independent_verification:
+    method: scipy.integrate.quad with scalar formulas
+    production_model_imported_status: pass
+    status: pass
+  optimizer:
+    method: bounded nonlinear least_squares
+    alpha_bounds_deg: [-10, 10]
+    beta_bounds_deg: [0, 20]
+    status: pass
+known_requirements:
+  excel_com:
+    status: needs_review
+    note: 没有 Microsoft Excel 的机器需提供能保持旧 XLS 单元格值的替代读取器。
+  engineering_tolerances:
+    status: needs_review
+    note: 题目没有给出流量计、探针和罐体尺寸的真实公差。

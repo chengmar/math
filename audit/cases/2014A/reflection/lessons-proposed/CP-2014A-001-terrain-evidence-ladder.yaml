@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "id": "CP-2014A-001",
+  "title": "多尺度地形选址应建立足迹净空证据阶梯",
+  "status": "candidate",
+  "source_case": "2014A",
+  "provenance": {
+    "blind_components": {
+      "class": "independent_pre_audit",
+      "items": ["coarse/fine DEM", "square footprint", "slope", "roughness", "relief", "distance risk"]
+    },
+    "reference_learned_components": [
+      {"class": "learned_after_reference", "reference": "REF-04", "item": "maximum safe-square radius"},
+      {"class": "learned_after_reference", "reference": "REF-03", "item": "robust local-plane residual"}
+    ]
+  },
+  "lesson": <LONG_QUOTE_REDACTED>,
+  "applicability": [
+    "terrain or facility placement is represented by a registered raster",
+    "the vehicle or facility has a known footprint that can be rasterized",
+    "both local roughness and contiguous obstacle-free area affect safety"
+  ],
+  "non_applicability": [
+    "pixel scale or coordinate orientation is unknown",
+    "absolute elevation is required but DEM registration metadata is absent",
+    "hazards cannot be represented by a binary or graded raster mask",
+    "the footprint is much smaller than one pixel"
+  ],
+  "minimum_baseline": [
+    "a slope-plus-roughness score evaluated on the full footprint",
+    "a distance or reachability term",
+    "explicit one-based/zero-based and row/column coordinate tests"
+  ],
+  "validation_protocol": [
+    "hash and dimension-check the source raster",
+    "fix all random seeds or replace stochastic labels with a deterministic procedure",
+    "compare the baseline with added safe-radius, edge-clearance, and robust-plane features by ablation",
+    "inject isolated spikes, trenches, striping, global slopes, plateau edges, and coordinate flips",
+    "report worst footprint height difference, minimum edge clearance, site stability under weights, and runtime",
+    "keep relative-terrain and absolute-height conclusions separate until registration evidence exists"
+  ],
+  "counterexamples": [
+    "a large contiguous region lies on an unsafe global slope",
+    "K-means absorbs a single lethal obstacle into the safe class",
+    "a boundary-clipped square is incorrectly counted as fully safe",
+    "row/column reversal produces a plausible but wrong location",
+    "robust plane fitting suppresses a real narrow ridge as an outlier"
+  ],
+  "evidence_strength": "mixed_case_internal",
+  "evidence": [
+    {"source": "blind-final terrain pipeline", "status": "pass", "claim": "multiscale square-footprint score and deterministic final points exist"},
+    {"source": "blind-final DEM registration", "status": "needs_review", "claim": "absolute height mapping lacks external metadata"},
+    {"source": "REF-04 MAT artifacts", "status": "pass", "claim": "source arrays match the problem DEM and attached maxima match reported terrain points"},
+    {"source": "REF-04 algorithm recreation", "status": "fail", "claim": "printed cluster centres do not reproduce the coarse point; seed and scale are inconsistent"},
+    {"source": "REF-03 robust plane", "status": "needs_review", "claim": "concept is relevant but not implemented by supplied code"}
+  ],
+  "uncertainties": [
+    "no cross-case evidence yet",
+    "feature weights may be data-scale dependent",
+    "safe-square radius is not sufficient for non-square or attitude-dependent footprints"
+  ],
+  "promotion_gate": [
+    "repeat the ablation on at least two additional terrain cases",
+    "include deterministic reruns and coordinate-flip tests",
+    "demonstrate improvement on at least one noise mechanism without regression on the listed counterexamples",
+    "document failure cases and computational cost"
+  ],
+  "do_not_claim": [
+    "the REF-04 clustering result is generally reproducible",
+    "a large safe radius alone guarantees a safe landing",
+    "relative DEM values determine absolute clearance without registration"
+  ]
+}

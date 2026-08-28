@@ -1,0 +1,50 @@
+schema_version: 1
+id: LP-2013A-003
+title: <REFERENCE_TITLE_REDACTED>
+proposal_kind: validation_pattern
+state: candidate
+case_specific: true
+applicable_when:
+  - 使用元胞自动机、蒙特卡洛、遗传算法或随机神经网络给出到达时间或区间。
+not_applicable_when:
+  - 算法完全确定且所有输入无随机性；此时仍应做确定性重跑和边界测试。
+minimum_baseline:
+  - 固定 seed 的确定性或期望路径。
+  - 相同输入下的点队列或守恒差分基线。
+protocol:
+  reproducibility:
+    - 固定并记录 seed、PRNG、版本、运行次数和未命中处理。
+    - 保存逐次结果或其不可变哈希，而非只保存均值。
+  semantic_checks:
+    - 重算代码实际输入的周期均值和容量单位。
+    - 核对论文运行次数、源码循环次数和图表样本数。
+    - 核对终止事件是否对应题目定义的空间边界。
+  distribution_checks:
+    - 报告均值、标准差、中位数、2.5%/97.5% 分位数和失败率。
+    - 不把均值的置信区间写成单次结果预测区间。
+  external_checks:
+    - 按时间或事件分组做校准/评价留出。
+    - 与最低基线在同一评价折比较误差和复杂度。
+current_evidence:
+  - reference: R1
+    status: needs_review
+    finding: 7 个表值可重算，但无 seed，源码末端调用不一致。
+  - reference: R2
+    status: fail
+    finding: 论文 100 次与源码 50 次不一致；窄区间未被重实现支持。
+  - reference: R3
+    status: pass
+    finding: 10000 次重实现均值复现论文随机均值。
+  - reference: R3_external_interpretation
+    status: fail
+    finding: 可复现均值基于 2355 pcu/h 代码流量，不是题设 1500 pcu/h。
+counterexamples:
+  - 均值复现但输入口径错误，说明 reproducible 不等于 valid。
+  - p>0.05 或训练集高 R2 不能替代留出评价。
+source_cases: [R1, R2, R3, BLIND independent-validator]
+evidence_strength:
+  internal: high
+  external: medium_low
+scope_controls:
+  direct_upgrade_in_reflection: false
+  dummy_input_detected: false

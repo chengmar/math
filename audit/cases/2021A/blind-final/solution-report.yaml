@@ -1,0 +1,126 @@
+case_id: 2021A
+phase: blind-revision
+skill: $cumcm-a-solve
+blind_revision: true
+overall_status: needs_review
+overall_reason: 内部几何、模型选择和双包络数值积分为 pass；问题一准则唯一性、面板几何解释与外部物理有效性仍为 needs_review。
+scope:
+  network_search_used: false
+  reference_papers_read: false
+  commentary_or_standard_answers_read: false
+  other_phase_skill_called: false
+  frozen_v1_modified: false
+  current_output_frozen: false
+frozen_v1_integrity:
+  write_performed: false
+  recorded_result_workbook_sha256: 41f3ff7914590af4d281163cacd45a4ed6e976e6332b2b25830adcb4afe24150
+  current_result_workbook_sha256: 41f3ff7914590af4d281163cacd45a4ed6e976e6332b2b25830adcb4afe24150
+  result_workbook_identity_status: pass
+  whole_tree_identity_status: needs_review
+  note: 当前最小副本不含原 FROZEN 清单，无法确认清单路径行口径；未伪造全树一致。
+questions:
+  question_1:
+    numerical_status: pass
+    criterion_uniqueness_status: needs_review
+    method: 在焦点固定的一参数抛物面族上最小化连续 300 米口径最大径向位移
+    sphere_radius_m: 300.4000153124247
+    nominal_focal_length_m: 139.98640713558993
+    focal_length_m: 140.32234069068346
+    focal_ratio: 0.4671182874100195
+    vertical_vertex_m: [0.0, 0.0, -300.73594886751823]
+    max_radial_displacement_m: 0.3359356359974299
+    evidence: results/ideal_paraboloid.json
+  question_2:
+    status: pass
+    method: 全焦距网格与局部细化包络下的焦距—节点凸投影联合设计
+    primary_objective: active-node radial residual RMS
+    direction_deg:
+      alpha: 36.795
+      beta: 78.169
+    focal_length_m: 140.3837765583601
+    focal_offset_from_nominal_m: 0.3973694227701685
+    ideal_vertex_m: [-49.38526923795354, -36.93818044388349, -294.4074263182279]
+    active_node_count: 692
+    actuator_stroke_range_m: [-0.24949453510927322, 0.1862481878343023]
+    max_abs_edge_strain: 0.0006950759956321217
+    radial_residual_rms_m: 0.06365875873225676
+    orthogonal_surface_rms_m: 0.06364752237344322
+    orthogonal_surface_max_abs_m: 0.25221261666205547
+    audit_anchor_not_better_status: pass
+    exact_constraint_status: pass
+    rounded_output_status: pass
+    result_workbook:<SOURCE_FILE_REDACTED>
+    evidence: results/validation_metrics.json
+  question_3:
+    numerical_status: pass
+    panel_geometry_interpretation_status: needs_review
+    physical_external_validity_status: needs_review
+    samples_per_panel: 16384
+    inherited_spherical_curvature:
+      adjusted_reception_ratio: 0.28965806553112156
+      baseline_reception_ratio: 0.05282741248511745
+      relative_improvement: 4.483101516901364
+    planar_facets:
+      adjusted_reception_ratio: 0.010601886284114001
+      baseline_reception_ratio: 0.008104747800209687
+      relative_improvement: 0.3081081047135985
+    evidence: results/<SOURCE_FILE_REDACTED>
+model_selection:
+  selected: J2_joint_focal_projection
+  selected_status: pass
+  simple_baseline_status: pass
+  frozen_v1_baseline_status: pass
+  audit_counterexample_anchor_status: pass
+  kkt_status: pass
+  formal_global_proof_status: needs_review
+  evidence:
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+audit_findings:
+  AUD-2021A-001:
+    status: pass
+    resolution: 联合搜索焦距与节点投影；所选主目标优于审计锚点，并披露最大误差代价。
+  AUD-2021A-002:
+    status: needs_review
+    resolution: 已实现平面片与继承球面曲率两个条件模型；题面不足以唯一确认调整后面板规则。
+  AUD-2021A-003:
+    status: pass
+    resolution: 已重写 Markdown；最终验证记录异常控制字符为 0，公式符号与论文数字检查为 pass。
+  AUD-2021A-004:
+    status: pass
+    resolution: 主图覆盖全部向前命中并按投影功率加权，另给 6 米局部图及保留功率比例。
+validation:
+  input_identity_status: pass
+  joint_focal_search_status: pass
+  inner_kkt_status: pass
+  exact_stroke_status: pass
+  exact_edge_strain_status: pass
+  cable_closure_status: pass
+  rounded_output_status: pass
+  ideal_ray_identity_status: pass
+  two_panel_model_numerical_status: pass
+  execution_reproduction_status: pass
+  formal_mathematical_correctness_status: needs_review
+  panel_geometry_interpretation_status: needs_review
+  physical_external_validity_status: needs_review
+limitations:
+  - 问题一极小极大准则是明确建模偏好，不是题面唯一指定。
+  - 节点只允许径向移动，未建立完整索网受力与切向自由度模型。
+  - 联合方案改善主目标，但最大正交误差大于冻结 V1 和一参数基线。
+  - 两种面板包络给出的接收比差异显著，真实曲率与姿态需工程信息确认。
+  - 几何光学忽略缝隙、遮挡、衍射、反射率和馈源方向图。
+deliverables:
+  problem_analysis: problem-analysis.md
+  data_audit: data-audit.md
+  assumptions: assumptions.yaml
+  variables: variables.yaml
+  model_selection: model-selection.md
+  reproducibility: reproducibility.yaml
+  code: code/
+  results: results/
+  figures: figures/
+  paper_tex: paper/main.tex
+  paper_markdown: paper/paper.md
+  workbook:<SOURCE_FILE_REDACTED>
+freeze_status: needs_review
+freeze_note: 本会话不自行冻结；完成后由外部冻结脚本生成 blind-final。

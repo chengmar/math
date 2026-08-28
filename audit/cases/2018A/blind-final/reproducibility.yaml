@@ -1,0 +1,32 @@
+schema_version: 1
+phase: blind-revision
+random_seed: 2018
+stochastic_components: none
+working_directory: <RUNTIME_ROOT>\2018A\workspaces\blind-revision
+commands:
+- python code/run_all.py
+- python code/verify_outputs.py
+- python code/check_reproducibility.py
+- python code/build_manifest.py
+python: 3.12.13
+platform: Windows-11-10.0.26200-SP0
+dependencies:
+  numpy: 2.5.2
+  scipy: 1.18.1
+  pandas: 3.0.5
+  matplotlib: 3.11.1
+  openpyxl: 3.1.5
+  pyyaml: 6.0.3
+input_files:
+  input\problem\<SOURCE_FILE_REDACTED>: b51198d1878ffa397183425f02afbc8eb55c9725f9e07bb68b39049cab83b2d3
+  input\data\<SOURCE_FILE_REDACTED>: 5cc06685f8fe568107a492351a5bc22f9119b0d509d324e303c84c0014e885a2
+run_all_status: pass
+second_run_status: pass
+paper_compile_status: needs_review
+paper_compile_note: XeLaTeX is not installed in the current environment.
+semantic_sha256_first: e643986f387109a329600bf2548e3f11259517ac2d7341d9c76e856d00752dcd
+semantic_sha256_second: e643986f387109a329600bf2548e3f11259517ac2d7341d9c76e856d00752dcd
+post_run_verification_status: pass
+output_manifest_status: pass
+output_manifest_entry_count: 37
+output_manifest_self_hash_included: false

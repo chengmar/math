@@ -1,0 +1,201 @@
+schema_version: 1
+case_id: "2012A"
+artifact_status: candidate
+scope:
+  blind_version: "blind-final"
+  reference_count: 4
+  external_search_used: false
+  approved_references_only: true
+freeze_validation:
+  status: pass
+  manifest_entries: 213
+  missing: 0
+  size_mismatch: 0
+  hash_mismatch: 0
+  unsafe_paths: 0
+  duplicate_paths: 0
+  unexpected_files: 0
+  tree_sha256_expected: "d906f6cb698512b164213c40b53ba8669af1b01264a2994108904b353f8c51a9"
+  tree_sha256_actual: "d906f6cb698512b164213c40b53ba8669af1b01264a2994108904b353f8c51a9"
+  audit_prerequisite: pass
+materials:
+  - id: B0
+    kind: frozen_blind_final
+    title: <REFERENCE_TITLE_REDACTED>
+    evidence_status: needs_review
+    evidence_note: "内部复现与一致性为 pass；无外部质量真值。"
+  - id: R1
+    file: "<SOURCE_FILE_REDACTED>"
+    title: <REFERENCE_TITLE_REDACTED>
+    sha256: <REFERENCE_HASH_REDACTED>
+    extraction_status: pass
+    claim_validation_status: needs_review
+  - id: R2
+    file: "<SOURCE_FILE_REDACTED>"
+    title: <REFERENCE_TITLE_REDACTED>
+    sha256: <REFERENCE_HASH_REDACTED>
+    extraction_status: pass
+    claim_validation_status: fail
+  - id: R3
+    file: "<SOURCE_FILE_REDACTED>"
+    title: <REFERENCE_TITLE_REDACTED>
+    sha256: <REFERENCE_HASH_REDACTED>
+    extraction_status: pass
+    claim_validation_status: fail
+  - id: R4
+    file: "<SOURCE_FILE_REDACTED>"
+    title: <REFERENCE_TITLE_REDACTED>
+    sha256: <REFERENCE_HASH_REDACTED>
+    extraction_status: pass
+    claim_validation_status: fail
+questions:
+  q1:
+    blind:
+      model: "sample-paired exact sign flip; paired t and Wilcoxon checks; ICC(2,k), Kendall W, within-wine SD"
+      red_exact_p: 0.02027098834514618
+      white_exact_p: 0.01334402710199356
+      difference_status: pass
+      working_panel: 1
+      trust_status: needs_review
+    references:
+      R1:
+        model: "per-wine two-factor ANOVA plus Alpha/ICC"
+        result: "red panel 1; white panel 2"
+        status: needs_review
+      R2:
+        model: "paired t by item and total; deviation variance"
+        result: "total red/white p about 0.030/0.020; panel 2 selected"
+        status: fail
+        reason: "adjacent text contradicts total significance; stability is not accuracy"
+      R3:
+        model: "F test then unpaired Welch t"
+        result: "p=0.121776/0.106083; panel 2 selected"
+        status: fail
+        reason: "natural sample pairing discarded"
+      R4:
+        model: "unpaired one-way ANOVA"
+        result: "white p about 0.0229; red p about 0.1164; panel 2 selected"
+        status: fail
+        reason: "pairing discarded and colour labels are mixed in narrative"
+  q2:
+    blind:
+      model: "equal-block PCA-Ward; three provisional grades"
+      red_membership_status: pass
+      white_membership_status: pass
+      red_median_ari: 0.4820971867007673
+      white_median_ari: 0.1998077198900996
+      status: needs_review
+    references:
+      R1:
+        grades: 4
+        red_membership_status: pass
+        validation_status: needs_review
+      R2:
+        grades: 5
+        red_duplicates: [9, 14]
+        white_duplicates: [12]
+        membership_status: fail
+      R3:
+        grades: 5
+        red_membership_status: pass
+        white_missing: [28]
+        white_membership_status: fail
+      R4:
+        grades: 4
+        red_duplicates: [23]
+        red_missing: [8]
+        white_duplicates: [11]
+        white_missing: [19, 28]
+        membership_status: fail
+  q3:
+    blind:
+      local_method: "tie-preserving permutation p; one colour-wise BH family"
+      red_significant_links: 59
+      white_significant_links: 21
+      red_same_anthocyanin_spearman: 0.9371184371184372
+      red_global_q2: -0.030124030993254447
+      white_global_q2: -0.25280881515397513
+      global_mapping_status: fail
+    references:
+      R1:
+        same_anthocyanin_reported_pearson: 0.923
+        same_anthocyanin_recomputed_pearson: 0.922473361040051
+        local_claim_status: pass
+        global_validation_status: needs_review
+      R2:
+        method: "PCA factors, grade, partial correlation, stepwise regression"
+        status: needs_review
+      R3:
+        method: "per-sample heterogeneous-vector Pearson association"
+        reported_red_white: [0.71, 0.86]
+        status: fail
+      R4:
+        method: "same-name indicator plots and regressions with deleted outliers"
+        status: needs_review
+  q4:
+    blind:
+      model: "selection-aware repeated nested scope/family selection"
+      red:
+        rmse: 9.061178808475775
+        baseline_rmse: 7.551539320585643
+        q2: -0.43978758717664745
+        permutation_p: 0.722
+        status: fail
+      white:
+        rmse: 4.760622503703709
+        baseline_rmse: 5.009586547463737
+        q2: 0.09692520262384341
+        relative_improvement: 0.049697523218971806
+        permutation_p: 0.05
+        status: needs_review
+      sensory_replacement_status: fail
+    references:
+      R1:
+        model: "screening and backward in-sample regressions"
+        status: fail
+        reason: "no prediction baseline; coefficient/t/p internal inconsistencies"
+      R2:
+        model: "multiple regression and path analysis"
+        reported_r2: 0.719
+        status: fail
+        reason: "misreads sqrt(1-R2)=0.5301 as 53% unexplained and 47% explained"
+      R3:
+        model: "multiple regression"
+        status: needs_review
+        reason: "no RMSE, R2, baseline, residual diagnostics, or cross-validation"
+      R4:
+        model: "correlation/regression plots"
+        status: needs_review
+        reason: "in-sample and selectively removes outliers"
+cross_cutting:
+  blind_internal_reproduction: pass
+  blind_external_validation: needs_review
+  blind_fold_isolation: pass
+  blind_aroma_unit_invariance: pass
+  blind_complexity: "high; clean reproduction wall time 1057.177 seconds"
+  reference_runtimes: needs_review
+provenance:
+  independently_conceived:
+    - "sample pairing"
+    - "working-panel uncertainty"
+    - "equal-block PCA-Ward provisional grades"
+    - "local association versus global mapping distinction"
+    - "physicochemical variables cannot replace sensory evaluation"
+  audit_corrected:
+    - "exact dynamic-programming sign flip"
+    - "self-contained entry point and input provenance"
+    - "fold-internal preprocessing"
+    - "unit-invariant aroma transform"
+    - "tie-preserving high-repeat permutation and one BH family"
+    - "selection-aware scope/family evaluation"
+    - "physical support constraints"
+    - "coefficient identifiability limits"
+  learned_after_references:
+    - "treat score construction and item weights as target sensitivity"
+    - "pre-register chemistry groups for interpretable block analysis"
+    - "automatically require grade coverage and mutual exclusion"
+    - "path analysis requires a pre-specified mechanism and stronger sample support"
+uncertainty:
+  - "No external quality gold standard or independent vintage/region dataset."
+  - "Scanned-PDF OCR is adequate for structure and was visually checked for critical tables, but unreviewed formulas remain needs_review."
+  - "Reference code and software sessions were incomplete, so full end-to-end reproduction is needs_review."

@@ -1,0 +1,65 @@
+schema_version: 1
+case_id: "2016A"
+failure_modes:
+  - id: CAND-2016A-F01
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: corrected_after_audit
+    evidence_status: pass
+    trigger: "题面只有质量，却输出无条件唯一浮力、球径或流阻。"
+    consequence: "Q1/Q2 条件性被隐藏，Q3 可行性可被球流阻反例推翻。"
+    detection: "列出每个水动力/浮力量的直接数据源；无法追溯则 needs_review。"
+
+  - id: CAND-2016A-F02
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: audit_and_reference_failure
+    evidence_status: pass
+    trigger: "报告链长但链长/单环长度不是整数，或写成‘112 或 113 环’。"
+    consequence: "方案不可制造，优化分数对应不存在的结构。"
+    detection: "对每个输出设计执行精确整数性断言。"
+
+  - id: CAND-2016A-F03
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: learned_after_references
+    evidence_status: pass
+    trigger: "D=16 m 和 D=20 m 分别给不同链环数或配重。"
+    consequence: "部署后随潮汐不能更换硬件，方案不覆盖题定环境区间。"
+    detection: "区分设计变量与状态变量；环境扫描时设计变量必须保持常量。"
+
+  - id: CAND-2016A-F04
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: learned_after_references
+    evidence_status: pass
+    trigger: "直接把 m、m、deg 相加，或某目标的实际贡献远低于名义重要性。"
+    consequence: "单位选择而非工程偏好决定排名。"
+    detection: "做单位变换测试，并输出每个目标对总分的贡献比例。"
+
+  - id: CAND-2016A-F05
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: learned_after_references
+    evidence_status: pass
+    trigger: "输入微小变化导致输出大幅变化，却据此声称模型精确。"
+    consequence: "实际说明条件数差、输入误差会放大。"
+    detection: "分别报告离散误差、条件敏感性和数据不确定性，不互相替代。"
+
+  - id: CAND-2016A-F06
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: reflection_synthesis
+    evidence_status: pass
+    trigger: "多篇论文共享材料密度、二维静力等假设，并给出接近数值。"
+    consequence: "共同假设偏差或共同实现错误被误认成独立验证。"
+    detection: "只有模型独立性、数据独立性和误差口径明确时才讨论交叉验证。"
+
+  - id: CAND-2016A-F07
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: reflection_synthesis
+    evidence_status: pass
+    trigger: "只写遗传算法、熵权或变步长，并声称全局最优。"
+    consequence: "边界、随机性、网格和遗漏结构无法审计。"
+    detection: "要求域边界、候选数、种子/重复、收敛轨迹、第二方案和反例。"

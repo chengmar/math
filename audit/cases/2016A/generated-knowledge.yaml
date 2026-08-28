@@ -1,0 +1,16 @@
+case_id: 2016A
+status: candidate_only
+candidate_count: 22
+machine_verified_count: 0
+verified_count: 0
+exported_files:
+- file: failure-modes.yaml
+  sha256: 9fd4f8b781afb0dc81765972b740ad814871748515fc7d9c51ba2278a316c1f2
+- file: method-cards.yaml
+  sha256: 44aea988069260a9f98edbcbf7aa39a2134e435c682070280d3ba5640c65811c
+- file: README.md
+  sha256: e0f3b29e7f7d24a9ea667b790785a866c9d7bc48e4e7ea424f910c58de04be57
+- file: validation-patterns.yaml
+  sha256: 5ccf653be55fd6b032264c36d7e3fa4d155a3a7991a273ced85a64f32895b46d
+- file: writing-lessons.yaml
+  sha256: 1f554522ca5644dbe46f734a0b9a16def667f3fae38c56452d5bfd74b144b712

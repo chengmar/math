@@ -1,0 +1,220 @@
+schema_version: 1
+case_id: 2020A
+phase: reflection
+overall_status: needs_review
+knowledge_status: candidate
+
+freeze_gate:
+  phase_check: pass
+  external_freeze_status: pass
+  audit_prerequisite: pass
+  manifest_entry_count: 140
+  manifest_hash_check: pass
+  tree_hash_check: pass
+  tree_sha256: 71c54e4bf0743b10c68590356f52284c13a953829b1d556cd99c3c3d549a57b8
+  isolated_solve_rerun:
+    status: pass
+    generated_files: 37
+    sha256_matches: 37
+  isolated_oracle_rerun:
+    status: pass
+    verification_sha256_match: pass
+    convergence_sha256_match: pass
+
+sources:
+  BF:
+    kind: frozen_blind_final
+    title: <REFERENCE_TITLE_REDACTED>
+    identity_status: pass
+    reproducibility_status: pass
+  R1:
+    kind: approved_reference
+    file: <REFERENCE_ID>
+    title: <REFERENCE_TITLE_REDACTED>
+    pages: 42
+    sha256: <REFERENCE_HASH_REDACTED>
+    identity_status: pass
+    ocr_status: pass
+    reproduction_status: needs_review
+  R2:
+    kind: approved_reference
+    file: <REFERENCE_ID>
+    title: <REFERENCE_TITLE_REDACTED>
+    pages: 26
+    sha256: <REFERENCE_HASH_REDACTED>
+    identity_status: pass
+    ocr_status: pass
+    reproduction_status: needs_review
+  R3:
+    kind: approved_reference
+    file: <REFERENCE_ID>
+    title: <REFERENCE_TITLE_REDACTED>
+    pages: 89
+    sha256: <REFERENCE_HASH_REDACTED>
+    identity_status: pass
+    ocr_status: pass
+    reproduction_status: needs_review
+
+models:
+  BF:
+    air_field: direction_dependent_first_order_spatial_relaxation
+    board_response: lumped_effective_temperature_ode
+    fitted_parameter_count: 5
+    fit_rmse_C: 1.7268718680587056
+    time_ordered_holdout_worst_rmse_C: 5.52681513092842
+    identifiability_status: needs_review
+    interpretability_status: pass
+  R1:
+    air_field: controlled_zones_constant_gaps_linear
+    board_response: one_dimensional_thickness_heat_pde_with_convection
+    reported_fitted_quantity_count: 7
+    fit_evidence_status: needs_review
+    interpretability_status: pass
+  R2:
+    air_field: controlled_zones_constant_gaps_linear_with_cooling_boundary_extension
+    board_response: lumped_heat_time_constants_plus_newton_cooling
+    reported_fitted_quantity_count: 3
+    fit_evidence_status: needs_review
+    interpretability_status: pass
+  R3:
+    air_field: controlled_zones_constant_gaps_linear_with_fitted_front_start
+    board_response: one_dimensional_half_thickness_heat_pde_with_newton_boundary
+    reported_fitted_quantity_count: 4
+    reported_fit_R2: 0.9813
+    fit_evidence_status: needs_review
+    interpretability_status: needs_review
+
+results:
+  q1_marker_temperatures_C:
+    BF: [130.8355212847726, 168.27138015273417, 186.69006354740253, 225.93492817803485]
+    R1: [129.1007, 166.8982, 188.6547, 222.6252]
+    R2: [129.0153, 163.9644, 174.8322, 207.8417]
+    R3: [138.9208, 172.2397, 190.1654, 223.1558]
+  q2_maximum_speed_cm_min:
+    BF: 92.76436236092935
+    R1: 80.068
+    R2: 77.85
+    R3: 76.0
+    cross_model_comparability_status: needs_review
+  q3:
+    objective_contract:
+      BF: pass
+      R1: pass
+      R2: pass
+      R3: pass
+    rising_area_C_s:
+      BF: 309.29547853045676
+      R1: 483.5632
+      R2: 406.2318
+      R3: 403.069
+    settings_T1_5_T6_T7_T8_9_v:
+      BF: [175.0853087606882, 185.00000000024488, 225.00000000001845, 262.1249458221516, 99.99818166263232]
+      R1: [170.5518, 185.0331, 225.6946, 265.0, 86.1056]
+      R2: [184.2181, 189.8133, 227.5226, 264.07, 90.0982]
+      R3: [185.0, 203.0, 238.0, 265.0, 97.0]
+    cross_model_ranking_status: needs_review
+  q4:
+    metrics_directly_comparable_status: fail
+    BF:
+      metric: absolute_mirrored_excess_temperature_area
+      value: 20.498440969141505
+      unit: C_s
+      internal_status: pass
+    R1:
+      metric: discrete_mean_absolute_temperature_difference
+      value: 9.9904
+      unit: K
+      table_unit_status: fail
+    R2:
+      metric: paired_temperature_mean_square_measure
+      value: 21.6865
+      unit_status: needs_review
+    R3:
+      metric: normalized_weighted_composite
+      body_value: 0.99386
+      abstract_body_consistency_status: fail
+
+validation:
+  BF:
+    model_candidate_comparison: pass
+    time_ordered_holdout: pass
+    blocked_candidate_resampling: pass
+    independent_metric_oracle: pass
+    analytic_geometry_and_mutation: pass
+    independent_RK45: pass
+    step_convergence: pass
+    multi_seed_and_alternative_search: pass
+    global_optimality: needs_review
+    single_factor_robustness: fail
+    joint_corner_robustness: fail
+    external_validity: needs_review
+  R1:
+    repeated_optimizer_runs: pass
+    local_sensitivity_presence: pass
+    independent_metric_oracle: needs_review
+    numerical_reproduction: needs_review
+    global_optimality: needs_review
+    external_validity: needs_review
+  R2:
+    optimizer_trace_presence: pass
+    cooling_fit_limit_disclosed: pass
+    independent_metric_oracle: needs_review
+    numerical_reproduction: needs_review
+    global_optimality: needs_review
+    external_validity: needs_review
+  R3:
+    search_space_arithmetic: pass
+    q4_internal_consistency: fail
+    independent_metric_oracle: needs_review
+    numerical_reproduction: needs_review
+    global_optimality: needs_review
+    external_validity: needs_review
+
+complexity:
+  BF:
+    model: low_state_dimension
+    optimization: medium_high
+    evidence_overhead: high
+  R1:
+    model: high_grid_dimension
+    optimization: high
+    author_runtime_statement: tens_of_minutes_to_hours
+  R2:
+    model: low_state_dimension
+    optimization: medium_high
+    reported_iterations_q3_q4: [20000, 50000]
+  R3:
+    model: high_grid_dimension
+    optimization: very_high
+    discrete_state_count_recomputed: 7001316
+
+provenance_classes:
+  independent_before_audit_or_references:
+    - two_layer_air_field_and_board_response_decomposition
+    - M0_M1_M2_candidate_hierarchy
+    - direction_dependent_spatial_relaxation
+    - temperature_dependent_effective_heating_rate
+    - time_ordered_holdout
+    - q4_epsilon_constraint_structure
+    - deterministic_rerun_and_single_factor_sensitivity
+  audit_corrected_before_references:
+    - q3_rising_side_objective
+    - corrected_q4_area_cap
+    - independent_metric_oracle_and_mutation_test
+    - removal_of_fixed_engineering_margins_from_original_problem
+    - residual_dependence_and_identifiability_diagnostics
+    - multi_seed_and_sobol_cross_search
+    - joint_corner_stress_test
+    - epsilon_sensitivity_sweep
+  learned_only_after_references:
+    - large_cross_model_spread_in_q1_q2_q3_results
+    - all_three_references_independently_use_rising_side_q3_area
+    - reference_PDE_alternatives_and_full_thickness_visualization
+    - R1_unit_label_failure
+    - R2_unit_label_failure_and_cooling_fit_disclosure
+    - R3_abstract_body_q4_conflict
+
+promotion:
+  direct_verified_upgrade_allowed: false
+  candidate_only: true
+  dummy_demo_only_rule_respected: true

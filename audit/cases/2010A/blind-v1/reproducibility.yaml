@@ -1,0 +1,74 @@
+phase: solve
+status: pass
+random_seed: 20260824
+workspace_assumption: commands are run from the current solve workspace
+environment:
+  os: Windows
+  python: 3.12.13
+  numpy: 2.5.2
+  pandas: 3.0.5
+  scipy: 1.18.0
+  matplotlib: 3.11.1
+  spreadsheet_reader: Microsoft Excel COM
+  tex_engine: XeLaTeX (MiKTeX portable)
+inputs:
+  - path: input/data/<SOURCE_FILE_REDACTED>
+    sha256: fc3cf8098742f11feb5832fea8a47e5db0f862faab89e61dc0b669f0010c5777
+    status: pass
+  - path: input/data/<SOURCE_FILE_REDACTED>
+    sha256: f7eb407354ca0e71effde153535cc1ec617e45a3849afac814c5c9361880558f
+    status: pass
+  - path: input/problem/<SOURCE_FILE_REDACTED>
+    sha256: a6bb7399061fcf1af4ff7a0d3df3020653f4e90d27a13eef8e35bcec1cacc9c1
+    status: pass
+commands:
+  full_pipeline: powershell -File code/run_all.ps1
+  steps:
+    - powershell -File code/extract_inputs.ps1
+    - python code/solve.py
+    - python code/render_paper.py
+    - python code/verify_outputs.py
+  optional_pdf_build:
+    - cd paper
+    - xelatex --disable-installer -interaction=nonstopmode -halt-on-error main.tex
+    - xelatex --disable-installer -interaction=nonstopmode -halt-on-error main.tex
+numerical_controls:
+  actual_tank:
+    method: composite Gauss-Legendre
+    axial_cell_m: 0.025
+    points_per_cell: 8
+    refinement_cell_m: 0.0125
+    refinement_max_table_difference_l: 0.0008433
+  small_tank:
+    method: composite Gauss-Legendre
+    axial_cell_m: 0.01
+    points_per_cell: 8
+    refinement_cell_m: 0.005
+  optimizer:
+    method: bounded nonlinear least_squares
+    alpha_bounds_deg: [-10, 10]
+    beta_bounds_deg: [0, 20]
+    tolerances: 1.0e-12
+outputs:
+  extraction_manifest: results/extracted/manifest.json
+  structured_summary: results/summary.json
+  parameters: results/parameters.json
+  small_table: results/<SOURCE_FILE_REDACTED>
+  actual_table: results/<SOURCE_FILE_REDACTED>
+  residuals: results/<SOURCE_FILE_REDACTED>
+  sensitivity: results/<SOURCE_FILE_REDACTED>
+  figures: figures/
+  paper_markdown: paper/paper.md
+  paper_latex: paper/main.tex
+  paper_pdf: paper/<SOURCE_FILE_REDACTED>
+  verification: results/verification.json
+known_requirements:
+  excel_com:
+    status: needs_review
+    note: A machine without Microsoft Excel must supply another legacy-XLS reader while preserving cell values.
+  official_year_format:
+    status: needs_review
+    note: The allowed paper template itself marks the official-year format configuration as needing review.
+  deterministic_numerics:
+    status: pass
+    note: Fixed inputs, versions and commands reproduce the reported values in the current environment.

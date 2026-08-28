@@ -1,0 +1,81 @@
+phase: blind-revision
+entrypoint: code/solve.py
+working_directory: <RUNTIME_ROOT>/2016A/workspaces/blind-revision
+runtime:
+  language: Python
+  version: 3.12.13
+  implementation_path_used: <LAB_ROOT>/runtime/python312-venv/Scripts/python.exe
+  standard_library_only: true
+  operating_system: Microsoft Windows NT 10.0.26200.0
+  powershell_version: 7.6.4
+randomness:
+  used: false
+  seed: null
+  reason: 所有方程求解、整数枚举、连续精化和绘图均为确定性算法。
+command_used: >-
+  $env:PYTHONUTF8='1'; $env:PYTHONIOENCODING='utf-8';
+  $env:PYTHONDONTWRITEBYTECODE='1'; python code/solve.py
+run_command: python code/solve.py
+physics_test_command: >-
+  $env:PYTHONDONTWRITEBYTECODE='1'; python code/test_physics.py
+consistency_command: python code/check_consistency.py
+generated_manifest: results/generated-manifest.json
+manifest_schema:
+  version: 2
+  source_inputs_field: source_inputs
+  generated_outputs_field: generated_outputs
+  manifest_self_included: false
+  generated_file_count_definition: generated_output_count plus one manifest file
+  hash_algorithm: SHA-256 over exact file bytes
+  ordering: relative POSIX path ascending
+expected_stdout_keys:
+  - status
+  - q2_recommended_ball_dry_mass_kg_if_solid_steel
+  - q2_recommended_ball_effective_mass_kg
+  - q3_selected_design
+  - q3_selected_link_count
+  - validation
+  - generated_output_entries
+  - generated_files_including_manifest
+numerical_tolerances:
+  horizontal_force_abs_n: 1.0e-6
+  ball_node_horizontal_force_abs_n: 1.0e-6
+  vertical_force_abs_n: 1.0e-6
+  member_moment_abs_nm: 1.0e-6
+  chain_geometry_abs_m: 1.0e-8
+  independent_quadrature_endpoint_abs_m: 1.0e-7
+status:
+  source_and_command_recorded: pass
+  deterministic_algorithm: pass
+  physics_unit_test: pass
+  clean_run_1: pass
+  clean_run_2: pass
+  two_run_output_comparison: pass
+  latex_compilation: needs_review
+two_run_evidence:
+  clean_run_1:
+    initial_file_count: 1
+    results_directory_initially_absent: pass
+    figures_directory_initially_absent: pass
+    exit_code: 0
+    elapsed_seconds: 1321.6483675
+    stderr_bytes: 0
+    manifest_sha256: e823d8e40b72abe93a71dc206136bdd829cf9758a5c206d66ed1467598a56fa1
+  clean_run_2:
+    initial_file_count: 1
+    results_directory_initially_absent: pass
+    figures_directory_initially_absent: pass
+    exit_code: 0
+    elapsed_seconds: 1314.1968074
+    stderr_bytes: 0
+    manifest_sha256: e823d8e40b72abe93a71dc206136bdd829cf9758a5c206d66ed1467598a56fa1
+  generated_output_count_each_run: 36
+  files_including_manifest_each_run: 37
+  output_set_or_hash_mismatch_count: 0
+  actual_manifest_entry_mismatch_count: 0
+  stdout_sha256_each_run: 2481f582bbfa2ac3e3ddbe15a136d2c06d31b6f8ed4fe699a93999b417fb25f6
+  comparison: pass
+notes:
+  - 每次干净复跑只复制 code/solve.py，results 与 figures 目录初始不存在。
+  - solve.py 自行生成 results/README.md；静态输入不会混入 generated_outputs。
+  - 两个空目录复跑已实际完成；逐文件集合、大小和 SHA-256 比较为 pass。

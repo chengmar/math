@@ -1,0 +1,156 @@
+schema_version: 1
+case_id: 2020A
+phase: audit
+status: fail
+identity_status: pass
+reproduction_status: pass
+mathematical_correctness_status: fail
+leakage_status: pass
+finding_counts:
+  critical: 1
+  major: 2
+  minor: 2
+  suggestion: 1
+findings:
+  - id: AUD-MATH-001
+    severity: critical
+    category: objective_definition
+    evidence:
+      - "题面 problem/<SOURCE_FILE_REDACTED> 第 3 问写明最小化‘超过217℃到峰值温度所覆盖的面积’，题面图2（<SOURCE_FILE_REDACTED>）只在升温侧上穿217℃至峰值之间着阴影。"
+      - "frozen-solution/code/core.py:250-253 同时算出全段面积、升温侧面积和降温侧面积；frozen-solution/code/solve.py:339,352 却选择全段 area_above_217_C_s 作为第3问目标。"
+      - "frozen-solution/paper/main.tex:113-115 明确把第3问改写为整条曲线从0到结束的积分；frozen-solution/paper/paper.md:76-79、122 据此报告629.893 ℃·s。"
+      - "冻结Q3曲线的升温侧阴影面积为311.041808 ℃·s，峰后未着阴影部分为318.851069 ℃·s，代码将两者相加得到629.892877 ℃·s；见 audit-probes.json/q3_objective_counterexample。"
+      - "20,000个固定种子样本中有8,664个满足相同加严约束；反例A的题面阴影面积810.318060小于B的825.887763，但代码全段面积1434.459167大于B的1263.648809，排序严格反转。"
+      - "frozen-solution/code/solve.py:357,377,729 又把错误的全段Q3面积乘1.05作为Q4面积约束，错误传导至第4问。"
+    affected_files:
+      - frozen-solution/code/core.py
+      - frozen-solution/code/solve.py
+      - frozen-solution/results/q3_summary.json
+      - frozen-solution/results/q4_summary.json
+      - frozen-solution/results/all_results.json
+      - frozen-solution/solution-report.yaml
+      - frozen-solution/problem-analysis.md
+      - frozen-solution/paper/paper.md
+      - frozen-solution/paper/main.tex
+    reason: >-
+      这不是等价指标或舍入差异，而是把题面未着阴影的峰后面积加入目标。
+      第3问的面积数值必错，最优性所对应的优化问题也被替换；第4问继承了错误面积定义和错误面积上限，因此两问的最终结论均不能接受。
+    recommended_fix: >-
+      在新版本中定义 A3=∫[t217_up,t_peak](T-217)dt，只优化升温侧阴影面积；
+      对217℃交点和峰值时刻做插值并单独验证该积分的网格收敛。
+      用修正后的A3重新定义第4问的“结合问题3”规则，重跑Q3/Q4、敏感性、图表、论文和所有摘要后重新冻结；不得覆盖blind-v1。
+    requires_human_review: false
+
+  - id: AUD-VAL-002
+    severity: major
+    category: validation_circularity
+    evidence:
+      - "frozen-solution/code/verify_outputs.py:17-28 从被审代码直接导入 directional_air_field、curve_metrics、process_slacks、adjusted_slacks 和 evaluate_design。"
+      - "frozen-solution/code/verify_outputs.py:133,168,206,232 使用共享的指标、约束和设计评价函数；独立部分仅是时间ODE改用RK45。"
+      - "verification.json 的 area_above_217_C_s 检查比较的是同一个错误定义，因而全部显示pass，却没有发现 AUD-MATH-001。"
+      - "check_deliverables.py 主要做文件存在和字符串包含检查；论文与代码共同写错时仍会pass。"
+    affected_files:
+      - frozen-solution/code/verify_outputs.py
+      - frozen-solution/code/check_deliverables.py
+      - frozen-solution/results/verification.json
+      - frozen-solution/results/deliverable_check.json
+      - frozen-solution/reproducibility.yaml
+      - frozen-solution/paper/paper.md
+      - frozen-solution/paper/main.tex
+    reason: >-
+      该验证能证明时间积分实现的一致性，但不能独立验证题意、指标、约束、空间温度场或单位。
+      报告把范围有限的数值交叉积分称为“独立验证”，使共同定义错误逃逸。
+    recommended_fix: >-
+      建立不导入core.py/solve.py指标函数的审计oracle：从原始曲线独立计算交点、题面阴影面积、对称性和全部制程界限；
+      用解析常温/恒温/单调曲线测试几何与单位，并把“独立积分”和“独立题意/指标验证”分开报告。
+    requires_human_review: false
+
+  - id: AUD-STAT-003
+    severity: major
+    category: identifiability_and_uncertainty
+    evidence:
+      - "frozen-solution/code/solve.py:215 用 n=709 的独立残差BIC公式，但未建立残差独立或噪声模型。"
+      - "audit-probes.json 显示M2残差lag-1相关为0.999477、Durbin-Watson为0.001046，709点仅有12个残差符号游程，存在强烈结构性自相关。"
+      - "局部雅可比诊断中 corr(log(lambda_down),log(k_cool))=0.984854，corr(log(lambda_up),log(k_ref))=0.906613；参数存在明显混淆。"
+      - "calibration.json 的滚动折中 lambda_down 从0.5、15.01到28.64 cm，k_cool从0.003、0.00743到0.01219 s^-1，早期折触界。"
+      - "沿最弱校准方向把实验RMSE仅从1.729103增至1.778892 ℃时，lambda_down/k_cool可变化+22.9%/+12.3%，冻结Q2、Q3、Q4设计的峰值分别降至239.855、239.928、239.928 ℃，全部违反240℃下界。"
+    affected_files:
+      - frozen-solution/code/solve.py
+      - frozen-solution/results/calibration.json
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/results/sensitivity_summary.json
+      - frozen-solution/model-selection.md
+      - frozen-solution/solution-report.yaml
+      - frozen-solution/paper/paper.md
+      - frozen-solution/paper/main.tex
+    reason: >-
+      稠密采样的一条平滑轨迹不能作为709个独立证据点。未量化模型差异和参数联合不确定性时，
+      把Q2-Q4贴着240℃或60 s边界的名义解标为制程pass，不能支持工艺可行性；现有单因素敏感性也不能替代联合置信域传播。
+    recommended_fix: >-
+      检查并建模残差相关（分块bootstrap、GLS或显式模型差异），做参数profile/联合置信域与可辨识性报告；
+      将联合参数不确定性传播到Q1-Q4，并对Q2-Q4做机会约束或最坏情形稳健优化。
+      最关键的是补充至少一个不同速度或温区组合的独立实验。
+    requires_human_review: true
+
+  - id: AUD-CON-004
+    severity: minor
+    category: constraint_definition
+    evidence:
+      - "frozen-solution/code/solve.py:66-75 固定加入斜率0.02 ℃/s、时间0.20 s、峰值0.10 ℃的MARGIN；:273-275 从所有原始约束余量中扣除该值。"
+      - "冻结Q3结果恰为rise_150_190=60.200 s、peak=240.100 ℃，说明报告的是加严可行域的边界解，而不是题面原可行域的最优解。"
+      - "RK45对Q3的峰值差约4.9e-5 ℃、时间差约1.7e-6 s，远小于固定0.10 ℃/0.20 s；固定余量不是由已测离散误差反推得到。"
+      - "paper/main.tex:181 虽披露‘预设数值余量’，但结论仍称第3问‘最小’。"
+    affected_files:
+      - frozen-solution/code/solve.py
+      - frozen-solution/results/q3_summary.json
+      - frozen-solution/results/q4_summary.json
+      - frozen-solution/paper/paper.md
+      - frozen-solution/paper/main.tex
+    reason: >-
+      保守余量可以作为工程方案，但它改变了题面优化问题。若仍称数学最优，应证明余量仅覆盖数值误差；当前余量明显更大。
+    recommended_fix: >-
+      分开报告“题面原约束最优解”和“带工程安全裕度的推荐解”。原约束解用经网格/RK45验证的误差界处理，工程裕度则由工艺风险或不确定性分析确定。
+    requires_human_review: false
+
+  - id: AUD-PROV-005
+    severity: minor
+    category: provenance_consistency
+    evidence:
+      - "frozen-solution/reproducibility.yaml:3 与 solution-report.yaml:6 写 freeze_status: not_frozen；paper/paper.md:168、paper/main.tex:242 也写‘未冻结/未审计’，但FROZEN_BLIND_V1.json已封存该载荷。"
+      - "reproducibility.yaml:56 记录 paper/main.tex SHA-256=147363...，冻结清单与实际文件均为d06b1d...；paper.md哈希则一致。"
+      - "FROZEN_BLIND_V1.json:12-15 声明 dependencies=[]、random_seed=null、knowledge_cards=[]，而requirements.txt、solve.py及训练记忆使用记录分别给出依赖、2020/2021/2041种子和3张卡。"
+      - "retrieval-log.json:15 的cards为空，而reports/training-memory-retrieval.json:21起列出3张卡。"
+      - "requirements.txt:5 的openpyxl未锁版本；本次复现实际为3.1.5。"
+    affected_files:
+      - frozen-solution/FROZEN_BLIND_V1.json
+      - frozen-solution/reproducibility.yaml
+      - frozen-solution/solution-report.yaml
+      - frozen-solution/retrieval-log.json
+      - frozen-solution/reports/training-memory-retrieval.json
+      - frozen-solution/code/requirements.txt
+      - frozen-solution/paper/paper.md
+      - frozen-solution/paper/main.tex
+    reason: >-
+      这些不一致没有阻止本机逐字节复现，但会误导后续审计者判断冻结时点、论文身份、依赖、随机性和训练知识来源。
+    recommended_fix: >-
+      从单一机器可读来源在最终封存后生成冻结元数据；交叉校验论文哈希、seed、依赖与知识卡清单；锁定openpyxl版本，并在封存门禁中拒绝not_frozen或陈旧哈希。
+    requires_human_review: false
+
+  - id: AUD-OPT-006
+    severity: suggestion
+    category: stochastic_stability
+    evidence:
+      - "audit-random-stability.json 使用相同算法和预算测试3个种子：Q3局部解目标差仅5.3e-9 ℃·s，稳定性pass，但3次全局差分进化均达到代数上限。"
+      - "Q4三次全局运行均达到上限；一个SLSQP返回‘Inequality constraints incompatible’，虽最终点评价可行；目标E_sym范围20.593538--20.680915 ℃·s，T8:9范围262.194--262.706 ℃。"
+      - "冻结报告已把严格全局最优性标为needs_review，这一降级是恰当的。"
+    affected_files:
+      - frozen-solution/code/solve.py
+      - frozen-solution/code/verify_outputs.py
+      - frozen-solution/results/q4_summary.json
+      - frozen-solution/results/verification.json
+      - frozen-solution/solution-report.yaml
+    reason: >-
+      选中种子的Q4局部结果可复现，但现有单种子和邻域抽样不足以证明稳定最优；多种子结果显示小幅局部差异和一次局部求解失败。
+    recommended_fix: >-
+      修正目标后，用多种子、增加预算和至少一种不同全局/约束算法复核；报告目标与设置分布、失败运行及Pareto/epsilon约束敏感性，不把单个种子当作全局证据。
+    requires_human_review: true

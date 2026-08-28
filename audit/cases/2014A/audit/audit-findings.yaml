@@ -1,0 +1,243 @@
+schema_version: 1
+case_id: 2014A
+phase: audit
+overall_status: fail
+summary:
+  critical: 0
+  major: 5
+  minor: 4
+  suggestion: 1
+findings:
+  - id: AUD-2014A-001
+    severity: major
+    category: coverage_control_strategy
+    status: fail
+    evidence: >-
+      题面提取文本要求“确定……6个阶段的最优控制策略”（results/source_extract/problem.html
+      574--581）。solve.py 只生成按时间给定的参考推力和开环扰动，没有反馈律、状态估计器、
+      在线重规划算法或闭环仿真；全文代码检索也没有 controller/feedback/闭环控制实现。
+      paper/main.tex 305 明示 1% 质量或推力误差会造成约 4.1--4.2 km 下程误差，
+      方向误差 0.2 度会造成约 1.23 km 高度误差，却只说“必须采用闭环自主导航”。
+      solution-report.yaml 仍把 question_2_six_stage_trajectory_and_control 标成 pass。
+    affected_files:
+      - frozen-solution/code/solve.py
+      - frozen-solution/paper/main.tex
+      - frozen-solution/paper/paper.md
+      - frozen-solution/solution-report.yaml
+    reason: >-
+      名义开环参考轨迹不等同于控制策略；现有敏感性反而证明它在小扰动下不能单独完成软着陆。
+      因此 Q2 的“trajectory_and_control: pass”超出实际证据。
+    recommended_fix: >-
+      增加明确的制导/反馈结构（状态估计、误差反馈、推力和姿态指令、阶段切换与重规划规则），
+      在测量噪声、质量/推力/方向误差和导航延迟下做跨全程闭环仿真；在此之前把控制策略覆盖降为 needs_review。
+    requires_human_review: false
+
+  - id: AUD-2014A-002
+    severity: major
+    category: terrain_vertical_datum
+    status: fail
+    evidence: >-
+      results/summary.json 中精图中心高程为 14.900000572 m，选点高程为 8.100000381 m，
+      相差 -6.800000191 m。solve.py 448--471 只把 coarse/fine 选点的 x、y 传入轨迹，
+      垂直端点仍硬编码为 100、30、4 m；1092--1095 又固定按 4 m 自由落体。
+      若 100 m 悬停点地面作为精图垂直基准，则代码的 4 m 关机点实际距所选低地约 10.8 m，
+      对应撞击速度约 5.934 m/s，而非论文的 3.611 m/s。audit_terrain_coupling.py 的条件复核还显示，
+      注册粗图 +1.0 m 和精图 -6.8 m 后，同一时序的最低推力约 1500.825 N，5% 裕度不再通过；
+      固定 h>=0 约束也把“较低地形上的正常 4 m 净空”误判为负高度。
+    affected_files:
+      - frozen-solution/code/solve.py
+      - frozen-solution/results/summary.json
+      - frozen-solution/results/dem_sites.json
+      - frozen-solution/paper/main.tex
+      - frozen-solution/assumptions.yaml
+    reason: >-
+      绝对径向高度、DEM 地形高程和离地净空没有放在同一垂直基准中，因而 100/30/4 m 边界、
+      地形碰撞约束、推力裕度和自由落体速度不能同时成立。附件未给两幅 DEM 的绝对垂直配准，
+      使具体修正值仍需人工确认，但“代码完全未耦合地形高程”是确定事实。
+    recommended_fix: >-
+      明确粗图中心、精图中心、名义月面和月心坐标之间的垂直转换；动力学使用绝对径向高度，
+      另设 clearance(t)=absolute_height-terrain(x,y) 并约束净空，在所选点以 clearance=30/4 m
+      重建并重新优化轨迹、推力裕度、燃料与自由落体结果。若配准确实不可得，相关结果必须标为 needs_review。
+    requires_human_review: true
+
+  - id: AUD-2014A-003
+    severity: major
+    category: omitted_actuator_constraints
+    status: fail
+    evidence: >-
+      各段分别用三次 Hermite 曲线构造，代码只连续拼接位置、速度和质量，没有约束推力矢量连续、
+      姿态角速度或节流速率。audit_numeric_checks.py 在 0.02 s 密网格上测得：
+      rapid_adjustment->coarse_avoidance 的推力方向瞬时跳变 179.9375 度；
+      coarse_avoidance->fine_avoidance 的推力大小瞬时下降 3355.790 N，方向再跳 11.998 度。
+      paper/main.tex 252 仍称全程满足题定范围和裕度，325 才把姿态/节流速率列为局限。
+    affected_files:
+      - frozen-solution/code/solve.py
+      - frozen-solution/paper/main.tex
+      - frozen-solution/assumptions.yaml
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+    reason: >-
+      推力幅值落在静态上下限内，不代表控制可执行；瞬时近 180 度翻转要求无限姿态角速度，
+      与“控制策略可行”不相容。披露局限不能替代活跃约束或可执行过渡段。
+    recommended_fix: >-
+      把姿态、角速度/角加速度、推力转向速率、节流速率和最短保持时间加入状态与约束；
+      至少要求段间推力矢量连续，并为姿态翻转安排有限时长过渡，再重新计算燃料与边界状态。
+    requires_human_review: false
+
+  - id: AUD-2014A-004
+    severity: major
+    category: verifier_false_positive
+    status: fail
+    evidence: >-
+      verify.<SOURCE_FILE_REDACTED> 是否有 5 行且每行自报 status=pass，
+      不按误差数值重新判阈；<SOURCE_FILE_REDACTED> 非空就把 paper_compile 标为 pass。
+      在 audit-verifier-counterexample 中，<SOURCE_FILE_REDACTED> 替换成 28 字节 requirements.txt，
+      并把重积分误差改为位置 1,000,000 m、速度 10,000 m/s、质量 1,000 kg，仍保留自报 pass；
+      更新可自行修改的 results/manifest.json 后，验证器退出码为 0、overall_status=pass，
+      independent_reintegration=pass 且 paper_compile=pass。
+    affected_files:
+      - frozen-solution/code/verify.py
+      - frozen-solution/results/verification.json
+      - frozen-solution/results/manifest.json
+    reason: >-
+      验证器信任待验证产物中的状态字段和未锚定清单，且把文件存在当作编译证据，
+      因而可以对明显错误给出假阳性。“verify.py pass”不能作为独立数学或构建验证。
+    recommended_fix: >-
+      验证器从原始轨迹/推力重新积分并自行应用数值阈值，忽略输入 CSV 的 status；
+      从干净目录实际调用 XeLaTeX/latexmk，记录命令、日志、退出码并校验 PDF 头与新鲜度；
+      将验证器输入清单锚定到只读 FROZEN 清单或外部签名，而不是允许同目录清单随意同步修改。
+    requires_human_review: false
+
+  - id: AUD-2014A-005
+    severity: major
+    category: unsupported_optimality
+    status: fail
+    evidence: >-
+      solve.py 410--485 依次优化主减速、快速调整+粗避障、精避障+缓降三个子块，并非对论文所列
+      8 个变量联合求解。paper/main.tex 56、203--207 和 model-selection.md 却称所得为该函数空间内数值最优。
+      audit_global_search.py 对同一 8 变量 Hermite 模型做一次联合差分进化（seed=99173，140 代，80 个体）：
+      在同一 1575--7125 N 的 5% 验收区间内得到 1172.868910 kg，较冻结方案密网格值少 0.710238 kg；
+      0.02 s 密网格的推力为 1575.040--7124.852 N，题定和 5% 约束均 pass，
+      RK4 重积分最大位置误差 8.47e-5 m。仅按题定 1500--7500 N 时还找到少 4.471356 kg 的可行方案。
+    affected_files:
+      - frozen-solution/code/solve.py
+      - frozen-solution/model-selection.md
+      - frozen-solution/paper/main.tex
+      - frozen-solution/paper/paper.md
+    reason: >-
+      一个同模型、同验收约束且燃料更少的可行反例足以否定当前“函数空间内数值最优”表述。
+      多种子复跑证明原顺序算法本身稳定，但稳定收敛到同一点不等于联合最优。
+    recommended_fix: >-
+      对全部耦合变量联合优化并做多起点/多算法交叉检查，报告最优性间隙、约束活跃性和收敛历史；
+      若保留顺序求解，将表述改为“固定分块策略下的可行近优解”，不要声称函数空间内最优。
+    requires_human_review: false
+
+  - id: AUD-2014A-006
+    severity: minor
+    category: frozen_provenance_consistency
+    status: fail
+    evidence: >-
+      FROZEN_BLIND_V1.json 的 random_seed=null、run_command=null、dependencies=[]、knowledge_cards=[]，
+      但 reproducibility.yaml 声明 seed=2014、命令和三项依赖，reports/training-memory-retrieval.json 还列出 3 张卡。
+      solution-report.yaml 的 freeze_status 仍为 not_frozen，paper/main.tex 353 也称“本交付未冻结”。
+      冻结目录已有 1,021,<SOURCE_FILE_REDACTED>，verification.json 却仍把 paper_compile 标为 needs_review。
+      干净复跑 21 个核心产物时 20 个字节相同，唯一差异是 reproducibility.yaml：冻结版额外加入了
+      solve.py 不会生成的 repeatability_evidence，故声明命令不能完整再生该权威载荷。
+    affected_files:
+      - frozen-solution/FROZEN_BLIND_V1.json
+      - frozen-solution/reproducibility.yaml
+      - frozen-solution/solution-report.yaml
+      - frozen-solution/results/verification.json
+      - frozen-solution/retrieval-log.json
+      - frozen-solution/reports/training-memory-retrieval.json
+      - frozen-solution/paper/main.tex
+    reason: >-
+      文件哈希完整性仍为 pass，但冻结、复现、知识来源和编译状态的元数据不是原子生成，
+      导致同一快照内部出现互相矛盾的 provenance 状态。
+    recommended_fix: >-
+      在最后一次求解、重复性检查和论文编译完成后原子生成全部元数据；让 solve/build 脚本生成或显式保留
+      repeatability_evidence；冻结时写入实际 seed、命令、依赖和知识卡，并重新生成只读 verification 结果。
+    requires_human_review: false
+
+  - id: AUD-2014A-007
+    severity: minor
+    category: dem_footprint_definition
+    status: fail
+    evidence: >-
+      paper/main.tex 96--108 与图示把 Omega 描述为半径 5 m 的物理足迹并画圆；
+      solve.py 144--158 实际使用 101x101 方窗，即 10,201 像素，而同半径圆盘只有 7,845 像素，
+      面积多 30.03%，角点距离达到 7.071 m。audit_dem_checks.py 用圆盘重算后，选点从
+      (row=330,col=572) 移到 (330,569)，即 0.3 m；圆盘和方窗下硬阈值都仍为 pass。
+    affected_files:
+      - frozen-solution/code/solve.py
+      - frozen-solution/paper/main.tex
+      - frozen-solution/figures/<SOURCE_FILE_REDACTED>
+      - frozen-solution/results/dem_sites.json
+    reason: >-
+      实现、文字和图形对足迹几何的定义不一致。虽然本数据上的安全状态未翻转，
+      但像素位置和指标发生可测变化，其他地形上可产生更大偏差。
+    recommended_fix: >-
+      明确选择“圆盘半径”或“方窗半宽”；若是着陆架圆形包络，使用圆盘卷积并按圆盘边界留 margin，
+      重新生成选点、敏感性和图；若保留方窗，则改写论文和图例并报告其对角覆盖半径。
+    requires_human_review: false
+
+  - id: AUD-2014A-008
+    severity: minor
+    category: validation_leakage_scope
+    status: needs_review
+    evidence: >-
+      select_site 在 solve.py 190--196 用 rms_slope、roughness、relief_sd 三个量选最小分数，
+      hazard_checks 在 209--217 又用完全相同的三个量做所谓“独立硬阈值”；没有留出 DEM 或测量误差模型。
+      dem_robustness 对每组半径/权重重新选择最优点后再检查，而不是只检验冻结选点。
+      reports/training-memory-usage.md 却写“用未进入目标函数的硬坡度/粗糙度阈值”并称评分与验收指标分离。
+      audit_dem_checks.py 另行确认冻结点在 3--7 m 方窗下仍全部 pass，但这仍是同图、同指标的内部检查。
+    affected_files:
+      - frozen-solution/code/solve.py
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/reports/training-memory-usage.md
+      - frozen-solution/paper/main.tex
+    reason: >-
+      阈值未直接进入加权和，不等于评价信息独立；在同一空间场上按这些指标选点后再用同指标判安全，
+      会产生选择后乐观偏差。解答已经承认没有外部图，因此外部安全只能 needs_review。
+    recommended_fix: >-
+      将其明确命名为“选择后内部阈值检查”，不要称独立验证；若可获得数据，使用留出区域/独立测图、
+      预先固定阈值和测量噪声模型；同时报告固定名义点在扰动下的指标，而不仅是每次重选后的最优点。
+    requires_human_review: true
+
+  - id: AUD-2014A-009
+    severity: minor
+    category: sampled_constraint_enforcement
+    status: fail
+    evidence: >-
+      优化阶段仅以每段 121 个样点检查推力（solve.py 410--472）。冻结输出的较密网格给出
+      1599.777--7100.070 N；audit_numeric_checks.py 用不大于 0.02 s 的网格得到
+      1599.767964--7100.070317 N，因此内部 1600--7100 N 目标轻微 fail，
+      虽然题定 1500--7500 N 和 1575--7125 N 设计裕度仍 pass。
+    affected_files:
+      - frozen-solution/code/solve.py
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/model-selection.md
+      - frozen-solution/paper/main.tex
+    reason: >-
+      离散采样惩罚不能证明连续时间约束；本例只出现亚牛顿级目标越界，未破坏题定可行性，
+      但说明“严格满足优化目标区间”不能由当前网格保证。
+    recommended_fix: >-
+      在优化后用自适应极值搜索或解析/高密度包络认证全部连续时间推力极值，
+      将认证约束回馈优化并给出数值容差；区分 optimisation target、design margin 与 problem bounds 的状态。
+    requires_human_review: false
+
+  - id: AUD-2014A-010
+    severity: suggestion
+    category: tree_hash_documentation
+    status: needs_review
+    evidence: >-
+      FROZEN_BLIND_V1.json 声明 tree_sha256=66d4bf...，但冻结清单和 audit Skill 均未定义
+      路径排序、路径分隔符、大小/哈希串联和编码规则。逐文件 90/90 的大小与 SHA-256 已独立核验为 pass，
+      但 tree_sha256 无法在不猜测算法的情况下独立复算，因此仅能标为 needs_review。
+    affected_files:
+      - frozen-solution/FROZEN_BLIND_V1.json
+    reason: >-
+      未定义算法的聚合摘要不可由第三方复核，不能把“字段存在”当作树哈希验证成功。
+    recommended_fix: >-
+      在清单中增加 tree_hash_algorithm、canonicalization_version 和精确伪代码/工具版本，
+      并提供只读校验命令；最好让聚合哈希覆盖规范化的 path、size、sha256 三元组。
+    requires_human_review: true

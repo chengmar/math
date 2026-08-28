@@ -1,0 +1,39 @@
+schema_version: 1
+id: "CAND-2021A-001"
+case_id: "2021A"
+status: "candidate"
+category: "method_card"
+title: <REFERENCE_TITLE_REDACTED>
+
+provenance:
+  classification: "learned_after_references"
+  sources:
+    - "R3: <REFERENCE_ID>"
+  prior_blind_final_present: false
+  note: "R3的具体方案违反边长约束；只提炼焦域自由度，不接受其结果。"
+
+candidate_claim:
+  text: "当接收器是有限圆面而非点时，可把焦点位置作为受逐射线命中约束的设计变量，而非先验固定在圆心。"
+  mathematical_status: "needs_review"
+  physical_status: "needs_review"
+
+applicability:
+  - "几何光学聚焦问题的接收器具有明确有限有效区"
+  - "焦点移动不会与设备姿态、焦面位置或控制系统冲突"
+
+implementation_outline:
+  - "外层联合搜索焦距与焦点轴向偏移"
+  - "中层求节点可实现面形"
+  - "最终以全口径逐射线命中接收区验收，而不是只检查焦点坐标"
+
+failure_modes:
+  - "焦点在圆内但边缘射线因面板误差越出接收区"
+  - "额外自由度破坏题面固定焦面或馈源姿态"
+  - "用焦域自由度掩盖边长、行程或拉索约束违例"
+
+promotion_gate:
+  direct_verified_upgrade_allowed: false
+  required:
+    - "精确和舍入约束均为pass"
+    - "逐射线命中与接收半径敏感性为pass"
+    - "至少一个额外受控案例复现"

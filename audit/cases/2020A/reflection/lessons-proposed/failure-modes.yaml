@@ -1,0 +1,44 @@
+schema_version: 1
+case_id: 2020A
+knowledge_status: candidate
+failure_modes:
+  - id: FM-OBJECTIVE-SCOPE-001
+    name: 把互补区域加入图示局部目标
+    observed_status: fail
+    evidence: blind-v1 把峰后 318.851069 ℃·s 加入升温侧 311.041808 ℃·s。
+    guard: 独立目标合同、分量字段、错误目标变异测试。
+  - id: FM-SHARED-VALIDATION-002
+    name: 主程序与验证共享同一指标定义
+    observed_status: fail
+    evidence: blind-v1 的验证共享 curve_metrics，所有检查为 pass 仍未发现 Q3 定义错误。
+    guard: oracle 不导入主指标实现；解析几何与变异测试。
+  - id: FM-DENSE-N-AS-EVIDENCE-003
+    name: 把强自相关稠密点当独立样本
+    observed_status: fail
+    evidence: lag-1 约 0.9995、DW 约 0.001、符号游程仅 10。
+    guard: 时间留出、块重采样、相关误差模型与外部工况。
+  - id: FM-MARGIN-AS-ROBUSTNESS-004
+    name: 用固定数值余量冒充制造稳健性
+    observed_status: fail
+    evidence: 128 联合角点使 Q3/Q4 的 150--190 ℃时间降至约 54.7 s。
+    guard: 数值容差与工程裕度分离；联合不确定性传播。
+  - id: FM-REFERENCE-AS-TRUTH-005
+    name: 默认优秀参考材料整体正确
+    observed_status: fail
+    evidence: R1/R2 单位表头错误；R3 Q4 摘要与正文方案冲突。
+    guard: 文件身份、公式、内部一致性、复现和外部证据分别判定。
+  - id: FM-INCOMPARABLE-METRICS-006
+    name: 直接比较名称相似但定义/量纲不同的 Q4 指标
+    observed_status: fail
+    evidence: BF 为绝对差面积，R1 为平均绝对温差，R2 为均方量，R3 为归一化复合量。
+    guard: 比较前建立指标合同、单位与归一化基准。
+  - id: FM-PRECISION-OVER-STRUCTURE-007
+    name: 继续增加小数位而忽略跨模型离散
+    observed_status: fail
+    evidence: BF 内部面积数值差小于 0.1 ℃·s，而参考间 Q3 面积差超过 90 ℃·s；Q2 速度跨度 16.8 cm/min。
+    guard: 先做结构候选与外部实验，再报告控制精度。
+  - id: FM-CLAIM-GLOBAL-WITH-EARLY-STOP-008
+    name: 随机搜索或提前终止图搜索被写成全局最优
+    observed_status: fail
+    evidence: R3 明确提前返回 A*；BF/R1/R2 的启发式搜索也没有连续域证明。
+    guard: 保留退出状态、失败运行和替代方法；全局性保持 needs_review。

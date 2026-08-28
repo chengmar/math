@@ -1,0 +1,222 @@
+schema_version: 1
+case_id: 2018A
+phase: audit
+overall_status: needs_review
+finding_counts:
+  critical: 0
+  major: 3
+  minor: 5
+  suggestion: 1
+findings:
+  - id: AUD-001
+    severity: major
+    category: model_structure_and_identifiability
+    evidence:
+      status: needs_review
+      items:
+        - <LONG_QUOTE_REDACTED>
+        - <LONG_QUOTE_REDACTED>
+        - <LONG_QUOTE_REDACTED>
+    affected_files:
+      - frozen-solution/code/thermal_model.py
+      - frozen-solution/code/run_all.py
+      - frozen-solution/assumptions.yaml
+      - frozen-solution/paper/sections/02-assumptions-data.tex
+      - frozen-solution/paper/sections/05-solutions.tex
+    reason: >-
+      One calibration trajectory can fit multiple gap-heat-transfer structures that scale differently with d4.
+      The reported Q3 pair is therefore a conditional optimum of the pure-conduction gap model, not an
+      identified unique engineering optimum.
+    recommended_fix: >-
+      Add alternative gap models with a thickness-independent parallel conductance and/or temperature-dependent
+      effective transfer; calibrate against experiments at multiple d4 and temperatures. Until such data exist,
+      report a scenario/Pareto set and label the unique pair as model-conditional.
+    requires_human_review: true
+
+  - id: AUD-002
+    severity: major
+    category: initial_and_boundary_conditions
+    evidence:
+      status: needs_review
+      items:
+        - "The problem states that mannequin body temperature is held at 37 C; it does not independently measure the initial temperature profile of all four clothing layers."
+        - <LONG_QUOTE_REDACTED>
+        - <LONG_QUOTE_REDACTED>
+    affected_files:
+      - frozen-solution/assumptions.yaml
+      - frozen-solution/code/thermal_model.py
+      - frozen-solution/code/run_all.py
+      - frozen-solution/paper/sections/02-assumptions-data.tex
+      - frozen-solution/paper/sections/05-solutions.tex
+    reason: >-
+      The safety conclusions are sensitive to an initial profile that is assumed rather than observed or imposed
+      by the stated operating protocol. A skin reading of 37 C at one instant does not determine all layer states.
+    recommended_fix: >-
+      Specify a garment preconditioning protocol and measure or bound the initial layer profile. Recompute Q2/Q3
+      against the worst admissible initial profile, or state clearly that the recommendations require all layers
+      to be equilibrated at 37 C before exposure.
+    requires_human_review: true
+
+  - id: AUD-003
+    severity: major
+    category: robust_safety_constraints
+    evidence:
+      status: needs_review
+      items:
+        - "results/<SOURCE_FILE_REDACTED>:4-15 shows the nominal Q2 and Q3 designs fail several single-parameter +/-5% cases; maximum durations are 896.902 s and 374.401 s versus the 300 s limit."
+        - "The nominal margins are only 5.752 s (Q2) and 7.631 s (Q3)."
+        - <LONG_QUOTE_REDACTED>
+        - <LONG_QUOTE_REDACTED>
+    affected_files:
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+      - frozen-solution/results/robustness_summary.yaml
+      - frozen-solution/results/key_results.yaml
+      - frozen-solution/paper/main.tex
+      - frozen-solution/paper/sections/05-solutions.tex
+      - frozen-solution/paper/sections/06-validation-conclusion.tex
+    reason: >-
+      The nominal constraints are computed correctly, but they do not constitute an engineering guarantee under
+      the solution's own small perturbation scenarios. The chosen +/-5% set is deterministic and not tied to an
+      estimated confidence region or manufacturing tolerance.
+    recommended_fix: >-
+      Define an evidence-based uncertainty/tolerance set, propagate correlated calibration uncertainty and model
+      discrepancy, and solve a robust constraint problem. If no uncertainty set is authorized, phrase 17.6 mm
+      and (19.3,6.4) mm only as nominal conditional optima and place the reserve designs beside them.
+    requires_human_review: true
+
+  - id: AUD-004
+    severity: minor
+    category: reproducibility_manifest
+    evidence:
+      status: fail
+      items:
+        - "results/output_manifest.json:80-82 declares its own SHA-256 as 7478754c..., while the frozen file actually hashes to 7c978489...."
+        - "run_all.py:1171-1186 enumerates existing outputs before overwriting output_manifest.json; check_reproducibility.py creates reproducibility_check.json only later at lines 91-93."
+        - <LONG_QUOTE_REDACTED>
+        - "<SOURCE_FILE_REDACTED> has identical cells and semantic digest but clean/frozen byte hashes 215cb503... and e6656f6c..., showing nondeterministic ZIP container bytes."
+    affected_files:
+      - frozen-solution/code/run_all.py
+      - frozen-solution/code/check_reproducibility.py
+      - frozen-solution/results/output_manifest.json
+      - frozen-solution/results/<SOURCE_FILE_REDACTED>
+    reason: >-
+      The scientific values reproduce, but the secondary output manifest is self-inconsistent and dependent on
+      prior directory contents. Byte-level workbook identity is also not reproducible despite semantic identity.
+    recommended_fix: >-
+      Generate verification and reproduction artifacts first, build the output manifest last from an explicit
+      allowlist, and exclude the manifest itself or store its digest externally. Use a canonical workbook semantic
+      digest, or normalize ZIP member timestamps if byte identity is required.
+    requires_human_review: false
+
+  - id: AUD-005
+    severity: minor
+    category: data_pipeline_consistency
+    evidence:
+      status: needs_review
+      items:
+        - "run_all.py:101-119 reads attachment-1 material values, but only returns them for reporting."
+        - "thermal_model.py:29-34 separately hard-codes all four material constants used by the solver."
+        - "The current attachment and hard-coded constants match exactly, so current numerical results pass; verify_outputs.py does not assert this equality."
+    affected_files:
+      - frozen-solution/code/run_all.py
+      - frozen-solution/code/thermal_model.py
+      - frozen-solution/code/verify_outputs.py
+    reason: >-
+      The advertised dependency on attachment 1 is not programmatic. A changed or corrected workbook could be
+      reported in input_audit.json while calculations silently continue with stale constants.
+    recommended_fix: >-
+      Parse a typed material configuration from attachment 1 and pass it into the model, or add an explicit exact
+      equality assertion that fails before calculation when attachment and code constants differ.
+    requires_human_review: false
+
+  - id: AUD-006
+    severity: minor
+    category: provenance_and_leakage_metadata
+    evidence:
+      status: fail
+      items:
+        - "FROZEN_BLIND_V1.json records knowledge_cards: [] and retrieval-log.json records cards: []."
+        - "reports/training-memory-retrieval.json:21-66 and reports/training-memory-usage.md document three adopted/adapted cards that are also copied under knowledge/training-memory/."
+        - "The three cards contain generic validation guidance from 2007A/2009A and no 2018A model, title, answer, or key number; content-leakage review is pass."
+        - <LONG_QUOTE_REDACTED>
+    affected_files:
+      - frozen-solution/FROZEN_BLIND_V1.json
+      - frozen-solution/retrieval-log.json
+      - frozen-solution/reports/training-memory-retrieval.json
+      - frozen-solution/reports/training-memory-usage.md
+      - frozen-solution/solution-report.yaml
+      - frozen-solution/reproducibility.yaml
+    reason: >-
+      No answer leakage was found, but mutually inconsistent provenance fields prevent the empty-card declarations
+      from serving as a reliable audit trail.
+    recommended_fix: >-
+      Populate one authoritative knowledge-card list with IDs, hashes, status and decisions; distinguish automatic
+      retrieval from profile-injected cards explicitly. Reconcile freeze_performed and run_command during the
+      external freeze step without altering an already frozen version.
+    requires_human_review: false
+
+  - id: AUD-007
+    severity: minor
+    category: verification_independence
+    evidence:
+      status: needs_review
+      items:
+        - "verify_outputs.py:15 imports the same thermal_model implementation it purports to verify."
+        - "Its Q3 optimality check at lines 190-196 takes the minimum of the grid CSV generated by run_all.py rather than independently regenerating the grid."
+        - "Its paper consistency test at lines 242-250 checks only that eight numeric substrings occur somewhere in paper.md plus main.tex; wrong context or negation would still pass."
+        - "The present audit independently reconstructed the ODE from attachment data and matched the modal solver within 1.53e-11 C; actual paper/table/figure numbers also pass."
+    affected_files:
+      - frozen-solution/code/verify_outputs.py
+      - frozen-solution/code/check_reproducibility.py
+      - frozen-solution/results/verification.json
+    reason: >-
+      Existing automated pass states are mostly same-implementation consistency checks. They are useful regression
+      tests but weaker than the labels "independent" and "paper_result_consistency" imply.
+    recommended_fix: >-
+      Add an independently assembled ODE solver or thermal-resistance benchmark, regenerate optimization grids from
+      raw structured inputs, and compare paper tables through a machine-readable results-to-claims mapping rather
+      than token presence.
+    requires_human_review: false
+
+  - id: AUD-008
+    severity: minor
+    category: objective_definition
+    evidence:
+      status: needs_review
+      items:
+        - "The problem asks for optimal d2 and d4 but supplies no cost, mass, bulk or comfort weights."
+        - "assumptions.yaml:35-38 and paper/sections/01-problem-analysis.tex:13 correctly disclose the engineering choice min(d2+d4)."
+        - "On the same feasible 0.1 mm grid, min(d2+d4) gives the reported ties near (19.3,6.4), while min(d2+2*d4) gives (24.9,2.6) mm."
+    affected_files:
+      - frozen-solution/assumptions.yaml
+      - frozen-solution/code/run_all.py
+      - frozen-solution/paper/sections/01-problem-analysis.tex
+      - frozen-solution/paper/sections/05-solutions.tex
+    reason: >-
+      The numerical optimizer solves a well-defined problem, but uniqueness of the word "optimal" depends on an
+      unstated stakeholder objective. The disclosure is good, yet the selected pair remains judgment-dependent.
+    recommended_fix: >-
+      Ask for or justify material-specific cost/weight/comfort weights; otherwise provide the feasible Pareto
+      frontier and a short sensitivity table over objective weights before selecting one engineering compromise.
+    requires_human_review: true
+
+  - id: AUD-009
+    severity: suggestion
+    category: parsimony
+    evidence:
+      status: pass
+      items:
+        - "An 18-state finite-volume model obtains mean ordered-fold RMSE 0.003585 C; a 27-state model obtains 0.002882 C versus 0.003228 C for the selected 54-state mesh."
+        - "After refitting, the 18-, 27-, 36-, 54-, 72- and 108-state models all round to Q2=17.6 mm and Q3 d2=19.3 mm at d4=6.4."
+        - "The 54-state model is not statistically over-parameterized because only h_out and h_in are fitted; the issue is computational/model parsimony, not overfit."
+    affected_files:
+      - frozen-solution/code/thermal_model.py
+      - frozen-solution/model-selection.md
+      - frozen-solution/paper/sections/04-calibration-selection.tex
+    reason: >-
+      A materially smaller finite-volume discretization is equally effective for the reported decisions and even
+      slightly better on the chosen fold average, so 54 states are not necessary for predictive performance.
+    recommended_fix: >-
+      Include a mesh-size-versus-error/decision table and either select the 27-state mesh for the main pipeline or
+      retain 54 states explicitly for spatial-field resolution while stating that decision results are mesh-stable.
+    requires_human_review: false

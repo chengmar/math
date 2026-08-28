@@ -1,0 +1,70 @@
+case_id: 2008A
+phase: solve
+status: pass
+workspace: <RUNTIME_ROOT>/2008A/workspaces/solve
+inputs:
+  - path: input/problem/<SOURCE_FILE_REDACTED>
+    sha256: d28c0ef2aaee74e9618dbf77a022527ced5f8b723eee4cc27774f648d842e599
+    status: pass
+  - path: working/source-extract/docx-unpacked/word/media/<SOURCE_FILE_REDACTED>
+    sha256: bb1917172c6591aaff1a8cb101d86493d0918223aca3e93d226d7e234c66cb86
+    status: pass
+software:
+  operating_system: Windows-11-10.0.26200-SP0
+  microsoft_word: '12.0'
+  python: 3.12.13
+  numpy: 2.5.2
+  scipy: 1.18.0
+  matplotlib: 3.11.1
+  pillow: 12.3.0
+  pyyaml: 6.0.3
+randomness:
+  seed: 2008
+  monte_carlo_repetitions: 100
+  contour_noise_sigma_px: 0.25
+  deterministic_core_solver: true
+commands:
+  - powershell -NoProfile -ExecutionPolicy Bypass -File code/extract_problem.ps1
+  - python code/solve.py --monte-carlo 100
+  - python code/check_consistency.py
+  - cd paper; xelatex -interaction=nonstopmode -halt-on-error main.tex
+key_outputs:
+  - results/source_metadata.json
+  - results/<SOURCE_FILE_REDACTED>
+  - results/<SOURCE_FILE_REDACTED>
+  - results/<SOURCE_FILE_REDACTED>
+  - results/model_metrics.json
+  - results/validation.json
+  - results/sensitivity.json
+  - results/pose.json
+  - results/main_results.json
+  - figures/<SOURCE_FILE_REDACTED>
+  - figures/<SOURCE_FILE_REDACTED>
+  - figures/<SOURCE_FILE_REDACTED>
+  - figures/<SOURCE_FILE_REDACTED>
+  - paper/main.tex
+  - paper/paper.md
+checks:
+  phase_check: pass
+  source_hash_check: pass
+  extraction_dimension_check: pass
+  full_pipeline_exit_code: pass
+  required_artifacts_nonempty: pass
+  paper_result_consistency: pass
+  repeated_run_hash_match: pass
+  xelatex_compile: pass
+  xelatex_layout_log: pass
+  pdf_page_visual_check: pass
+deterministic_output_hashes:
+  results/main_results.json: 4ac679bd650a43198faa18a8561d753a4909c85fdca5acd428d0ccd409c0606b
+  results/<SOURCE_FILE_REDACTED>: 2adf5bdedf9e2e80dfda92948571b4192d805d4bca2018eaa98e9428287965f6
+  results/model_metrics.json: cbf0637a7065fd944787679a2da0fc9869a52861ae230b99c1c3506f2bc5b40a
+  results/validation.json: ad4bb10d78a160f034faf403ff0eaf15474e80ee752712888f9319eba72769cb
+  results/sensitivity.json: f4adc1d902a6927e93e7ee22724998b8ef77ccb9d2983f38ed5e352d382347fb
+  results/pose.json: 2919b39b3d9c00caa398a21c0b0853e06ee0531a547f4adcc211e829c3e8df5a
+  results/<SOURCE_FILE_REDACTED>: 0dbf235cc0d4adb8ff5d6e19e5390f8e5239c35547dde29e9cb7257dbd67e10f
+  results/generated_numbers.tex: 7c2bf27a820d94708fd243591619f8640a94c23a6d5d4a7bcdfa1dc0d78cd6f3
+notes:
+  - Word仅作旧DOC到DOCX的本地离线格式转换。
+  - 关键数字在JSON/CSV中，图表不是唯一数据来源。
+  - repeated_run_hash_match只比较确定性的关键数值文件；PNG元数据和PDF不作为判据。

@@ -1,0 +1,34 @@
+schema_version: 1
+id: "CAND-2021A-006"
+case_id: "2021A"
+status: "candidate"
+category: "do_not_generalize"
+title: <REFERENCE_TITLE_REDACTED>
+
+provenance:
+  classification: "case_specific_synthesis"
+  sources: ["BF", "R1", "R2", "R3"]
+
+case_specific_items:
+  - "R约300.400015 m和F=0.466R"
+  - "300 m工作口径、1 m直径接收圆"
+  - "0.07%边长上限和±0.6 m促动器行程"
+  - "692个倾斜方向活动节点、6525条唯一边"
+  - "平面基准约0.81%与连续曲率基准约5.28%"
+  - "本题观测角alpha=36.795度、beta=78.169度"
+
+nontransfer_rule:
+  text: "这些数字、活动集规模、焦距和接收比只能作为2021A本题证据，不能成为其他口径、曲率、馈源或索网系统的默认常数。"
+  transfer_status: "fail"
+
+potentially_transferable_abstractions:
+  - "先声明目标函数再比较结果"
+  - "精确与舍入约束双重验收"
+  - "数值、模型和外部证据分层"
+  - "使用简单可行基线解释复杂度收益"
+
+promotion_gate:
+  direct_verified_upgrade_allowed: false
+  required:
+    - "剥离全部本题常数"
+    - "至少两个不同系统案例复现抽象模式"

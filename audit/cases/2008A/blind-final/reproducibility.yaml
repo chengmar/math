@@ -1,0 +1,83 @@
+case_id: 2008A
+phase: blind-revision
+status: pass
+authority:
+  baseline: blind-v1/current-code-and-paper
+  selection_status: pass
+  rationale: 当前V1的code/solve.py与论文、results根目录采用同一monte-carlo流水线；审计指出的results/generated及bootstrap流水线为冲突旧产物，已从修订载荷排除。
+  legacy_pipeline_status: fail
+authoritative_command: powershell -NoProfile -ExecutionPolicy Bypass -File code/run_all.ps1 -MonteCarlo 100 -Seed 2008
+execution_order:
+  - extract_problem
+  - solve
+  - extreme_checks
+  - paper_result_consistency
+  - xelatex_pass_1
+  - xelatex_pass_2
+  - build_run_manifest
+  - verify_run_manifest
+inputs:
+  - path: input/problem/<SOURCE_FILE_REDACTED>
+    sha256: d28c0ef2aaee74e9618dbf77a022527ced5f8b723eee4cc27774f648d842e599
+    status: pass
+  - path: working/source-extract/docx-unpacked/word/media/<SOURCE_FILE_REDACTED>
+    sha256: bb1917172c6591aaff1a8cb101d86493d0918223aca3e93d226d7e234c66cb86
+    status: pass
+dependencies:
+  requirements: code/requirements.txt
+  exact_pin_status: pass
+  python: 3.12.13
+  numpy: 2.5.2
+  scipy: 1.18.0
+  matplotlib: 3.11.1
+  pillow: 12.3.0
+  pyyaml: 6.0.3
+  xelatex: required
+  microsoft_word_com: required_for_legacy_doc_extraction
+randomness:
+  seed: 2008
+  monte_carlo_repetitions: 100
+  contour_noise_sigma_px: 0.25
+  deterministic_core_solver: pass
+key_outputs:
+  - results/main_results.json
+  - results/<SOURCE_FILE_REDACTED>
+  - results/model_metrics.json
+  - results/validation.json
+  - results/sensitivity.json
+  - results/extreme_checks.json
+  - results/paper_consistency.json
+  - figures/<SOURCE_FILE_REDACTED>
+  - figures/<SOURCE_FILE_REDACTED>
+  - figures/<SOURCE_FILE_REDACTED>
+  - figures/<SOURCE_FILE_REDACTED>
+  - paper/<SOURCE_FILE_REDACTED>
+lineage:
+  run_manifest: results/run_manifest.json
+  run_manifest_verification: results/run_manifest_verification.json
+  run_manifest_status: pass
+  code_output_lineage_status: pass
+repeatability:
+  baseline_manifest: results/repeatability/baseline_run_manifest.json
+  comparison_report: results/repeatability.json
+  deterministic_output_hash_match_status: pass
+checks:
+  phase_check: pass
+  source_hash_check: pass
+  extraction_dimension_check: pass
+  full_pipeline_exit_code: pass
+  required_artifacts_nonempty: pass
+  extreme_input_rejection: pass
+  paper_result_consistency: pass
+  xelatex_compile: pass
+  xelatex_layout_log: pass
+  run_manifest_verification: pass
+  repeated_run_hash_match: pass
+external_freeze:
+  status: needs_review
+  owner: external_blind_final_freeze_script
+  requirement: 对最终载荷使用规范化相对路径记录每个文件的字节数和SHA-256，并明确清单自身排除规则与唯一冻结标识。
+notes:
+  - 运行级清单明确排除自身及随后生成的验证报告，不能替代整树冻结清单。
+  - PDF不纳入重复运行确定性判据；数值JSON/CSV、代码、输入和四幅PNG纳入。
+  - 本修订不自行冻结，也不跨阶段resume。

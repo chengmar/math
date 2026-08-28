@@ -1,0 +1,123 @@
+schema_version: 1
+case_id: 2018A
+phase: reflection
+overall_status: needs_review
+status_vocabulary: [pass, fail, needs_review]
+blind_final:
+  id: BLIND-FINAL
+  freeze_manifest: blind-final/FROZEN_BLIND_FINAL.json
+  declared_tree_sha256: 39e7e2583662e357ea27cf889060fd88e504b3ddfa884bdb67eafccb87884792
+  recomputed_tree_sha256: 39e7e2583662e357ea27cf889060fd88e504b3ddfa884bdb67eafccb87884792
+  file_hash_status: pass
+  audit_prerequisite_status: pass
+references:
+  - id: REF-01
+    file: <REFERENCE_ID>
+    sha256: <REFERENCE_HASH_REDACTED>
+    pages: 31
+    title: <REFERENCE_TITLE_REDACTED>
+    relevance_status: pass
+    extraction_status: pass
+    reproduction_status: needs_review
+  - id: REF-02
+    file: <REFERENCE_ID>
+    sha256: <REFERENCE_HASH_REDACTED>
+    pages: 43
+    title: <REFERENCE_TITLE_REDACTED>
+    relevance_status: pass
+    extraction_status: pass
+    reproduction_status: needs_review
+  - id: REF-03
+    file: <REFERENCE_ID>
+    sha256: <REFERENCE_HASH_REDACTED>
+    pages: 28
+    title: <REFERENCE_TITLE_REDACTED>
+    relevance_status: pass
+    extraction_status: pass
+    reproduction_status: fail
+  - id: REF-04
+    file: <REFERENCE_ID>
+    sha256: <REFERENCE_HASH_REDACTED>
+    pages: 45
+    title: <REFERENCE_TITLE_REDACTED>
+    relevance_status: fail
+    extraction_status: pass
+    reproduction_status: needs_review
+    exclusion_reason: 2018B CNC/RGV material, unrelated to 2018A thermal clothing
+dimensions:
+  problem_decomposition:
+    blind_final: {status: pass, summary: 数据审计→候选比较→标定→三问→压力情景→独立验证}
+    REF-01: {status: pass, summary: PDE→双系数拟合→显式差分→临界厚度→辐射/材料作用}
+    REF-02: {status: pass, summary: 两层推导→四层耦合→隐式差分→成本/舒适度目标}
+    REF-03: {status: needs_review, summary: PDE→边界耗散→黄金分割/网格；实现链断裂}
+  assumptions:
+    blind_final: {status: pass, boundary: double_Robin, initial_clothing_c: 37, gap: pure_conduction_nominal}
+    REF-01: {status: needs_review, boundary: double_Robin, radiation: refitted_scenario}
+    REF-02: {status: needs_review, boundary: outer_Dirichlet_inner_Robin}
+    REF-03: {status: fail, boundary: claimed_Newton_but_printed_state_not_updated}
+  model:
+    blind_final: {status: pass, method: conservative_finite_volume, states: 54, time_solver: symmetric_eigendecomposition}
+    REF-01: {status: pass, method: explicit_finite_difference, q1_dt_s: 0.002}
+    REF-02: {status: pass, method: backward_Euler_Thomas, unknowns: 152}
+    REF-03: {status: fail, method: backward_Euler_Thomas_with_missing_skin_update}
+  validation:
+    blind_final: {status: pass, evidence: [time_ordered_folds, final_holdout, mesh_study, energy_balance, independent_Radau, independent_full_grids]}
+    REF-01: {status: needs_review, evidence: [Fourier_number, in_sample_SSE, partial_appendix_reimplementation]}
+    REF-02: {status: needs_review, evidence: [implicit_stability, in_sample_error, appendix_reimplementation]}
+    REF-03: {status: fail, evidence: [vague_reverse_inversion, printed_code_liveness_failure]}
+  robustness:
+    blind_final: {status: needs_review, evidence: [initial_temperature, gap_structure, objective_weight, parameter_stress], reason: no authorized uncertainty set or external design experiments}
+    REF-01: {status: needs_review, evidence: [radiation_refit, layer_role_scenarios]}
+    REF-02: {status: needs_review, evidence: [environment_temperature_sensitivity]}
+    REF-03: {status: needs_review, evidence: [qualitative_limitations_only]}
+results:
+  q1_parameters:
+    BLIND-FINAL: {h_out_w_m2k: 119.97936200618787, h_in_w_m2k: 8.360055977403729}
+    REF-01: {h_out_w_m2k: 113.0, h_in_w_m2k: 8.344}
+    REF-02: {outer_boundary: Dirichlet, h_in_w_m2k: 8.6125}
+    REF-03: {status: fail, reason: delta/K not executable from printed code}
+  q2_d2_mm:
+    BLIND-FINAL: {value: 17.6, model_internal_status: pass}
+    REF-01: {value: 17.5, common_blind_model_status: fail, common_blind_duration_above_44_s: 335.1875532347067}
+    REF-02: {value: 19.3, printed_algorithm_status: pass, common_blind_model_status: pass}
+    REF-03: {value: 15.7, common_blind_model_status: fail, common_blind_duration_above_44_s: 995.2677073253763}
+  q3_mm:
+    BLIND-FINAL: {d2: 19.3, d4: 6.4, model_internal_status: pass}
+    REF-01: {d2: 19.2, d4: 6.4, common_blind_model_status: fail, common_blind_duration_above_44_s: 305.48835849979514}
+    REF-02:
+      abstract: {d2: 21.7, d4: 6.4, printed_algorithm_status: pass}
+      body: {d2: 21.8, d4: 6.4, consistency_status: fail}
+    REF-03: {d2: 16.8, d4: 6.4, common_blind_model_status: fail, common_blind_duration_above_44_s: 602.0461142204142}
+reproduction_evidence:
+  REF-01:
+    status: pass
+    scope: printed Q1 explicit scheme only
+    recomputed_sse: 3.655228429961511
+    reported_sse: 3.6552
+    recomputed_max_positive_residual_c: 0.0060783733214151425
+    recomputed_max_abs_residual_c: 0.09528021402986298
+    metric_label_status: fail
+  REF-02:
+    status: needs_review
+    scope: printed implicit scheme and selected design neighbors
+    recomputed_q1_rmse_c: 0.4941826263643125
+    reported_deviation_index: 0.4593
+    recomputed_max_abs_error_c: 1.9882069887506688
+    reported_max_error_c: 1.99
+    q2_19p2_status: fail
+    q2_19p3_status: pass
+    q3_21p6_6p4_status: fail
+    q3_21p7_6p4_status: pass
+  REF-03:
+    status: fail
+    findings:
+      - Q1 injects measured skin temperature as a boundary node
+      - Q2 and Q3 print K arrays that are never used
+      - Q2 and Q3 never update the reported skin boundary state
+uncertainties:
+  - status: needs_review
+    item: Approved-reference provenance has no separate expected-hash manifest; hashes are observed current-copy identities only.
+  - status: needs_review
+    item: PDF formulas with custom symbol fonts required cross-check against prose and appendix code.
+  - status: needs_review
+    item: Common-model feasibility is a pressure comparison, not a declaration that BLIND-FINAL is physical truth.

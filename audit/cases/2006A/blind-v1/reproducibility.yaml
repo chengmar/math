@@ -1,0 +1,96 @@
+phase: solve
+status: pass
+workspace_relative_execution: true
+network_required: false
+randomness:
+  seed: 2006
+  monte_carlo_draws: 300
+legacy_conversion:
+  command: powershell -ExecutionPolicy Bypass -File code/convert_inputs.ps1 -Workspace .
+  implementation: Microsoft Word and Excel 12.0 read-only COM
+  outputs:
+    - input/converted/manifest.json
+    - input/converted/word/*.txt
+    - input/converted/excel/**/*.tsv
+  note: manifest.generated_at is intentionally time-varying; numerical results do not use it
+solve:
+  command: python code/solve.py --workspace .
+  deterministic_core: true
+independent_verification:
+  command: python code/verify_outputs.py --workspace .
+  scope: arithmetic constraints, independent objective recalculation, required files, paper-result linkage
+second_run_hash_check:
+  command: python code/check_reproducibility.py --workspace .
+  expected_report: results/reproducibility_check.json
+  status: pass
+  observed_target_count: 21
+  observed_matched_count: 21
+paper_compile:
+  command: xelatex --disable-installer -interaction=nonstopmode -halt-on-error main.tex
+  working_directory: paper
+  runs: 2
+  status: pass
+  output: paper/<SOURCE_FILE_REDACTED>
+  log_check: no LaTeX warnings, undefined references, overfull boxes, or errors after final run
+full_command:
+  command: powershell -ExecutionPolicy Bypass -File code/run_all.ps1 -Workspace .
+  status: pass
+dependencies:
+  operating_system: Windows 11
+  python: 3.12.13
+  numpy: 2.5.2
+  pandas: 3.0.5
+  scipy: 1.18.0
+  matplotlib: 3.11.1
+  pyyaml: 6.0.3
+  powershell: required
+  microsoft_word_com: 12.0
+  microsoft_excel_com: 12.0
+input_provenance:
+  hashes: results/input_hashes.json
+  conversion_manifest: input/converted/manifest.json
+output_provenance:
+  hashes: results/output_hashes.json
+  note: hashes are generated after independent verification; they are not manually asserted
+key_outputs:
+  - results/summary.json
+  - results/<SOURCE_FILE_REDACTED>
+  - results/<SOURCE_FILE_REDACTED>
+  - results/<SOURCE_FILE_REDACTED>
+  - results/forecast_validation.json
+  - results/constraint_checks.json
+  - results/boundary_checks.json
+  - results/<SOURCE_FILE_REDACTED>
+  - results/<SOURCE_FILE_REDACTED>
+  - figures/<SOURCE_FILE_REDACTED>
+  - figures/<SOURCE_FILE_REDACTED>
+  - figures/<SOURCE_FILE_REDACTED>
+  - figures/<SOURCE_FILE_REDACTED>
+expected_invariants:
+  total_isbn: 500
+  allocation_sum: 500
+  branch_order:
+    - 计算机类
+    - 经管类
+    - 数学类
+    - 英语类
+    - 两课类
+    - 机械、能源类
+    - 化学、化工类
+    - 地理、地质类
+    - 环境类
+  branch_allocation:
+    - 55
+    - 48
+    - 120
+    - 69
+    - 72
+    - 53
+    - 22
+    - 30
+    - 31
+known_non_determinism:
+  - input/converted/manifest.json: generated_at
+limitations:
+  - Office COM version is environment-specific; the checked TSV conversions are retained in the workspace.
+  - A pass from verification is mechanical and does not prove causal validity of the economic model.

@@ -1,0 +1,18 @@
+case_id: 2008A
+status: candidate_only
+candidate_count: 35
+machine_verified_count: 0
+verified_count: 0
+exported_files:
+- file: case-specific-facts.yaml
+  sha256: 282cb75050a23c8d52609ac88fcdeb1a13ffcc6e5ba3e355c5efd7aa53c478ad
+- file: expression-and-nontransfer.yaml
+  sha256: f7b182321e40dde85bafaba5fe0eb456ce53d90aa028c883766e945802c59f94
+- file: failure-modes.yaml
+  sha256: 9c5aa9b26663b7bb89f52db66facc3f6649dcc2bfe58ea3d5896c770005f4506
+- file: method-cards.yaml
+  sha256: a54bcf66fa8dd76aaf709a2e1384d70f9615d5a0c4ecb6b37b0d119c1dc76b02
+- file: README.md
+  sha256: 164ed9ed54ea65e9d133a3e2946b5dbe2fd44579fff4feb867b91d0b7d803844
+- file: validation-patterns.yaml
+  sha256: 24196292bdcb73f2d2943bf2861447d62cfd4633fe3619b3abb0e65b6eb27d36

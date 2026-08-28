@@ -1,0 +1,78 @@
+schema_version: 1
+case_id: 2008A
+package_status: candidate
+cards:
+  - id: METHOD-SHARED-CONIC-HOMOGRAPHY
+    status: candidate
+    source: independent_blind
+    name: "Known coplanar circles as a shared projective system"
+    use_when:
+      - "Several known circles lie on one rigid plane."
+      - "The projected physical centers, not merely ellipse centers, are required."
+    core:
+      - "Represent each object circle by C_i and its image conic by Q_i proportional to H^-T C_i H^-1."
+      - "Estimate one H from all boundary points with a geometric residual and a robust loss."
+      - "Map object centers through H only after the shared model is fitted."
+    minimum_checks:
+      - "positive depth or a valid projective orientation"
+      - "conic ellipticity"
+      - "whole-object holdout"
+      - "coordinate convention and label disambiguation"
+    known_limits:
+      - "nonplanar target"
+      - "strong unmodelled lens distortion"
+      - "severe occlusion or grazing view"
+    current_evidence_status: pass
+    cross_case_evidence_status: needs_review
+
+  - id: METHOD-HETEROGENEOUS-TANGENT-CROSSCHECK
+    status: candidate
+    source: reference_learned
+    name: "Tangent geometry as an independent center cross-check"
+    use_when:
+      - "Equal circles have clean, complete projected boundaries."
+      - "An estimator with a different failure path from conic fitting is desired."
+    core:
+      - "Recover external common tangents at subpixel precision."
+      - "Join the two tangent-contact points belonging to one projected circle."
+      - "Intersect two such projected diameter lines to estimate the physical center image."
+      - "Compare with the shared-conic estimate; report the discrepancy rather than selecting a reference as truth."
+    mandatory_guards:
+      - "condition number for nearly parallel lines"
+      - "uncertainty propagation from tangent points"
+      - "convex-boundary and visibility checks"
+      - "no integer-only rounding before intersection"
+    current_evidence_status: needs_review
+    reason: "Approved papers give the geometry, but their full extraction code is unavailable and one appendix table does not reproduce the reported centers."
+
+  - id: METHOD-METRIC-TWO-CAMERA-TARGET-POSE
+    status: candidate
+    source: independent_blind
+    name: "Compose two metric target poses for relative camera location"
+    prerequisites:
+      - "known or separately calibrated K_1 and K_2"
+      - "the same rigid target observed by both fixed cameras"
+      - "known target dimensions"
+    equations:
+      - "R_21 = R_2 R_1^T"
+      - "t_21 = t_2 - R_21 t_1"
+      - "C_2_in_1 = -R_21^T t_21"
+    mandatory_checks:
+      - "R_j orthogonality and determinant +1"
+      - "positive target depth in both cameras"
+      - "consistent axis and transform direction"
+      - "cross-pose stability if multiple target poses exist"
+    current_formula_status: pass
+    numerical_two_camera_status: needs_review
+
+  - id: METHOD-IDENTIFIABILITY-BEFORE-SOLVER
+    status: candidate
+    source: reflection_derived
+    name: "Check structural solution families before multi-start nonlinear solving"
+    core:
+      - "Search for collapsed, scale, sign, permutation, or gauge families algebraically."
+      - "Encode non-degeneracy constraints before interpreting a numerical root."
+      - "Use multi-start only after structural ambiguity is removed."
+    motivating_evidence: "The R62 incidence equations accept every configuration in which all five centers are the same point."
+    evidence_status: pass
+    cross_case_evidence_status: needs_review

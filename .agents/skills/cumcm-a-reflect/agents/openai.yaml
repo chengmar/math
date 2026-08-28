@@ -1,0 +1,6 @@
+interface:
+  display_name: "CUMCM A 参考复盘"
+  short_description: "在最终冻结后批判性对照参考材料并提出候选知识卡"
+  default_prompt: "Use $cumcm-a-reflect to compare the final frozen solution with approved references."
+policy:
+  allow_implicit_invocation: false

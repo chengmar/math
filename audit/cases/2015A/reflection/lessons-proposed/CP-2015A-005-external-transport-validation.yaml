@@ -1,0 +1,40 @@
+schema_version: 1
+proposal_id: "CP-2015A-005"
+proposal_state: "candidate"
+title: <REFERENCE_TITLE_REDACTED>
+origin: "learned_after_reference_access_from_R4"
+origin_status: "pass"
+summary: "在开发案例之外选择带已知真值的异源案例，先锁定模型、调参和拒答规则，再运行并揭示真值，以区分内部自洽与外部正确。"
+applicable_when:
+  - "存在至少一个数据生成或采集机制相近、真值可靠的外部案例。"
+  - "模型版本和调参预算可以在揭示真值前冻结。"
+not_applicable_when:
+  - "外部案例与目标任务的观测定义或单位不可比。"
+  - "研究者已经看过真值并据此反复调参，却仍称为盲测。"
+minimum_baseline:
+  - "只在同一前向程序生成的合成数据上验证。"
+  - "只报告开发数据的训练残差。"
+validation_requirements:
+  - "记录数据来源、真值测量误差和许可边界。"
+  - "在真值揭示前哈希模型、参数、随机种子和拒答阈值。"
+  - "报告所有失败分支和未通过数据门槛的案例。"
+  - "与至少一个简单基线使用相同信息和预算。"
+counterexamples:
+  - "用同一太阳前向模型合成再反演只能验证代码自洽。"
+  - "挑选一个成功案例而隐去失败案例会产生选择偏差。"
+  - "外部论文只给结果图，没有原始数据和真值定义。"
+source_case:
+  case_id: "2015A"
+  source_artifact: "R4 external literature-case validation idea"
+  reference_ids: ["R4"]
+evidence_strength:
+  design_value_status: "pass"
+  R4_reproduction_status: "needs_review"
+  current_blind_external_truth_status: "needs_review"
+evidence:
+  - "R4 是本材料集中最明确提出文献案例迁移检验的材料。"
+  - "R4 未提供可复核的原始验证数据与独立源码。"
+promotion_requirements:
+  - "完成至少两个预注册外部案例。"
+  - "由未参与模型开发者独立运行一次。"
+  - "公开成功、失败和拒答案例的完整清单。"

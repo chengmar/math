@@ -1,0 +1,29 @@
+schema_version: 1
+case_id: 2020A
+knowledge_status: candidate
+lessons:
+  - id: WL-001
+    lesson: 每个结论同时写清“指标定义、单位、适用模型、约束状态和证据层”。
+    evidence_status: pass
+  - id: WL-002
+    lesson: 主目标、辅助指标、诊断量必须使用不同字段名，不能都写成“面积”。
+    evidence_status: pass
+  - id: WL-003
+    lesson: 名义可行、工程稳健、全局最优和外部有效性分别使用 pass/fail/needs_review。
+    evidence_status: pass
+  - id: WL-004
+    lesson: 摘要、表格、图注、JSON 和状态文字由同一结构化结果源生成。
+    evidence_status: pass
+    counterexamples:
+      - R3 的 Q4 摘要—正文冲突。
+      - R1/R2 的结果表单位错误。
+      - BF 冻结载荷中的冻结前状态文字。
+  - id: WL-005
+    lesson: 迭代曲线只能说明一次运行过程，不能单独写成“避免局部最优”。
+    evidence_status: pass
+  - id: WL-006
+    lesson: 对参考材料说明文本层/OCR、正文覆盖、原页抽查和代码可执行性，不把“已阅读”写成“已复现”。
+    evidence_status: pass
+  - id: WL-007
+    lesson: 当多模型结果离散大于内部数值误差时，正文应突出结构风险而非末位小数。
+    evidence_status: pass

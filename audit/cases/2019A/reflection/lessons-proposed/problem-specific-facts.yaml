@@ -1,0 +1,41 @@
+schema_version: 1
+artifact: "problem_specific_facts"
+knowledge_state: "candidate"
+entries:
+  - id: "PSF-01"
+    fact: "the corrected rail mass equation is V_r*d(rho_r)/dt=rho_in*Q_A-rho_r*(Q_B+Q_D)"
+    knowledge_state: "candidate"
+    origin_class: "audit_after_blind_revision_before_reference"
+    evidence_status: pass
+    scope_status: needs_review
+  - id: "PSF-02"
+    fact: "the exact P1 opening times are 0.287601160561 ms at 100 MPa and 0.751794338534 ms at 150 MPa under the frozen model"
+    knowledge_state: "candidate"
+    origin_class: "audit_after_blind_revision_before_reference"
+    evidence_status: pass
+    scope_status: needs_review
+  - id: "PSF-03"
+    fact: "the frozen P2 structural endpoints are 0.023226638 and 0.027530254 rad/ms"
+    knowledge_state: "candidate"
+    origin_class: "audit_after_blind_revision_before_reference"
+    evidence_status: pass
+    scope_status: needs_review
+  - id: "PSF-04"
+    fact: "R-A and R-B report P2 speeds close to the frozen bottleneck endpoint"
+    knowledge_state: "candidate"
+    origin_class: "reference_triggered"
+    evidence_status: pass
+    scope_status: needs_review
+  - id: "PSF-05"
+    fact: "R-C states incompatible P3 angular speeds in its abstract and body after unit normalization"
+    knowledge_state: "candidate"
+    origin_class: "reference_triggered"
+    evidence_status: fail
+    scope_status: needs_review
+  - id: "PSF-06"
+    fact: "using E(100 MPa)=2171.4 MPa and rho=850 kg/m^3 gives an idealized wave speed near 1598.31 m/s and a 0.5 m one-way transit near 0.3128 ms"
+    knowledge_state: "candidate"
+    origin_class: "reference_triggered"
+    evidence_status: needs_review
+    scope_status: needs_review
+    limitation: "pipe-wall compliance and boundary effects are omitted"

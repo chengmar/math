@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "id": "CP-2014A-002",
+  "title": "分段轨迹必须与连续性、执行器动态和闭环验证联立",
+  "status": "candidate",
+  "source_case": "2014A",
+  "provenance": {
+    "class": "audit_corrected_pre_reference",
+    "trigger": "Audit exposed a near-180-degree direction flip, nominal-only control, and verifier false positives",
+    "reference_role": "comparison only; REF-02 latency discussion was read after the blind revision"
+  },
+  "lesson": <LONG_QUOTE_REDACTED>,
+  "applicability": [
+    "a trajectory has multiple stages or mode switches",
+    "actuator magnitude, rate, delay, or direction limits matter",
+    "terminal state and path constraints can be numerically checked",
+    "a feedback simulator is available"
+  ],
+  "non_applicability": [
+    "the task is purely static geometry",
+    "actuator dynamics are provably negligible relative to trajectory timescale",
+    "there is no calibrated dynamics model on which closed-loop conclusions could rest"
+  ],
+  "minimum_baseline": [
+    "the original piecewise open-loop trajectory",
+    "state and control jumps at every stage boundary",
+    "a nominal reintegration with all path and terminal residuals"
+  ],
+  "validation_protocol": [
+    "construct at least position/velocity-continuous joins and test whether acceleration continuity is required",
+    "measure control magnitude, direction rate, and force rate over continuous segments and boundaries",
+    "re-optimize with actuator constraints as hard constraints and compare with downstream clipping",
+    "simulate measurement delay, state error, model error, and actuator saturation in combination",
+    "use event detection and adaptive refinement to search between sampled times",
+    "cross-check the final trajectory with an independent integrator or implementation"
+  ],
+  "counterexamples": [
+    "a smooth state path requires an impossible instantaneous thrust-vector rotation",
+    "a limiter keeps force within bounds but causes terminal speed failure",
+    "a controller passes isolated disturbances but fails when delay and saturation coincide",
+    "discrete samples pass while a between-sample clearance minimum fails",
+    "longer duration satisfies rate limits but consumes more fuel than the feasibility margin allows"
+  ],
+  "evidence_strength": "single_case_strong_internal_mixed_boundary",
+  "evidence": [
+    {"source": "blind-final quintic joins", "status": "pass", "claim": "reported position, velocity, acceleration, and boundary-force jumps are internally negligible"},
+    {"source": "blind-final seven-scenario closed loop", "status": "pass", "claim": "all configured internal scenarios meet configured thresholds"},
+    {"source": "blind-final reference force rate", "status": "fail", "claim": "about 2038 N/s exceeds the internal 1800 N/s target"},
+    {"source": "external actuator and flight validity", "status": "needs_review", "claim": "real hardware limits and independent flight model are unavailable"}
+  ],
+  "uncertainties": [
+    "the actuator rate target is assumed rather than supplied",
+    "the seven disturbances do not span all joint worst cases",
+    "global optimality is not established"
+  ],
+  "promotion_gate": [
+    "apply the protocol to at least two additional switched-control cases",
+    "show that hard actuator coupling catches a failure missed by nominal optimization",
+    "include continuous-time extrema and an independent simulator",
+    "report performance, feasibility, and computational cost tradeoffs"
+  ],
+  "do_not_claim": [
+    "smooth state interpolation alone guarantees actuator feasibility",
+    "internal scenarios establish real-system robustness",
+    "multistart search establishes a global optimum"
+  ]
+}

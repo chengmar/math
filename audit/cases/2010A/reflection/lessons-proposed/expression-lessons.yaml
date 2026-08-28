@@ -1,0 +1,58 @@
+schema_version: 1
+case_id: "2010A"
+phase: reflection
+lessons:
+  - id: EL-2010A-01
+    status: candidate
+    provenance: audit_corrected
+    title: <REFERENCE_TITLE_REDACTED>
+    rule: "表头直接写 selection fit、post-selection check、refill check，避免靠正文补救。"
+
+  - id: EL-2010A-02
+    status: candidate
+    provenance: audit_corrected
+    title: <REFERENCE_TITLE_REDACTED>
+    rule: "写明固定流量比例、固定题图尺寸、固定零点；不要只在局限章节统一声明。"
+
+  - id: EL-2010A-03
+    status: candidate
+    provenance: reference_learned
+    title: <REFERENCE_TITLE_REDACTED>
+    rule: "摘要声称求得参数和标定表时，正文必须给出数值、目标、数据范围和表入口。"
+    counterexample: "R3 正文推导很长，但实际罐参数和表没有清楚落地。"
+
+  - id: EL-2010A-04
+    status: candidate
+    provenance: reference_learned
+    title: <REFERENCE_TITLE_REDACTED>
+    rule: "改写为样本内一致性，并补充留出、残差结构或独立实现证据。"
+
+  - id: EL-2010A-05
+    status: candidate
+    provenance: independent
+    title: <REFERENCE_TITLE_REDACTED>
+    rule: "正文给一个裁剪截面函数和坐标图；极端情形放验证表，不把分支数量当严谨性。"
+
+  - id: EL-2010A-06
+    status: candidate
+    provenance: audit_corrected
+    title: <REFERENCE_TITLE_REDACTED>
+    rule: "CSV 保留复算精度；正文按工程不确定性取整；压力范围标注非置信。"
+
+  - id: EL-2010A-07
+    status: candidate
+    provenance: reference_learned
+    title: <REFERENCE_TITLE_REDACTED>
+    rule: "提供相对路径、环境、输入映射、命令、预期输出和哈希；避免本机绝对路径。"
+
+  - id: EL-2010A-08
+    status: candidate
+    provenance: reference_learned
+    title: <REFERENCE_TITLE_REDACTED>
+    rule: "弱可辨识问题中，参数表和业务输出表都要有跨模型对照。"
+
+  - id: EL-2010A-09
+    status: candidate
+    provenance: audit_corrected
+    title: <REFERENCE_TITLE_REDACTED>
+    rule: "audit、blind-revision、冻结与清单状态放入复现附录；摘要和正文主线聚焦问题、模型、结果、验证与工程边界。"

@@ -1,0 +1,114 @@
+case_id: 2015A
+phase: blind-revision
+reproduction_status: pass
+external_validity_status: needs_review
+phase_gate:
+  literal_python_runner_status: needs_review
+  equivalent_conditions_status: pass
+  note: "系统没有可用 python/py；未伪称 check_phase.py 字面执行成功。"
+environment:
+  operating_system: "Microsoft Windows 10.0.26200"
+  powershell: "7.6.4"
+  dotnet: ".NET 10.0.10"
+  required_components:
+    - "PowerShell 7"
+    - "Microsoft Excel COM；只打开工作区生成的 XLS 副本"
+    - "PowerShell Add-Type，用于编译 code/SolarShadow.cs"
+    - "System.Drawing.Common，用于生成 PNG"
+  python_status: needs_review
+  latex_engine_status: needs_review
+  latex_note: "未检测到 xelatex、latexmk 或 pdflatex；不能声称 PDF 编译 pass。"
+input_integrity:
+  immutable_manifest: code/<SOURCE_FILE_REDACTED>
+  generated_comparison: results/<SOURCE_FILE_REDACTED>
+  source_preservation_record: results/<SOURCE_FILE_REDACTED>
+  check_before_office_open: true
+  office_working_copy_pattern: "results/.workbook-read-copy-<PID>.xls"
+  current_workspace_input_status: pass
+  earlier_historical_byte_identity_status: needs_review
+randomness:
+  coordinate_rounding_seed: 2015
+  coordinate_rounding_replicates_per_branch: 100
+  coordinate_rounding_label: rounding_only_conditional
+  residual_block_bootstrap_seed: 2016
+  residual_block_length_points: 3
+  residual_block_replicates_per_branch: 100
+  deterministic_search: true
+commands:
+  phase_check_literal: "python <skill>/scripts/check_phase.py --workspace <workspace>"
+  phase_check_literal_status: needs_review
+  generate_all: "pwsh -NoProfile -File .\\code\\run_all.ps1 -SensitivityReplicates 100"
+  independent_validation: "pwsh -NoProfile -File .\\code\\validate_outputs.ps1"
+  dense_branch_crosscheck: "pwsh -NoProfile -File .\\code\\crosscheck_search.ps1"
+  paper_consistency: "pwsh -NoProfile -File .\\code\\check_paper_consistency.ps1"
+  full_verification_with_rerun: "pwsh -NoProfile -File .\\code\\verify_all.ps1 -Rerun -SensitivityReplicates 100"
+  clean_isolated_reproduction: "pwsh -NoProfile -File .\\code\\clean_reproduce.ps1 -SensitivityReplicates 100"
+last_formal_generation:
+  status: pass
+  elapsed_seconds: 186.0
+  generated_png_count: 8
+  independent_validation_status: pass
+  independent_validation_pass: 40
+  independent_validation_needs_review: 1
+  independent_validation_fail: 0
+  dense_candidate_crosscheck: "24/24 pass"
+  deterministic_rerun: "30/30 pass"
+  clean_isolated_reproduction: "30/30 deterministic files pass; stage cleanup pass"
+outputs:
+  key_results: results/key_results.json
+  normalized_data:
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+  selection:
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+  uncertainty_and_stress:
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+    - results/uncertainty_status.json
+  q4:
+    - results/<SOURCE_FILE_REDACTED>
+    - results/q4_status.json
+  validation:
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+  paper_sources:
+    - paper/main.tex
+    - paper/paper.md
+    - paper/generated-values.tex
+determinism:
+  dynamic_exclusions:
+    - results/run_metadata.json
+  dynamic_exclusion_reason: "含开始/结束时间和耗时。"
+  rerun_files_are_hashed: true
+  verification_tables_bind_source_sha256: true
+clean_build_policy:
+  status: pass
+  stage_path: "_clean-repro-blind-revision"
+  preexisting_results_status: pass
+  preexisting_figures_status: pass
+  preexisting_generated_values_status: pass
+  deterministic_files_compared: 30
+  deterministic_files_pass: 30
+  stage_cleanup_status: pass
+  note: "隔离副本开始时 results、figures、paper/generated-values.tex 均不存在；完整重建后与主修订版逐项哈希一致，临时副本已清理。"
+limitations:
+  - "复现 pass 仅指当前允许环境中确定执行与哈希一致，不证明数学真值。"
+  - "外部地点、总体统计区间和附件4数值均为 needs_review。"
+  - "无 LaTeX 引擎，PDF 编译为 needs_review。"

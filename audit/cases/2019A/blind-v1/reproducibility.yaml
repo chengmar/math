@@ -1,0 +1,65 @@
+case_id: 2019A
+phase: solve
+status: needs_review
+run_command: python code/run_all.py
+verification_command: python code/verify_outputs.py
+manifest_record_command: python code/verify_outputs.py --record-manifest
+randomness:
+  deterministic_model: true
+  seed: 2019
+  seed_used_for: 固定任何未来可能调用的随机过程；当前主算法无随机抽样
+environment:
+  os: Windows-11-10.0.26200-SP0
+  python: 3.12.13
+  packages:
+    numpy: 2.5.2
+    scipy: 1.18.1
+    openpyxl: 3.1.5
+    matplotlib: 3.11.1
+    PyYAML: 6.0.3
+    Pillow: 12.3.0
+input_identity:
+  status: pass
+  manifest: results/input-manifest.json
+  method: SHA-256 streamed from files by code/run_all.py
+numerical_settings:
+  problem_1_final_dt_ms: 0.01_to_0.02
+  pump_system_final_dt_ms: 0.005
+  optimization_dt_ms: 0.02_to_0.05
+  interpolation:
+    elasticity: piecewise_linear_on_0.5_mpa_table
+    density: trapezoidal_integral_of_1_over_E_then_linear_lookup
+    cam: periodic_cubic_spline
+    needle: PCHIP_with_expanded_constant_intervals
+  ode_solver: explicit_midpoint
+  convergence_check: compare_0.01_ms_with_0.005_ms
+generated_artifacts:
+  summaries:
+  - results/problem1-summary.json
+  - results/problem2-summary.json
+  - results/problem3-summary.json
+  validation:
+  - results/validation.json
+  - results/<SOURCE_FILE_REDACTED>
+  - results/<SOURCE_FILE_REDACTED>
+  time_series: results/*.csv
+  figures: figures/*.png
+  paper_values:
+  - results/paper-values.json
+  - results/paper-values.tex
+full_script_rerun:
+  status: pass
+  baseline_manifest: results/rerun-baseline.json
+  comparison_result: results/verification.json
+  note: 第二次全量运行及哈希比较完成后由verify_outputs.py更新，不预先声称pass。
+  compared_file_count: 28
+  changed_file_count: 0
+paper_compile:
+  status: needs_review
+  command: 在paper目录运行 xelatex -interaction=nonstopmode -halt-on-error main.tex 两次
+  reason: 当前环境未检测到XeLaTeX、LuaLaTeX、pdfLaTeX或Tectonic，不能伪造编译成功。
+external_validity:
+  status: needs_review
+  reason: 获准输入不含实验台架观测，模型内重跑不能替代外部验证。
+network_used: false
+forbidden_material_used: false

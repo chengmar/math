@@ -1,0 +1,180 @@
+{
+  "schema_version": 1,
+  "case_id": "2016A",
+  "phase": "audit",
+  "overall_status": "fail",
+  "environment": {
+    "operating_system": "Microsoft Windows NT 10.0.26200.0",
+    "process_architecture": "X64",
+    "powershell_version": "7.6.4",
+    "python_version": "3.8.3",
+    "python_executable": "<ABSOLUTE_PATH>",
+    "dependencies": [],
+    "standard_library_only_status": "pass",
+    "network_used": false,
+    "randomness_used": false
+  },
+  "phase_check": {
+    "status": "pass",
+    "attempts": [
+      {
+        "command": "python <ABSOLUTE_PATH>",
+        "exit_code": 1,
+        "status": "fail",
+        "stdout": "",
+        "stderr": "python is not recognized"
+      },
+      {
+        "command": "py -3 <ABSOLUTE_PATH>",
+        "exit_code": 1,
+        "status": "fail",
+        "stdout": "",
+        "stderr": "py is not recognized"
+      },
+      {
+        "command": "exact Python 3.8.3 interpreter without UTF-8 environment",
+        "exit_code": 1,
+        "status": "fail",
+        "stdout": "",
+        "stderr": "Fatal Python error: unknown encoding cp936"
+      },
+      {
+        "command": "PYTHONUTF8=1; PYTHONIOENCODING=utf-8; exact Python 3.8.3 check_phase.py --workspace audit",
+        "exit_code": 0,
+        "status": "pass",
+        "stdout": "[PASS] audit 阶段锁有效",
+        "stderr": ""
+      }
+    ]
+  },
+  "path_lock_verification": {
+    "status": "pass",
+    "allowed_paths_sha256_expected": "da5a5981ac721b295d9da788ad00c14bbd775b3e912e8c92b44fa6ddbad1d830",
+    "allowed_paths_sha256_actual": "da5a5981ac721b295d9da788ad00c14bbd775b3e912e8c92b44fa6ddbad1d830",
+    "forbidden_paths_sha256_expected": "f075bf741aa5e0dc4527893642bc07eb4bc70edc84733fa9b1801ed5ccaa0b47",
+    "forbidden_paths_sha256_actual": "f075bf741aa5e0dc4527893642bc07eb4bc70edc84733fa9b1801ed5ccaa0b47"
+  },
+  "frozen_verification": {
+    "status": "pass",
+    "manifest_path": "frozen-solution/FROZEN_BLIND_V1.json",
+    "manifest_sha256": "213ae0fabaa34b21e4fcb955c7e2c566fb0c1f6ad90a8189471bc7e4aced173c",
+    "schema_status": "pass",
+    "case_id_status": "pass",
+    "snapshot_status": "pass",
+    "listed_file_count": 65,
+    "per_file_size_sha256_status": "pass",
+    "unlisted_file_status": "pass",
+    "required_payload_status": "pass",
+    "post_audit_recheck_status": "pass",
+    "tree_sha256_expected": "e1e04fb77a18a10f29b6cc2ea3a7bb3f477b7cbbec1d41dab8a629ce3a6528ab",
+    "tree_sha256_recalculation_status": "needs_review",
+    "tree_sha256_note": "Canonical aggregation algorithm is not declared; no mismatch was found in any listed file."
+  },
+  "input_verification": {
+    "status": "pass",
+    "path": "input/problem/<SOURCE_FILE_REDACTED>",
+    "size_bytes": 75264,
+    "sha256": "95d6ca4f17b09e301fd492094f46b3c8b399ff879d45c80202dcb5ffddd785ef",
+    "matches_frozen_copy_status": "pass",
+    "body_extraction_status": "pass",
+    "word_cleanup_status": "fail"
+  },
+  "run_environment_policy": {
+    "status": "pass",
+    "clean_directory_rule": "Only code/solve.py was copied; results and figures were absent before each clean run.",
+    "environment_variables": {
+      "PYTHONUTF8": "1",
+      "PYTHONIOENCODING": "utf-8",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    }
+  },
+  "runs": [
+    {
+      "id": "clean_run_1",
+      "status": "pass",
+      "working_directory": "repro-clean-run1",
+      "command": "<ABSOLUTE_PATH>",
+      "exit_code": 0,
+      "elapsed_seconds": 80.947,
+      "stdout": "{\"generated_files\": 27, \"q2_recommended_ball_mass_kg\": 2250.0, \"q3_selected_design\": {\"ball_mass_kg\": 4800.0, \"chain_length_m\": 21.06, \"chain_type\": \"V\"}, \"q3_selected_link_count\": 117, \"status\": \"pass\", \"validation\": \"pass\"}\r\n",
+      "stderr": "",
+      "manifest_entry_count": 26,
+      "manifest_sha256": "85e87c83585742c854321a07b8fccd7ce5f7c08cb5d55a729647e03358c01caa"
+    },
+    {
+      "id": "clean_run_2",
+      "status": "pass",
+      "working_directory": "repro-clean-run2",
+      "command": "<ABSOLUTE_PATH>",
+      "exit_code": 0,
+      "elapsed_seconds": 61.242,
+      "stdout": "{\"generated_files\": 27, \"q2_recommended_ball_mass_kg\": 2250.0, \"q3_selected_design\": {\"ball_mass_kg\": 4800.0, \"chain_length_m\": 21.06, \"chain_type\": \"V\"}, \"q3_selected_link_count\": 117, \"status\": \"pass\", \"validation\": \"pass\"}\r\n",
+      "stderr": "",
+      "manifest_entry_count": 26,
+      "manifest_sha256": "85e87c83585742c854321a07b8fccd7ce5f7c08cb5d55a729647e03358c01caa"
+    },
+    {
+      "id": "seeded_control",
+      "status": "pass",
+      "working_directory": "repro-seeded-control",
+      "preexisting_file": "results/README.md",
+      "command": "<ABSOLUTE_PATH>",
+      "exit_code": 0,
+      "elapsed_seconds": 61.419,
+      "stdout": "{\"generated_files\": 28, \"q2_recommended_ball_mass_kg\": 2250.0, \"q3_selected_design\": {\"ball_mass_kg\": 4800.0, \"chain_length_m\": 21.06, \"chain_type\": \"V\"}, \"q3_selected_link_count\": 117, \"status\": \"pass\", \"validation\": \"pass\"}\r\n",
+      "stderr": "",
+      "manifest_entry_count": 27,
+      "manifest_sha256": "e2f6face724fb359240025dad855a7c0b3348012eea1dffa89122a611dd5de81"
+    }
+  ],
+  "comparisons": {
+    "clean_run_1_vs_clean_run_2_status": "pass",
+    "clean_common_outputs_vs_frozen_status": "pass",
+    "clean_common_output_mismatch_count": 0,
+    "clean_manifest_vs_frozen_status": "fail",
+    "clean_missing_relative_to_frozen": [
+      "results/README.md"
+    ],
+    "seeded_manifest_vs_frozen_status": "pass",
+    "seeded_outputs_vs_frozen_status": "pass",
+    "frozen_manifest_entry_count": 27,
+    "frozen_manifest_sha256": "e2f6face724fb359240025dad855a7c0b3348012eea1dffa89122a611dd5de81"
+  },
+  "secondary_checks": {
+    "paper_consistency_script_status": "pass",
+    "paper_consistency_exit_code": 0,
+    "paper_consistency_check_count": 5,
+    "paper_consistency_report_sha256": "911b1c2a2504026c2bc28adfbe32d2d3eaf387872756417be39663a1ef1af069",
+    "paper_consistency_matches_frozen_status": "pass",
+    "latex_compilation_status": "needs_review"
+  },
+  "numerical_stability": {
+    "status": "pass",
+    "candidate_count": 60,
+    "strict_recheck_case_count": 120,
+    "strict_fail_count": 0,
+    "screen_27_vs_strict_70_max_abs_difference": {
+      "draft_m": 4.161701427918274e-09,
+      "drum_angle_deg": 1.313041853023833e-08,
+      "anchor_angle_deg": 1.7957872451290768e-06,
+      "wander_radius_m": 2.8260890516662585e-07
+    },
+    "strict_max_abs_residual": {
+      "horizontal_force_n": 4.547473508864641e-13,
+      "vertical_force_n": 1.546140993013978e-11,
+      "chain_geometry_m": 6.88098467094278e-10,
+      "member_moment_nm": 1.0267342531733448e-12
+    },
+    "continuous_depth_scan_status": "pass",
+    "continuous_depth_step_m": 0.01,
+    "nominal_max_constraint_ratio": 0.9119095890543099,
+    "stress_1_10_max_constraint_ratio": 0.9988884520464255,
+    "dense_environment_grid_status": "pass",
+    "dense_environment_case_count": 5822
+  },
+  "audit_generated_directories": [
+    "repro-clean-run1",
+    "repro-clean-run2",
+    "repro-seeded-control"
+  ]
+}

@@ -1,0 +1,40 @@
+schema_version: 1
+proposal_id: "CP-2015A-006"
+proposal_state: "candidate"
+title: <REFERENCE_TITLE_REDACTED>
+origin: "learned_after_reference_access_from_R2_R4"
+origin_status: "pass"
+summary: "视频反演应把首帧偏移、采样间隔、奇偶帧选择、杆高和控制点扰动作为完整管线级消融，而不是只对最终优化器调参。"
+applicable_when:
+  - "视频按固定间隔抽帧，时间相位可能改变太阳轨迹覆盖。"
+  - "杆高、控制点或影尖标注存在测量误差。"
+not_applicable_when:
+  - "输入已经是经独立验证的连续物理坐标和精确时间序列。"
+  - "任务只要求单帧定性描述，不进行参数反演。"
+minimum_baseline:
+  - "只使用一个首帧和固定抽帧间隔。"
+  - "只在一个杆高值上给出结果。"
+validation_requirements:
+  - "枚举多个首帧偏移和至少两个采样间隔。"
+  - "对杆高、控制点和影尖像素做符合测量误差的扰动。"
+  - "每次从图像提取重新运行到分支排序，不能只扰动最终参数表。"
+  - "报告分支保持率、参数漂移和拒答率。"
+counterexamples:
+  - "奇数帧和偶数帧分别落在不同压缩/去隔行伪影上。"
+  - "一个首帧偏移恰好删除关键早期轨迹，导致日期分支互换。"
+  - "杆高误差被错误吸收到经纬度或时间偏差中。"
+source_case:
+  case_id: "2015A"
+  source_artifact: "R2 frame-offset discussion and R4 rod-height sensitivity"
+  reference_ids: ["R2", "R4"]
+evidence_strength:
+  reference_report_status: "pass"
+  current_real_video_execution_status: "fail"
+  external_truth_status: "needs_review"
+evidence:
+  - "R2 报告取帧起点会改变结果。"
+  - "R4 报告杆高 1.6–2.3 m 范围的敏感性。"
+promotion_requirements:
+  - "在至少两个原视频上执行预注册消融。"
+  - "把扰动幅度与实际标注/测量重复性对应。"
+  - "由外部真值评估漂移是否覆盖真实误差。"

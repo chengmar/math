@@ -1,0 +1,19 @@
+id: TM-014-UNCERTAINTY-BY-SOURCE
+title: 按数据、参数、结构和拓扑来源分层做不确定性
+type: validation_pattern
+status: provisional_training
+source_cases: [2004A, 2005A, 2007A]
+source_kind: cross_case_validation_synthesis
+origin_year: 2004
+tags: [uncertainty, sensitivity, robustness, data_audit, model_selection]
+applicable_conditions: [结论同时依赖观测噪声、参数设定或结构假设中的至少两类]
+inapplicable_conditions: [全部输入确定且模型结构由定义唯一给出]
+minimum_baseline: 列出不确定来源、影响路径和可验证范围
+recommended_action: 分层扰动并报告单层与联合情景；一层稳定不能替代另一层有效
+why_it_may_help: 坐标微扰、参数敏感性或随机重复常被误用来掩盖结构错误
+required_validation: [来源分类, 单层敏感性, 联合极端情景, 结论稳定区间]
+failure_modes: [用参数扰动代替拓扑验证, 只改变易计算的量]
+counterexamples: [边权扰动稳定但边是否存在这一结构假设错误]
+complexity_cost: 中；增加分层和联合情景
+evidence_summary: 多个早期案例支持不同不确定来源不可互相替代
+last_updated: '2026-08-24'

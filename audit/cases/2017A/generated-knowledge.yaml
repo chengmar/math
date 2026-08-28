@@ -1,0 +1,20 @@
+case_id: 2017A
+status: candidate_only
+candidate_count: 8
+machine_verified_count: 0
+verified_count: 0
+exported_files:
+- file: expression-lessons.md
+  sha256: ed9ac5f43b09e9808c3a86a2f5ea9694c6bac8fd6a5a07359659b10746fb3589
+- file: failure-modes.md
+  sha256: 83ce55dcf220586d9c2a13f3778e99578577850f3ed4a7d3efa09c88eddcc664
+- file: manifest.yaml
+  sha256: e86925e8c57bd916cc3699bfbb7785317adaf1879c084ddf0d6a2cdfa64e5eae
+- file: method-candidates.md
+  sha256: be7e3781eeab3bb85b71b7635439e1fd06a056fd3d9e1fba18f7a2452ded87c7
+- file: non-generalizable.md
+  sha256: 4801e99182ce1ebc1fd3a674fc69cfb7aeea98483a3dea6f811135c89979d224
+- file: README.md
+  sha256: ca0075f1d224a02aa0944f777666c88bbe9226169f534328788b8a74a6b8a57d
+- file: validation-patterns.md
+  sha256: 9060062b484950017c1da41978353828c0f5e19ee206bba2552e0803fd2f3dbc

@@ -1,0 +1,78 @@
+phase: solve
+status: pass
+workspace: <RUNTIME_ROOT>/2005A/workspaces/solve
+entrypoint: code/run_all.ps1
+commands:
+  - powershell -ExecutionPolicy Bypass -File code/run_all.ps1
+  - powershell -ExecutionPolicy Bypass -File code/run_all.ps1 -RebuildDocx
+  - python code/verify_results.py --workspace <RUNTIME_ROOT>/2005A/workspaces/solve
+environment:
+  os: Windows
+  shell: Windows PowerShell
+  python: 3.11.9
+  word_com_required_only_for_optional_docx_rebuild: true
+  unrar: <ABSOLUTE_PATH> Files/WinRAR/UnRAR.exe
+  tex_engine: XeLaTeX (MiKTeX 24.1)
+python_dependencies:
+  numpy: 2.4.2
+  pandas: 3.0.0
+  scipy: 1.17.0
+  scikit-learn: 1.8.0
+  matplotlib: 3.10.8
+  python-docx: 1.2.0
+  PyYAML: 6.0.3
+randomness:
+  seed: 2005
+  bootstrap_resamples: 5000
+  generator: numpy.random.default_rng
+input_hashes:
+  input/problem/<SOURCE_FILE_REDACTED>: CEA35513E302801D4504F3FEBDF444AF783D928C4748BDF91A21724A910E271A
+  input/attachments/<SOURCE_FILE_REDACTED>: DDD7B8E70AA727A2858E2476DDFEDA7E3042BE09D55B304297F990A203071E4F
+audited_docx_cache_hashes:
+  working/docx/<SOURCE_FILE_REDACTED>: DC43AACD5EAEEC044A727575ECD7D822A96040298E9C48D624A628214B76C8CA
+  working/docx/<SOURCE_FILE_REDACTED>: 02086754DB45E67BBAB256281F86EFE005384330B1A1314B54ED718372E588F2
+  working/docx/<SOURCE_FILE_REDACTED>: 1A12E7419FD8413BDBC52DEECBF8065F64AF15CCA513708B52ABE29188C7945A
+  working/docx/<SOURCE_FILE_REDACTED>: 085C96E984C3B0308C68468BF6E45B9E4BB4C3649CE4D230349EE20EBF6F6F5F
+  working/docx/<SOURCE_FILE_REDACTED>: 42BA09921283A02667CE91C40B82340C66FCF0484B3BBCE0E77C44F23AE7B5FC
+pipeline:
+  - step: verify_original_input_and_audited_docx_hashes
+    output: pass
+  - step: optional_extract_archive_and_convert_doc_to_docx
+    command_switch: -RebuildDocx
+    status: needs_review
+    note: 首次转换成功；本环境二次Word COM打开旧DOC曾阻塞，默认稳定入口使用带哈希的已审计缓存。
+  - step: extract_docx_tables
+    script: code/extract_docx.py
+    output: working/extracted
+  - step: build_tidy_data_and_audit
+    script: code/build_data.py
+    output: results/data
+  - step: solve_all_questions_and_generate_figures
+    script: code/solve_case.py
+    output:
+      - results
+      - figures
+      - paper/generated-values.tex
+      - paper/generated
+  - step: compile_paper
+    engine: xelatex+bibtex+xelatex+xelatex
+    output: paper/<SOURCE_FILE_REDACTED>
+  - step: verify_outputs_and_hashes
+    script: code/verify_results.py
+    output:
+      - results/final-verification.json
+      - results/reproduction-manifest.json
+determinism:
+  numerical_csv_json: pass
+  figures_from_fixed_seed: pass
+  key_results_hash_repeat: pass
+  key_results_sha256: 49DE1D4D8E0FAC64E1365DCC5CC7A99FF0ED6BDB42C09D53E3A87572D6A6B44C
+  raw_doc_com_conversion_repeatability: needs_review
+  docx_and_pdf_binary_hash_stability: needs_review
+  note: Word与TeX可能写入元数据时间；数值结果由固定种子和输入哈希复现。
+known_limitations:
+  - 年度水质只有10个样本且监测覆盖变化。
+  - 原始旧DOC首次由Word COM成功转换并保留哈希；二次强制转换在本环境曾阻塞，默认重跑使用已审计DOCX缓存。
+  - MiKTeX报告当前Windows版本不受支持，但本次编译退出码为0。
+  - 真实未来无劣V类的保证需要新增监测和外部审查。
+manifest: results/reproduction-manifest.json

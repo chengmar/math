@@ -1,0 +1,66 @@
+schema_version: 2
+phase: blind-revision
+case_id: 2010A
+status: needs_review
+frozen: false
+external_freeze_required: pass
+reflection_performed: false
+audit_report_used: pass
+other_stage_skill_used: pass
+scope:
+  blind_revision: pass
+  network_search_avoided: pass
+  forbidden_reference_access_avoided: pass
+  only_cumcm_a_solve_stage: pass
+  blind_v1_preserved: pass
+coverage:
+  question_1_model: pass
+  question_1_1cm_table: pass
+  question_1_time_ordered_check: pass
+  question_1_physical_probe_mechanism: needs_review
+  question_2_general_relation: pass
+  question_2_parameter_identification: pass
+  question_2_10cm_table: pass
+  question_2_time_ordered_checks: pass
+  question_2_prospectively_untouched_test: needs_review
+  independent_numerical_implementation: pass
+  sensitivity_and_limits: pass
+validation:
+  phase_lock: pass
+  input_hashes: pass
+  input_extraction: pass
+  fixed_seed: pass
+  candidate_data_roles: pass
+  independent_adaptive_quadrature: pass
+  boundary_and_monotonicity: pass
+  manifest_closure: pass
+  paper_result_linkage: pass
+  mathematical_correctness:
+    status: needs_review
+    note: 自动检查只验证数值不变量和独立实现，不伪称数学证明。
+engineering_readiness:
+  status: needs_review
+  reasons:
+    - 小罐探针姿态机理没有独立物理说明。
+    - 实际罐缺少流量计、探针零点和几何尺寸的真实公差。
+    - 诊断压力范围不是概率置信区间。
+precision_policy:
+  machine_csv_numeric_precision: pass
+  paper_tables_rounded_to_1_litre: pass
+  diagnostic_bounds_labeled_as_non_confidence: pass
+deliverables:
+  problem_analysis: problem-analysis.md
+  data_audit: data-audit.md
+  assumptions: assumptions.yaml
+  variables: variables.yaml
+  model_selection: model-selection.md
+  reproducibility: reproducibility.yaml
+  code: code/
+  results: results/
+  figures: figures/
+  paper_tex: paper/main.tex
+  paper_markdown: paper/paper.md
+  paper_pdf: paper/<SOURCE_FILE_REDACTED>
+next_stage:
+  status: needs_review
+  note: 本会话不冻结、不反思、不评测；由外部脚本生成 blind-final。

@@ -1,0 +1,34 @@
+schema_version: 1
+case_id: "2005A"
+phase: reflection
+collection_status: candidate
+direct_promotion: fail
+cards:
+  - id: "2005A-CASE-FACTS"
+    path: "00-case-specific-facts.md"
+    status: candidate
+    origin_class: mixed
+  - id: "2005A-REGULATORY-FIRST"
+    path: "01-regulatory-primary-continuous-secondary.md"
+    status: candidate
+    origin_class: independently_developed
+  - id: "2005A-SOURCE-INTERVAL"
+    path: "02-source-attribution-interval.md"
+    status: candidate
+    origin_class: learned_after_references
+  - id: "2005A-SHORT-SERIES-VALIDATION"
+    path: "03-short-series-validation.md"
+    status: candidate
+    origin_class: mixed
+  - id: "2005A-CAPACITY-SCENARIOS"
+    path: "04-treatment-capacity-scenarios.md"
+    status: candidate
+    origin_class: mixed
+  - id: "2005A-FAILURE-NONTRANSFER"
+    path: "05-failure-and-nontransfer.md"
+    status: candidate
+    origin_class: learned_after_references
+  - id: "2005A-EVIDENCE-EXPRESSION"
+    path: "06-evidence-and-expression.md"
+    status: candidate
+    origin_class: audit_after_correction

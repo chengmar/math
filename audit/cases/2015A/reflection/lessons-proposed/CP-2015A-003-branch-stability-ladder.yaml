@@ -1,0 +1,42 @@
+schema_version: 1
+proposal_id: "CP-2015A-003"
+proposal_state: "candidate"
+title: <REFERENCE_TITLE_REDACTED>
+origin: "audit_driven_revision"
+origin_status: "pass"
+summary: "对非凸或近不可辨识反演，不只报告单个最优点；依次检查离散分支、联合候选簇、时间窗口、相关误差重采样、污染和模型版本扰动。"
+applicable_when:
+  - "存在季节对称、镜像手性或多个局部极小。"
+  - "观测是时间序列，残差可能相关。"
+  - "少量异常点、时钟偏差或模型版本可能改变分支排序。"
+not_applicable_when:
+  - "问题是已证明满秩且误差独立的线性估计。"
+  - "样本少到无法构造任何有意义的窗口或重采样块。"
+minimum_baseline:
+  - "只报告全样本训练残差最小的一个点。"
+  - "独立样本 bootstrap，不检查时间相关。"
+validation_requirements:
+  - "枚举已知离散对称并给出每支的拟合和物理可行性。"
+  - "使用预先规定的多个前缀/窗口，报告中心和排序漂移。"
+  - "块长度需依据相关结构并做敏感性分析。"
+  - "加入可解释的异常点、时钟和公式扰动。"
+  - "预先定义何种漂移会触发拒答或精度降级。"
+counterexamples:
+  - "全样本 RMSE 极小但加入早期样本后地点中心大幅漂移。"
+  - "独立 bootstrap 给出很窄区间，而块 bootstrap 显示整条轨迹共同偏移。"
+  - "人工地域筛选删除了竞争分支，却未披露规则。"
+source_case:
+  case_id: "2015A"
+  source_artifact: "blind-final audit response and final validation"
+  reference_ids: ["R2", "R3"]
+evidence_strength:
+  workflow_implementation_status: "pass"
+  q2_prefix_stability_status: "fail"
+  robust_ols_status: "fail"
+  external_truth_status: "needs_review"
+evidence:
+  - "冻结修订已输出残差相关、块 bootstrap、联合簇、前缀漂移和污染压力测试。"
+  - "R2 的人工地域筛选和 R3 的初值敏感说明只报单支会隐藏选择不确定性。"
+promotion_requirements:
+  - "在多个带已知真值和多分支结构的案例上预注册阈值。"
+  - "比较 profile likelihood、贝叶斯后验或其他独立不确定性方法。"

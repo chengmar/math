@@ -1,0 +1,78 @@
+phase: solve
+status: pass
+workspace: <RUNTIME_ROOT>\2017A\workspaces\solve
+network_used: false
+randomness:
+  seed: 2017
+  monte_carlo_replicates: 200
+  deterministic_reconstruction: true
+environment:
+  os: Microsoft Windows NT 10.0.26200.0
+  powershell: 7.6.4
+  dotnet_sdk: 8.0.417
+  excel_com: 12.0
+  xelatex:
+    status: pass
+    engine: <LAB_ROOT>\runtime\miktex-portable\texmfs\install\miktex\bin\x64\xelatex.exe
+inputs:
+  - path: input/problem/<SOURCE_FILE_REDACTED>
+    sha256: 3DBF898B71DFAB3C0D5E50F51ACF4A06C307ED33A6D954442CD7CFE4B69EADB6
+    status: pass
+  - path: input/data/<SOURCE_FILE_REDACTED>
+    sha256: 15E91947D0A28FCD789290DCAF79D18ED4050132D68B47AA39DC8DF29DB2C034
+    status: pass
+commands:
+  full_pipeline: powershell -NoProfile -ExecutionPolicy Bypass -File .\code\run_all.ps1 -Workspace .
+  phase_check: python <LAB_ROOT>\.agents\skills\cumcm-a-solve\scripts\check_phase.py --workspace <RUNTIME_ROOT>\2017A\workspaces\solve
+  normalize_input: powershell -NoProfile -ExecutionPolicy Bypass -File .\code\export_xls.ps1 -Workspace <RUNTIME_ROOT>\2017A\workspaces\solve
+  numerical_solver: dotnet run --project .\code\CtSolver\CtSolver.csproj -- --workspace <RUNTIME_ROOT>\2017A\workspaces\solve
+  export_biff8: powershell -NoProfile -ExecutionPolicy Bypass -File .\code\export_results_xls.ps1 -Workspace <RUNTIME_ROOT>\2017A\workspaces\solve
+  verify: powershell -NoProfile -ExecutionPolicy Bypass -File .\code\verify_outputs.ps1 -Workspace <RUNTIME_ROOT>\2017A\workspaces\solve
+dependencies:
+  - .NET 8 SDK; no NuGet packages
+  - Windows Excel COM for reading legacy BIFF and writing genuine BIFF8 outputs
+  - PowerShell 7
+pipeline:
+  - step: phase_lock_check
+    output: console
+    status: pass
+  - step: xls_to_xlsx_normalization
+    output: results/normalized/<SOURCE_FILE_REDACTED>
+    status: pass
+  - step: calibration_reconstruction_validation
+    output: results/*.json; results/*.csv; figures/*.png
+    status: pass
+  - step: biff8_export
+    output:<SOURCE_FILE_REDACTED>;<SOURCE_FILE_REDACTED>
+    status: pass
+  - step: csv_xls_cellwise_comparison
+    output: results/verification.json
+    status: pass
+  - step: latex_compile_and_visual_inspection
+    output: paper/<SOURCE_FILE_REDACTED>
+    status: needs_review
+notes:
+  - Excel may rewrite workbook metadata, so output file SHA-256 can change even when all 65536 numeric cells are identical.
+  - Hash equality establishes file identity only; it is not evidence of mathematical correctness.
+  - Template and Monte Carlo validation are model-internal; external instrument validity remains needs_review.
+outputs:
+  exact_submission_matrices:
+<SOURCE_FILE_REDACTED>
+<SOURCE_FILE_REDACTED>
+  paper_sources:
+    - paper/main.tex
+    - paper/paper.md
+    - paper/generated-values.tex
+  structured_results:
+    - results/calibration.json
+    - results/<SOURCE_FILE_REDACTED>
+    - results/<SOURCE_FILE_REDACTED>
+    - results/model-comparison.json
+    - results/problem2-geometry.json
+    - results/problem3-geometry.json
+    - results/stability.json
+    - results/verification.json
+  figures:
+    - figures/<SOURCE_FILE_REDACTED>
+    - figures/<SOURCE_FILE_REDACTED>
+    - figures/<SOURCE_FILE_REDACTED>

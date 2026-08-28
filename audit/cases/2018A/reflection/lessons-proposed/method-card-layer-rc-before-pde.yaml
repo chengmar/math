@@ -1,0 +1,44 @@
+schema_version: 1
+id: CAND-METHOD-LAYER-RC-BEFORE-PDE
+status: candidate
+type: method_card
+title: <REFERENCE_TITLE_REDACTED>
+source_case: 2018A
+origin_classification: reference_triggered_synthesis
+sources:
+  approved_references: [REF-01, REF-03]
+  blind_evidence:
+    - blind-final/blind-v1/model-selection.md
+    - blind-final/results/independent_verification.json
+method:
+  steps:
+    - 统一 SI 单位并计算每层 R_j=d_j/k_j、C_j=rho_j*c_j*d_j。
+    - 加入边界热阻 1/h 与候选接触/并联热阻，画出阻力和热容占比。
+    - 用最小四节点 RC 检查数量级、符号和主要时间尺度。
+    - 只有在低阶预算无法提供空间场或误差不合格时，进入守恒 PDE。
+    - 优化结果必须回到 R–C 预算解释：改变的是稳态热阻、瞬态热惯性，还是边界结构。
+applicable_when:
+  - 多层、常物性或分段常物性的瞬态传热。
+  - 需要解释厚度变量为何影响终温或到达时间。
+not_applicable_when:
+  - 相变、强非线性辐射、强温变物性或热湿耦合主导，且线性 R–C 不能给出可靠数量级。
+  - 系统存在显著二维/三维热桥，层级串联拓扑不成立。
+minimum_baseline:
+  model: 每层一个热容、相邻半层热阻串联、两侧边界热阻。
+  comparison_required: 与经验单时间常数和目标 PDE 使用相同训练/评价切分。
+  status: pass
+validation:
+  required:
+    - 低阶与 PDE 的稳态热流方向和数量级一致。
+    - 厚度扰动的终温/响应时间方向一致。
+    - 至少一个网格或解析热阻检查。
+  current_case_status: pass
+  external_status: needs_review
+counterexamples:
+  - 低阶 RC 可解释但可能不能给出层内温度峰值，不能替代题目要求的完整温度场。
+  - 拟合误差小的 RC 也可能以等效参数掩盖错误结构。
+evidence_strength: needs_review
+evidence_reason: 当前案例中数量级和 PDE 响应一致，但尚未跨题验证。
+promotion_requirements:
+  - 在至少三个不同分层传热案例中验证层作用解释。
+  - 给出低阶预算失败时升级 PDE 的定量阈值。

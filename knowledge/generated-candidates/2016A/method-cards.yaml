@@ -1,0 +1,86 @@
+schema_version: 1
+case_id: "2016A"
+dummy_materials_present: false
+cards:
+  - id: CAND-2016A-M01
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: corrected_after_audit
+    evidence_status: pass
+    problem: >-
+      题面只给球干质量时，浮力和流阻不可唯一确定；用材料密度同时替代整体排水体积
+      和水动力形状会制造伪唯一答案。
+    method:
+      - "输入 m、V、d_h（或 A_h）分别建模。"
+      - "静力主变量用 m_eff=m-rho_w*V；流阻用独立 A_h。"
+      - "干质量换算必须紧邻标注结构/材料条件。"
+    validation:
+      - "固定 m_eff、无水流时改变 m 与 V，静力输出应不变。"
+      - "改变 d_h 时，球节点水平残差应保持在阈值内。"
+      - "对一个可手算球体复算 V、d、A 和流阻。"
+    limitations:
+      - "真实非球形结构还需要阻力系数与作用点。"
+      - "不能从本题实心钢情景推广为所有配重结构。"
+
+  - id: CAND-2016A-M02
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: corrected_after_audit
+    evidence_status: pass
+    problem: >-
+      用目标长度四舍五入链环数，或每个链长只保留最小可行配重，会漏掉合法方案并产生假 Pareto 最优。
+    method:
+      - "枚举声明域内每个合法整数链环数。"
+      - "为每个结构求完整连续可行区间，不先压缩为一个点。"
+      - "保留可审计网格，再逐结构连续精化。"
+      - "先构造 Pareto 集，后应用预先声明的偏好。"
+    validation:
+      - "报告候选数、可行数、非支配数。"
+      - "做网格加密、边界扩张、第二方案和分差。"
+      - "把已知遗漏反例纳入回归测试。"
+    limitations:
+      - "维数升高后需要分层筛选或可证明的界，不能静默缩域。"
+
+  - id: CAND-2016A-M03
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: independently_conceived_and_audit_strengthened
+    evidence_status: pass
+    method:
+      - "先验证载荷身份与运行复现。"
+      - "再验证方程残差、独立数值表达和手算单元。"
+      - "最后扫描几何、载荷、环境与偏好；外部数据缺失时保留 needs_review。"
+    required_outputs:
+      - "最坏工况及其位置"
+      - "约束裕量"
+      - "网格/边界停止准则"
+      - "未建模物理清单"
+    anti_pattern: "不得用模型内部残差证明真实海况正确。"
+
+  - id: CAND-2016A-M04
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: learned_after_references
+    evidence_status: needs_review
+    problem: "二维同向包络未必覆盖三维姿态、扭转和不同深度构件的载荷。"
+    method:
+      - "先增加方向夹角，保持其余模型不变，检查二维极限是否仍最坏。"
+      - "再把垂向剖面作为可替换函数接口，而不是固定为抛物线事实。"
+      - "每次扩展都保留退化到原二维/均匀流模型的回归用例。"
+    adoption_gate:
+      - "有题面、现场数据或透明的情景范围。"
+      - "三维力矩与浮标姿态方程有独立残差。"
+      - "计算量和最坏工况位置有收敛证据。"
+
+  - id: CAND-2016A-M05
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: independently_conceived_and_reference_contrast
+    evidence_status: pass
+    method:
+      - "所有目标先除以有物理含义且预先冻结的尺度。"
+      - "保留 Pareto 集，不让单一权重隐藏可选方案。"
+      - "对尺度/权重做扰动，报告排名稳定区间和第二结构方案。"
+    failure_test:
+      - "把 m 改写成 cm、角度改写成 rad，排名和目标含义不应改变。"
+      - "若一个目标贡献接近零，应明确它只是硬约束还是确实参与优化。"

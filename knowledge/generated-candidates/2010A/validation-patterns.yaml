@@ -1,0 +1,85 @@
+schema_version: 1
+case_id: "2010A"
+phase: reflection
+patterns:
+  - id: VP-2010A-01
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: audit_corrected
+    steps:
+      - "在看候选结果前，为每个连续数据块标记 fit、select、refit 或 check。"
+      - "同一数据块不能同时承担 select 和 independent check。"
+      - "修订阶段已经看过的结果必须标为 post-selection 或 retrospective。"
+    pass_evidence: "最终盲解把第一段选择与第二段/补油检查分栏。"
+    remaining_risk: "没有新的前瞻数据。"
+
+  - id: VP-2010A-02
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: audit_corrected
+    steps:
+      - "生产实现使用高效固定阶积分。"
+      - "验证实现不导入生产几何模块，改用标量公式和自适应积分。"
+      - "同时检查解析容量、空满边界、单调、有界和对称。"
+    pass_evidence: "121 个小罐节点、31 个实际罐节点与 603 个观测高度均由独立实现复核。"
+    remaining_risk: "共享坐标假设仍可能共同错误。"
+
+  - id: VP-2010A-03
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: reference_learned
+    steps:
+      - "对每个可接受模型记录参数差。"
+      - "在统一高度网格上计算最终表差、最大差和 RMSE。"
+      - "若参数不稳而表稳，优先诚实报告弱可辨识；若表也不稳，停止工程单值结论。"
+    evidence: "R4 与盲解的 beta 差 0.346°，表 RMSE 14.23 L。"
+    remaining_risk: "没有真实体积标签，表差仍不是误差。"
+
+  - id: VP-2010A-04
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: audit_corrected
+    steps:
+      - "用差分流量目标估计主参数。"
+      - "用分段自由截距的累计状态目标重估。"
+      - "报告残差自相关、参数差和整表最大差。"
+    evidence: "累计状态目标使整表最大变化 3.740 L。"
+    remaining_risk: "真实误差过程仍未知。"
+
+  - id: VP-2010A-05
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: reference_learned
+    levels:
+      - level: file_identity
+        allowed_statuses: [pass, needs_review]
+      - level: text_recovery
+        allowed_statuses: [pass, needs_review]
+      - level: code_result_consistency
+        allowed_statuses: [pass, fail, needs_review]
+      - level: numerical_cross_check
+        allowed_statuses: [pass, fail, needs_review]
+      - level: mathematical_correctness
+        allowed_statuses: [needs_review]
+    rule: "下层 pass 不自动传播到上层。"
+
+  - id: VP-2010A-06
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: audit_corrected
+    steps:
+      - "选择物理上可能混淆主参数的仪表、几何和零点因素。"
+      - "重估参数并传播到全表。"
+      - "明确写成 diagnostic stress，而非 tolerance 或 confidence interval。"
+    remaining_risk: "扰动幅度不代表真实设备。"
+
+  - id: VP-2010A-07
+    status: candidate
+    title: <REFERENCE_TITLE_REDACTED>
+    provenance: audit_corrected
+    steps:
+      - "先按外部权威清单逐文件检查路径、大小、SHA-256 和聚合树，决定是否允许读取参考。"
+      - "再以只读方式运行包内 manifest 校验，评价自包含复现链。"
+      - "两层状态分别报告；外层 pass 不覆盖内层 fail，内层 fail 也不否定更晚的外部冻结。"
+    evidence: "本案外层 205/205 与树哈希 pass；内层 6 个论文源文件、authority 树和 generated-core 树 fail。"
+    remaining_risk: "若缺少明确的规范化算法，聚合树只能 needs_review，不能自行换排序规则后伪报 pass。"

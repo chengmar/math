@@ -1,0 +1,35 @@
+schema_version: 1
+id: "CAND-2021A-005"
+case_id: "2021A"
+status: "candidate"
+category: "expression_pattern"
+title: <REFERENCE_TITLE_REDACTED>
+
+provenance:
+  classification: "learned_after_references"
+  sources:
+    - "R2: <REFERENCE_ID>"
+  note: "只学习编号算法框的可读性，不复制论文语言、结构或无证据结论。"
+
+pattern:
+  main_text:
+    - "10至15行编号伪代码"
+    - "输入、变量、循环、停止条件、输出"
+  evidence_index:
+    - "每个结论对应pass/fail/needs_review"
+    - "链接到JSON、CSV、图或复现记录"
+  appendix:
+    - "完整公式、残差和哈希"
+
+benefit:
+  text: "先建立计算流程，再让读者下钻到证据，降低多文件跳转成本。"
+  expression_status: "pass"
+
+risks:
+  - "伪代码过度简化约束"
+  - "算法框中的‘最优’措辞超过证据"
+
+promotion_gate:
+  direct_verified_upgrade_allowed: false
+  required:
+    - "至少在两篇不同模型论文中评估可读性与证据完整性"

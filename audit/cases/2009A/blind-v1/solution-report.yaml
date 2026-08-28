@@ -1,0 +1,104 @@
+schema_version: 1
+case_id: "2009A"
+phase: solve
+skill: "$cumcm-a-solve"
+blind_solution: true
+overall_status: pass
+status_meaning: "overall_status only describes solve-stage artifact completion; it is not a claim of formal mathematical proof or hardware certification"
+judgments:
+  phase_lock:
+    status: pass
+    evidence: "scripts/check_phase.py reported the solve lock valid"
+  allowed_path_compliance:
+    status: pass
+    evidence: "only input, empty verified knowledge, paper-template, retrieval log, skill files, and current solve outputs were used"
+  leakage_check:
+    status: pass
+    evidence: "retrieval-log cards are empty; no forbidden or external answer material was read"
+  problem_coverage:
+    status: pass
+    evidence: "questions 1 through 6 are answered in paper/main.tex and paper/paper.md"
+  deterministic_code_run:
+    status: pass
+    evidence: "code/run_all.ps1 regenerates data extraction, results, figures, paper macros, PDF, and verification"
+  data_validation:
+    status: pass
+    evidence: "468 finite observations, strictly increasing time, no imputation"
+  q4_method_acceptance:
+    status: needs_review
+    evidence: "absolute relative energy error is 5.576031%, but the problem supplies no acceptance threshold"
+  mathematical_correctness:
+    status: needs_review
+    evidence: "independent numerical identities pass; automated checks cannot constitute a formal proof of all modeling assumptions"
+  motor_hardware_feasibility:
+    status: needs_review
+    evidence: "absolute current, voltage, thermal, and torque-rate limits are not provided"
+  paper_build:
+    status: pass
+    evidence: "XeLaTeX two-pass build produces paper/<SOURCE_FILE_REDACTED> without unresolved references or layout warnings"
+  paper_result_consistency:
+    status: pass
+    evidence: "paper/main.tex imports code-generated macros and code/verify.py checks Markdown key values"
+questions:
+  - id: 1
+    computation_status: pass
+    result:
+      equivalent_inertia_kgm2: 51.9988857142857
+      rounded_engineering_value_kgm2: 52.0
+  - id: 2
+    computation_status: pass
+    result:
+      individual_flywheel_inertias_kgm2: [30.0083120713529, 60.0166241427057, 120.033248285411]
+      mechanical_inertias_kgm2: [10.0, 40.0083120713529, 70.0166241427057, 100.024936214059, 130.033248285411, 160.041560356764, 190.049872428117, 220.05818449947]
+      selected_mechanical_inertia_kgm2: 40.0083120713529
+      selected_compensation_kgm2: 11.9905736429328
+      alternative_feasible_compensation_kgm2: -18.01773842842
+  - id: 3
+    computation_status: pass
+    result:
+      law: "I = 1.5 * (1 - J_m/J_e) * M_b = -1.5 * (J_e-J_m) * d(omega)/dt"
+      constant_deceleration_current_A: 174.687844448322
+  - id: 4
+    computation_status: pass
+    acceptance_status: needs_review
+    result:
+      road_energy_J: 52150.2000870041
+      bench_brake_energy_J: 49242.2887357837
+      signed_error_bench_minus_road_J: -2907.91135122038
+      absolute_relative_error_pct: 5.576031053321
+      realized_effective_inertia_kgm2: 45.2659503318982
+      inferred_compensation_inertia_kgm2: 10.2659763290825
+  - id: 5
+    computation_status: pass
+    result:
+      controller: torque_zoh
+      offline_replay_relative_energy_error_pct: 0.0220870148336
+      max_speed_error_rpm: 0.0951377092860
+      max_current_A: 120.859375
+  - id: 6
+    computation_status: pass
+    hardware_status: needs_review
+    result:
+      controller: predictive_feedback
+      offline_replay_relative_energy_error_pct: 0.00000163762792
+      max_speed_error_rpm: 0.00461833540222
+      max_current_A: 122.63671875
+      nominal_command_range_kgm2: [12.5185185185, 13.4642857143]
+validation:
+  independent_energy_balance_status: pass
+  energy_balance_residual_J: 1.45519152283669e-11
+  integration_sensitivity_status: pass
+  integration_relative_error_range_pct: [5.52213056891913, 5.62993153772285]
+  step_sensitivity_status: pass
+  mechanical_inertia_sensitivity_status: pass
+  torque_calibration_stress_status: needs_review
+limitations:
+  - "The supplied torque trace is treated as exogenous in offline replay."
+  - "The replay horizon ends at 4.67 s; it does not invent the missing continuation needed for a new controller to reach 257 rpm."
+  - "A fixed torque-sensor calibration bias corrupts the internal reference."
+  - "No physical bench rerun or hardware-limit certification is available."
+deliverables:
+  required_files_status: pass
+  paper_pdf_status: pass
+  freeze_status: pass
+  freeze_note: "No freezing action was performed, as required for solve stage."
