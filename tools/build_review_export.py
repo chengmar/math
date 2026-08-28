@@ -9,12 +9,23 @@ import re
 import shutil
 import stat
 import subprocess
+import sys
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
 
 import yaml
+
+
+TRAINER_SRC = Path(__file__).resolve().parents[1] / "src"
+if str(TRAINER_SRC) not in sys.path:
+    sys.path.insert(0, str(TRAINER_SRC))
+
+from cumcm_lab.autopilot import (  # noqa: E402
+    _candidate_knowledge_statuses,
+    _validate_candidate_proposals,
+)
 
 
 TEXT_SUFFIXES = {
@@ -34,8 +45,8 @@ SKIP_PARTS = {
     "runtime", "logs", "corpus", "benchmarks", "cases", "reports",
 }
 MAX_TEXT_BYTES = 1_000_000
-COMPLETED_CASES = tuple(f"{year}A" for year in range(2004, 2010))
-INCOMPLETE_CASES = ("2010A", "2011A", "2012A")
+COMPLETED_CASES = tuple(f"{year}A" for year in range(2004, 2022))
+INCOMPLETE_CASES: tuple[str, ...] = ()
 ALL_TRAIN_CASES = tuple(f"{year}A" for year in range(2003, 2022))
 
 ABSOLUTE_PATH_PATTERNS = (
@@ -324,6 +335,24 @@ def candidate_entries(lesson_root: Path, case_id: str) -> list[dict[str, Any]]:
         return []
     index = read_yaml(lesson_root / "index.yaml")
     entries: list[dict[str, Any]] = []
+    if isinstance(index, dict) and isinstance(index.get("proposals"), list):
+        for position, card in enumerate(index["proposals"], 1):
+            if not isinstance(card, dict):
+                continue
+            relative = str(card.get("file") or card.get("path") or "")
+            path = lesson_root / relative
+            payload = read_yaml(path, {}) if path.is_file() else {}
+            text = path.read_text(encoding="utf-8-sig") if path.is_file() else ""
+            entries.append({
+                "card_id": str(card.get("id") or (payload or {}).get("id") or f"{case_id}-candidate-{position:02d}"),
+                "status": str(card.get("proposal_state") or card.get("status") or index.get("default_proposal_state") or "candidate"),
+                "source_case": case_id,
+                "source_file": relative,
+                "applicable_conditions_present": bool(re.search(r"适用|applicable|when_to_use", text, re.I)),
+                "inapplicable_conditions_present": bool(re.search(r"不适用|inapplicable|when_not_to_use|failure", text, re.I)),
+                "looks_case_specific": bool(re.search(r"case[-_ ]specific|具体事实|不迁移", relative + "\n" + text, re.I)),
+            })
+        return entries
     if isinstance(index, dict) and isinstance(index.get("cards"), list):
         for position, card in enumerate(index["cards"], 1):
             if not isinstance(card, dict):
@@ -344,21 +373,7 @@ def candidate_entries(lesson_root: Path, case_id: str) -> list[dict[str, Any]]:
     sequence = 0
     for path in sorted((*lesson_root.glob("*.yaml"), *lesson_root.glob("*.yml"))):
         payload = read_yaml(path, {})
-        statuses: list[str] = []
-        def visit(value: Any) -> None:
-            if isinstance(value, dict):
-                if str(value.get("status", "")).casefold() in {"candidate", "machine_verified", "verified", "deprecated"}:
-                    statuses.append(str(value.get("status")))
-                elif str(value.get("state", "")).casefold() in {"candidate", "machine_verified", "verified", "deprecated"}:
-                    statuses.append(str(value.get("state")))
-                if str(value.get("knowledge_status", "")).casefold() in {"candidate", "machine_verified", "verified", "deprecated"}:
-                    statuses.append(str(value.get("knowledge_status")))
-                for child in value.values():
-                    visit(child)
-            elif isinstance(value, list):
-                for child in value:
-                    visit(child)
-        visit(payload)
+        statuses = _candidate_knowledge_statuses(payload)
         text = path.read_text(encoding="utf-8-sig")
         for status in statuses:
             sequence += 1
@@ -389,7 +404,8 @@ def metrics_for_case(case_id: str, item: dict[str, Any], case_dir: Path) -> dict
     score = read_yaml(case_dir / "reports" / "score-report.yaml", {}) or {}
     counts = audit_counts(case_dir)
     lesson_root = case_dir / "workspaces" / "reflection" / "lessons-proposed"
-    candidates = candidate_entries(lesson_root, case_id)
+    proposal_validation = _validate_candidate_proposals(lesson_root, case_id)
+    candidates = candidate_entries(lesson_root, case_id) if not proposal_validation["invalid"] else []
     retrieval = read_json(case_dir / "workspaces" / "solve" / "retrieval-log.json", {}) or {}
     cards = retrieval.get("cards") if isinstance(retrieval, dict) else []
     started, finished = state_times(case_dir)
@@ -415,7 +431,7 @@ def metrics_for_case(case_id: str, item: dict[str, Any], case_dir: Path) -> dict
         "paper_lint_pass": report_status(case_dir / "reports" / f"paper-lint-{paper_label}.json"),
         "latex_compile_pass": report_status(case_dir / "reports" / f"tex-compile-{paper_label}.json"),
         "reflection_completed": "reflection" in completed,
-        "candidate_count": len(candidates),
+        "candidate_count": sum(str(entry.get("status", "")).casefold() == "candidate" for entry in candidates),
         "machine_verified_count": 0,
         "verified_count": 0,
         "knowledge_cards_used_in_solve": len(cards) if isinstance(cards, list) else 0,
@@ -705,11 +721,13 @@ def generate_effectiveness(export: Path, metrics: list[dict[str, Any]], knowledg
         "cards_that_look_case_specific": case_specific,
     }
     write_json(root / "knowledge-summary.json", knowledge_summary)
+    completed_ids = [row["case_id"] for row in metrics if row.get("status") == "completed"]
+    completed_label = "、".join(completed_ids) if completed_ids else "无"
     write_text(root / "learning-evidence.md", f"""# 学习效果证据分级
 
 ## 已被证据支持
 
-- 2004A—2009A 的磁盘状态包含 Blind V1、独立 Audit、Blind Final 和 Reflection。
+- 已完成案例（{completed_label}）的磁盘状态包含 Blind V1、独立 Audit、Blind Final 和 Reflection。
 - 已保存冻结清单、复现状态、论文 lint/编译状态以及阶段独立会话元数据。
 - 当前生成了 {candidate_total} 条 candidate 记录，未被伪装为 verified。
 
@@ -721,7 +739,7 @@ def generate_effectiveness(export: Path, metrics: list[dict[str, Any]], knowledg
 ## 尚未被支持
 
 - 当前没有 machine_verified 或 verified 知识卡。
-- 当前没有知识卡进入后续正式 Solve 的可核验证据。
+- 当前检索日志中进入后续正式 Solve 的训练记忆卡数量为 {sum(row['knowledge_cards_used_in_solve'] for row in metrics)}。
 - 当前系统尚未证明知识库提高了未见题解题能力。
 - 现有完成案例不足以证明模型能力随年份提升。
 
@@ -774,15 +792,15 @@ def generate_root_docs(export: Path, queue: dict[str, Any], metrics: list[dict[s
 
 - 已完成案例：{', '.join(completed) if completed else '无'}
 - 未完成或延期案例：{', '.join(incomplete)}
-- 当前训练断点：2012A / Solve / Blind V1 外层复现门禁前
+- 系统状态：training_complete_ready_for_final_test
 - 当前正式模型：gpt-5.6-sol，reasoning=max，fallback=false
-- 最近源项目测试：144 passed
+- 最近源项目测试：{source.get('test_result') or '未记录'}
 - Candidate：{candidate_total}
 - machine_verified：0
 - verified：0
 - 最终测试：sealed，consumed=false，content_exported=false
 - 活动训练进程：0
-- 训练暂停：是；禁止自动启动下一阶段和下一案例
+- 训练已停止；禁止自动启动下一阶段、下一案例或最终测试
 - 源分支：`{source['branch']}`
 - 源提交：`{source['commit']}`
 - 源工作树：{'有未提交修改' if source['dirty'] else '干净'}
@@ -834,7 +852,7 @@ def generate_self_audit(export: Path, metrics: list[dict[str, Any]], knowledge_r
 11. 最大风险：训练闭环形式完整，但评分和知识验证不足；网络/CLI 故障还会造成阶段性失败。
 12. 最值得保留：最小复制隔离、阶段独立会话、冻结哈希、独立 Audit、失败记录与泄漏守卫。
 13. 最应停止或简化：在无跨题验证时继续堆积 candidate；把格式/证据链修复解释为能力提升。
-14. 建议：保持训练暂停，先修复版本独立评分、复现入口发现、会话可靠性和知识对照评测，再决定是否继续。
+14. 建议：保持训练停止与最终测试密封；如由用户另行授权评测，应保留版本独立评分、复现入口和知识启用/禁用对照。
 
 当前 candidate 记录数：{candidate_total}。它们均保持 candidate 状态。
 """)
@@ -1007,6 +1025,7 @@ def build(args: argparse.Namespace) -> int:
         "commit": git_value(trainer, "rev-parse", "HEAD"),
         "branch": git_value(trainer, "branch", "--show-current"),
         "dirty": bool(git_value(trainer, "status", "--porcelain", default="")),
+        "test_result": args.source_test_result,
     }
     copied_framework = copy_framework(trainer, export)
     queue = read_json(trainer / "runtime" / "training-queue-state.json", {}) or {}
@@ -1029,6 +1048,9 @@ def build(args: argparse.Namespace) -> int:
         "consumed": False,
         "content_exported": False,
     })
+    snapshot = trainer / "reports" / "knowledge-snapshot-before-2023.json"
+    if snapshot.is_file():
+        copy_sanitized(snapshot, export / "audit" / "status" / "knowledge-snapshot-before-2023.json")
     for case_id in COMPLETED_CASES:
         export_completed_case(case_id, items[case_id], runtime_cases / case_id, export, next(row for row in metrics if row["case_id"] == case_id))
     run_root = trainer / "runtime" / "autopilot-runs"
