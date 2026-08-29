@@ -1,0 +1,19 @@
+id: TM-001-EVIDENCE-LAYERS
+title: 分层记录身份、复现、内部验证与外部结论
+type: validation_pattern
+status: provisional_training
+source_cases: [2007A, 2009A]
+source_kind: cross_case_synthesis
+origin_year: 2007
+tags: [validation, evidence, claim, audit, reproducibility]
+applicable_conditions: [存在代码、冻结、预测或工程结论中的至少两种证据层]
+inapplicable_conditions: [纯符号恒等式且不存在数值或外部解释]
+minimum_baseline: 为每项结论记录来源、证据层和 pass/fail/needs_review
+recommended_action: 分开评判文件身份、执行复现、内部不变量、留出表现和外部有效性，整体结论不得高于最弱关键层
+why_it_may_help: 防止把确定性运行或哈希一致误写成数学正确或外部有效
+required_validation: [每个关键数字可追溯, 结论附近标注证据层, 自动状态只用三值判断]
+failure_modes: [一个 overall pass 覆盖科学不确定性, 参考后内容回写成盲解原有思想]
+counterexamples: [重复运行完全一致但模型结构仍错误]
+complexity_cost: 低；增加一张证据矩阵
+evidence_summary: 两个较可信早期案例均暴露证据层混用问题
+last_updated: '2026-08-24'

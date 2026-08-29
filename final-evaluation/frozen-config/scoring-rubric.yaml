@@ -1,0 +1,33 @@
+version: 1
+total: 100
+categories:
+  result_reliability:
+    label: 结果准确性与可靠性
+    weight: 50
+    criteria:
+      question_coverage: {label: 小问覆盖, weight: 8, mode: objective}
+      mathematical_correctness: {label: 数学与模型正确性, weight: 12, mode: human}
+      numeric_results: {label: 主要数值结果, weight: 10, mode: objective}
+      reproducibility: {label: 可复现性, weight: 8, mode: objective}
+      validation_sensitivity: {label: 验证与敏感性, weight: 8, mode: objective}
+      uncertainty_limitations: {label: 不确定性与局限性, weight: 4, mode: human}
+  method_quality:
+    label: 方法质量与简洁创新
+    weight: 25
+    criteria:
+      fit_to_problem: {label: 方法与题目适配性, weight: 7, mode: human}
+      baseline_comparison: {label: 与简单基线的比较, weight: 5, mode: objective}
+      simplicity_cost: {label: 简洁性与计算代价, weight: 5, mode: human}
+      innovation_benefit: {label: 创新带来的实际收益, weight: 5, mode: human}
+      interpretability: {label: 可解释性, weight: 3, mode: human}
+  paper_quality:
+    label: 论文表达与排版
+    weight: 25
+    criteria:
+      abstract_quality: {label: 摘要质量, weight: 5, mode: human}
+      structure_logic: {label: 结构与逻辑, weight: 5, mode: human}
+      notation_explanation: {label: 公式、符号和说明, weight: 4, mode: human}
+      figure_tables: {label: 图表表达, weight: 4, mode: human}
+      traceability: {label: 代码—结果—结论可追踪性, weight: 4, mode: objective}
+      format_references: {label: 格式与参考文献, weight: 3, mode: objective}
+

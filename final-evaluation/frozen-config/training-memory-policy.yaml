@@ -1,0 +1,12 @@
+schema_version: 1
+enabled: true
+status: provisional_training
+first_allowed_year: 2011
+final_allowed_year: 2021
+max_cards_per_solve: 5
+only_earlier_source_years: true
+allow_in_evaluation: false
+allow_in_2023: false
+allow_candidate_directory: false
+allow_at_risk_cards: false
+promotion_implied: false

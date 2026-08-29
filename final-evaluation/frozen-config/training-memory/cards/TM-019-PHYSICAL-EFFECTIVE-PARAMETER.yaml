@@ -1,0 +1,19 @@
+id: TM-019-PHYSICAL-EFFECTIVE-PARAMETER
+title: 物理标定量与离散算子有效参数必须分层报告
+type: method_card
+status: provisional_training
+source_cases: [2017A]
+source_kind: generalized_reflection_candidate
+origin_year: 2017
+tags: [calibration, identifiability, discretization, inverse_problem, parameter_semantics]
+applicable_conditions: [物理参数同时进入离散仿真或逆问题算子, 网格、插值或数值积分误差可能被参数拟合吸收]
+inapplicable_conditions: [参数可由直接测量唯一确定且不参与离散近似, 已证明离散化误差对目标量可忽略]
+minimum_baseline: 分别用物理不变量或解析关系估计物理量，并在留出数据上估计算子有效参数，禁止把二者静默合并
+recommended_action: 为两类参数声明不同语义和单位；比较网格加密、算子替换及留出预测下的变化，并把差异列为离散化或可辨识性不确定性
+why_it_may_help: 离散误差会使拟合参数承担数值补偿；把补偿值解释成物理真值会产生看似精确但不可迁移的结论
+required_validation: [解析或守恒基线, 留出前向误差, 网格加密, 替代算子复核, 参数语义与单位审计]
+failure_modes: [用训练误差最低值覆盖物理测量, 未报告网格依赖, 把算子补偿解释为机制发现, 在不同数值实现间直接迁移有效参数]
+counterexamples: [网格加密后有效参数显著移动而物理估计稳定, 更换插值核后同一有效参数不再给出低留出误差]
+complexity_cost: 中；需要双轨标定和至少一次网格或算子敏感性试验
+evidence_summary: 某逆问题训练案例中，解析标定与离散前向拟合稳定指向不同数值语义；该分层原则仅作为待跨案例验证的训练假设
+last_updated: '2026-08-28'

@@ -1,0 +1,19 @@
+id: TM-010-INVARIANTS-BEFORE-OBJECTIVE
+title: 比较目标值前先通过可行性和守恒门禁
+type: validation_pattern
+status: provisional_training
+source_cases: [2004A, 2006A]
+source_kind: engineering_validation_synthesis
+origin_year: 2004
+tags: [optimization, feasibility, invariants, audit, baseline]
+applicable_conditions: [输出为配置、路径、调度或任何受约束决策]
+inapplicable_conditions: [没有决策变量或约束的纯估计任务]
+minimum_baseline: 解析成功、类型、总量、上下界和局部约束检查
+recommended_action: 按固定顺序先检查可行性，再独立复算目标，最后才比较方案优劣
+why_it_may_help: 不可行方案可能因目标值漂亮被误选
+required_validation: [逐约束残差, 总量守恒, 目标独立复算, 最坏松弛]
+failure_modes: [求解器成功替代可行性证书, 舍入后未重验]
+counterexamples: [标称最优方案违反固定总量或边界]
+complexity_cost: 低；增加结构化残差输出
+evidence_summary: 两个早期案例反复出现表格、舍入和约束不一致
+last_updated: '2026-08-24'

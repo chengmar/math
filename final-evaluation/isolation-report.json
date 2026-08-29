@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "status": "fail",
+  "checked_at": "2026-08-29T13:56:00+08:00",
+  "preregistration_sha256": "a485758eb5ed9407c9f96fcae5b5e1a34c4208aab03532c5bb86edf2f145c7f5",
+  "required_contract": {
+    "allowed_reads_pass": true,
+    "forbidden_reads_denied": true,
+    "workspace_code_execution": true,
+    "all_required_simultaneously": true
+  },
+  "selected_backend": null,
+  "content_boundary": {
+    "2023_question_opened": false,
+    "2023_official_attachments_opened": false,
+    "2023_reference_material_opened": false,
+    "2023_model_session_started": false,
+    "consumed": false
+  },
+  "workspace_write_probe": {
+    "status": "fail",
+    "probe_kind": "non_contest_random_canary",
+    "thread_id": "01a04c11-9e44-7843-8887-91ebcceb9b96",
+    "requested_model": "gpt-5.6-sol",
+    "catalog_model": "gpt-5.6-sol",
+    "reasoning": "max",
+    "fallback": false,
+    "ephemeral": true,
+    "sandbox": "workspace-write",
+    "cli_exit_code": 0,
+    "runner_status": "fail",
+    "allowed_reads_pass": false,
+    "forbidden_reads_denied": true,
+    "workspace_code_execution": false,
+    "forbidden_canary_content_read": false,
+    "evidence": "Windows policy rejected every shell/Python process creation, including commands confined to the current probe workspace. The external canary was not read, but the backend is unusable because allowed reads and workspace code execution did not pass."
+  },
+  "fallback_backends": {
+    "docker": {
+      "installed": false,
+      "service_present": false,
+      "usable": false
+    },
+    "windows_sandbox": {
+      "executable_present": false,
+      "feature_query_requires_elevation": true,
+      "usable": false
+    },
+    "wsl2": {
+      "wsl_executable_present": true,
+      "status_exit_code": 1,
+      "list_exit_code": 1,
+      "usable_distribution_found": false,
+      "usable": false
+    },
+    "dedicated_low_privilege_local_account": {
+      "creation_attempted": true,
+      "created": false,
+      "error_type": "Microsoft.PowerShell.Commands.AccessDeniedException",
+      "error_message": "拒绝访问。",
+      "usable": false
+    }
+  },
+  "hard_gate": {
+    "passed": false,
+    "stop_before_2023_content": true,
+    "wider_sandbox_fallback_used": false,
+    "reason": "No available backend simultaneously permits the arm workspace and code execution while enforcing filesystem denial for forbidden roots."
+  }
+}
+

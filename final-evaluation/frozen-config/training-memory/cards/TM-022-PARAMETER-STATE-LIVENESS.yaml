@@ -1,0 +1,19 @@
+id: TM-022-PARAMETER-STATE-LIVENESS
+title: 每个声明参数与输出状态都必须通过活性审计
+type: validation_pattern
+status: provisional_training
+source_cases: [2018A]
+source_kind: generalized_reflection_candidate
+origin_year: 2018
+tags: [implementation_audit, parameter_liveness, state_update, perturbation, reproducibility]
+applicable_conditions: [数值流程包含校准参数、状态数组、边界节点或多阶段代码, 报告结论依赖实现中的参数传播和状态更新]
+inapplicable_conditions: [参数明确属于未启用的可选分支且报告没有声称该分支生效, 输出由已审计的闭式表达式直接生成]
+minimum_baseline: 建立声明量到使用位置再到报告输出的追踪表，并对每个校准参数做小扰动、对每个报告状态检查更新时间或约束方程
+recommended_action: 同时执行静态引用扫描和动态扰动测试；故意断开参数、冻结状态或替换观测输入时，相应测试必须失败；区分极低灵敏度与完全未使用
+why_it_may_help: 未使用参数、陈旧状态和观测闭环会让标定或约束看似成立，却使结果与论文声称的机制无关
+required_validation: [参数引用覆盖, 状态更新覆盖, 数值导数与容差, 故障注入失败断言, 观测与验证目标独立性]
+failure_modes: [只检查变量已声明, 只靠静态搜索判断动态分支, 把零灵敏度直接解释为机制不重要, 同一观测既作边界输入又作预测验证]
+counterexamples: [参数在代码中被读取但随后被常数覆盖, 状态数组正确分配却从未推进, 极小但非零效应被过大容差误判为未使用]
+complexity_cost: 中；需维护追踪表与故障注入测试，大型多阶段程序可按结论关键路径分层执行
+evidence_summary: 某多阶段动态仿真实现的参考复核暴露了未使用参数与未更新状态；静态覆盖结合动态扰动可形成更可靠的活性证据，待跨案例验证
+last_updated: '2026-08-28'

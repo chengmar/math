@@ -1,0 +1,177 @@
+schema_version: 1
+evaluation_id: CUMCM-2023A-final-three-arm
+status: preregistered_before_test_content_access
+evidence_scope: single_held_out_case_evidence
+created_at: '2026-08-29T13:45:00+08:00'
+
+immutable_inputs:
+  source_training_commit: 24c8ef9bc6cf2fd447b40c649f860553f6ba4297
+  sanitized_training_commit: 3a4ab32b67054eddc3623b2e36950e043edd49c1
+  knowledge_snapshot_sha256: 6c261d4a226863a2524017e9ee50c1be25985de1b74637be89581daffccd1561
+  agents_sha256: 2f9b19cf0d4cb8e2964aeb58cddcb9dca7abcfd999c9a63ac9e945faac4b7a10
+  skills_sha256:
+    cumcm-a-solve: 45aab1c11080ed5ec907bb8499e9e48436bf178474702b70c58bf6620eba8df1
+    cumcm-a-audit: 6832414ee9c863e557147d37727dc427687fb9274a0b817d0e88928a1a8d1591
+    cumcm-a-reflect: b797e56b747e9a5a39fdbb91eb125ed710919c88f49fde7faa0ef6b0facab091
+    cumcm-a-evaluate: ae47af98ac4590f3dff333eaec8952948b651291ab6378459c7061dd82355915
+  training_memory_tree_sha256: 4efa9dea17d350dadd8fd1d9a7608301b106cf1a2a849ffd5bc25a2d8ad72226
+  execution_model_policy_sha256: 19208ed204c175cf044858c5f6fbdedf75d40f9e13359efcf51053ef378fc2cd
+  training_memory_policy_sha256: 0107fb096906c96c004b07f3a5218ebd116caaf6b937b1a403d0e44d3f5ea82b
+  scoring_rubric_sha256: e0542383ab4be3414ba8c6361561d189b696713abce7234c14330436ad610571
+
+model_contract:
+  requested_model: gpt-5.6-sol
+  required_actual_model: gpt-5.6-sol
+  reasoning_effort: max
+  fallback: false
+  ephemeral: true
+  sandbox: workspace-write
+  approvals: never
+  new_thread_per_phase: true
+
+arms:
+  A:
+    name: generic-baseline
+    calls_per_round: 3
+    stages: [solve, audit, blind-revision]
+    prompt_package: neutral-generic-math-modeling
+    allowed_knowledge: none
+    forbidden_packages: [project_AGENTS, project_skills, training_memory, Candidate, historical_cases, historical_solutions, historical_reflections]
+  B:
+    name: workflow-only
+    calls_per_round: 3
+    stages: [solve, audit, blind-revision]
+    prompt_package: frozen-project-workflow
+    allowed_knowledge: [AGENTS, cumcm-a-solve, cumcm-a-audit, paper-template, freeze-and-reproduction-contract]
+    forbidden_packages: [training_memory, Candidate, historical_cases, historical_solutions, historical_reflections]
+  C:
+    name: full-trained-system
+    calls_per_round: 3
+    stages: [solve, audit, blind-revision]
+    prompt_package: frozen-project-workflow
+    allowed_knowledge: [AGENTS, cumcm-a-solve, cumcm-a-audit, paper-template, freeze-and-reproduction-contract, 22-provisional-training-cards]
+    memory_selection_limit: 5
+    memory_status_must_remain: provisional_training
+    memory_decisions: [adopt, adapt, reject]
+    required_memory_outputs: [training-memory-selection.json, training-memory-usage.md]
+    forbidden_packages: [Candidate, historical_cases, historical_solutions, historical_reflections]
+
+fairness_contract:
+  official_inputs: identical_question_and_official_attachments_only
+  paper_template: byte-identical_copy_per_arm
+  python_and_numeric_tools: identical
+  calls_per_arm_per_round: 3
+  time_budget_per_stage_seconds: 10800
+  reproduction_timeout_seconds: 3600
+  reproduction_runs_per_freeze: 1
+  revision_verification_runs: 1
+  network_policy: codex_model_transport_only_no_web_search_no_external_answer_lookup
+  output_contract: identical
+  groups_must_not_read_each_other: true
+  reflection_forbidden: true
+  references_forbidden_before_blind_scoring: true
+
+allowed_tools:
+  - local_shell_confined_to_current_arm_workspace
+  - python
+  - numpy
+  - pandas
+  - scipy
+  - matplotlib
+  - local_document_and_pdf_build_tools
+forbidden_tools:
+  - web_search
+  - browser
+  - external_connectors
+  - cross_arm_filesystem_access
+  - Intake
+  - reference_vault
+  - exam_vault_reference_material
+  - historical_runtime_cases
+
+randomization:
+  derivation: seeds_are_unsigned_64_bit_chunks_of_the_frozen_knowledge_snapshot_sha256
+  round_1_order_seed: 7792948409453274018
+  round_1_order: [C, A, B]
+  anonymous_mapping_seed: 5926763403112661438
+  second_round_order_rule: reverse_round_1_order
+  second_round_order: [B, A, C]
+
+blind_submission_contract:
+  solve_output: Blind_V1
+  audit_reads_only_own_frozen_Blind_V1: true
+  revision_output: Blind_Final
+  frozen_manifest_algorithm: sha256_per_file_and_tree
+  required_outputs:
+    - code
+    - results
+    - figures
+    - paper
+    - solution-report.yaml
+    - reproducibility.yaml
+    - data-audit.md
+    - assumptions.yaml
+    - variables.yaml
+    - model-selection.md
+    - audit
+  objective_gates: [reproduction, frozen_hash, leakage, paper_build, model_contract]
+
+judging:
+  anonymous_labels: [Solution_X, Solution_Y, Solution_Z]
+  independent_judges: [correctness-judge, method-judge, paper-judge]
+  calls_per_judging_round: 3
+  each_judge_scores_all_categories: true
+  category_weights:
+    result_accuracy_and_reliability: 50
+    method_quality_simplicity_and_innovation: 25
+    paper_expression_and_layout: 25
+  aggregation:
+    category_summary: median_across_three_judges
+    final_group_score: median_of_three_judge_total_scores
+    objective_gates_are_reported_separately: true
+  prohibited_quality_proxies: [file_count, paper_length, code_line_count]
+
+effect_definitions:
+  workflow_effect: B_minus_A
+  memory_effect: C_minus_B
+  full_system_effect: C_minus_A
+  labels:
+    workflow_and_memory_positive:
+      conditions: [B_minus_A_at_least_3, C_minus_B_at_least_3, C_minus_A_at_least_5, no_new_C_critical_error, at_least_two_judges_prefer_C, C_adopts_at_least_one_card, concrete_decision_impact_recorded]
+    workflow_positive_memory_inconclusive:
+      conditions: [B_clearly_above_A, C_minus_B_below_3_or_no_memory_adopted]
+    memory_positive_workflow_inconclusive:
+      conditions: [C_clearly_above_B, absolute_B_minus_A_below_3]
+    full_system_positive:
+      conditions: [C_minus_A_at_least_5, no_critical_correctness_regression, contribution_not_fully_separable]
+    inconclusive:
+      conditions: [all_differences_within_plus_or_minus_3_or_judge_disagreement_or_key_results_not_independently_verifiable]
+    negative_transfer:
+      conditions: [C_at_least_3_below_B_or_memory_adds_critical_error_or_memory_causes_clear_misfit]
+    system_underperforms:
+      conditions: [C_at_least_5_below_A_or_full_system_has_more_severe_errors]
+
+second_round:
+  trigger: first_round_label_is_inconclusive_and_reference_accessed_is_false
+  enabled: true
+  maximum_total_rounds: 2
+  rerun_all_arms: true
+  new_threads: true
+  frozen_prompts_and_scoring: true
+  no_skill_or_memory_changes: true
+  aggregation_after_second_round: median_across_two_rounds
+
+reference_access:
+  allowed_only_after: [all_preregistered_runs_complete, all_Blind_Final_frozen, all_anonymous_judging_complete, group_mapping_locked, blind_scores_written_immutable, no_more_submission_changes]
+  paper_count: 2_to_4
+  separate_workspace: reference-adjudication
+  submissions_are_immutable: true
+  update_skills_or_training_memory_forbidden: true
+
+stop_conditions:
+  invalid_arm_if_model_contract_mismatch: true
+  stop_before_content_if_isolation_probe_fails: true
+  maximum_rounds: 2
+  no_repeat_until_positive: true
+  consumed_is_irreversible: true
+

@@ -1,0 +1,19 @@
+id: TM-003-CONSERVATION-INVARIANTS
+title: 状态转移前后强制守恒、非负与边界不变量
+type: method_card
+status: provisional_training
+source_cases: [2007A, 2009A]
+source_kind: independently_conceived_and_audited
+origin_year: 2007
+tags: [simulation, state_transition, conservation, control, constraints]
+applicable_conditions: [模型包含人口、质量、能量、流量或资源的逐步转移]
+inapplicable_conditions: [开放系统且外部流入流出无法观测或定义]
+minimum_baseline: 无机制或平坦分配版本，并逐步输出不变量残差
+recommended_action: 把内部转移写成成对扣除与加入；每步检查守恒、非负、上下界和停止条件
+why_it_may_help: 复杂递推可以稳定复现但悄然制造或消灭状态量
+required_validation: [逐步残差, 极端输入, 浮点容差声明, 随机扰动后重新检查]
+failure_modes: [截断负值后未重新守恒, 随机情景跳过约束检查]
+counterexamples: [各局部方程都可运行但总体随内部转移无故增长]
+complexity_cost: 低到中；增加断言和残差表
+evidence_summary: 可信案例中守恒检查能区分机制效应与实现错误
+last_updated: '2026-08-24'

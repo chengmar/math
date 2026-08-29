@@ -1,0 +1,19 @@
+id: TM-009-CONSTRAINT-SCOPE
+title: 自然语言约束先标注主体、聚合层级、单位和边界例子
+type: failure_mode
+status: provisional_training
+source_cases: [2006A]
+source_kind: engineering_failure_pattern
+origin_year: 2006
+tags: [optimization, constraints, semantics, audit]
+applicable_conditions: [题面包含按组、按对象或按时期聚合的自然语言约束]
+inapplicable_conditions: [全部约束已经结构化且有权威机器可读定义]
+minimum_baseline: 每条约束写四元组并构造一个能区分两种解释的边界例子
+recommended_action: 在建模前完成约束追踪表，最终解逐条回代同一结构化定义
+why_it_may_help: 组级要求常被误写为逐对象要求，导致可行域发生根本变化
+required_validation: [四元组完整, 边界例子, 结果残差表]
+failure_modes: [主体错位, 聚合层级错位, 单位混用]
+counterexamples: [各对象均满足更强条件但总量或分组意图被改变]
+complexity_cost: 低；增加约束字典和单元测试
+evidence_summary: 低可信数学案例仅贡献已验证的语义失配失败模式
+last_updated: '2026-08-24'

@@ -1,0 +1,132 @@
+schema_version: 1
+collection: training-memory
+status: provisional_training
+version: 15
+created_at: '2026-08-24'
+active_card_limit: 25
+solve_retrieval_limit: 5
+first_allowed_case: 2011A
+final_allowed_case: 2021A
+current_active_count: 22
+machine_verified_count: 0
+verified_count: 0
+cards:
+- TM-001-EVIDENCE-LAYERS
+- TM-002-TIME-ORDERED-VALIDATION
+- TM-003-CONSERVATION-INVARIANTS
+- TM-004-BOUNDED-LONG-HORIZON
+- TM-005-CAUSAL-TIMELINE
+- TM-006-SMALL-DENOMINATOR-GUARD
+- TM-007-FIT-EVALUATE-SEPARATION
+- TM-008-IMMUTABLE-INPUT-PROVENANCE
+- TM-009-CONSTRAINT-SCOPE
+- TM-010-INVARIANTS-BEFORE-OBJECTIVE
+- TM-011-STRUCTURE-BEFORE-SOLVER
+- TM-012-REPRODUCIBILITY-TIERS
+- TM-013-SINGLE-SOURCE-RESULTS
+- TM-014-UNCERTAINTY-BY-SOURCE
+- TM-015-THRESHOLD-PROVENANCE
+- TM-016-MIXED-DESIGN-DOMAIN
+- TM-017-UNIT-INVARIANT-MULTIOBJECTIVE
+- TM-018-AUDIT-COUNTEREXAMPLE-REGRESSION
+- TM-019-PHYSICAL-EFFECTIVE-PARAMETER
+- TM-020-FULL-ESTIMATOR-PERTURBATION
+- TM-021-SCALE-BUDGET-BEFORE-HIGH-FIDELITY
+- TM-022-PARAMETER-STATE-LIVENESS
+case_updates:
+- case_id: 2010A
+  status: completed
+  candidate_count_reviewed: 32
+  cards_added: 0
+  decision: retain_candidates_without_forced_provisional_card
+  reason: 单题 Reflection candidate 尚缺跨案例适用性证据；完成更新审查但不强行套用或升级。
+  updated_at: '2026-08-27T21:29:25+08:00'
+- case_id: 2011A
+  status: completed
+  candidate_count_reviewed: 34
+  cards_added: 0
+  decision: retain_candidates_without_forced_provisional_card
+  reason: 单题 Reflection candidate 尚缺跨案例适用性证据；完成更新审查但不强行套用或升级。
+  updated_at: '2026-08-27T21:30:23+08:00'
+- case_id: 2012A
+  status: completed
+  candidate_count_reviewed: 8
+  cards_added: 0
+  decision: retain_candidates_without_forced_provisional_card
+  reason: 单题 Reflection candidate 尚缺跨案例适用性证据；完成更新审查但不强行套用或升级。
+  updated_at: '2026-08-27T21:31:02+08:00'
+- case_id: 2013A
+  status: completed
+  candidate_count_reviewed: 5
+  cards_added: 0
+  decision: retain_candidates_without_forced_provisional_card
+  reason: 单题 Reflection candidate 尚缺跨案例适用性证据；完成更新审查但不强行套用或升级。
+  updated_at: '2026-08-27T21:31:39+08:00'
+- case_id: 2014A
+  status: completed
+  candidate_count_reviewed: 4
+  cards_added: 0
+  decision: retain_candidates_without_forced_provisional_card
+  reason: 单题 Reflection candidate 尚缺跨案例适用性证据；完成更新审查但不强行套用或升级。
+  updated_at: '2026-08-27T21:32:14+08:00'
+- case_id: 2015A
+  status: completed
+  candidate_count_reviewed: 7
+  cards_added: 0
+  decision: retain_candidates_without_forced_provisional_card
+  reason: 单题 Reflection candidate 尚缺跨案例适用性证据；完成更新审查但不强行套用或升级。
+  updated_at: '2026-08-27T21:32:52+08:00'
+- case_id: 2016A
+  status: completed
+  candidate_count_reviewed: 22
+  cards_added: 3
+  added_card_ids:
+  - TM-016-MIXED-DESIGN-DOMAIN
+  - TM-017-UNIT-INVARIANT-MULTIOBJECTIVE
+  - TM-018-AUDIT-COUNTEREXAMPLE-REGRESSION
+  decision: add_generalized_bounded_provisional_cards
+  reason: 三项经验已去除单题变量与数值，补全适用和不适用边界、最低基线、验证、反例与复杂度；仅进入 provisional_training，等待后续年份正负迁移证据。
+  updated_at: '2026-08-28T00:10:00+08:00'
+- case_id: 2017A
+  status: completed
+  candidate_count_reviewed: 9
+  cards_added: 2
+  added_card_ids:
+  - TM-019-PHYSICAL-EFFECTIVE-PARAMETER
+  - TM-020-FULL-ESTIMATOR-PERTURBATION
+  decision: add_generalized_bounded_provisional_cards
+  reason: 两项经验已去除题面变量、专有数值和参考答案特征，并补全适用边界、最低基线、验证、反例与成本；仅进入 provisional_training，等待后续年份正负迁移证据。
+  updated_at: '2026-08-28T04:15:00+08:00'
+- case_id: 2018A
+  status: completed
+  candidate_count_reviewed: 6
+  cards_added: 2
+  added_card_ids:
+  - TM-021-SCALE-BUDGET-BEFORE-HIGH-FIDELITY
+  - TM-022-PARAMETER-STATE-LIVENESS
+  decision: add_generalized_bounded_provisional_cards
+  reason: 两项经验已去除题面对象、专有数值和参考答案特征，并补全适用边界、最低基线、验证、反例与成本；仅进入 provisional_training，等待后续年份正负迁移证据。
+  updated_at: '2026-08-28T06:43:30+08:00'
+- case_id: 2019A
+  status: completed
+  candidate_count_reviewed: 41
+  cards_added: 0
+  decision: retain_candidates_without_forced_provisional_card
+  reason: 单题 Reflection candidate 尚缺跨案例适用性证据；完成更新审查但不强行套用或升级。
+  updated_at: '2026-08-28T11:46:34+08:00'
+- case_id: 2020A
+  status: completed
+  candidate_count_reviewed: 40
+  cards_added: 0
+  decision: retain_candidates_without_forced_provisional_card
+  reason: 单题 Reflection candidate 尚缺跨案例适用性证据；完成更新审查但不强行套用或升级。
+  updated_at: '2026-08-28T16:43:12+08:00'
+- case_id: 2021A
+  status: completed
+  candidate_count_reviewed: 6
+  cards_added: 0
+  decision: retain_candidates_without_forced_provisional_card
+  reason: 单题 Reflection candidate 尚缺跨案例适用性证据；完成更新审查但不强行套用或升级。
+  updated_at: '2026-08-28T20:53:03+08:00'
+last_case_update: 2021A
+last_updated: '2026-08-28T20:53:03+08:00'

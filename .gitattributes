@@ -1,0 +1,2 @@
+# Frozen evaluation snapshots preserve source bytes, including final blank lines.
+final-evaluation/** whitespace=-blank-at-eof

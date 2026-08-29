@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "activated_at": "2026-08-21T23:10:10+08:00",
+  "candidate_baseline_count": 6,
+  "execution_policy": {
+    "continuous_mode": false,
+    "strict_serial_cases": true,
+    "training_paused": true,
+    "new_model_sessions_allowed": false,
+    "auto_start_next_phase": false,
+    "auto_start_next_case": false,
+    "current_case": null,
+    "current_phase": null,
+    "first_case": "2016A",
+    "final_training_case": "2021A",
+    "max_cases": "all_remaining",
+    "stop_after_current_case": true,
+    "stop_on_usage_limit": true,
+    "retry_on_usage_limit": false,
+    "stop_before_2023": true,
+    "reuse_valid_existing_outputs": true,
+    "max_retries_per_atomic_phase": 2,
+    "max_transient_retries_per_model_phase": 2,
+    "max_blind_revision_rounds": 2,
+    "auto_publish_sanitized_final_snapshot": true,
+    "model": "gpt-5.6-sol",
+    "reasoning": "max",
+    "fallback_allowed": false,
+    "foreground_only": true
+  },
+  "temporarily_disabled": [
+    "baseline_automatic_comparison",
+    "curator_model",
+    "shadow_evaluation",
+    "machine_verified_automatic_promotion",
+    "background_autopilot",
+    "github_automatic_publish",
+    "windows_absolute_path_permission_gate"
+  ],
+  "training_status": "training_complete_ready_for_final_test",
+  "completed_at": "2026-08-28T21:16:02+08:00"
+}
