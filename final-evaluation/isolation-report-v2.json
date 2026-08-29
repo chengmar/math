@@ -1,0 +1,71 @@
+{
+  "schema_version": 2,
+  "generated_at": "2026-08-29T16:16:46.8537907+08:00",
+  "status": "pass",
+  "implementation": "elevated",
+  "sandbox_mode": "workspace-write",
+  "permission_profile": "evaluation-workspace-write",
+  "approval_policy": "never",
+  "danger_full_access": false,
+  "private_desktop": true,
+  "uac_observed": false,
+  "ephemeral_codex_session": true,
+  "sandbox_identity": "LAPTOP-E2MB61C8\\CodexSandboxOffline",
+  "cli_version": "codex-cli 0.150.0-alpha.8",
+  "probe_model_request": {
+    "model": "gpt-5.6-sol",
+    "reasoning_effort": "max",
+    "fallback_observed": false
+  },
+  "allowed": {
+    "file_read": true,
+    "file_write": true,
+    "created_output_read": true,
+    "python_execution": true,
+    "python_standard_library": true,
+    "numerical_library_execution": true,
+    "powershell_or_entrypoint_execution": true,
+    "git_read_only": true,
+    "xelatex_execution": true
+  },
+  "denied": {
+    "outside_read": true,
+    "outside_write": true,
+    "outside_list": true,
+    "vault_sentinel_read": true,
+    "other_arm_read": true,
+    "other_arm_write": true
+  },
+  "2023_content_read": false,
+  "2023_reference_read": false,
+  "native_permission_profile_read_deny_effective": false,
+  "os_acl_deny_guard_applied": true,
+  "os_acl_deny_guard_principal": "LAPTOP-E2MB61C8\\CodexSandboxUsers",
+  "network_enabled_for_model_transport": true,
+  "command_network_enabled": false,
+  "probe_command_count": 1,
+  "probe_command_exit_code": 0,
+  "direct_probe_pass": true,
+  "real_ephemeral_session_probe_pass": true,
+  "frozen_evaluation_state": {
+    "branch": "evaluation/2023-final-three-arm",
+    "commit": "f1dc11002cb3a1a503952cc9b278500950e48372",
+    "preregistration_sha256": "a485758eb5ed9407c9f96fcae5b5e1a34c4208aab03532c5bb86edf2f145c7f5",
+    "2023_consumed_at_probe_time": false
+  },
+  "evidence": {
+    "probe_script_sha256": "94e941bb8d55ef3e8ea3092dc4c9ffa6acd7b44957e08278410a957067f4415b",
+    "direct_probe_stdout_sha256": "abdbe613b6190c153825976aa67cce61d7411727df1d15d4b639846fdce5a98e",
+    "direct_probe_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "ephemeral_session_stdout_sha256": "1c72e1707e0345d17ac7bbefb9d5cfbcddaa3bf73c24b136e94a956642bba4f",
+    "ephemeral_session_stderr_sha256": "ae4bc24f98c2e68347a70961fe0fee27b22556fdbecc19f22c4def639fa579",
+    "ephemeral_session_final_sha256": "83166507cf293e7c898ecfd38634cf6abe5431470e0be67eeac493bafb3a5859",
+    "evaluation_config_sha256": "b0f00f5811e1ecd0c71aeeb2a9a912bdfebfdbb7869e17fcdc8d2ab921251308",
+    "vault_sentinel_sha256_before_cleanup": "2a41cf37d30a67097bf49063d84b8146e711d999d7c617a694ac2af26c79dfee"
+  },
+  "notes": [
+    "The current native permission-profile implementation did not materialize deny-read ACL state; explicit Windows deny ACLs for the dedicated CodexSandboxUsers group supplied the tested read boundary.",
+    "The model executed the prescribed synthetic PowerShell probe exactly once; no 2023A path or real Vault material was enumerated or opened.",
+    "Transient model-stream timeouts recovered through the normal HTTP transport and did not alter the model request, sandbox policy, command count, or probe result."
+  ]
+}

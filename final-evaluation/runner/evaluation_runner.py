@@ -8,6 +8,7 @@ import shutil
 import subprocess
 import sys
 import time
+import tomllib
 from datetime import datetime
 from pathlib import Path
 
@@ -15,6 +16,7 @@ from pathlib import Path
 MODEL = "gpt-5.6-sol"
 REASONING = "max"
 SANDBOX = "workspace-write"
+PERMISSION_PROFILE = "evaluation-workspace-write"
 ALLOWED_PHASES = {"probe", "solve", "audit", "blind-revision", "judge", "reference-adjudication"}
 
 
@@ -62,6 +64,7 @@ def build_command(executable: str, workspace: Path, final_message: Path) -> list
     command = [
         executable,
         "exec",
+        "--strict-config",
         "-C",
         str(workspace),
         "-m",
@@ -70,9 +73,9 @@ def build_command(executable: str, workspace: Path, final_message: Path) -> list
         f'model_reasoning_effort="{REASONING}"',
         "-c",
         'approval_policy="never"',
-        "-s",
-        SANDBOX,
-        "--ignore-user-config",
+        "-c",
+        f'default_permissions="{PERMISSION_PROFILE}"',
+        "--ignore-rules",
         "--json",
         "-o",
         str(final_message),
@@ -80,9 +83,37 @@ def build_command(executable: str, workspace: Path, final_message: Path) -> list
         "--ephemeral",
         "-",
     ]
-    if "--add-dir" in command or any("bypass" in item for item in command):
+    if "-s" in command or "--add-dir" in command or any("bypass" in item or "danger" in item for item in command):
         raise AssertionError("unsafe CLI option in evaluation command")
     return command
+
+
+def validate_evaluation_config(codex_home: Path) -> dict[str, object]:
+    config_path = codex_home / "config.toml"
+    if not config_path.is_file():
+        raise EvaluationRunnerError("evaluation CODEX_HOME is missing config.toml")
+    with config_path.open("rb") as handle:
+        config = tomllib.load(handle)
+    windows = config.get("windows") or {}
+    permissions = (config.get("permissions") or {}).get(PERMISSION_PROFILE) or {}
+    filesystem = permissions.get("filesystem") or {}
+    network = permissions.get("network") or {}
+    if config.get("model") != MODEL or config.get("model_reasoning_effort") != REASONING:
+        raise EvaluationRunnerError("evaluation model/reasoning config mismatch")
+    if config.get("approval_policy") != "never" or config.get("default_permissions") != PERMISSION_PROFILE:
+        raise EvaluationRunnerError("evaluation approval/permission profile mismatch")
+    if windows.get("sandbox") not in {"elevated", "unelevated"}:
+        raise EvaluationRunnerError("native Windows sandbox implementation is not configured")
+    if filesystem.get(":root") != "deny" or filesystem.get(":workspace_roots", {}).get(".") != "write":
+        raise EvaluationRunnerError("workspace-write filesystem policy mismatch")
+    if network.get("enabled") is not False:
+        raise EvaluationRunnerError("command network must remain disabled")
+    return {
+        "permission_profile": PERMISSION_PROFILE,
+        "windows_sandbox": windows.get("sandbox"),
+        "private_desktop": bool(windows.get("sandbox_private_desktop")),
+        "command_network": False,
+    }
 
 
 def validate_catalog(executable: str, environment: dict[str, str]) -> dict[str, object]:
@@ -107,7 +138,8 @@ def validate_catalog(executable: str, environment: dict[str, str]) -> dict[str, 
 def parse_events(events_path: Path) -> dict[str, object]:
     thread_id = None
     completed = 0
-    errors: list[str] = []
+    warnings: list[str] = []
+    fatal_errors: list[str] = []
     for line in events_path.read_text(encoding="utf-8-sig", errors="replace").splitlines():
         try:
             event = json.loads(line)
@@ -118,8 +150,12 @@ def parse_events(events_path: Path) -> dict[str, object]:
         elif event.get("type") == "turn.completed":
             completed += 1
         elif event.get("type") == "error":
-            errors.append(str(event.get("message") or "Codex error"))
-    return {"thread_id": thread_id, "turn_completed": completed, "errors": errors}
+            message = str(event.get("message") or "Codex error")
+            if message.startswith("Reconnecting..."):
+                warnings.append(message)
+            else:
+                fatal_errors.append(message)
+    return {"thread_id": thread_id, "turn_completed": completed, "warnings": warnings, "fatal_errors": fatal_errors}
 
 
 def run(args: argparse.Namespace) -> int:
@@ -141,6 +177,7 @@ def run(args: argparse.Namespace) -> int:
     environment = dict(os.environ)
     environment["CODEX_HOME"] = str(codex_home)
     environment["PYTHONUTF8"] = "1"
+    sandbox_config = validate_evaluation_config(codex_home)
     catalog = validate_catalog(executable, environment)
     if not args.execute:
         print(json.dumps({"status": "dry_run", "command": command, "catalog": catalog}, ensure_ascii=False, indent=2))
@@ -162,7 +199,7 @@ def run(args: argparse.Namespace) -> int:
             check=False,
         )
     event_summary = parse_events(events)
-    valid = completed.returncode == 0 and event_summary["thread_id"] and event_summary["turn_completed"] >= 1 and not event_summary["errors"]
+    valid = completed.returncode == 0 and event_summary["thread_id"] and event_summary["turn_completed"] >= 1 and not event_summary["fatal_errors"]
     metadata = {
         "schema_version": 1,
         "phase": args.phase,
@@ -173,6 +210,7 @@ def run(args: argparse.Namespace) -> int:
         "fallback": False,
         "ephemeral": True,
         "sandbox": SANDBOX,
+        "permission_profile": PERMISSION_PROFILE,
         "approval_policy": "never",
         "thread_id": event_summary["thread_id"],
         "started_at": started_at,
@@ -181,6 +219,7 @@ def run(args: argparse.Namespace) -> int:
         "exit_code": completed.returncode,
         "executor_identity": getpass.getuser(),
         "catalog": catalog,
+        "sandbox_config": sandbox_config,
         "event_summary": event_summary,
     }
     (run_dir / "session.json").write_text(json.dumps(metadata, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -208,4 +247,3 @@ if __name__ == "__main__":
     except (EvaluationRunnerError, OSError, subprocess.SubprocessError, json.JSONDecodeError) as exc:
         print(json.dumps({"status": "fail", "error": f"{type(exc).__name__}: {exc}"}, ensure_ascii=False), file=sys.stderr)
         raise SystemExit(2)
-

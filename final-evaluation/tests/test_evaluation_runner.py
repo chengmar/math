@@ -13,13 +13,17 @@ SPEC.loader.exec_module(runner)
 
 def test_command_is_exact_workspace_write_contract(tmp_path: Path) -> None:
     command = runner.build_command("codex.exe", tmp_path, tmp_path / "final.txt")
-    assert command[command.index("-s") + 1] == "workspace-write"
+    assert "-s" not in command
     assert "--ephemeral" in command
-    assert "--ignore-user-config" in command
+    assert "--strict-config" in command
+    assert "--ignore-rules" in command
+    assert "--ignore-user-config" not in command
     assert "--add-dir" not in command
     assert not any("bypass" in item for item in command)
+    assert not any("danger" in item for item in command)
     assert command[command.index("-m") + 1] == "gpt-5.6-sol"
     assert 'model_reasoning_effort="max"' in command
+    assert 'default_permissions="evaluation-workspace-write"' in command
 
 
 def test_confined_workspace_rejects_runtime_root(tmp_path: Path) -> None:
@@ -42,4 +46,3 @@ def test_confined_file_rejects_outside_prompt(tmp_path: Path) -> None:
         pass
     else:
         raise AssertionError("outside prompt must be rejected")
-
