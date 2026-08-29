@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "case_id": "2023A",
+  "status": "final_test_running",
+  "consumed": true,
+  "consumed_at": "2026-08-29T16:34:08+08:00",
+  "consumption_id": "9b4e0586-791c-47b0-87a9-b2efe960f42f",
+  "preregistration_sha256": "a485758eb5ed9407c9f96fcae5b5e1a34c4208aab03532c5bb86edf2f145c7f5",
+  "isolation_report_v2_sha256": "2dc6e15ca403ed0df0c42f67cb77890bab9979d351bfcfc4aae265c35d8e611e",
+  "reference_accessed": false,
+  "round_1_order": ["C", "A", "B"]
+}
