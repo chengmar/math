@@ -1,0 +1,511 @@
+schema_version: 1
+evaluation_id: CUMCM-2023A-post-consumption-three-arm-recovery-replication
+formal_name: 2023A Post-Consumption Three-Arm Recovery Replication
+status: preregistered_before_round_1_arm_B_and_before_recovery_execution
+created_at: '2026-08-31T21:04:35+08:00'
+
+evidence_identity:
+  evidence_class: post_consumption_exploratory_replication
+  held_out_from_project_training: true
+  first_unconsumed_final_test: false
+  reference_accessed_before_replication: false
+  original_final_test_already_consumed: true
+  original_round_1_supplement: false
+  first_blind_test: false
+  relative_arm_comparison_allowed_if_all_recovery_gates_pass: true
+  evidence_strength_below_original_unconsumed_preregistration: true
+  generalization_scope: one_held_out_CUMCM_case_only
+
+immutable_ancestry:
+  evaluation_branch: evaluation/2023-final-three-arm
+  baseline_commit: f1dc11002cb3a1a503952cc9b278500950e48372
+  sandbox_recovery_commit: 7bf9bc5
+  consumption_commit: 009a317f40091a4c03b2283646a3d5ddcf01537e
+  consumption_id: 9b4e0586-791c-47b0-87a9-b2efe960f42f
+  consumed: true
+  consumed_is_irreversible: true
+  reference_accessed: false
+  original_preregistration_sha256: a485758eb5ed9407c9f96fcae5b5e1a34c4208aab03532c5bb86edf2f145c7f5
+  frozen_config_manifest_sha256: 8263afc2476c5c195666afa0e8e2f0935cde292e6a91abdc52327d34f683a2ba
+  prompt_manifest_sha256: 16304fc51e9c4ad344c29e50b8a5fc811730b05718464fa4302cec6b525b4408
+  training_memory_tree_sha256: 4efa9dea17d350dadd8fd1d9a7608301b106cf1a2a849ffd5bc25a2d8ad72226
+  smoke_evidence_file: preflight-smoke.json
+  passed_smoke_session_sha256: 96c4f8f6c3e892b1edaa35a15899436f7b36cae56a4eb882fa62308dfe1a58cb
+
+separation_from_original_round_1:
+  original_round_1_and_recovery_must_never_be_pooled_as_one_round: true
+  recovery_must_not_be_described_as_first_unconsumed_test: true
+  original_round_1_outputs_forbidden_as_recovery_inputs: true
+  original_round_1_audit_findings_forbidden_as_recovery_inputs: true
+  original_round_1_threads_forbidden: true
+  original_round_1_intermediate_files_forbidden: true
+  original_round_1_must_be_sealed_before_recovery_solve_starts: true
+  original_round_1_scoring_allowed: false
+  original_round_1_effect_estimation_allowed: false
+
+execution_preconditions:
+  - original_round_1_arm_B_has_completed_or_stopped_under_original_preregistration
+  - original_round_1_final_status_has_been_written_and_frozen
+  - original_round_1_A_B_C_are_full_control_denied
+  - active_evaluation_processes_equal_zero
+  - reference_accessed_is_false
+  - recovery_preregistration_hash_matches
+  - passed_synthetic_smoke_evidence_hash_matches
+
+model_contract:
+  stages: [solve, audit, blind_revision]
+  requested_model: gpt-5.6-sol
+  required_actual_model: gpt-5.6-sol
+  reasoning_effort: max
+  fallback: false
+  ephemeral: true
+  sandbox: workspace-write
+  permission_profile: evaluation-workspace-write
+  approval_policy: never
+  new_thread_per_stage: true
+  cross_stage_resume: false
+  calls_per_arm:
+    solve: 1
+    audit: 1
+    blind_revision: 1
+    total: 3
+  fourth_arm_model_call_allowed: false
+  failed_call_replacement_allowed: false
+  arm_invalid_if_model_contract_mismatch: true
+
+stage_definitions:
+  solve:
+    input: official_problem_and_attachments_plus_arm_package_only
+    output: Blind_V1
+    hard_timeout_seconds: 21600
+    postconditions: [reproduce, freeze_Blind_V1]
+  audit:
+    input: own_frozen_Blind_V1_only
+    output: audit_findings_and_revision_plan
+    hard_timeout_seconds: 21600
+    postconditions: [freeze_audit_outputs]
+  blind_revision:
+    input: own_frozen_Blind_V1_and_own_frozen_audit_only
+    output: Blind_Final_candidate
+    hard_timeout_seconds: 21600
+    postconditions: [deterministic_revision_verification, reproduce, freeze_Blind_Final]
+  local_reproduction:
+    model_calls: 0
+    timeout_seconds_per_freeze: 3600
+    runs_per_freeze: 1
+  deterministic_revision_verification:
+    model_calls: 0
+    timeout_seconds: 7200
+    required_checks:
+      - map_each_audit_finding_to_revision_evidence
+      - rerun_code
+      - verify_output_inventory
+      - recompute_counterexamples
+      - reconcile_paper_numbers_with_machine_results
+      - verify_frozen_hashes
+    mathematical_judgment_policy:
+      unresolved_label: needs_review
+      route_to: final_anonymous_correctness_judge
+      hidden_model_call_allowed: false
+
+completion_detection:
+  terminal_grace_seconds: 120
+  completed_signal:
+    turn_completed_minimum: 1
+    final_message_must_be_nonempty: true
+    fatal_error_count: 0
+  reconnect_messages_are_nonfatal_only_if:
+    - a_turn_completed_event_exists
+    - final_message_is_nonempty
+    - no_non_reconnect_error_exists
+  cli_still_running_after_completed_signal:
+    action: enter_terminal_grace_then_terminate_exact_child_process_tree_and_salvage_complete_output
+    classify_as_model_failure: false
+  genuine_model_computation:
+    action: continue_until_hard_timeout
+  network_interruption:
+    action: classify_separately_and_stop_before_next_stage
+  model_error:
+    action: classify_separately_and_stop_before_next_stage
+  local_gate_execution:
+    action: never_count_as_model_computation
+  hard_timeout_uniform_across_arms: true
+
+workspace_isolation:
+  runtime_root: final-evaluation-runtime/recovery-round
+  arms: [A, B, C]
+  fresh_workspace_generation_per_arm_and_round: true
+  fresh_run_id_per_arm_and_round: true
+  fresh_thread_ids_per_stage: true
+  fresh_input_manifest: true
+  fresh_output_manifest: true
+  fresh_freeze_manifest: true
+  mutual_full_control_deny_when_inactive: true
+  only_current_arm_may_be_activated: true
+  other_arms_must_remain_denied: true
+  manager_must_not_use_arm_math_to_change_later_prompts: true
+  allowed_cross_round_input: frozen_protocol_and_allowed_read_only_sources_only
+
+common_inputs_and_environment:
+  official_inputs: byte_identical_read_only_copies_per_arm
+  frozen_evaluation_framework: identical
+  frozen_scoring_rubric: identical
+  paper_template_structure: identical
+  python_environment: identical
+  numerical_libraries: identical
+  xelatex_environment: identical
+  reproduction_gates: identical
+  freeze_gates: identical
+  objective_gates: identical
+  command_network: disabled
+  model_transport_only: true
+  web_search: forbidden
+  external_answer_lookup: forbidden
+  references: forbidden_before_locked_blind_scores
+  official_input_reuse_from_round_1: specification_only_read_only_copy
+
+arms:
+  A:
+    name: generic-baseline
+    prompt_package: frozen_neutral_math_modeling_protocol
+    allowed_packages: [official_inputs, neutral_protocol, common_paper_template, common_local_tools]
+    forbidden_packages:
+      - project_AGENTS
+      - project_skills
+      - training_memory
+      - Candidate
+      - historical_cases
+      - historical_solutions
+      - historical_reflections
+      - original_round_1_outputs
+    required_workflow_elements:
+      - data_audit
+      - simple_baseline
+      - candidate_model_comparison
+      - executable_code
+      - independent_validation
+      - robustness_or_sensitivity
+      - paper
+      - audit
+      - blind_revision
+  B:
+    name: workflow-only
+    prompt_package: frozen_project_workflow
+    allowed_packages:
+      - official_inputs
+      - frozen_AGENTS
+      - frozen_cumcm_a_solve
+      - frozen_cumcm_a_audit
+      - frozen_paper_template
+      - frozen_reproduction_freeze_and_gate_tools
+    forbidden_packages:
+      - training_memory
+      - Candidate
+      - historical_cases
+      - historical_solutions
+      - historical_reflections
+      - original_round_1_outputs
+  C:
+    name: full-trained-system
+    base_package: identical_to_B
+    only_additional_input: frozen_22_provisional_training_cards
+    card_content_modification_allowed: false
+    selection_limit: 5
+    selection_decisions: [adopt, adapt, reject]
+    zero_card_selection_allowed: true
+    required_memory_outputs:
+      - training-memory-selection.json
+      - training-memory-usage.md
+    required_memory_fields:
+      - card_id
+      - decision
+      - decision_impact
+      - added_validation
+      - complexity_change
+      - negative_transfer_risk
+    forbidden_packages:
+      - Candidate
+      - historical_cases
+      - historical_solutions
+      - historical_reflections
+      - original_round_1_outputs
+
+randomization:
+  seed_material:
+    passed_smoke_session_sha256: 96C4F8F6C3E892B1EDAA35A15899436F7B36CAE56A4EB882FA62308DFE1A58CB
+    original_preregistration_sha256: a485758eb5ed9407c9f96fcae5b5e1a34c4208aab03532c5bb86edf2f145c7f5
+    representation_rule: use_the_exact_case_sensitive_hex_strings_stored_above
+  seed_derivation: sha256(label + '|' + passed_smoke_session_sha256 + '|' + original_preregistration_sha256); unsigned_big_endian_uint64_from_first_16_hex_digits
+  permutation_rule: sort_A_B_C_by_ascending_sha256(label + '|' + decimal_seed + '|' + arm)
+  recovery_round_1:
+    order_seed: 13919091027039883215
+    order_seed_sha256: c12a8b8ae70a0fcf9253ae2e5879f0c6f18b46d15e7dd5c7baeb4b001189e94f
+    run_order: [A, C, B]
+    anonymous_mapping_seed: 8871864276596264488
+    anonymous_mapping_seed_sha256: 7b1f318dedff8e28f44ea880302f1c65fddcf56206ca4194ee0d706138862bb8
+  recovery_round_2_if_triggered:
+    order_seed: 16523704264747246908
+    order_seed_sha256: e54ffd7b81dde53c549146cc26f7e790e893626cfb5b4feb7f30253430284f6f
+    run_order: [C, B, A]
+    anonymous_mapping_seed: 5405300445088149587
+    anonymous_mapping_seed_sha256: 4b037c1dc5bd7053b09381fb54951f0de857422a81d6b58c9ba9a4c226c16b02
+  anonymous_labels_in_rank_order: [Solution_X, Solution_Y, Solution_Z]
+  mapping_storage: derive_then_write_to_separate_ACL_isolated_file
+  judges_must_not_read_mapping: true
+
+per_arm_execution_order:
+  - solve_in_new_thread
+  - reproduce_Blind_V1
+  - freeze_Blind_V1
+  - audit_in_new_thread
+  - blind_revision_in_new_thread
+  - deterministic_revision_verification_without_model_call
+  - reproduce_Blind_Final
+  - freeze_Blind_Final
+  - verify_model_metadata
+  - run_leakage_scan
+  - run_objective_gates
+  - restore_full_control_deny
+
+blind_submission_contract:
+  solve_output: Blind_V1
+  revision_output: Blind_Final
+  frozen_manifest_algorithm: sha256_per_file_and_tree
+  partial_revision_is_failure_evidence_only: true
+  partial_revision_score_eligible: false
+  Blind_V1_may_replace_Blind_Final: false
+  all_Blind_Final_must_freeze_before_judging: true
+  required_objective_gates:
+    - reproduction
+    - frozen_hash
+    - leakage
+    - paper_build
+    - model_contract
+
+anonymous_judging:
+  starts_only_after_all_three_Blind_Final_are_frozen: true
+  judges:
+    - correctness-judge
+    - method-judge
+    - paper-judge
+  independent_new_thread_per_judge: true
+  calls_per_judging_round: 3
+  judge_model_contract:
+    requested_model: gpt-5.6-sol
+    required_actual_model: gpt-5.6-sol
+    reasoning_effort: max
+    fallback: false
+    ephemeral: true
+  each_judge_reads_all_anonymous_solutions: true
+  each_judge_scores_all_categories: true
+  judge_forbidden_inputs:
+    - arm_identity_mapping
+    - training_memory_usage_records
+    - original_round_1_results
+    - run_order
+    - other_judge_outputs
+    - 2023A_reference_papers
+  judge_may_modify_submission: false
+  correctness_checks:
+    - question_coverage
+    - mathematical_correctness
+    - key_numbers
+    - units
+    - constraints
+    - boundaries
+    - identifiability
+    - numerical_stability
+    - counterexamples
+    - reproducibility
+  method_checks:
+    - method_fit
+    - baseline
+    - simplicity
+    - complexity_benefit
+    - validation_strength
+    - robustness
+    - interpretability
+    - practical_innovation_value
+  paper_checks:
+    - abstract
+    - structure
+    - derivation
+    - notation
+    - figures_and_tables
+    - conclusion
+    - limitations
+    - layout
+    - readability
+  category_weights:
+    result_accuracy_and_reliability: 50
+    method_quality_simplicity_and_innovation: 25
+    paper_expression_and_layout: 25
+  aggregation:
+    final_arm_score: median_of_three_judge_total_scores
+    category_score: median_across_three_judges
+    objective_gates_reported_separately: true
+  score_lock_before_unblinding: true
+
+effect_estimation:
+  workflow_effect: B_minus_A
+  memory_effect: C_minus_B
+  full_system_effect: C_minus_A
+  effect_evidence_class: post_consumption_exploratory_replication
+  clear_difference_points: 3
+  full_system_difference_points: 5
+  label_precedence:
+    - negative_transfer
+    - system_underperforms
+    - workflow_and_memory_positive
+    - workflow_positive_memory_inconclusive
+    - memory_positive_workflow_inconclusive
+    - full_system_positive
+    - inconclusive
+  labels:
+    workflow_and_memory_positive:
+      all_conditions:
+        - B_minus_A_at_least_3
+        - C_minus_B_at_least_3
+        - C_minus_A_at_least_5
+        - C_has_no_new_critical_error
+        - at_least_two_judges_prefer_C
+        - C_adopts_at_least_one_card
+        - concrete_card_decision_impact_is_recorded
+    workflow_positive_memory_inconclusive:
+      all_conditions:
+        - B_minus_A_at_least_3
+        - C_minus_B_below_3_or_C_adopts_zero_cards
+    memory_positive_workflow_inconclusive:
+      all_conditions:
+        - C_minus_B_at_least_3
+        - absolute_B_minus_A_below_3
+    full_system_positive:
+      all_conditions:
+        - C_minus_A_at_least_5
+        - C_has_no_critical_correctness_regression
+        - workflow_and_memory_contributions_not_separable
+    inconclusive:
+      any_condition:
+        - all_effects_within_plus_or_minus_3
+        - material_judge_disagreement
+        - key_numbers_not_independently_verifiable
+    negative_transfer:
+      any_condition:
+        - C_minus_B_at_most_negative_3
+        - training_memory_adds_critical_error
+        - training_memory_causes_clear_model_misfit
+    system_underperforms:
+      any_condition:
+        - C_minus_A_at_most_negative_5
+        - full_system_has_more_severe_errors_than_baseline
+  universal_claims_from_single_case_forbidden: true
+
+second_recovery_pairing:
+  trigger_all_conditions:
+    - first_recovery_round_label_is_inconclusive
+    - reference_accessed_is_false
+  maximum_complete_A_B_C_pairings: 2
+  maximum_additional_pairings_after_first: 1
+  rerun_all_arms: true
+  new_workspaces: true
+  new_run_ids: true
+  new_threads: true
+  same_frozen_protocol: true
+  same_22_training_memory_cards: true
+  prompt_adjustment_from_first_recovery_results: false
+  skill_changes_allowed: false
+  card_changes_allowed: false
+  scoring_changes_allowed: false
+  reference_access_allowed_between_pairings: false
+  repeat_until_positive_forbidden: true
+  aggregation_after_second_pairing: median_per_arm_across_two_pairings_then_apply_effect_rules
+
+reference_access:
+  allowed_only_after:
+    - original_round_1_is_formally_sealed
+    - all_triggered_recovery_pairings_have_ended
+    - all_recovery_Blind_Final_are_frozen
+    - all_anonymous_judging_is_complete
+    - scoring_report_is_frozen
+    - arm_mapping_is_locked
+    - submission_changes_are_permanently_disabled
+  irreversible_transition:
+    reference_accessed: true
+    reference_accessed_at: current_timestamp_at_transition
+  source: exam-vault
+  paper_count: 2_to_4
+  destination: reference-adjudication
+  reference_papers_are_absolute_truth: false
+  submissions_remain_immutable: true
+  adjudication_checks:
+    - key_results
+    - question_coverage
+    - model_assumptions
+    - constraints
+    - robustness
+    - common_errors_across_arms
+    - positive_or_negative_memory_transfer
+    - reference_paper_errors_or_limitations
+  update_skills_candidate_or_training_memory_forbidden: true
+
+failure_and_stop_policy:
+  stop_before_next_stage_on:
+    - authentication_failure
+    - usage_interruption
+    - requested_model_unavailable
+    - actual_model_mismatch
+    - fallback_observed
+    - sandbox_failure
+    - cross_arm_access
+    - frozen_hash_mismatch
+    - premature_reference_access
+    - indeterminate_state_machine
+  on_stop:
+    - preserve_current_output
+    - restore_A_B_C_full_control_deny
+    - write_exact_checkpoint
+    - clear_owned_PID_lock_and_nonce
+    - leave_consumed_true
+    - leave_reference_accessed_unchanged
+    - set_active_evaluation_processes_to_zero
+  prohibited_recovery_actions:
+    - switch_to_weaker_model
+    - add_unregistered_model_call
+    - replace_Blind_Final_with_Blind_V1
+    - modify_scoring
+    - modify_training_memory
+    - open_references_early
+
+publication_policy:
+  target_branch: final-evaluation-2023
+  sanitized_only: true
+  allowed:
+    - original_round_1_status
+    - recovery_preregistration
+    - evaluation_framework
+    - anonymous_scores
+    - effect_label
+    - selected_training_memory_ids
+    - non_problem_revealing_reference_summary
+    - tests_and_scans
+  forbidden:
+    - official_problem_statement
+    - official_attachments
+    - raw_data
+    - reference_papers
+    - full_solution_text
+    - sensitive_problem_reconstructable_numbers
+    - authentication_files
+    - local_absolute_paths
+    - full_model_logs
+    - private_runtime_directories
+
+permanent_final_stop:
+  training_status: final_evaluation_completed
+  training_paused: true
+  continuous_mode: false
+  active_processes: 0
+  consumed: true
+  retrain_allowed: false
+  retest_2023A_as_unconsumed_allowed: false
+  repeat_recovery_after_maximum_pairings_allowed: false

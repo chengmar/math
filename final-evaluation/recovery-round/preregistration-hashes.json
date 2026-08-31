@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "preregistration_sha256": "46eb88f1821400aa5e28f337fefde44d329b1f0f84d510b28f55d1e046140336",
+  "preflight_smoke_sha256": "afa99a1fcfc51b9b9e348928f483fcace9c6cdf63db95cf58dd5b229ecdf8a2a",
+  "preflight_checks_sha256": "aa2c0f8a7567ef188e8bad6c5e29c9e50b4635bd95120e5f5f828e4aa9074f85",
+  "original_preregistration_sha256": "a485758eb5ed9407c9f96fcae5b5e1a34c4208aab03532c5bb86edf2f145c7f5",
+  "hash_algorithm": "sha256"
+}

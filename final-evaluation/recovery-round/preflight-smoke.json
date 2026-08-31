@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "purpose": "2023A recovery model-availability smoke test",
+  "synthetic_only": true,
+  "official_2023A_content_accessed": false,
+  "round_1_arm_workspace_accessed": false,
+  "training_memory_accessed": false,
+  "reference_material_accessed": false,
+  "attempts": [
+    {
+      "attempt": 1,
+      "status": "infrastructure_probe_failed",
+      "failure_class": "python_not_on_sandbox_path",
+      "model_transport_available": true,
+      "requested_model": "gpt-5.6-sol",
+      "actual_model": "gpt-5.6-sol",
+      "reasoning_effort": "max",
+      "fallback": false,
+      "ephemeral": true,
+      "turn_completed": 1,
+      "final_marker_exact": false,
+      "thread_id": "01a057e0-089b-7972-b001-fcb91c9e277a",
+      "session_sha256": "1ddbe920d39d4b21ffbfa4a217c19857687583f794e2a32368ade63059601dd3",
+      "events_sha256": "800a47a0b4a95fee692e49c35a51ed8f68c8fb1685821b5ad5e9d12486bff985",
+      "final_message_sha256": "56975aabe24ecf71a07e67969687b3564a537381e386a6e69901fc62f5c65bfb"
+    },
+    {
+      "attempt": 2,
+      "status": "pass",
+      "correction": "Use the fixed bundled Python executable path in the synthetic prompt; no evaluation input or model contract changed.",
+      "requested_model": "gpt-5.6-sol",
+      "actual_model": "gpt-5.6-sol",
+      "reasoning_effort": "max",
+      "fallback": false,
+      "ephemeral": true,
+      "turn_completed": 1,
+      "fatal_errors": 0,
+      "command_count": 1,
+      "command_exit_code": 0,
+      "final_marker_exact": true,
+      "thread_id": "01a057e4-9e89-7632-b7a2-09f4f2ad4af5",
+      "started_at": "2026-08-31T20:56:35+08:00",
+      "finished_at": "2026-08-31T20:58:55+08:00",
+      "elapsed_seconds": 140.234,
+      "session_sha256": "96c4f8f6c3e892b1edaa35a15899436f7b36cae56a4eb882fa62308dfe1a58cb",
+      "events_sha256": "61fa3c82d410500f3918d32c87372c207e3b7520c892c191ea86c71b0cbeec37",
+      "final_message_sha256": "bfcc86b5866253d213b398dac7e4a0eac17f7ab1120afde24d2973c291a8fbb0"
+    }
+  ],
+  "final_status": "pass",
+  "temporary_workspace_disposition": "moved_to_recycle_bin_after_hash_capture"
+}

@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-08-31T21:04:35+08:00",
+  "scope": "deterministic recovery checks before original Round 1 arm B",
+  "status": "pass",
+  "git": {
+    "branch": "evaluation/2023-final-three-arm",
+    "head": "009a317f40091a4c03b2283646a3d5ddcf01537e",
+    "worktree_clean_before_recovery_preregistration": true,
+    "baseline_commit_present": true,
+    "sandbox_recovery_commit_present": true,
+    "consumption_commit_present": true
+  },
+  "original_preregistration": {
+    "sha256_expected": "a485758eb5ed9407c9f96fcae5b5e1a34c4208aab03532c5bb86edf2f145c7f5",
+    "sha256_actual": "a485758eb5ed9407c9f96fcae5b5e1a34c4208aab03532c5bb86edf2f145c7f5",
+    "pass": true,
+    "frozen_config_entries_verified": 45,
+    "frozen_config_failures": 0,
+    "prompt_entries_verified": 5,
+    "prompt_failures": 0
+  },
+  "consumption_state": {
+    "case_id": "2023A",
+    "consumption_id": "9b4e0586-791c-47b0-87a9-b2efe960f42f",
+    "consumed": true,
+    "reference_accessed": false
+  },
+  "round_1_runtime": {
+    "A_full_control_deny": true,
+    "B_full_control_deny": true,
+    "C_full_control_deny": true,
+    "B_run_files": 0,
+    "B_submission_files": 0,
+    "A_blind_v1_manifest_entries_verified": 64,
+    "A_blind_v1_manifest_failures": 0,
+    "A_blind_v1_manifest_sha256": "585de47ed2979784a0549b0af831912622a21cf33b99b3fa0c0be103556c9d00",
+    "A_isolated_reproduction_status": "pass",
+    "C_blind_v1_manifest_entries_verified": 43,
+    "C_blind_v1_manifest_failures": 0,
+    "C_isolated_reproduction_files_checked": 41,
+    "C_isolated_reproduction_hash_mismatches": 0,
+    "C_frozen_source_modified": false,
+    "A_blind_final_frozen": false,
+    "C_blind_final_frozen": false,
+    "partial_revision_directories_score_eligible": false
+  },
+  "runtime_safety": {
+    "active_evaluation_processes": 0,
+    "evaluation_pid_files": 0,
+    "evaluation_lock_files": 0,
+    "evaluation_nonce_files": 0,
+    "desktop_codex_processes_classified_as_evaluation_runner": 0,
+    "sandbox_group_present": true,
+    "sandbox_identity_present": true,
+    "sandbox_permission_profile": "evaluation-workspace-write",
+    "windows_sandbox": "elevated",
+    "private_desktop": true,
+    "command_network": false
+  },
+  "model_catalog": {
+    "cli_version": "codex-cli 0.150.0-alpha.8",
+    "model": "gpt-5.6-sol",
+    "reasoning_effort": "max",
+    "supported": true,
+    "fallback": false
+  },
+  "scans": {
+    "tracked_git_corpus_leak_status": "pass",
+    "tracked_files_checked": 574,
+    "tracked_git_corpus_findings": 0,
+    "secret_pattern_scan_status": "pass",
+    "secret_pattern_findings": 0,
+    "tracked_sensitive_artifact_name_findings": 0
+  },
+  "content_boundaries": {
+    "official_problem_content_read_by_manager": false,
+    "reference_papers_read": false,
+    "B_results_read": false,
+    "partial_A_or_C_revision_used_to_design_recovery_protocol": false
+  },
+  "next_action_allowed": "freeze_and_commit_recovery_preregistration_only"
+}
