@@ -4,6 +4,7 @@ import argparse
 import getpass
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -158,6 +159,179 @@ def parse_events(events_path: Path) -> dict[str, object]:
     return {"thread_id": thread_id, "turn_completed": completed, "warnings": warnings, "fatal_errors": fatal_errors}
 
 
+def terminate_exact_process_tree(process: subprocess.Popen[str]) -> dict[str, object]:
+    """Terminate only the process tree started by this runner."""
+
+    result: dict[str, object] = {
+        "pid": process.pid,
+        "requested": False,
+        "method": None,
+        "return_code": process.poll(),
+    }
+    if process.poll() is not None:
+        return result
+    result["requested"] = True
+    if os.name == "nt":
+        completed = subprocess.run(
+            ["taskkill", "/PID", str(process.pid), "/T", "/F"],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            timeout=30,
+            check=False,
+        )
+        result.update(
+            {
+                "method": "taskkill_exact_pid_tree",
+                "taskkill_return_code": completed.returncode,
+                "taskkill_stdout": completed.stdout[-2000:],
+                "taskkill_stderr": completed.stderr[-2000:],
+            }
+        )
+    else:
+        result["method"] = "terminate_process_group"
+        try:
+            os.killpg(process.pid, 15)
+        except ProcessLookupError:
+            pass
+    try:
+        process.wait(timeout=30)
+    except subprocess.TimeoutExpired:
+        process.kill()
+        process.wait(timeout=30)
+        result["forced_parent_kill"] = True
+    result["return_code"] = process.returncode
+    return result
+
+
+def resolve_runtime_tools(runtime_root: Path) -> dict[str, str | None]:
+    """Resolve the fixed Python and portable XeLaTeX used by evaluation stages."""
+
+    python_executable = Path(sys.executable).resolve(strict=True)
+    lab_root = runtime_root.resolve(strict=True).parent
+    portable_xelatex = (
+        lab_root
+        / "runtime"
+        / "miktex-portable"
+        / "texmfs"
+        / "install"
+        / "miktex"
+        / "bin"
+        / "x64"
+        / "xelatex.exe"
+    )
+    located_xelatex = portable_xelatex if portable_xelatex.is_file() else None
+    if located_xelatex is None:
+        fallback = shutil.which("xelatex.exe") or shutil.which("xelatex")
+        located_xelatex = Path(fallback).resolve() if fallback else None
+    return {
+        "python_executable": str(python_executable),
+        "python_directory": str(python_executable.parent),
+        "xelatex_executable": str(located_xelatex) if located_xelatex else None,
+        "xelatex_directory": str(located_xelatex.parent) if located_xelatex else None,
+    }
+
+
+def prepare_environment(codex_home: Path, runtime_tools: dict[str, str | None]) -> dict[str, str]:
+    environment = dict(os.environ)
+    environment["CODEX_HOME"] = str(codex_home)
+    environment["PYTHONUTF8"] = "1"
+    environment["PYTHONIOENCODING"] = "utf-8"
+    environment["RUST_LOG"] = "codex_core::session::session=debug"
+    path_entries = [runtime_tools["python_directory"], runtime_tools["xelatex_directory"], environment.get("PATH")]
+    environment["PATH"] = os.pathsep.join(str(item) for item in path_entries if item)
+    environment["CUMCM_PYTHON_EXECUTABLE"] = str(runtime_tools["python_executable"])
+    if runtime_tools["xelatex_executable"]:
+        environment["CUMCM_XELATEX_EXECUTABLE"] = str(runtime_tools["xelatex_executable"])
+    return environment
+
+
+def run_codex_process(
+    command: list[str],
+    *,
+    prompt_text: str,
+    workspace: Path,
+    environment: dict[str, str],
+    events_path: Path,
+    stderr_path: Path,
+    final_message_path: Path,
+    timeout_seconds: int,
+    terminal_grace_seconds: float,
+) -> dict[str, object]:
+    """Supervise a stage, distinguishing model timeout from a completed CLI hang."""
+
+    popen_kwargs: dict[str, object] = {}
+    if os.name == "nt":
+        popen_kwargs["creationflags"] = subprocess.CREATE_NEW_PROCESS_GROUP
+    else:
+        popen_kwargs["start_new_session"] = True
+    with events_path.open("w", encoding="utf-8", newline="\n") as stdout_handle, stderr_path.open(
+        "w", encoding="utf-8", newline="\n"
+    ) as stderr_handle:
+        process = subprocess.Popen(
+            command,
+            stdin=subprocess.PIPE,
+            stdout=stdout_handle,
+            stderr=stderr_handle,
+            cwd=workspace,
+            env=environment,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            shell=False,
+            **popen_kwargs,
+        )
+        assert process.stdin is not None
+        process.stdin.write(prompt_text)
+        process.stdin.close()
+        started = time.monotonic()
+        terminal_seen_at: float | None = None
+        while True:
+            return_code = process.poll()
+            summary = parse_events(events_path)
+            if return_code is not None:
+                return {
+                    "pid": process.pid,
+                    "return_code": int(return_code),
+                    "terminal_recovered": False,
+                    "timed_out": False,
+                    "termination": None,
+                    "event_summary": summary,
+                }
+            terminal_complete = (
+                int(summary["turn_completed"]) >= 1
+                and not summary["fatal_errors"]
+                and final_message_path.is_file()
+                and final_message_path.stat().st_size > 0
+            )
+            if terminal_complete:
+                terminal_seen_at = terminal_seen_at or time.monotonic()
+                if time.monotonic() - terminal_seen_at >= terminal_grace_seconds:
+                    termination = terminate_exact_process_tree(process)
+                    return {
+                        "pid": process.pid,
+                        "return_code": process.returncode,
+                        "terminal_recovered": True,
+                        "timed_out": False,
+                        "termination": termination,
+                        "event_summary": parse_events(events_path),
+                    }
+            else:
+                terminal_seen_at = None
+                if time.monotonic() - started >= timeout_seconds:
+                    termination = terminate_exact_process_tree(process)
+                    return {
+                        "pid": process.pid,
+                        "return_code": process.returncode,
+                        "terminal_recovered": False,
+                        "timed_out": True,
+                        "termination": termination,
+                        "event_summary": parse_events(events_path),
+                    }
+            time.sleep(1.0)
+
+
 def run(args: argparse.Namespace) -> int:
     runtime_root = Path(args.runtime_root)
     workspace = confined_directory(Path(args.workspace), runtime_root)
@@ -174,32 +348,47 @@ def run(args: argparse.Namespace) -> int:
     events = run_dir / "events.jsonl"
     stderr = run_dir / "stderr.txt"
     command = build_command(executable, workspace, final_message)
-    environment = dict(os.environ)
-    environment["CODEX_HOME"] = str(codex_home)
-    environment["PYTHONUTF8"] = "1"
+    runtime_tools = resolve_runtime_tools(runtime_root)
+    environment = prepare_environment(codex_home, runtime_tools)
     sandbox_config = validate_evaluation_config(codex_home)
     catalog = validate_catalog(executable, environment)
     if not args.execute:
-        print(json.dumps({"status": "dry_run", "command": command, "catalog": catalog}, ensure_ascii=False, indent=2))
+        print(
+            json.dumps(
+                {"status": "dry_run", "command": command, "catalog": catalog, "runtime_tools": runtime_tools},
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
         return 0
     started_at = now_iso()
     started = time.monotonic()
-    with prompt.open("r", encoding="utf-8-sig") as stdin_handle, events.open("w", encoding="utf-8") as stdout_handle, stderr.open("w", encoding="utf-8") as stderr_handle:
-        completed = subprocess.run(
-            command,
-            stdin=stdin_handle,
-            stdout=stdout_handle,
-            stderr=stderr_handle,
-            cwd=workspace,
-            env=environment,
-            text=True,
-            encoding="utf-8",
-            errors="replace",
-            timeout=args.timeout_seconds,
-            check=False,
-        )
-    event_summary = parse_events(events)
-    valid = completed.returncode == 0 and event_summary["thread_id"] and event_summary["turn_completed"] >= 1 and not event_summary["fatal_errors"]
+    outcome = run_codex_process(
+        command,
+        prompt_text=prompt.read_text(encoding="utf-8-sig"),
+        workspace=workspace,
+        environment=environment,
+        events_path=events,
+        stderr_path=stderr,
+        final_message_path=final_message,
+        timeout_seconds=args.timeout_seconds,
+        terminal_grace_seconds=args.terminal_grace_seconds,
+    )
+    event_summary = outcome["event_summary"]
+    stderr_text = stderr.read_text(encoding="utf-8-sig", errors="replace")
+    configured_models = re.findall(r"Configuring session: model=([^;\s]+);", stderr_text)
+    debug_model_mismatch = bool(configured_models) and configured_models != [MODEL]
+    completed_process = outcome["return_code"] == 0 or outcome["terminal_recovered"]
+    valid = bool(
+        completed_process
+        and not outcome["timed_out"]
+        and event_summary["thread_id"]
+        and event_summary["turn_completed"] >= 1
+        and not event_summary["fatal_errors"]
+        and final_message.is_file()
+        and final_message.stat().st_size > 0
+        and not debug_model_mismatch
+    )
     metadata = {
         "schema_version": 1,
         "phase": args.phase,
@@ -216,10 +405,24 @@ def run(args: argparse.Namespace) -> int:
         "started_at": started_at,
         "finished_at": now_iso(),
         "elapsed_seconds": round(time.monotonic() - started, 3),
-        "exit_code": completed.returncode,
+        "exit_code": outcome["return_code"],
         "executor_identity": getpass.getuser(),
         "catalog": catalog,
         "sandbox_config": sandbox_config,
+        "runtime_tools": runtime_tools,
+        "process_pid": outcome["pid"],
+        "timed_out": outcome["timed_out"],
+        "terminal_recovered": outcome["terminal_recovered"],
+        "completion_classification": (
+            "terminal_event_complete_cli_tree_reaped"
+            if outcome["terminal_recovered"]
+            else "hard_timeout"
+            if outcome["timed_out"]
+            else "normal_process_exit"
+        ),
+        "process_tree_termination": outcome["termination"],
+        "configured_models_from_debug": configured_models,
+        "actual_model_evidence": "debug_metadata" if configured_models else "exact_cli_contract_plus_catalog",
         "event_summary": event_summary,
     }
     (run_dir / "session.json").write_text(json.dumps(metadata, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -237,6 +440,7 @@ def parser() -> argparse.ArgumentParser:
     result.add_argument("--codex-executable", default="codex")
     result.add_argument("--phase", required=True, choices=sorted(ALLOWED_PHASES))
     result.add_argument("--timeout-seconds", type=int, default=10800)
+    result.add_argument("--terminal-grace-seconds", type=float, default=120.0)
     result.add_argument("--execute", action="store_true")
     return result
 
