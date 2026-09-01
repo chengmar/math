@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "evaluation_id": "CUMCM-2023A-final-three-arm",
+  "sealed_at": "2026-09-01T23:51:00+08:00",
+  "status": "preregistered_incomplete_due_usage_and_timeout",
+  "preregistration_sha256": "a485758eb5ed9407c9f96fcae5b5e1a34c4208aab03532c5bb86edf2f145c7f5",
+  "consumption": {
+    "consumed": true,
+    "consumption_id": "9b4e0586-791c-47b0-87a9-b2efe960f42f",
+    "reference_accessed": false
+  },
+  "preregistered_order": ["C", "A", "B"],
+  "calls_used": 9,
+  "unregistered_calls": 0,
+  "arms": {
+    "C": {
+      "solve": {
+        "run_id": "round-1/C/runs/solve",
+        "thread_id": "01a04caa-6e53-74a0-a994-075b69cfaeb0",
+        "status": "pass",
+        "requested_model": "gpt-5.6-sol",
+        "actual_model": "gpt-5.6-sol",
+        "reasoning": "max",
+        "fallback": false,
+        "turn_completed": 1
+      },
+      "audit": {
+        "run_id": "round-1/C/runs/audit",
+        "thread_id": "01a04d2d-fa4b-7f62-9f7f-057349da26b4",
+        "status": "pass",
+        "requested_model": "gpt-5.6-sol",
+        "actual_model": "gpt-5.6-sol",
+        "reasoning": "max",
+        "fallback": false,
+        "turn_completed": 1
+      },
+      "blind_revision": {
+        "run_id": "round-1/C/runs/blind-revision",
+        "thread_id": "01a04d69-c08e-7390-9178-64c52e359611",
+        "status": "fail_hard_timeout",
+        "requested_model": "gpt-5.6-sol",
+        "configured_model": "gpt-5.6-sol",
+        "actual_model": null,
+        "reasoning": "max",
+        "fallback": false,
+        "turn_completed": 0,
+        "started_at_evidence": "2026-08-29T20:06:11+08:00",
+        "last_event_at": "2026-08-29T23:05:59+08:00",
+        "session_record": null
+      },
+      "blind_v1_frozen": true,
+      "blind_final_frozen": false,
+      "valid_for_scoring": false
+    },
+    "A": {
+      "solve": {
+        "run_id": "round-1/A/runs/solve",
+        "thread_id": "01a04e13-8418-79f1-b0b3-be51bb35ce9c",
+        "status": "pass",
+        "requested_model": "gpt-5.6-sol",
+        "actual_model": "gpt-5.6-sol",
+        "reasoning": "max",
+        "fallback": false,
+        "turn_completed": 1
+      },
+      "audit": {
+        "run_id": "round-1/A/runs/audit",
+        "thread_id": "01a04e76-d3dc-7313-8052-d1e7b1c73501",
+        "status": "pass",
+        "requested_model": "gpt-5.6-sol",
+        "actual_model": "gpt-5.6-sol",
+        "reasoning": "max",
+        "fallback": false,
+        "turn_completed": 1
+      },
+      "blind_revision": {
+        "run_id": "round-1/A/runs/blind-revision",
+        "thread_id": "01a04e98-5f0b-78c1-8d8f-b3369bb38fb4",
+        "status": "fail_usage_limit",
+        "requested_model": "gpt-5.6-sol",
+        "configured_model": "gpt-5.6-sol",
+        "actual_model": null,
+        "reasoning": "max",
+        "fallback": false,
+        "turn_completed": 0,
+        "elapsed_seconds": 5446.188,
+        "fatal_error": "usage_limit"
+      },
+      "blind_v1_frozen": true,
+      "blind_final_frozen": false,
+      "valid_for_scoring": false
+    },
+    "B": {
+      "solve": {
+        "run_id": "round-1/B/runs/solve",
+        "thread_id": "01a05c6b-cedd-7433-a52a-69d6ff3c7b3a",
+        "status": "pass",
+        "requested_model": "gpt-5.6-sol",
+        "actual_model": "gpt-5.6-sol",
+        "reasoning": "max",
+        "fallback": false,
+        "turn_completed": 1,
+        "elapsed_seconds": 6143.235
+      },
+      "audit": {
+        "run_id": "round-1/B/runs/audit",
+        "thread_id": "01a05cd0-beb4-7583-bc5b-d069e84863ba",
+        "status": "pass",
+        "requested_model": "gpt-5.6-sol",
+        "actual_model": "gpt-5.6-sol",
+        "reasoning": "max",
+        "fallback": false,
+        "turn_completed": 1,
+        "elapsed_seconds": 3393.891,
+        "audit_disposition": "major_revision_required"
+      },
+      "blind_revision": {
+        "run_id": "round-1/B/runs/blind-revision",
+        "thread_id": "01a05d05-8f1d-7602-9587-8174eed2d2ed",
+        "status": "fail_hard_timeout",
+        "requested_model": "gpt-5.6-sol",
+        "configured_model": "gpt-5.6-sol",
+        "actual_model": null,
+        "reasoning": "max",
+        "fallback": false,
+        "turn_completed": 0,
+        "elapsed_seconds": 10800.765,
+        "completion_classification": "hard_timeout",
+        "process_tree_terminated": true
+      },
+      "blind_v1_frozen": true,
+      "blind_final_frozen": false,
+      "valid_for_scoring": false
+    }
+  },
+  "effect_estimation": "unavailable",
+  "blind_scoring_allowed": false,
+  "winning_arm": null,
+  "budget_compliance": {
+    "three_model_stages_per_arm": true,
+    "new_ephemeral_thread_per_stage": true,
+    "a_or_c_makeup_calls": 0,
+    "b_retries": 0,
+    "model_switches": 0
+  },
+  "isolation_at_seal": {
+    "A_full_control_deny": true,
+    "B_full_control_deny": true,
+    "C_full_control_deny": true,
+    "active_round1_processes": 0,
+    "pid_lock_nonce_count": 0
+  },
+  "conclusion": "No arm produced a valid frozen Blind Final. Blind V1 artifacts and incomplete Blind Final worktrees are not substitutes. Round 1 is permanently sealed without scores, effects, or a winner."
+}
