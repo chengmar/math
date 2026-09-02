@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "case_id": "2023A",
-  "status": "final_test_running",
+  "status": "final_evaluation_stopped_hard_timeout",
   "consumed": true,
   "consumed_at": "2026-08-29T16:34:08+08:00",
   "consumption_id": "9b4e0586-791c-47b0-87a9-b2efe960f42f",

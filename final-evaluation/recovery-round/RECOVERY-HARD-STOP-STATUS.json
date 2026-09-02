@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "evaluation_id": "CUMCM-2023A-recovery-three-arm",
+  "checkpoint_at": "2026-09-02T09:13:49+08:00",
+  "status": "recovery_incomplete_hard_timeout",
+  "evidence_class": "post_consumption_exploratory_replication",
+  "recovery_preregistration_sha256": "46eb88f1821400aa5e28f337fefde44d329b1f0f84d510b28f55d1e046140336",
+  "original_preregistration_sha256": "a485758eb5ed9407c9f96fcae5b5e1a34c4208aab03532c5bb86edf2f145c7f5",
+  "consumption": {
+    "consumed": true,
+    "consumption_id": "9b4e0586-791c-47b0-87a9-b2efe960f42f",
+    "reference_accessed": false
+  },
+  "pairing": 1,
+  "preregistered_order": ["A", "C", "B"],
+  "stopped_at_arm": "A",
+  "stopped_at_stage": "blind_revision",
+  "calls_used": 3,
+  "unregistered_calls": 0,
+  "failed_call_replacements": 0,
+  "arm_A": {
+    "solve": {
+      "run_id": "recovery-round/pairing-1/A/runs/solve",
+      "thread_id": "01a05db5-d265-7bc1-a9cf-dbd2e9b3da8a",
+      "status": "pass",
+      "requested_model": "gpt-5.6-sol",
+      "actual_model": "gpt-5.6-sol",
+      "reasoning": "max",
+      "fallback": false,
+      "ephemeral": true,
+      "elapsed_seconds": 6872.812
+    },
+    "blind_v1": {
+      "frozen": true,
+      "file_count": 53,
+      "total_bytes": 1688578,
+      "tree_sha256": "584ca4dd25a0a910be759f9efd0236ae5fc58261d00f8bf475417c6b856c3a7c",
+      "manifest_sha256": "5ae6d768fa410748c9bd11cebf28d54b8ed8b6bd67ad6a97c98bf81950e286c9"
+    },
+    "audit": {
+      "run_id": "recovery-round/pairing-1/A/runs/audit",
+      "thread_id": "01a05e2c-f285-7681-999e-3a2a42a33767",
+      "status": "pass",
+      "requested_model": "gpt-5.6-sol",
+      "actual_model": "gpt-5.6-sol",
+      "reasoning": "max",
+      "fallback": false,
+      "ephemeral": true,
+      "elapsed_seconds": 3433.906,
+      "finding_count": 10,
+      "tree_sha256": "1cc05a13174703a77627ab0f14539ed0a3782425b3425d042fea31f4de6f5928",
+      "manifest_sha256": "a62f7f3b2e4624bb38e919418efa4b35820e0a64bcf9438b5201102e8c7ad670"
+    },
+    "blind_revision": {
+      "run_id": "recovery-round/pairing-1/A/revision-workspace/runs/blind-revision",
+      "thread_id": "01a05e64-522c-79c2-bae3-24b0c7d354d9",
+      "status": "fail_hard_timeout",
+      "requested_model": "gpt-5.6-sol",
+      "configured_model": "gpt-5.6-sol",
+      "actual_model": null,
+      "reasoning": "max",
+      "fallback": false,
+      "ephemeral": true,
+      "started_at": "2026-09-02T03:13:47+08:00",
+      "finished_at": "2026-09-02T09:13:49+08:00",
+      "elapsed_seconds": 21600.391,
+      "hard_timeout_seconds": 21600,
+      "turn_completed": 0,
+      "completion_classification": "hard_timeout",
+      "process_tree_terminated": true,
+      "partial_revision_is_failure_evidence_only": true,
+      "partial_revision_score_eligible": false,
+      "blind_final_frozen": false,
+      "valid_for_scoring": false
+    }
+  },
+  "arm_C": {
+    "model_calls_started": 0,
+    "blind_final_frozen": false,
+    "valid_for_scoring": false
+  },
+  "arm_B": {
+    "model_calls_started": 0,
+    "blind_final_frozen": false,
+    "valid_for_scoring": false
+  },
+  "downstream": {
+    "second_pairing_executed": false,
+    "anonymous_judging_executed": false,
+    "effect_estimation": "unavailable",
+    "reference_adjudication_executed": false,
+    "production_release_executed": false,
+    "github_publication_executed": false
+  },
+  "stop_policy": {
+    "failed_call_replacement_allowed": false,
+    "fourth_arm_model_call_allowed": false,
+    "blind_v1_may_replace_blind_final": false,
+    "all_blind_final_must_freeze_before_judging": true,
+    "next_stage_allowed": false
+  },
+  "isolation_at_stop": {
+    "A_full_control_deny": true,
+    "B_full_control_deny": true,
+    "C_full_control_deny": true,
+    "owned_evaluation_processes": 0,
+    "reference_accessed": false
+  },
+  "conclusion": "The sole preregistered A blind-revision call reached the 21600-second hard timeout without a completed turn. Replacement and retry are forbidden. Its partial worktree is failure evidence only, so the recovery experiment cannot proceed to C, B, judging, effect estimation, reference adjudication, or production release."
+}
