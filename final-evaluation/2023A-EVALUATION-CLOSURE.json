@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "evaluation_case": "2023A",
+  "closed_at": "2026-09-08T00:00:00+08:00",
+  "status": "permanently_archived_incomplete",
+  "consumed": true,
+  "reference_accessed": false,
+  "original_preregistered_round": {
+    "status": "incomplete",
+    "effect_estimation": "unavailable",
+    "blind_scoring_valid": false,
+    "authoritative_status": "final-evaluation/round-1/ROUND-1-FINAL-STATUS.json"
+  },
+  "recovery_round": {
+    "status": "incomplete",
+    "effect_estimation": "unavailable",
+    "blind_scoring_valid": false,
+    "authoritative_status": "final-evaluation/recovery-round/RECOVERY-HARD-STOP-STATUS.json"
+  },
+  "primary_failure": {
+    "kind": "monolithic_blind_revision_hard_timeout",
+    "timeout_seconds": 21600,
+    "elapsed_seconds": 21600.391,
+    "turn_completed": 0
+  },
+  "secondary_failure": {
+    "kind": "usage_interruption"
+  },
+  "blind_scoring_valid": false,
+  "workflow_effect": null,
+  "memory_effect": null,
+  "full_system_effect": null,
+  "winning_arm": null,
+  "future_use_as_clean_final_test": "prohibited",
+  "future_allowed_use": [
+    "consumed_case",
+    "post_hoc_diagnostic_case_without_training_updates"
+  ],
+  "interpretation": {
+    "evaluation_completion_failed": true,
+    "system_effectiveness_proven": false,
+    "system_ineffectiveness_proven": false
+  },
+  "policy": {
+    "additional_2023A_model_sessions_allowed": false,
+    "blind_v1_may_replace_blind_final": false,
+    "open_2023A_references_for_effect_conclusion": false,
+    "write_2023A_results_back_to_training": false
+  }
+}
