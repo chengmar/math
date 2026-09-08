@@ -1,0 +1,178 @@
+schema_version: 2
+evaluation_id: CUMCM-2022A-project-heldout-replacement-final
+evaluation_case: 2022A
+status: preregistered_before_problem_body_access
+created_at: '2026-09-08T12:10:00+08:00'
+evidence_class: project_heldout_replacement_evaluation
+first_test_for_case: true
+eligibility_status: eligible_with_metadata_exposure
+foundation_model_caveat: public_historical_problem_may_have_been_seen_in_foundation_pretraining
+
+immutable_inputs:
+  baseline_commit: 807457b5ba46813a95959e2497aa0997e475799c
+  source_training_commit: 24c8ef9bc6cf2fd447b40c649f860553f6ba4297
+  eligibility_sha256: b7a5b7290a4026020717cce14eb6f6e36a6b20fd46f763df59479ea72eddc7a3
+  prompt_manifest_sha256: c55c8708318184d95f6c4840628a4eb2bf6d19b779638c01229054ca4af866fc
+  frozen_config_manifest_sha256: 8263afc2476c5c195666afa0e8e2f0935cde292e6a91abdc52327d34f683a2ba
+  knowledge_snapshot_sha256: 6c261d4a226863a2524017e9ee50c1be25985de1b74637be89581daffccd1561
+  agents_sha256: 2f9b19cf0d4cb8e2964aeb58cddcb9dca7abcfd999c9a63ac9e945faac4b7a10
+  training_memory_tree_sha256: 4efa9dea17d350dadd8fd1d9a7608301b106cf1a2a849ffd5bc25a2d8ad72226
+  skills_sha256:
+    cumcm-a-solve: 45aab1c11080ed5ec907bb8499e9e48436bf178474702b70c58bf6620eba8df1
+    cumcm-a-audit: 6832414ee9c863e557147d37727dc427687fb9274a0b817d0e88928a1a8d1591
+    cumcm-a-reflect: b797e56b747e9a5a39fdbb91eb125ed710919c88f49fde7faa0ef6b0facab091
+    cumcm-a-evaluate: ae47af98ac4590f3dff333eaec8952948b651291ab6378459c7061dd82355915
+
+model_contract:
+  requested_model: gpt-5.6-sol
+  required_actual_model: gpt-5.6-sol
+  reasoning_effort: max
+  fallback: false
+  ephemeral: true
+  sandbox: workspace-write
+  approvals: never
+  new_thread_per_stage: true
+
+arms:
+  A:
+    name: generic-baseline
+    formal_calls: 4
+    allowed_resources: [official_inputs, neutral_prompts, paper_template, fixed_python_numeric_stack, xelatex]
+    forbidden_resources: [project_AGENTS, project_skills, training_memory, Candidate, historical_cases, historical_answers, 2023A_outputs]
+  B:
+    name: workflow-only
+    formal_calls: 4
+    allowed_resources: [official_inputs, frozen_AGENTS, frozen_solve_skill, frozen_audit_skill, paper_template, freeze_and_reproduction_tools, fixed_python_numeric_stack, xelatex]
+    forbidden_resources: [training_memory, Candidate, historical_cases, historical_answers, 2023A_outputs]
+  C:
+    name: full-trained
+    formal_calls: 4
+    allowed_resources: [official_inputs, frozen_AGENTS, frozen_solve_skill, frozen_audit_skill, paper_template, freeze_and_reproduction_tools, fixed_python_numeric_stack, xelatex, 22_provisional_training_cards]
+    unique_difference_from_B: 22_provisional_training_cards
+    memory_retrieval_limit: 5
+    memory_decisions: [adopt, adapt, reject]
+    required_memory_fields: [decision_influenced, validation_added, complexity_added, observed_risks]
+    zero_adoption_allowed: true
+    forbidden_resources: [Candidate, historical_cases, historical_answers, 2023A_outputs]
+
+randomization:
+  algorithm: python_random_v3_mersenne_twister_shuffle
+  round_1_seed: 20220908
+  round_1_order: [B, C, A]
+  anonymous_mapping_seed: 20220909
+  round_2: disabled_by_default
+
+stages:
+  - name: Solve
+    formal_calls: 1
+    timeout_seconds: 21600
+    output: FROZEN_BLIND_V1
+    checkpoints: [problem-analysis, data-audit, assumptions, variables, model-selection, code, results, figures, paper, reproducibility]
+  - name: Audit
+    formal_calls: 1
+    timeout_seconds: 14400
+    read_only_submission: FROZEN_BLIND_V1
+    outputs: [findings, counterexamples, revision-plan, reproduction-report]
+    submission_modification_forbidden: true
+  - name: Revision-Correctness
+    formal_calls: 1
+    timeout_seconds: 14400
+    scope: [critical_and_high_math, code, formulas, units, constraints, boundaries, stability, key_numbers, counterexamples, result_files]
+    paper_polish_out_of_scope: true
+    progress_file: submission/revision-work/revision-progress.json
+    update_progress_after_each_finding: true
+  - name: Revision-Paper-And-Verification
+    formal_calls: 1
+    timeout_seconds: 14400
+    scope: [paper_integration, figures, abstract, notation, result_consistency, reproducibility, finding_mapping, final_delivery_check]
+    redesign_forbidden_unless_prior_critical_unresolved: true
+    output: FROZEN_BLIND_FINAL_candidate
+
+deterministic_revision_verification:
+  additional_model_calls: 0
+  checks: [finding_map, code_rerun, counterexample_recalculation, numeric_consistency, paper_consistency, sha256_manifest, lint, xelatex, freeze]
+
+technical_recovery:
+  policy_identical_for_all_arms: true
+  formal_calls_per_stage: 1
+  max_technical_retries_per_stage: 1
+  retry_allowed_only_if: [request_not_submitted, actual_model_empty, turn_completed_zero, no_usable_mathematical_output, cli_start_failure, connection_failed_before_any_model_output]
+  retry_forbidden_if: [completed_but_low_quality, mathematically_wrong, timeout_after_usable_output, desire_for_better_answer, arm_underperforms]
+  terminal_recovery_if_final_message_written_but_cli_still_running: true
+  repeat_call_after_terminal_recovery: false
+  max_continuations_per_arm: 1
+  continuation_trigger: useful_partial_disk_output_but_stage_incomplete
+  continuation_scope: unfinished_checklist_only
+  preserve_partial_outputs: true
+  cross_arm_read_forbidden: true
+  record_actual_calls: true
+
+fairness_contract:
+  official_inputs: byte_identical_per_arm
+  python_and_numeric_tools: identical
+  xelatex: identical
+  stage_count: 4
+  formal_calls_per_arm: 4
+  stage_timeouts_identical: true
+  output_contract: identical
+  reproduction_gate: identical
+  only_one_active_arm: true
+  new_ephemeral_thread_each_call: true
+  references_forbidden_before_scores_frozen: true
+  other_arms_forbidden: true
+  web_and_external_answer_lookup_forbidden: true
+
+isolation_contract:
+  mechanism: codex_native_windows_sandbox_plus_explicit_acl_deny
+  deny_other_arm_fullcontrol: true
+  probes_before_and_after_each_arm: true
+  forbidden_roots: [other_arms, 2022A_references, 2023A, historical_runtime_cases, Intake, complete_Vault, user_codex_home]
+  isolation_failure_action: stop_evaluation_and_continue_workflow_only_release
+
+freeze_contract:
+  required_markers: [FROZEN_BLIND_V1, FROZEN_BLIND_FINAL]
+  manifest_algorithm: sha256_per_file_and_tree
+  required_metadata: [input_hashes, code_hashes, result_hashes, paper_source_hashes, pdf_status, model_metadata, call_records, isolation_records]
+  deterministic_reproduction_required: true
+
+judging:
+  begins_only_after_all_blind_finals_frozen: true
+  anonymous_labels: [Solution_X, Solution_Y, Solution_Z]
+  judges: [correctness-judge, method-judge, paper-judge]
+  judge_model_contract: {requested_model: gpt-5.6-sol, required_actual_model: gpt-5.6-sol, reasoning_effort: max, fallback: false, ephemeral: true}
+  judge_independence: true
+  judges_blind_to: [A_B_C, skill_use, memory_use, run_order, memory_selection, other_judges, references]
+  weights:
+    result_accuracy_and_reliability: 50
+    method_quality_simplicity_and_innovation: 25
+    paper_expression_and_layout: 25
+  aggregation:
+    arm_total: median_of_three_judge_totals
+    category_total: median_of_three_judge_category_scores
+
+effect_definitions:
+  workflow_effect: B_minus_A
+  memory_effect: C_minus_B
+  full_system_effect: C_minus_A
+  labels:
+    workflow_and_memory_positive: [B_minus_A_at_least_3, C_minus_B_at_least_3, C_minus_A_at_least_5, C_no_new_critical, at_least_two_judges_prefer_C, C_adopts_at_least_one_card]
+    workflow_positive_memory_inconclusive: [B_clearly_above_A, C_minus_B_below_3_or_C_adopts_zero_cards]
+    memory_positive_workflow_inconclusive: [C_clearly_above_B, absolute_B_minus_A_below_3]
+    full_system_positive: [C_minus_A_at_least_5, no_critical_correctness_regression, contribution_not_cleanly_separable]
+    inconclusive: [small_differences_or_judge_disagreement]
+    negative_transfer: [C_minus_B_at_most_minus_3_or_memory_causes_critical]
+    system_underperforms: [C_minus_A_at_most_minus_5]
+  scope_limit: single_project_heldout_case_not_universal_generalization
+
+reference_access:
+  allowed_only_after: [all_Blind_Final_frozen, anonymous_scores_frozen, arm_mapping_frozen, effect_conclusion_frozen]
+  count: 2_to_4
+  workspace: reference-adjudication
+  submissions_immutable: true
+  may_not_update_training_memory_or_skills: true
+
+completion_policy:
+  no_2023A_retry: true
+  incomplete_2022A_arm_means_effect_unavailable: true
+  evaluation_failure_does_not_block_product_release: true
+  release_fallback_mode: workflow-only

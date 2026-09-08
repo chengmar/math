@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["judge", "solutions", "ranking"],
+  "properties": {
+    "judge": {"enum": ["correctness-judge", "method-judge", "paper-judge"]},
+    "solutions": {
+      "type": "object",
+      "required": ["Solution X", "Solution Y", "Solution Z"],
+      "additionalProperties": {
+        "type": "object",
+        "required": ["result_accuracy_and_reliability", "method_quality_simplicity_and_innovation", "paper_expression_and_layout", "total", "critical_findings", "high_findings"],
+        "properties": {
+          "result_accuracy_and_reliability": {"type": "number", "minimum": 0, "maximum": 50},
+          "method_quality_simplicity_and_innovation": {"type": "number", "minimum": 0, "maximum": 25},
+          "paper_expression_and_layout": {"type": "number", "minimum": 0, "maximum": 25},
+          "total": {"type": "number", "minimum": 0, "maximum": 100},
+          "critical_findings": {"type": "array"},
+          "high_findings": {"type": "array"}
+        }
+      }
+    },
+    "ranking": {
+      "type": "array",
+      "items": {"enum": ["Solution X", "Solution Y", "Solution Z"]},
+      "minItems": 3,
+      "maxItems": 3,
+      "uniqueItems": true
+    }
+  }
+}

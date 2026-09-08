@@ -1,0 +1,63 @@
+{
+  "schema_version": "1.0",
+  "case_id": "2022A",
+  "assessed_at": "2026-09-08T12:02:32+08:00",
+  "status": "eligible_with_metadata_exposure",
+  "eligible_for_replacement_final_evaluation": true,
+  "audit_mode": "metadata_hash_and_provenance_only",
+  "body_accessed_before_decision": false,
+  "attachments_parsed_before_decision": false,
+  "reference_titles_or_bodies_accessed_before_decision": false,
+  "metadata_exposure": {
+    "present": true,
+    "allowed_fields": [
+      "year",
+      "problem_number",
+      "document_role",
+      "extension",
+      "size",
+      "sha256",
+      "split_and_import_status"
+    ],
+    "observed_contexts": [
+      "corpus_manifest_and_import_records",
+      "corpus_summary",
+      "exclusion_rule_tests"
+    ]
+  },
+  "protected_materials": {
+    "total": 11,
+    "problem_statements": 1,
+    "official_attachments_and_data": 7,
+    "reference_papers": 3,
+    "all_sources_exist": true,
+    "all_sizes_match_manifest": true,
+    "all_sha256_match_manifest": true
+  },
+  "import_audit": {
+    "all_split_values": ["excluded"],
+    "plan_actions": ["skip"],
+    "result_actions": ["skipped"],
+    "nonempty_destinations": 0
+  },
+  "provenance_audit": {
+    "active_files_checked": 25453,
+    "runtime_case_count": 19,
+    "runtime_contains_2022A": false,
+    "protected_exact_hash_matches": 0,
+    "git_repositories_checked": 2,
+    "unique_git_blobs_checked_per_repository": 495,
+    "protected_git_blob_matches": 0,
+    "sensitive_git_path_mentions": 0,
+    "knowledge_prompt_runtime_or_curator_marker_matches": 0
+  },
+  "frozen_inputs": {
+    "baseline_commit": "807457b5ba46813a95959e2497aa0997e475799c",
+    "corpus_manifest_sha256": "cd9343851c0201e6c5b8d96335ce4cc8e79fb707a504037c48ed2b556e690f5f",
+    "corpus_split_sha256": "5bce851c7dab0e90d35848a4f1af7e6c451d2e643d281f900bcf9ade12bd295c"
+  },
+  "decision_rationale": "Only held-out logistics metadata was previously exposed. No protected source or reference material was imported, copied into active project files, committed to Git, used in a runtime case, or found in curator state.",
+  "foundation_model_caveat": "This is held out relative to this project's training process; because it is a public historical problem, absolute absence from foundation-model pretraining cannot be guaranteed.",
+  "required_label": "metadata_exposure",
+  "report": "external-setup-report:2022A-HELDOUT-ELIGIBILITY-REPORT.md"
+}
