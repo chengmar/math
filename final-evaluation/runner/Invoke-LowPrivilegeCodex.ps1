@@ -9,7 +9,8 @@ param(
     [Parameter(Mandatory = $true)][string]$RunDir,
     [Parameter(Mandatory = $true)][string]$CodexHome,
     [Parameter(Mandatory = $true)][string]$CodexExecutable,
-    [Parameter(Mandatory = $true)][ValidateSet('probe','solve','audit','blind-revision','judge','reference-adjudication')][string]$Phase,
+    [Parameter(Mandatory = $true)][ValidateSet('probe','solve','audit','revision-correctness','revision-paper-verification','continuation','judge','reference-adjudication')][string]$Phase,
+    [Parameter(Mandatory = $true)][int]$TimeoutSeconds,
     [switch]$Execute
 )
 
@@ -30,10 +31,10 @@ $arguments = @(
     '--run-dir', $RunDir,
     '--codex-home', $CodexHome,
     '--codex-executable', $CodexExecutable,
-    '--phase', $Phase
+    '--phase', $Phase,
+    '--timeout-seconds', $TimeoutSeconds
 )
 if ($Execute) { $arguments += '--execute' }
 $process = Start-Process -FilePath $PythonExecutable -ArgumentList $arguments -Credential $credential -WorkingDirectory $Workspace -WindowStyle Hidden -Wait -PassThru -RedirectStandardOutput $stdoutPath -RedirectStandardError $stderrPath
 [pscustomobject]@{ ExitCode = $process.ExitCode; Stdout = $stdoutPath; Stderr = $stderrPath } | ConvertTo-Json
 exit $process.ExitCode
-

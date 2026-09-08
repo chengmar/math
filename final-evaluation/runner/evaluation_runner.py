@@ -18,7 +18,16 @@ MODEL = "gpt-5.6-sol"
 REASONING = "max"
 SANDBOX = "workspace-write"
 PERMISSION_PROFILE = "evaluation-workspace-write"
-ALLOWED_PHASES = {"probe", "solve", "audit", "blind-revision", "judge", "reference-adjudication"}
+PHASE_TIMEOUTS = {
+    "solve": 21600,
+    "audit": 14400,
+    "revision-correctness": 14400,
+    "revision-paper-verification": 14400,
+    "continuation": 14400,
+    "judge": 14400,
+    "reference-adjudication": 14400,
+}
+ALLOWED_PHASES = {"probe", *PHASE_TIMEOUTS}
 
 
 class EvaluationRunnerError(RuntimeError):
@@ -342,6 +351,11 @@ def run(args: argparse.Namespace) -> int:
     run_dir.mkdir(parents=True, exist_ok=False)
     if args.phase not in ALLOWED_PHASES:
         raise EvaluationRunnerError("unknown phase")
+    expected_timeout = PHASE_TIMEOUTS.get(args.phase)
+    if expected_timeout is not None and args.timeout_seconds != expected_timeout:
+        raise EvaluationRunnerError(
+            f"phase {args.phase} must use preregistered timeout {expected_timeout} seconds"
+        )
     codex_home = Path(args.codex_home).resolve(strict=True)
     executable = resolve_executable(args.codex_executable)
     final_message = run_dir / "final-message.txt"
@@ -439,7 +453,7 @@ def parser() -> argparse.ArgumentParser:
     result.add_argument("--codex-home", required=True)
     result.add_argument("--codex-executable", default="codex")
     result.add_argument("--phase", required=True, choices=sorted(ALLOWED_PHASES))
-    result.add_argument("--timeout-seconds", type=int, default=10800)
+    result.add_argument("--timeout-seconds", type=int, required=True)
     result.add_argument("--terminal-grace-seconds", type=float, default=120.0)
     result.add_argument("--execute", action="store_true")
     return result
