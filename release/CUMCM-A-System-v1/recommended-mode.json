@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "recommended_mode": "workflow-only",
+  "status": "final_evaluation_incomplete_workflow_only",
+  "reason": "2022A 在 B 臂独立审计阶段发现工作区外读取成功，已按冻结协议封存为无法形成有效三臂效果估计；训练记忆效果未验证，故保守固定推荐 workflow-only。",
+  "evaluation_status": "completed_without_valid_three_arm_effect_estimate",
+  "workflow_effect": null,
+  "memory_effect": null,
+  "full_system_effect": null,
+  "training_memory_effect": "unverified",
+  "user_selectable_modes": [
+    "workflow-only",
+    "full-trained"
+  ]
+}

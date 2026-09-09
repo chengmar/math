@@ -1,0 +1,19 @@
+id: TM-018-AUDIT-COUNTEREXAMPLE-REGRESSION
+title: Audit 反例必须转化为可重复的回归用例
+type: validation_pattern
+status: provisional_training
+source_cases: [2016A]
+source_kind: generalized_reflection_candidate
+origin_year: 2016
+tags: [audit, counterexample, regression, revision, evidence]
+applicable_conditions: [独立审计发现反例、边界失败或约束违反, 修订模型、代码或论文结论]
+inapplicable_conditions: [finding 仅为不影响结论的排版或措辞问题]
+minimum_baseline: 保存修订前 finding、触发输入和可观察失败，并为修订后结果定义通过条件
+recommended_action: 在修订后重放原反例，记录它是被新增约束排除、由模型修正改善还是以证据接受，同时运行邻近正常用例防止回归
+why_it_may_help: 只改文字、删除失败样本或覆盖旧输出，无法证明 Audit finding 已真正解决
+required_validation: [修订前失败可复现, 修订后状态与证据, 邻近正常用例, finding 到测试的可追踪标识]
+failure_modes: [删除反例, 只报告新结果, 改变输入后声称已修复, 修复局部问题却破坏其他小问]
+counterexamples: [原反例在修订后仍违反同一约束, 反例通过但基线用例出现新的数值或单位错误]
+complexity_cost: 低；每个实质 finding 增加一个固定输入回归和一条证据记录
+evidence_summary: 2016A 的独立 Audit 反例在 Blind Revision 中转为复现与约束检查后才形成可审计闭环；待后续案例检验
+last_updated: '2026-08-28'

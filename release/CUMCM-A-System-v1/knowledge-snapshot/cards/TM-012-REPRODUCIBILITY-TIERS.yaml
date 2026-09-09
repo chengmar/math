@@ -1,0 +1,19 @@
+id: TM-012-REPRODUCIBILITY-TIERS
+title: 区分数值复现、字节完整性和语义视觉等价
+type: validation_pattern
+status: provisional_training
+source_cases: [2005A, 2008A, 2009A]
+source_kind: engineering_cross_case_synthesis
+origin_year: 2005
+tags: [reproducibility, hash, paper, freeze, audit]
+applicable_conditions: [交付物包含代码、结构化结果、构建文档或二进制文件]
+inapplicable_conditions: [只有一段无需执行的纯文本说明]
+minimum_baseline: 为每类证据分别记录输入、命令、退出码、结果哈希和构建产物状态
+recommended_action: 数值结果用语义重算，权威载荷用 SHA-256，PDF 等非确定构建物用来源数字和视觉检查
+why_it_may_help: 构建时间戳会改变二进制，而相同哈希也不能证明结论正确
+required_validation: [权威载荷清单, 排除规则, 干净副本运行, 文档数字核对]
+failure_modes: [旧构建哈希继续描述新文件, 哈希一致冒充数学证明]
+counterexamples: [PDF 字节不同但页面和源数字一致]
+complexity_cost: 中；维护多层清单和构建记录
+evidence_summary: 多个工程案例反复支持三层复现证据的必要性
+last_updated: '2026-08-24'

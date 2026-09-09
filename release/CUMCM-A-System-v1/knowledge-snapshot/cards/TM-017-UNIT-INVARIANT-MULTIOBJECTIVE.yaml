@@ -1,0 +1,19 @@
+id: TM-017-UNIT-INVARIANT-MULTIOBJECTIVE
+title: 多目标排序必须对单位变换不敏感并保留偏好扰动证据
+type: validation_pattern
+status: provisional_training
+source_cases: [2016A]
+source_kind: generalized_reflection_candidate
+origin_year: 2016
+tags: [multiobjective, normalization, units, pareto, preference_sensitivity]
+applicable_conditions: [目标具有不同量纲或数量级, 需要由权重或评分从多个可行方案中排序]
+inapplicable_conditions: [目标已由物理定律合成为唯一有量纲效用且单位固定, 只做硬约束可行性判定]
+minimum_baseline: 先构造可行集或 Pareto 集，并明确每个目标的量纲、方向和归一化尺度来源
+recommended_action: 使用预先冻结且有物理含义的尺度归一化目标，执行单位变换测试与权重扰动，报告排名稳定区间、各目标贡献和第二方案
+why_it_may_help: 原量纲加权和会让单位选择和数量级代替真实偏好决定排名
+required_validation: [单位换算不变性, 归一化尺度来源表, 权重扰动, 目标贡献比例, Pareto 前沿保留]
+failure_modes: [米与厘米换算后排名改变, 某目标实际贡献近零却宣称同等重要, 自定尺度未做敏感性, 只报告唯一最优]
+counterexamples: [仅改变单位表示就得到不同首选方案, 小幅权重扰动使首选结构跳变且未披露]
+complexity_cost: 低到中；增加尺度审计、扰动计算和备选方案报告
+evidence_summary: 2016A Reflection 的参考复算暴露原量纲加权和与名义权重失真；尚需后续案例验证可迁移性
+last_updated: '2026-08-28'

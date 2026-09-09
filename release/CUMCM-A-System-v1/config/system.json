@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "version": "1.0.0",
+  "mode": "workflow-only",
+  "recommended_mode": "workflow-only",
+  "model": "gpt-5.6-sol",
+  "reasoning_effort": "max",
+  "fallback": false,
+  "cases_root": "user-cases",
+  "reference_policy": "manual_after_verified_blind_final"
+}

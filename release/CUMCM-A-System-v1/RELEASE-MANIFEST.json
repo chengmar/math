@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "product": "CUMCM-A-System",
+  "version": "1.0.0",
+  "release_status": "verified_release",
+  "built_at": "2026-09-09T14:05:00+08:00",
+  "default_mode": "workflow-only",
+  "user_selectable_modes": [
+    "workflow-only",
+    "full-trained"
+  ],
+  "model_contract": {
+    "model": "gpt-5.6-sol",
+    "reasoning": "max",
+    "fallback": false,
+    "ephemeral_per_stage": true
+  },
+  "evaluation": {
+    "status": "completed_without_valid_three_arm_effect_estimate",
+    "workflow_effect": null,
+    "memory_effect": null,
+    "full_system_effect": null,
+    "training_memory_effect": "unverified",
+    "reference_accessed": false,
+    "recommended_mode": "workflow-only"
+  },
+  "verification": {
+    "trainer_pytest": {
+      "status": "pass",
+      "tests": 199
+    },
+    "evaluation_repo_pytest": {
+      "status": "pass",
+      "tests": 199
+    },
+    "release_pytest": {
+      "status": "pass",
+      "tests": 9
+    },
+    "regression": {
+      "status": "pass",
+      "cases": 1
+    },
+    "dummy_lifecycle": "pass",
+    "synthetic_real_model_smoke": {
+      "status": "pass",
+      "actual_model": "gpt-5.6-sol",
+      "reasoning": "max",
+      "fallback": false,
+      "ephemeral": true
+    },
+    "secret_path_binary_scan": "pass",
+    "protected_2022A_2023A_exact_hash_scan": "pass"
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "hash_manifest": "RELEASE-FILES.sha256",
+    "file_count_hashed": 76,
+    "package_file_count_total": 78,
+    "self_excluded": [
+      "RELEASE-FILES.sha256"
+    ],
+    "mutable_excluded": [
+      "config/system.json",
+      "user-cases/**"
+    ]
+  },
+  "mutable_files": [
+    "config/system.json",
+    "user-cases/**"
+  ],
+  "privacy": {
+    "contains_real_problem_statements": false,
+    "contains_original_competition_data": false,
+    "contains_reference_papers": false,
+    "contains_evaluation_answers": false,
+    "contains_authentication_material": false,
+    "contains_private_model_logs": false
+  }
+}

@@ -1,0 +1,19 @@
+id: TM-005-CAUSAL-TIMELINE
+title: 用单步时序图审查在线算法的因果索引
+type: validation_pattern
+status: provisional_training
+source_cases: [2009A]
+source_kind: audited_and_reference_strengthened
+origin_year: 2009
+tags: [control, online, causality, time_index, leakage]
+applicable_conditions: [离散控制、滚动优化或在线预测使用历史观测]
+inapplicable_conditions: [纯离线全轨迹优化且不宣称在线实现]
+minimum_baseline: 明确当前观测控制下一个保持区间的零阶保持
+recommended_action: 标出观测可用时刻、命令计算时刻、保持区间和下一观测到达时刻，再逐行核对代码索引
+why_it_may_help: 可快速发现未来信息、错一拍和未建模延迟
+required_validation: [无未来索引, 延迟注入, 第一个和最后一个区间边界]
+failure_modes: [用区间未来值生成当前命令, 全轨迹拟合后声称在线]
+counterexamples: [离线误差很小但实时实现需要尚未到达的数据]
+complexity_cost: 低；一张时序图和索引断言
+evidence_summary: 可信控制案例的审计证明因果索引需要独立检查
+last_updated: '2026-08-24'
