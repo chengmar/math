@@ -15,14 +15,14 @@
 
 ## 安全边界
 
-实际路径：
+路径角色（由本机 `local-paths.toml` 或启动器解析，不写死盘符）：
 
-- 实验室：`D:\CUMCM-A-Lab`
-- Git 项目：`D:\CUMCM-A-Lab\trainer`
-- 参考 Vault：`D:\CUMCM-A-Vaults\reference-vault`
-- 考试 Vault：`D:\CUMCM-A-Vaults\exam-vault`
-- 专用配置：`D:\CUMCM-A-Lab\codex-home`
-- Baseline 配置：`D:\CUMCM-A-Lab\baseline-codex-home`
+- 实验室：`<LAB_ROOT>`
+- Git 项目：`<TRAINER_ROOT>`
+- 参考 Vault：`<VAULT_ROOT>/reference-vault`
+- 考试 Vault：`<VAULT_ROOT>/exam-vault`
+- 专用配置：`<LAB_ROOT>/codex-home`
+- Baseline 配置：`<LAB_ROOT>/baseline-codex-home`
 
 两个 Vault 在 Git 仓库外，没有符号链接进入 trainer。系统只在专用 `CODEX_HOME` 中禁用非项目自定义/插件 Skills；没有删除原 Skills、修改原 `.codex` 或卸载插件。来源不明或系统内置内容只清点、不操作。
 
@@ -30,7 +30,7 @@
 
 ## 批量语料与自动训练队列
 
-`framework-v1` 之后的批量层固定采用 2003A—2021A 训练、2022 排除、2023A 最终测试封存。原始材料只从仓库外的 Intake 读取，确定性副本只写到仓库外的 Vault，真实运行案例只写到 `D:\CUMCM-A-Lab\runtime-cases`。仓库中的 `corpus/training-queue.yaml` 仅保存不透明案例状态；本机尝试次数、锁、PID 和断点保存在被 Git 忽略的 `runtime`。
+`framework-v1` 之后的批量层固定采用 2003A—2021A 训练、2022 排除、2023A 最终测试封存。原始材料只从仓库外的 Intake 读取，确定性副本只写到仓库外的 Vault，真实运行案例只写到 `<RUNTIME_ROOT>`。仓库中的 `corpus/training-queue.yaml` 仅保存不透明案例状态；本机尝试次数、锁、PID 和断点保存在被 Git 忽略的 `runtime`。
 
 批量层包括：只读 inventory、默认 dry-run 的事务导入、源/目标 SHA-256 复核、安全解压、同年 A 题匹配、独立 Curator、19 题升序队列、每阶段全新 Codex 会话、可恢复 Autopilot、Shadow Evaluation、机器验证知识门和 2023 单向封存。2023A 在显式不可逆确认前永远不会进入自动队列。
 
@@ -43,10 +43,10 @@ PowerShell 入口位于 `scripts`，可从任意当前目录运行并自动定�
 在 Windows PowerShell 中运行：
 
 ```powershell
-Set-Location 'D:\CUMCM-A-Lab\trainer'
+Set-Location '<TRAINER_ROOT>'
 .\scripts\setup.ps1
-& 'D:\CUMCM-A-Lab\Verify-Codex-Isolation.ps1'
-& 'D:\CUMCM-A-Lab\Start-CUMCM-Codex.ps1'
+& '<LAB_ROOT>\Verify-Codex-Isolation.ps1'
+& '<LAB_ROOT>\Start-CUMCM-Codex.ps1'
 ```
 
 `setup.ps1` 只安装 `requirements-core.txt` 中的 PyYAML、pytest、jsonschema。真实案例需要常用数值包时再执行：
@@ -62,10 +62,10 @@ Set-Location 'D:\CUMCM-A-Lab\trainer'
 ### 1. 新建案例并放题目
 
 ```powershell
-Set-Location 'D:\CUMCM-A-Lab\trainer'
+Set-Location '<TRAINER_ROOT>'
 .\scripts\new-case.ps1 -CaseId 'train-a-001' -Split 'train' -Title '训练题标题' -ProblemFamily 'mechanistic'
-Copy-Item -LiteralPath 'C:\待导入\problem.pdf' -Destination '.\cases\train\train-a-001\input\problem\problem.pdf'
-Copy-Item -LiteralPath 'C:\待导入\data.xlsx' -Destination '.\cases\train\train-a-001\input\data\data.xlsx'
+Copy-Item -LiteralPath '<INTAKE_ROOT>\problem.pdf' -Destination '.\cases\train\train-a-001\input\problem\problem.pdf'
+Copy-Item -LiteralPath '<INTAKE_ROOT>\data.xlsx' -Destination '.\cases\train\train-a-001\input\data\data.xlsx'
 ```
 
 先确认题面和原始附件放在 `input`；不要把参考论文、讲评或答案放入案例目录。
@@ -117,9 +117,9 @@ Copy-Item -LiteralPath 'C:\待导入\data.xlsx' -Destination '.\cases\train\trai
 只有 Final 哈希通过后才能操作。把用户选定的 2–4 篇材料放到 Vault，例如：
 
 ```powershell
-New-Item -ItemType Directory -Force 'D:\CUMCM-A-Vaults\reference-vault\train-a-001'
-Copy-Item -LiteralPath 'C:\待导入\paper-1.pdf' -Destination 'D:\CUMCM-A-Vaults\reference-vault\train-a-001\paper-1.pdf'
-Copy-Item -LiteralPath 'C:\待导入\paper-2.pdf' -Destination 'D:\CUMCM-A-Vaults\reference-vault\train-a-001\paper-2.pdf'
+New-Item -ItemType Directory -Force '<VAULT_ROOT>\reference-vault\train-a-001'
+Copy-Item -LiteralPath '<INTAKE_ROOT>\paper-1.pdf' -Destination '<VAULT_ROOT>\reference-vault\train-a-001\paper-1.pdf'
+Copy-Item -LiteralPath '<INTAKE_ROOT>\paper-2.pdf' -Destination '<VAULT_ROOT>\reference-vault\train-a-001\paper-2.pdf'
 ```
 
 在 `cases\train\train-a-001\case.yaml` 的 `reference_ids` 中填写相对 Vault 路径：
@@ -172,7 +172,7 @@ Dummy 经验是 `demo`，升级工具会拒绝把它变为真实 verified。
 考试题只建 `exam` stub，答案留在 `exam-vault`。Treatment 和 Baseline 应保持 Codex 版本、模型、推理设置、时间预算、软件、允许工具和评分规则相同：
 
 ```powershell
-& 'D:\CUMCM-A-Lab\Start-CUMCM-Baseline.ps1' -Workspace 'D:\某个独立Baseline工作区'
+& '<LAB_ROOT>\Start-CUMCM-Baseline.ps1' -Workspace '<BASELINE_WORKSPACE>'
 ```
 
 不要根据一次 A/B 运行下确定结论；使用 `tools\compare_runs.py` 保存多次运行和波动。
@@ -205,7 +205,7 @@ Dummy 经验是 `demo`，升级工具会拒绝把它变为真实 verified。
 - 非空工作区：准备脚本会拒绝覆盖。先人工确认内容属于哪次运行，再使用新案例 ID；不要强行清空历史。
 - 冻结校验失败：不要修改清单“适配”文件；保留现场，依据审计决定该版本无效并新建冻结版本/案例。
 
-用户级 `C:\Users\lenovo\.agents\skills` 已做只读备份（源目录当时为空）。恢复脚本位于 `D:\CUMCM-A-Lab\archives\user-skills-20260816-151835\restore-skills.ps1`；目标非空时默认拒绝覆盖，只有人工核对后才传 `-Force`。
+用户级 `<USER_HOME>\.agents\skills` 已做只读备份（源目录当时为空）。恢复脚本位于 `<LAB_ROOT>\archives\user-skills-<timestamp>\restore-skills.ps1`；目标非空时默认拒绝覆盖，只有人工核对后才传 `-Force`。
 
 ## 更新规则与备份实验室
 
@@ -215,8 +215,8 @@ Dummy 经验是 `demo`，升级工具会拒绝把它变为真实 verified。
 
 ```powershell
 $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
-Copy-Item -LiteralPath 'D:\CUMCM-A-Lab' -Destination "E:\Backups\CUMCM-A-Lab-$stamp" -Recurse
-Copy-Item -LiteralPath 'D:\CUMCM-A-Vaults' -Destination "E:\Backups\CUMCM-A-Vaults-$stamp" -Recurse
+Copy-Item -LiteralPath '<LAB_ROOT>' -Destination "<BACKUP_ROOT>\CUMCM-A-Lab-$stamp" -Recurse
+Copy-Item -LiteralPath '<VAULT_ROOT>' -Destination "<BACKUP_ROOT>\CUMCM-A-Vaults-$stamp" -Recurse
 ```
 
 Git 只管理 `trainer`。重要修改后运行测试和回归，再有意提交；不要修改全局 Git 用户配置。

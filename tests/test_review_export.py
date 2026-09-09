@@ -110,3 +110,18 @@ def test_framework_sanitization_preserves_python_long_string_syntax(tmp_path: Pa
     exported = destination.read_text(encoding="utf-8")
     ast.parse(exported)
     assert "<LONG_QUOTE_REDACTED>" not in exported
+
+
+def test_path_sanitization_derives_local_roots_without_hardcoded_machine_paths() -> None:
+    trainer_root = MODULE_PATH.resolve().parents[1]
+    lab_root = trainer_root.parent
+    source = f"trainer={trainer_root}; runtime={lab_root / 'runtime-cases'}; home={Path.home()}"
+
+    sanitized = review_export.normalize_path_text(source)
+
+    assert str(trainer_root) not in sanitized
+    assert str(lab_root / "runtime-cases") not in sanitized
+    assert str(Path.home()) not in sanitized
+    assert "<TRAINER_ROOT>" in sanitized
+    assert "<RUNTIME_ROOT>" in sanitized
+    assert "<USER_HOME>" in sanitized
