@@ -4,7 +4,7 @@ import subprocess
 from pathlib import Path
 from typing import Iterable
 
-from .corpus_validate import SENSITIVE_SUFFIXES, TRACKED_BINARY_ALLOWLIST
+from .corpus_validate import SENSITIVE_SUFFIXES, TRACKED_BINARY_ALLOWLIST, TRACKED_BINARY_FILE_ALLOWLIST
 from .util import sha256_file
 
 
@@ -42,7 +42,7 @@ def inspect_git_tree(
         file_path = trainer_root / relative
         if not file_path.is_file():
             continue
-        allowlisted = normalized.startswith(TRACKED_BINARY_ALLOWLIST)
+        allowlisted = normalized.startswith(TRACKED_BINARY_ALLOWLIST) or normalized in TRACKED_BINARY_FILE_ALLOWLIST
         parts = {part.casefold() for part in Path(normalized).parts}
         if parts & FORBIDDEN_PATH_PARTS:
             findings.append({"path": normalized, "reason": "forbidden_corpus_path"})

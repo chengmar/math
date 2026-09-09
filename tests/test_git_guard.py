@@ -25,3 +25,20 @@ def test_git_guard_passes_text_only_tree(tmp_path):
     (tmp_path / "safe.py").write_text("print('ok')\n", encoding="utf-8")
     _git(tmp_path, "add", "safe.py")
     assert inspect_git_tree(tmp_path)["status"] == "pass"
+
+
+def test_git_guard_allows_only_the_named_release_zip(tmp_path):
+    _git(tmp_path, "init")
+    release = tmp_path / "release"
+    release.mkdir()
+    approved = release / "CUMCM-A-System-v1.zip"
+    approved.write_bytes(b"PK\x03\x04 synthetic product archive")
+    _git(tmp_path, "add", "-f", "release/CUMCM-A-System-v1.zip")
+    assert inspect_git_tree(tmp_path)["status"] == "pass"
+
+    unapproved = release / "unexpected.zip"
+    unapproved.write_bytes(b"PK\x03\x04 unexpected archive")
+    _git(tmp_path, "add", "-f", "release/unexpected.zip")
+    report = inspect_git_tree(tmp_path)
+    assert report["status"] == "fail"
+    assert any(item["path"] == "release/unexpected.zip" for item in report["findings"])

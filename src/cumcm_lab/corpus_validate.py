@@ -29,6 +29,7 @@ SENSITIVE_SUFFIXES = {
     ".gz",
 }
 TRACKED_BINARY_ALLOWLIST = ("cases/dummy/", "tests/fixtures/", "templates/")
+TRACKED_BINARY_FILE_ALLOWLIST = ("release/CUMCM-A-System-v1.zip",)
 
 
 def _record_source_kind(record: dict[str, Any]) -> str | None:
@@ -72,7 +73,8 @@ def _git_leak_findings(trainer_root: Path, real_hashes: set[str]) -> list[str]:
         normalized = relative.replace("\\", "/")
         path = trainer_root / relative
         suffix = path.suffix.casefold()
-        if suffix in SENSITIVE_SUFFIXES and not normalized.startswith(TRACKED_BINARY_ALLOWLIST):
+        allowlisted = normalized.startswith(TRACKED_BINARY_ALLOWLIST) or normalized in TRACKED_BINARY_FILE_ALLOWLIST
+        if suffix in SENSITIVE_SUFFIXES and not allowlisted:
             findings.append(f"tracked_sensitive_extension:{normalized}")
         if path.is_file() and sha256_file(path) in real_hashes:
             findings.append(f"tracked_real_hash:{normalized}")
