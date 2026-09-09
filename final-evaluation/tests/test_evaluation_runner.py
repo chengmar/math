@@ -13,6 +13,14 @@ runner = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(runner)
 
 
+class NoopSupervisor:
+    def attach_child(self, pid: int, events_path: Path, final_message_path: Path) -> None:
+        self.pid = pid
+
+    def update(self, *, status: str, recovery_classification: str) -> None:
+        pass
+
+
 def test_command_is_exact_workspace_write_contract(tmp_path: Path) -> None:
     command = runner.build_command("codex.exe", tmp_path, tmp_path / "final.txt")
     assert "-s" not in command
@@ -72,6 +80,7 @@ def test_terminal_supervisor_reaps_only_completed_child_tree(tmp_path: Path) -> 
         final_message_path=final,
         timeout_seconds=10,
         terminal_grace_seconds=0.1,
+        supervisor=NoopSupervisor(),
     )
     assert outcome["terminal_recovered"] is True
     assert outcome["timed_out"] is False
@@ -94,6 +103,7 @@ def test_terminal_supervisor_classifies_real_timeout(tmp_path: Path) -> None:
         final_message_path=final,
         timeout_seconds=0.1,
         terminal_grace_seconds=0.1,
+        supervisor=NoopSupervisor(),
     )
     assert outcome["terminal_recovered"] is False
     assert outcome["timed_out"] is True

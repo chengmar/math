@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "evaluation_case": "2022A",
+  "closed_at": "2026-09-09T13:30:07+08:00",
+  "status": "completed_without_valid_three_arm_effect_estimate",
+  "consumed": true,
+  "reference_accessed": false,
+  "preregistration_sha256": "1ef22faa677117a3d576754f1b1969e7582dd14ce04cfc6e3faf60b86a6d16a3",
+  "blind_scoring_valid": false,
+  "workflow_effect": null,
+  "memory_effect": null,
+  "full_system_effect": null,
+  "training_memory_effect": "unverified",
+  "recommended_mode": "workflow-only",
+  "closure_reason": "The workflow-only arm produced a verified and frozen Blind V1, but its independent Audit was invalidated after a successful read outside the active arm workspace.",
+  "policy": {
+    "additional_2022A_model_sessions_allowed": false,
+    "blind_v1_may_replace_blind_final": false,
+    "anonymous_judging_allowed": false,
+    "open_2022A_references_for_effect_conclusion": false,
+    "write_2022A_results_back_to_training": false
+  },
+  "privacy": {
+    "contains_problem_body": false,
+    "contains_solution_results": false,
+    "contains_reference_material": false,
+    "contains_private_run_logs": false,
+    "contains_machine_absolute_paths": false
+  }
+}

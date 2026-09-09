@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import ctypes
 import getpass
 import json
 import os
@@ -10,6 +11,7 @@ import subprocess
 import sys
 import time
 import tomllib
+import uuid
 from datetime import datetime
 from pathlib import Path
 
@@ -36,6 +38,194 @@ class EvaluationRunnerError(RuntimeError):
 
 def now_iso() -> str:
     return datetime.now().astimezone().isoformat(timespec="seconds")
+
+
+def atomic_write_json(path: Path, payload: object) -> None:
+    temporary = path.with_name(f".{path.name}.{os.getpid()}.tmp")
+    temporary.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    os.replace(temporary, path)
+
+
+def process_observation(pid: int) -> dict[str, object | None]:
+    """Return creation time and CPU seconds without adding a runtime dependency."""
+
+    if os.name != "nt":
+        return {"creation_time": None, "cpu_seconds": None}
+    process_query_information = 0x0400
+    handle = ctypes.windll.kernel32.OpenProcess(process_query_information, False, pid)
+    if not handle:
+        return {"creation_time": None, "cpu_seconds": None}
+    try:
+        creation = ctypes.c_ulonglong()
+        exit_time = ctypes.c_ulonglong()
+        kernel = ctypes.c_ulonglong()
+        user = ctypes.c_ulonglong()
+        ok = ctypes.windll.kernel32.GetProcessTimes(
+            handle,
+            ctypes.byref(creation),
+            ctypes.byref(exit_time),
+            ctypes.byref(kernel),
+            ctypes.byref(user),
+        )
+        if not ok:
+            return {"creation_time": None, "cpu_seconds": None}
+        windows_epoch_seconds = creation.value / 10_000_000 - 11_644_473_600
+        created = datetime.fromtimestamp(windows_epoch_seconds).astimezone().isoformat(timespec="seconds")
+        return {
+            "creation_time": created,
+            "cpu_seconds": round((kernel.value + user.value) / 10_000_000, 6),
+        }
+    finally:
+        ctypes.windll.kernel32.CloseHandle(handle)
+
+
+def latest_output_modification(workspace: Path, run_dir: Path) -> str | None:
+    latest: float | None = None
+    for root in (workspace / "checkpoint", workspace / "submission", run_dir):
+        if not root.exists():
+            continue
+        for path in root.rglob("*"):
+            if path.is_file():
+                try:
+                    value = path.stat().st_mtime
+                except OSError:
+                    continue
+                latest = value if latest is None else max(latest, value)
+    return datetime.fromtimestamp(latest).astimezone().isoformat(timespec="seconds") if latest else None
+
+
+class RuntimeSupervisor:
+    """Disk-backed single-stage supervisor that survives management-stream loss."""
+
+    def __init__(self, runtime_root: Path, workspace: Path, phase: str, run_dir: Path, timeout_seconds: int):
+        self.runtime_root = runtime_root.resolve(strict=True)
+        self.workspace = workspace
+        self.phase = phase
+        self.run_dir = run_dir
+        self.timeout_seconds = timeout_seconds
+        self.nonce = uuid.uuid4().hex
+        self.state_path = self.runtime_root / "runtime-supervisor.json"
+        self.pid_path = self.runtime_root / "runtime-supervisor.pid"
+        self.lock_path = self.runtime_root / "runtime-supervisor.lock"
+        self.heartbeat_path = self.runtime_root / "runtime-supervisor-heartbeat.json"
+        self.started_at = now_iso()
+        self.deadline_epoch = time.time() + timeout_seconds
+        self.child_pid: int | None = None
+        self.child_creation_time: str | None = None
+        self.events_path: Path | None = None
+        self.final_message_path: Path | None = None
+        self.last_state: dict[str, object] = {}
+
+    def acquire(self) -> None:
+        payload = {
+            "schema_version": 1,
+            "supervisor_pid": os.getpid(),
+            "supervisor_started_at": self.started_at,
+            "nonce": self.nonce,
+            "arm": self.workspace.name,
+            "phase": self.phase,
+            "run_id": self.run_dir.name,
+        }
+        try:
+            descriptor = os.open(self.lock_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+        except FileExistsError as error:
+            existing = self.lock_path.read_text(encoding="utf-8-sig", errors="replace")
+            raise EvaluationRunnerError(f"runtime supervisor lock already exists: {existing[:1000]}") from error
+        with os.fdopen(descriptor, "w", encoding="utf-8", newline="\n") as handle:
+            json.dump(payload, handle, ensure_ascii=False, indent=2)
+            handle.write("\n")
+        self.pid_path.write_text(f"{os.getpid()}\n", encoding="ascii")
+        self.update(status="starting", recovery_classification="fresh_stage")
+
+    def attach_child(self, pid: int, events_path: Path, final_message_path: Path) -> None:
+        self.child_pid = pid
+        observation = process_observation(pid)
+        self.child_creation_time = str(observation.get("creation_time") or "") or None
+        self.events_path = events_path
+        self.final_message_path = final_message_path
+        self.update(status="running", recovery_classification="active_supervised_stage")
+
+    def update(self, *, status: str, recovery_classification: str) -> None:
+        observation = process_observation(self.child_pid) if self.child_pid else {
+            "creation_time": None,
+            "cpu_seconds": None,
+        }
+        event_summary = (
+            parse_events(self.events_path)
+            if self.events_path and self.events_path.is_file()
+            else {"thread_id": None, "turn_completed": 0, "warnings": [], "fatal_errors": []}
+        )
+        last_event_time = None
+        if self.events_path and self.events_path.is_file():
+            last_event_time = datetime.fromtimestamp(self.events_path.stat().st_mtime).astimezone().isoformat(
+                timespec="seconds"
+            )
+        state: dict[str, object] = {
+            "schema_version": 1,
+            "status": status,
+            "active_evaluation_case": "2022A",
+            "arm": self.workspace.name,
+            "phase": self.phase,
+            "run_id": self.run_dir.name,
+            "thread_id": event_summary.get("thread_id"),
+            "supervisor_pid": os.getpid(),
+            "child_pid": self.child_pid,
+            "child_creation_time": self.child_creation_time or observation.get("creation_time"),
+            "nonce": self.nonce,
+            "events_path": str(self.events_path) if self.events_path else None,
+            "final_message_path": str(self.final_message_path) if self.final_message_path else None,
+            "stage_started_at": self.started_at,
+            "stage_deadline": datetime.fromtimestamp(self.deadline_epoch).astimezone().isoformat(timespec="seconds"),
+            "last_event_time": last_event_time,
+            "last_cpu_observation": observation.get("cpu_seconds"),
+            "last_output_modification": latest_output_modification(self.workspace, self.run_dir),
+            "turn_completed": event_summary.get("turn_completed"),
+            "fatal_errors": event_summary.get("fatal_errors"),
+            "recovery_classification": recovery_classification,
+            "heartbeat_at": now_iso(),
+        }
+        atomic_write_json(self.state_path, state)
+        atomic_write_json(
+            self.heartbeat_path,
+            {
+                "schema_version": 1,
+                "heartbeat_at": state["heartbeat_at"],
+                "supervisor_pid": os.getpid(),
+                "child_pid": self.child_pid,
+                "nonce": self.nonce,
+                "status": status,
+            },
+        )
+        self.last_state = state
+
+    def finish(self, *, status: str, recovery_classification: str) -> None:
+        self.update(status=status, recovery_classification=recovery_classification)
+        atomic_write_json(self.run_dir / "runtime-supervisor-final.json", self.last_state)
+        idle = dict(self.last_state)
+        idle.update(
+            {
+                "status": "idle",
+                "active_evaluation_case": None,
+                "arm": None,
+                "phase": None,
+                "run_id": None,
+                "thread_id": None,
+                "supervisor_pid": None,
+                "child_pid": None,
+                "child_creation_time": None,
+                "nonce": None,
+                "events_path": None,
+                "final_message_path": None,
+                "recovery_classification": recovery_classification,
+                "heartbeat_at": now_iso(),
+            }
+        )
+        atomic_write_json(self.state_path, idle)
+        for path in (self.heartbeat_path, self.pid_path, self.lock_path):
+            try:
+                path.unlink()
+            except FileNotFoundError:
+                pass
 
 
 def confined_file(path: Path, root: Path, label: str) -> Path:
@@ -267,6 +457,7 @@ def run_codex_process(
     final_message_path: Path,
     timeout_seconds: int,
     terminal_grace_seconds: float,
+    supervisor: RuntimeSupervisor,
 ) -> dict[str, object]:
     """Supervise a stage, distinguishing model timeout from a completed CLI hang."""
 
@@ -291,12 +482,14 @@ def run_codex_process(
             shell=False,
             **popen_kwargs,
         )
+        supervisor.attach_child(process.pid, events_path, final_message_path)
         assert process.stdin is not None
         process.stdin.write(prompt_text)
         process.stdin.close()
         started = time.monotonic()
         terminal_seen_at: float | None = None
         while True:
+            supervisor.update(status="running", recovery_classification="active_supervised_stage")
             return_code = process.poll()
             summary = parse_events(events_path)
             if return_code is not None:
@@ -375,19 +568,26 @@ def run(args: argparse.Namespace) -> int:
             )
         )
         return 0
+    supervisor = RuntimeSupervisor(runtime_root, workspace, args.phase, run_dir, args.timeout_seconds)
+    supervisor.acquire()
     started_at = now_iso()
     started = time.monotonic()
-    outcome = run_codex_process(
-        command,
-        prompt_text=prompt.read_text(encoding="utf-8-sig"),
-        workspace=workspace,
-        environment=environment,
-        events_path=events,
-        stderr_path=stderr,
-        final_message_path=final_message,
-        timeout_seconds=args.timeout_seconds,
-        terminal_grace_seconds=args.terminal_grace_seconds,
-    )
+    try:
+        outcome = run_codex_process(
+            command,
+            prompt_text=prompt.read_text(encoding="utf-8-sig"),
+            workspace=workspace,
+            environment=environment,
+            events_path=events,
+            stderr_path=stderr,
+            final_message_path=final_message,
+            timeout_seconds=args.timeout_seconds,
+            terminal_grace_seconds=args.terminal_grace_seconds,
+            supervisor=supervisor,
+        )
+    except BaseException:
+        supervisor.finish(status="failed", recovery_classification="runner_exception")
+        raise
     event_summary = outcome["event_summary"]
     stderr_text = stderr.read_text(encoding="utf-8-sig", errors="replace")
     configured_models = re.findall(r"Configuring session: model=([^;\s]+);", stderr_text)
@@ -440,6 +640,10 @@ def run(args: argparse.Namespace) -> int:
         "event_summary": event_summary,
     }
     (run_dir / "session.json").write_text(json.dumps(metadata, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    supervisor.finish(
+        status="completed" if valid else "failed",
+        recovery_classification=str(metadata["completion_classification"]),
+    )
     print(json.dumps(metadata, ensure_ascii=False, indent=2))
     return 0 if valid else 1
 
