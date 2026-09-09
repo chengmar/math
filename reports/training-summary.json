@@ -1,7 +1,11 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-28T21:16:02+08:00",
-  "system_status": "training_complete_ready_for_final_test",
+  "generated_at": "2026-09-09T14:36:00+08:00",
+  "system_status": "production_release_ready",
+  "training_status": "completed",
+  "evaluation_status": "completed_without_valid_three_arm_effect_estimate",
+  "project_status": "production_release_ready",
+  "active_processes": 0,
   "execution_policy": {
     "continuous_mode": false,
     "strict_serial_cases": true,
@@ -970,9 +974,21 @@
   "new_machine_verified_count": 0,
   "final_test": {
     "case_id": "2023A",
-    "status": "test_sealed",
-    "consumed": false,
+    "status": "permanently_archived_incomplete",
+    "consumed": true,
+    "reference_accessed": false,
     "manifest_sha256": "2054e6fa346db311175d4d0c433790c36079c54b35734e02b0ff430dc76441b6"
+  },
+  "replacement_evaluation": {
+    "case_id": "2022A",
+    "status": "completed_without_valid_three_arm_effect_estimate",
+    "consumed": true,
+    "reference_accessed": false,
+    "workflow_effect": null,
+    "memory_effect": null,
+    "full_system_effect": null,
+    "training_memory_effect": "unverified",
+    "recommended_mode": "workflow-only"
   },
   "isolation_statement": "这是最小复制工作区隔离，不是Windows绝对路径安全证明。"
 }
