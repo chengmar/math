@@ -150,20 +150,19 @@ def git_value(root: Path, *args: str, default: str | None = None) -> str | None:
 
 
 def normalize_path_text(text: str) -> str:
-    replacements = (
-        (r"D:\CUMCM-A-Lab\trainer", "<LAB_ROOT>"),
-        (r"D:\CUMCM-A-Lab\runtime-cases", "<RUNTIME_ROOT>"),
-        (r"D:\CUMCM-A-Lab", "<LAB_ROOT>"),
-        (r"D:\CUMCM-A-Vaults", "<VAULT_ROOT>"),
-        (r"D:\CUMCM-A-Intake", "<INTAKE_ROOT>"),
-        (r"C:\Users\lenovo", "<USER_HOME>"),
-        ("D:/CUMCM-A-Lab/trainer", "<LAB_ROOT>"),
-        ("D:/CUMCM-A-Lab/runtime-cases", "<RUNTIME_ROOT>"),
-        ("D:/CUMCM-A-Lab", "<LAB_ROOT>"),
-        ("D:/CUMCM-A-Vaults", "<VAULT_ROOT>"),
-        ("D:/CUMCM-A-Intake", "<INTAKE_ROOT>"),
-        ("C:/Users/lenovo", "<USER_HOME>"),
-    )
+    trainer_root = Path(__file__).resolve().parents[1]
+    lab_root = trainer_root.parent
+    replacements: list[tuple[str, str]] = []
+    for path, target in (
+        (trainer_root, "<TRAINER_ROOT>"),
+        (lab_root / "runtime-cases", "<RUNTIME_ROOT>"),
+        (lab_root, "<LAB_ROOT>"),
+        (lab_root.parent / "CUMCM-A-Vaults", "<VAULT_ROOT>"),
+        (lab_root.parent / "CUMCM-A-Intake", "<INTAKE_ROOT>"),
+        (Path.home(), "<USER_HOME>"),
+    ):
+        replacements.extend(((str(path), target), (path.as_posix(), target)))
+    replacements.sort(key=lambda item: len(item[0]), reverse=True)
     for source, target in replacements:
         text = text.replace(source, target)
     text = text.replace("CUMCM-A-Vaults", "VAULT_ROOT_PLACEHOLDER")
